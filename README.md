@@ -8,7 +8,7 @@ This project is to be run especially on Linux environment and be compatible with
 #### Practoring Assignment System
 
 Automatic Assignment: Assigns TAs based on their current workload while considering constraints such as:
-	•	Prioritizes TAs assigned to the specific course.
+	*	Prioritizes TAs assigned to the specific course.
 	•	Ensures no conflicts with leave, exams, or their schedule.
 	•	Enforces PhD/MS restrictions.	
     •	Proctor Swap: TAs can request swapping some proctor duties with other TAs under permission of authorized staff.
