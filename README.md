@@ -38,7 +38,7 @@ Technology Stack
 +  Backend: Spring Boot (Java), Maven, Spring Security, JPA (Hibernate)
 +  Database: MySQL
 +  Frontend: PHP, React.js, Angular
-+  Deployment: Apache2 on Linux server
++  Deployment: Apache2 on Linux server.
 
 
 
