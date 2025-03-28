@@ -13,7 +13,7 @@ const LoginPage = () => {
   return (
     <div className="login-container">
       <div className="logo-section">
-        <img src="logo.png" alt="Bilkent Logo" className="bilkent-logo" />
+        <img src="BilkentLogo.jpg" alt="Bilkent Logo" className="bilkent-logo" />
       </div>
       <div className="form-section">
         <div className="login-box">
