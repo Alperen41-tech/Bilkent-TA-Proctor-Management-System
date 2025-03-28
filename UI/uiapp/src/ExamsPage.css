@@ -1,0 +1,73 @@
+/* src/ExamsPage.css */
+.exams-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  .exams-content {
+    display: flex;
+    margin-top: 30px;
+    gap: 20px;
+  }
+  
+  .left-section {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .right-section {
+    flex: 1;
+  }
+  
+  .card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  .task-row, .assigned-tas {
+    margin-top: 10px;
+    background-color: #f3f4f6;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .placeholder-row {
+    color: #aaa;
+    font-style: italic;
+  }
+  
+  .details-section {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+  
+  .swap-button {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    align-self: flex-end;
+  }
+  
+  .swap-button:hover {
+    background: #4f46e5;
+  }
+  

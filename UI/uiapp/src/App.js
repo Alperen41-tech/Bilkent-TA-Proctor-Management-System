@@ -5,6 +5,8 @@ import ProfilePage from "./ProfilePage";
 import ExamsPage from "./ExamsPage";
 import LogoutModal from "./LogoutModal";
 
+
+
 function App() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
@@ -21,7 +23,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/profile" element={<ProfilePage onLogout={handleLogout} />} />
-        <Route path="/exams" element={<ExamsPage onLogout={handleLogout} />} />
+        <Route path="/exams" element={<ExamsPage />} />
       </Routes>
 
       <LogoutModal

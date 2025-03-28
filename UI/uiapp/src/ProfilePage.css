@@ -4,34 +4,6 @@
     padding: 20px;
   }
   
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .title {
-    font-weight: bold;
-    font-size: 20px;
-  }
-  
-  .nav-links {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-  
-  .nav-links a {
-    text-decoration: none;
-    color: black;
-  }
-  
-  .nav-links a.active {
-    color: #6366f1;
-    border-bottom: 2px solid #6366f1;
-    padding-bottom: 2px;
-  }
-  
   .logout {
     padding: 6px 14px;
     border: 1px solid #6366f1;

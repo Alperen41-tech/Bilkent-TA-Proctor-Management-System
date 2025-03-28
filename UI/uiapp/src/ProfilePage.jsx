@@ -1,25 +1,16 @@
 import React from "react";
 import "./ProfilePage.css";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
-const ProfilePage = ({ onLogout }) => {
+const ProfilePage = () => {
   const navigate = useNavigate();
   const [showChangePasswordModal, setShowChangePasswordModal] = React.useState(false);
   const [showUnavailabilityModal, setShowUnavailabilityModal] = React.useState(false);
 
   return (
     <div className="profile-container">
-      <header className="navbar">
-        <div className="title">Bilkent TA Management System</div>
-        <nav className="nav-links">
-          <a href="#">Dashboard</a>
-          <a href="#">My Schedule</a>
-          <a href="#">Paid Proctoring</a>
-          <a href="#" onClick={() => navigate("/exams")}>Exams</a>
-          <a className="active" href="#">Profile</a>
-          <button className="logout" onClick={onLogout}>Logout</button>
-        </nav>
-      </header>
+      <Navbar />
 
       <div className="profile-content">
         <div className="info-card">

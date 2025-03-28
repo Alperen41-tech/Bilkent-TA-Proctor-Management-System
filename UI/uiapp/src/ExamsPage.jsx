@@ -1,35 +1,40 @@
+// src/ExamsPage.jsx
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import "./LoginPage.css";
+import "./ExamsPage.css";
+import Navbar from "./Navbar";
 
-const LoginPage = () => {
-  const navigate = useNavigate();
-
-  const handleLogin = () => {
-    // you can add validation later
-    navigate("/profile");
-  };
-
+const ExamsPage = () => {
   return (
-    <div className="login-container">
-      <div className="logo-section">
-        <img src="BilkentLogo.jpg" alt="Bilkent Logo" className="bilkent-logo" />
-      </div>
-      <div className="form-section">
-        <div className="login-box">
-          <h2>Sign in</h2>
-          <label>Email</label>
-          <input type="email" placeholder="example.email@bilkent.edu.tr" />
-          <label>Password</label>
-          <input type="password" placeholder="Enter your password" />
-          <div className="forgot-password">
-            <a href="#">Forgot password?</a>
+    <div className="exams-container">
+      <Navbar />
+
+      <div className="exams-content">
+        <div className="left-section">
+          <div className="card">
+            <h3>Choose the task you wish to get</h3>
+            <div className="task-row placeholder-row">[ Task options will load here ]</div>
           </div>
-          <button onClick={handleLogin}>Login</button>
+
+          <div className="card">
+            <h3>Choose one of your tasks</h3>
+            <div className="task-row placeholder-row">[ Your tasks will load here ]</div>
+          </div>
+        </div>
+
+        <div className="right-section">
+          <div className="card">
+            <h3>TAs Assigned for this Task</h3>
+            <div className="assigned-tas placeholder-row">[ Assigned TAs will load here ]</div>
+            <div className="details-section">
+              <label htmlFor="details">Details</label>
+              <textarea id="details" placeholder="Enter details..." />
+              <button className="swap-button">Request Swap</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default ExamsPage;
