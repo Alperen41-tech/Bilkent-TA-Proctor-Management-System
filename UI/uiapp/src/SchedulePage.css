@@ -1,0 +1,68 @@
+.schedule-page {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  .calendar-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+  }
+  
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .calendar-header h2 {
+    font-size: 20px;
+  }
+  
+  .calendar-nav button {
+    color: black;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-weight: bold;
+  }
+  
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: 100px repeat(7, 1fr);
+    gap: 1px;
+    border: 2px solid #c4b5fd;
+  }
+  
+  .grid-header {
+    background: #f3f4f6;
+    text-align: center;
+    padding: 10px 0;
+    font-weight: bold;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .grid-header.empty {
+    background: none;
+    border: none;
+  }
+  
+  .time-label {
+    background: #f9fafb;
+    padding: 10px;
+    text-align: right;
+    border-right: 1px solid #ccc;
+  }
+  
+  .grid-cell {
+    height: 60px;
+    background: white;
+    border: 1px solid #eee;
+    transition: background 0.2s ease;
+  }
+  

@@ -5,8 +5,8 @@ import ProfilePage from "./ProfilePage";
 import ExamsPage from "./ExamsPage";
 import LogoutModal from "./LogoutModal";
 import PaidProctoringPage from "./PaidProctoringPage";
-
-
+import SchedulePage from "./SchedulePage";
+import DashboardPage from "./DashboardPage";
 
 function App() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -26,6 +26,8 @@ function App() {
         <Route path="/profile" element={<ProfilePage onLogout={handleLogout} />} />
         <Route path="/exams" element={<ExamsPage />} />
         <Route path="/proctoring" element={<PaidProctoringPage />} />
+        <Route path="/schedule" element={<SchedulePage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
       </Routes>
 
       <LogoutModal
