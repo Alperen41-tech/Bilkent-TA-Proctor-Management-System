@@ -4,6 +4,7 @@ import LoginPage from "./LoginPage";
 import ProfilePage from "./ProfilePage";
 import ExamsPage from "./ExamsPage";
 import LogoutModal from "./LogoutModal";
+import PaidProctoringPage from "./PaidProctoringPage";
 
 
 
@@ -24,6 +25,7 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/profile" element={<ProfilePage onLogout={handleLogout} />} />
         <Route path="/exams" element={<ExamsPage />} />
+        <Route path="/proctoring" element={<PaidProctoringPage />} />
       </Routes>
 
       <LogoutModal

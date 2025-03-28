@@ -1,0 +1,40 @@
+/* src/PaidProctoringPage.css */
+.paid-proctoring-page {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  .proctoring-content {
+    display: flex;
+    margin-top: 30px;
+    gap: 20px;
+  }
+  
+  .proctoring-left {
+    flex: 2;
+  }
+  
+  .proctoring-right {
+    flex: 1;
+  }
+  
+  .card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  }
+  
+  .task-list, .assigned-tas {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f3f4f6;
+    border-radius: 8px;
+    min-height: 100px;
+  }
+  
+  .placeholder {
+    color: #aaa;
+    font-style: italic;
+  }
+  
