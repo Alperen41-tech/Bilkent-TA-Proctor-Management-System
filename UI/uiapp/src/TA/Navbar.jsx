@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import "./Navbar.css";
-import LogoutModal from "./LogoutModal";
+import LogoutModal from "../LogoutModal";
 
 const Navbar = () => {
   const navigate = useNavigate();

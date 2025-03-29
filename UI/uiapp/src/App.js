@@ -3,12 +3,18 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-route
 import LoginPage from "./LoginPage";
 import LogoutModal from "./LogoutModal";
 
+
 // Updated paths for components now inside TA folder
 import ProfilePage from "./TA/ProfilePage";
 import ExamsPage from "./TA/ExamsPage";
 import PaidProctoringPage from "./TA/PaidProctoringPage";
 import SchedulePage from "./TA/SchedulePage";
 import DashboardPage from "./TA/DashboardPage";
+
+import INS_TAsPage from "./Ins/INS_TAsPage";
+import InstructorProfilePage from "./Ins/InstructorProfilePage";
+
+
 
 function App() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -30,6 +36,10 @@ function App() {
         <Route path="/proctoring" element={<PaidProctoringPage />} />
         <Route path="/schedule" element={<SchedulePage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+
+        <Route path="/ins-tas" element={<INS_TAsPage />} />
+        <Route path="/instructor-profile" element={<InstructorProfilePage />} />
+
       </Routes>
 
       <LogoutModal
