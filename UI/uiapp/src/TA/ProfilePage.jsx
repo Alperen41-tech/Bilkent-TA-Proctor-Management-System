@@ -1,7 +1,7 @@
 import React from "react";
 import "./ProfilePage.css";
 import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar";
 
 const ProfilePage = () => {
   const navigate = useNavigate();

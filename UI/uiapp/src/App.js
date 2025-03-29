@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import LoginPage from "./LoginPage";
-import ProfilePage from "./ProfilePage";
-import ExamsPage from "./ExamsPage";
 import LogoutModal from "./LogoutModal";
-import PaidProctoringPage from "./PaidProctoringPage";
-import SchedulePage from "./SchedulePage";
-import DashboardPage from "./DashboardPage";
+
+// Updated paths for components now inside TA folder
+import ProfilePage from "./TA/ProfilePage";
+import ExamsPage from "./TA/ExamsPage";
+import PaidProctoringPage from "./TA/PaidProctoringPage";
+import SchedulePage from "./TA/SchedulePage";
+import DashboardPage from "./TA/DashboardPage";
 
 function App() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);

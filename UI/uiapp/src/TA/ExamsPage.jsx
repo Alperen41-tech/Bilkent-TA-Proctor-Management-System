@@ -1,7 +1,7 @@
 // src/ExamsPage.jsx
 import React from "react";
 import "./ExamsPage.css";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar";
 
 const ExamsPage = () => {
   return (
