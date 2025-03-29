@@ -27,7 +27,7 @@ const NavbarINS = () => {
           
           <NavLink to="/ins-tas" className={({ isActive }) => (isActive ? "active" : "")}>TAs</NavLink>
           <NavLink to="/ins-tas" className={({ isActive }) => (isActive ? "active" : "")}>Dashboard</NavLink>
-          <NavLink to="/ins-tas" className={({ isActive }) => (isActive ? "active" : "")}>My Schedule</NavLink>
+          <NavLink to="/ins-schedule" className={({ isActive }) => (isActive ? "active" : "")}>My Schedule</NavLink>
           <NavLink to="/ins-tas" className={({ isActive }) => (isActive ? "active" : "")}>Exams</NavLink>
           <NavLink to="/instructor-profile" className={({ isActive }) => (isActive ? "active" : "")}>Profile</NavLink>
 
