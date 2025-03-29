@@ -26,13 +26,14 @@
   }
   
   .ta-search-bar input {
-    flex: 1;
+    flex: 2;
     padding: 8px 12px;
     border-radius: 6px;
     border: 1px solid #ccc;
   }
   
   .ta-search-bar button {
+    flex: 1;
     background: #6366f1;
     color: white;
     padding: 8px 14px;
