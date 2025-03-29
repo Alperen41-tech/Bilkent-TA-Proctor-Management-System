@@ -9,7 +9,7 @@ const LoginPage = () => {
     // you can add validation later
     //navigate("/dashboard");   //ENABLE FOR TA
 
-    navigate("/ins-tas");
+    navigate("/ins-dashboard"); 
   };
 
   return (

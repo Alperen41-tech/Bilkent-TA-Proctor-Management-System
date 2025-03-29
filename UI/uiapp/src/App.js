@@ -14,6 +14,7 @@ import DashboardPage from "./TA/DashboardPage";
 import INS_TAsPage from "./Ins/INS_TAsPage";
 import InstructorProfilePage from "./Ins/InstructorProfilePage";
 import INS_SchedulePage from "./Ins/INS_SchedulePage";
+import INS_DashboardPage from "./Ins/INS_DashboardPage";
 
 
 import INS_ExamsPage from "./Ins/INS_ExamsPage";
@@ -43,7 +44,7 @@ function App() {
         <Route path="/ins-tas" element={<INS_TAsPage />} />
         <Route path="/instructor-profile" element={<InstructorProfilePage />} />
         <Route path="/ins-schedule" element={<INS_SchedulePage />} />
-
+        <Route path="/ins-dashboard" element={<INS_DashboardPage />} />
         <Route path="/ins-exam-page" element={<INS_ExamsPage />} />
 
       </Routes>
