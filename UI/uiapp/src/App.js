@@ -16,6 +16,9 @@ import InstructorProfilePage from "./Ins/InstructorProfilePage";
 import INS_SchedulePage from "./Ins/INS_SchedulePage";
 
 
+import INS_ExamsPage from "./Ins/INS_ExamsPage";
+
+
 function App() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
@@ -40,6 +43,8 @@ function App() {
         <Route path="/ins-tas" element={<INS_TAsPage />} />
         <Route path="/instructor-profile" element={<InstructorProfilePage />} />
         <Route path="/ins-schedule" element={<INS_SchedulePage />} />
+
+        <Route path="/ins-exam-page" element={<INS_ExamsPage />} />
 
       </Routes>
 
