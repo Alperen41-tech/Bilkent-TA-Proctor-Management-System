@@ -1,26 +1,25 @@
 // src/InstructorProfilePage.jsx
 import React from "react";
-import "./InstructorProfilePage.css"; // Reusing the same CSS
-import Navbar from "./NavbarINS";
+import "./AdminProfilePage.css"; // Reusing the same CSS
+import NavbarAdmin from "./NavbarAdmin";
 
-const InstructorProfilePage = () => {
+const AdminProfilePage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = React.useState(false);
 
   return (
     <div className="profile-container">
-      <Navbar />
+      <NavbarAdmin />
 
       <div className="profile-content">
         {/* Info Section */}
         <div className="info-card">
           <h3>Personal Information</h3>
-          <p><strong>Name</strong><br />Mehmet Fatih</p>
-          <p><strong>Surname</strong><br />Sultan</p>
-          <p><strong>Email</strong><br />ahmet.yilmaz@bilkent.edu.tr</p>
-          <p><strong>ID</strong><br />34346543</p>
-          <p><strong>Role</strong><br />Instructor</p>
-          <p><strong>Department</strong><br />Computer Science</p>
-          <p><strong>Course(s)</strong><br />CS 202, CS 898</p>
+          <p><strong>Name</strong><br />Admin</p>
+          <p><strong>Surname</strong><br />Adminoğlu</p>
+          <p><strong>Email</strong><br />admin.adminoglu@bilkent.edu.tr</p>
+          <p><strong>ID</strong><br />123456</p>
+          <p><strong>Role</strong><br />Admin</p>
+
         </div>
 
         {/* Manage Account Section */}
@@ -54,4 +53,4 @@ const InstructorProfilePage = () => {
   );
 };
 
-export default InstructorProfilePage;
+export default AdminProfilePage;

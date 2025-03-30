@@ -20,6 +20,12 @@ import INS_DashboardPage from "./Ins/INS_DashboardPage";
 import INS_ExamsPage from "./Ins/INS_ExamsPage";
 
 
+
+import AdminProfilePage from "./Admin/AdminProfilePage";
+//import AdminDatabasePage from "./Admin/AdminDatabasePage";
+import AdminLogsPage from "./Admin/AdminLogsPage";
+
+
 function App() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
@@ -46,6 +52,20 @@ function App() {
         <Route path="/ins-schedule" element={<INS_SchedulePage />} />
         <Route path="/ins-dashboard" element={<INS_DashboardPage />} />
         <Route path="/ins-exam-page" element={<INS_ExamsPage />} />
+
+
+
+        <Route path="/admin-profile" element={<AdminProfilePage />} />
+        <Route path="/admin-logs" element={<AdminLogsPage />} />
+
+        
+        
+
+
+
+
+
+
 
       </Routes>
 

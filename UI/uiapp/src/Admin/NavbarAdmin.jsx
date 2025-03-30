@@ -1,9 +1,9 @@
 import React from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import "./NavbarINS.css";
+import "./NavbarAdmin.css";
 import LogoutModal from "../LogoutModal";
 
-const NavbarINS = () => {
+const NavbarAdmin = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -18,18 +18,17 @@ const NavbarINS = () => {
 
 
 
-  //CHANGED ALL TO ins-tas FOR NOW!!!!!!!!!!!!!!!!!!!!!
+
   return (
     <>
       <header className="navbar">
-        <div className="title">Bilkent Instructor Panel</div>
+        <div className="title">Bilkent Admin Panel</div>
         <nav className="nav-links">
           
-          <NavLink to="/ins-tas" className={({ isActive }) => (isActive ? "active" : "")}>TAs</NavLink>
-          <NavLink to="/ins-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>Dashboard</NavLink>
-          <NavLink to="/ins-schedule" className={({ isActive }) => (isActive ? "active" : "")}>My Schedule</NavLink>
-          <NavLink to="/ins-exam-page" className={({ isActive }) => (isActive ? "active" : "")}>Exams</NavLink>
-          <NavLink to="/instructor-profile" className={({ isActive }) => (isActive ? "active" : "")}>Profile</NavLink>
+          <NavLink to="/admin-database" className={({ isActive }) => (isActive ? "active" : "")}>Database</NavLink>
+          <NavLink to="/admin-logs" className={({ isActive }) => (isActive ? "active" : "")}>Logs</NavLink>
+          <NavLink to="/admin-profile" className={({ isActive }) => (isActive ? "active" : "")}>Profile</NavLink>
+
 
           <button className="logout" onClick={openModal}>Logout</button>
         </nav>
@@ -44,4 +43,4 @@ const NavbarINS = () => {
   );
 };
 
-export default NavbarINS;
+export default NavbarAdmin;
