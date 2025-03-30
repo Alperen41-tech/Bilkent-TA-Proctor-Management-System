@@ -33,6 +33,7 @@ const AdminLogsPage = () => {
   return (
     <div className="logs-container">
       <NavbarAdmin />
+      <div className="logs">
       <div className="logs-content">
         <div className="logs-table">
           <div className="table-header">
@@ -60,7 +61,21 @@ const AdminLogsPage = () => {
             ))}
           </div>
         </div>
-        <div className="log-details">
+          <div className="set-globals">
+          <h4>Set Globals</h4>
+          <div className="globals-inputs">
+            <label>Term - Spring 2025</label>
+            <input type="text" placeholder="e.g., Spring" />
+            <button className="set-term-button">Set Term</button>
+          </div>
+          <div className="globals-inputs">
+            <label>Proctoring Cap</label>
+            <input type="text" placeholder="e.g., Spring" />
+            <button className="set-proctoring-button">Set Proctoring Cap</button>
+          </div>
+        </div>
+      </div>
+      <div className="log-details">
           <h3>View Log Details</h3>
 
 
@@ -70,20 +85,6 @@ const AdminLogsPage = () => {
             <button className="create-report-button">Create Annual Report</button>
             <button className="export-logs-button">Export Logs</button>
           </div>
-        </div>
-      </div>
-
-      <div className="set-globals">
-        <h4>Set Globals</h4>
-        <div className="globals-inputs">
-          <label>Term - Spring 2025</label>
-          <input type="text" placeholder="e.g., Spring" />
-          <button className="set-term-button">Set Term</button>
-        </div>
-        <div className="globals-inputs">
-          <label>Proctoring Cap</label>
-          <input type="text" placeholder="e.g., Spring" />
-          <button className="set-proctoring-button">Set Proctoring Cap</button>
         </div>
       </div>
     </div>
