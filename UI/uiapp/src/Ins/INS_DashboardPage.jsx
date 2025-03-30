@@ -5,12 +5,10 @@ import "./INS_DashboardPage.css";
 const INS_DashboardPage = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [selectedProctoring, setSelectedProctoring] = useState(null);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setSelectedRequest(null);
-    setSelectedProctoring(null);
   };
 
   return (
@@ -20,6 +18,7 @@ const INS_DashboardPage = () => {
         {/* LEFT SIDE */}
         <div className="dashboard-left">
           {/* Tabs */}
+          <div className="top-left">
           <div className="tab-bar">
             <button onClick={() => handleTabClick("pending")} className={activeTab === "pending" ? "active" : ""}>Pending Requests</button>
             <button onClick={() => handleTabClick("received")} className={activeTab === "received" ? "active" : ""}>Received Requests</button>
@@ -38,7 +37,7 @@ const INS_DashboardPage = () => {
               <div className="placeholder">[ Display past submitted workload entries ]</div>
             )}
           </div>
-
+          </div>
           {/* Bottom Left Panel */}
           <div className="bottom-left">
             {activeTab === "pending" || activeTab === "received" ? (

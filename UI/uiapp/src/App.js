@@ -18,6 +18,8 @@ import INS_DashboardPage from "./Ins/INS_DashboardPage";
 
 
 import INS_ExamsPage from "./Ins/INS_ExamsPage";
+import DS_ProfilePage from "./DS/DS_ProfilePage";
+import DS_DashboardPage from "./DS/DS_DashboardPage";
 
 
 
@@ -52,6 +54,8 @@ function App() {
         <Route path="/ins-schedule" element={<INS_SchedulePage />} />
         <Route path="/ins-dashboard" element={<INS_DashboardPage />} />
         <Route path="/ins-exam-page" element={<INS_ExamsPage />} />
+        <Route path="/ds-profile" element={<DS_ProfilePage />} />
+        <Route path="/ds-dashboard" element={<DS_DashboardPage />} />
 
 
 
