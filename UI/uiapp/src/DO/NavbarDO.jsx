@@ -25,10 +25,10 @@ const NavbarDO = () => {
         <div className="title">Bilkent TA Managament System</div>
         <nav className="nav-links">
           
-          <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>TAs</NavLink>
           <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>Dashboard</NavLink>
-          <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>My Schedule</NavLink>
+          <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>TA Requests</NavLink>
           <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>Exams</NavLink>
+          <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>Create Exam</NavLink>
           <NavLink to="/do-profile" className={({ isActive }) => (isActive ? "active" : "")}>Profile</NavLink>
 
           <button className="logout" onClick={openModal}>Logout</button>
