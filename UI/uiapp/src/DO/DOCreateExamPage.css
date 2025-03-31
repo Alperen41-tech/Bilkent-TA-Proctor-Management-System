@@ -1,0 +1,144 @@
+/* Main Container */
+.do-create-exam-container {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f7;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+  }
+  
+  /* Content Layout: full height column */
+  .do-create-exam-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  /* Top & Bottom Rows fill available space equally */
+  .top-row, .bottom-row {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* Each Box fills its container */
+  .box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+  
+  /* Headings */
+  .your-exams h3,
+  .assigned-tas h3,
+  .create-task h3,
+  .choose-tas h3 {
+    margin-bottom: 10px;
+  }
+  
+  /* Lists inside boxes fill available space and scroll if needed */
+  .exam-list,
+  .ta-assigned-list,
+  .ta-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  /* Additional styling remains the same for inner elements */
+  
+  /* Example: Exam item styling */
+  .exam-item {
+    display: flex;
+    gap: 10px;
+    background-color: #f9fafb;
+    padding: 8px;
+    border-radius: 6px;
+    justify-content: space-between;
+  }
+  
+  /* TA Row styling */
+  .ta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #f9fafb;
+    padding: 8px;
+    border-radius: 6px;
+  }
+  
+  .dismiss-btn {
+    margin-left: auto;
+    background-color: #f87171;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  /* Form styling for Create Task */
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+  
+  .form-row label {
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  
+  .time-interval {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .ta-count-row {
+    width: 100px;
+  }
+  
+  .checkbox-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .create-btn {
+    background-color: #6366f1;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  /* Choose TAs Buttons */
+  .assign-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .assign-btn {
+    background-color: #6366f1;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .assigned-tas {
+    margin-top: 0px;
+  }
+
+
+  
