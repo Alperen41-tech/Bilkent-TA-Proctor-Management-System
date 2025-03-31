@@ -24,7 +24,7 @@ import DS_DashboardPage from "./DS/DS_DashboardPage";
 
 
 import AdminProfilePage from "./Admin/AdminProfilePage";
-//import AdminDatabasePage from "./Admin/AdminDatabasePage";
+import AdminDatabasePage from "./Admin/AdminDatabasePage";
 import AdminLogsPage from "./Admin/AdminLogsPage";
 
 import DO_ProfilePage from "./DO/DO_ProfilePage";
@@ -61,6 +61,7 @@ function App() {
 
         <Route path="/admin-profile" element={<AdminProfilePage />} />
         <Route path="/admin-logs" element={<AdminLogsPage />} />
+        <Route path="/admin-database" element={<AdminDatabasePage />} />
 
         <Route path="/do-profile" element={<DO_ProfilePage />} />        
         
