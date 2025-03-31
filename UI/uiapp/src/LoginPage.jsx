@@ -10,7 +10,8 @@ const LoginPage = () => {
     //navigate("/dashboard");   //ENABLE FOR TA
 
     //navigate("/ins-dashboard");
-    navigate("/admin-profile"); 
+    //navigate("/admin-profile");
+    navigate("do-profile"); 
   };
 
   return (

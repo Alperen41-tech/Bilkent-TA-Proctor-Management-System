@@ -27,6 +27,8 @@ import AdminProfilePage from "./Admin/AdminProfilePage";
 //import AdminDatabasePage from "./Admin/AdminDatabasePage";
 import AdminLogsPage from "./Admin/AdminLogsPage";
 
+import DO_ProfilePage from "./DO/DO_ProfilePage";
+
 
 function App() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -57,12 +59,10 @@ function App() {
         <Route path="/ds-profile" element={<DS_ProfilePage />} />
         <Route path="/ds-dashboard" element={<DS_DashboardPage />} />
 
-
-
         <Route path="/admin-profile" element={<AdminProfilePage />} />
         <Route path="/admin-logs" element={<AdminLogsPage />} />
 
-        
+        <Route path="/do-profile" element={<DO_ProfilePage />} />        
         
 
 
