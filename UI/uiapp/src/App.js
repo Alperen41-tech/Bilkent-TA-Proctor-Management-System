@@ -69,9 +69,7 @@ function App() {
 
         <Route path="/do-profile" element={<DO_ProfilePage />} />
         <Route path="/do-exams" element={<DOExamsPage />} />
-        <Route path="/do-create-exam" element={<DOCreateExamPage />} />       
-        
-        <Route path="/do-profile" element={<DO_ProfilePage />} />    
+        <Route path="/do-create-exam" element={<DOCreateExamPage />} />         
         <Route path="/do-dashboard" element={<DO_DashboardPage />} />
         <Route path="/do-ta-requests" element={<DO_TARequestsPage />} />  
 

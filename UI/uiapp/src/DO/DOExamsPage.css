@@ -19,7 +19,11 @@
     flex: 2;
     display: flex;
     flex-direction: column;
+    background-color: white;
     gap: 20px;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   }
   
   /* Search Filter */
@@ -33,6 +37,7 @@
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 6px;
+    flex: 2;
   }
   
   .search-button {
@@ -42,6 +47,7 @@
     padding: 8px 12px;
     border-radius: 6px;
     cursor: pointer;
+    flex: 1;
   }
   
   /* Exams Table */
@@ -49,13 +55,12 @@
     background-color: white;
     border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   }
   
   .table-row {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
+    padding: 10px;
   }
   
   .table-row.header {
