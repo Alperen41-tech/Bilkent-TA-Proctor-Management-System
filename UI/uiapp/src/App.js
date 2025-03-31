@@ -29,6 +29,8 @@ import AdminLogsPage from "./Admin/AdminLogsPage";
 
 import DO_ProfilePage from "./DO/DO_ProfilePage";
 import DOExamsPage from "./DO/DOExamsPage";
+import DO_DashboardPage from "./DO/DO_DashboardPage";
+import DO_TARequestsPage from "./DO/DO_TARequestsPage";
 
 
 function App() {
@@ -67,11 +69,9 @@ function App() {
         <Route path="/do-profile" element={<DO_ProfilePage />} />
         <Route path="/do-exams" element={<DOExamsPage />} />       
         
-
-
-
-
-
+        <Route path="/do-profile" element={<DO_ProfilePage />} />    
+        <Route path="/do-dashboard" element={<DO_DashboardPage />} />
+        <Route path="/do-ta-requests" element={<DO_TARequestsPage />} />  
 
 
       </Routes>
