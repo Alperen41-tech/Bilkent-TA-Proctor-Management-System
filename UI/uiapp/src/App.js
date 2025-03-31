@@ -29,6 +29,7 @@ import AdminLogsPage from "./Admin/AdminLogsPage";
 
 import DO_ProfilePage from "./DO/DO_ProfilePage";
 import DOExamsPage from "./DO/DOExamsPage";
+import DOCreateExamPage from "./DO/DOCreateExamPage";
 
 
 function App() {
@@ -65,7 +66,8 @@ function App() {
         <Route path="/admin-database" element={<AdminDatabasePage />} />
 
         <Route path="/do-profile" element={<DO_ProfilePage />} />
-        <Route path="/do-exams" element={<DOExamsPage />} />       
+        <Route path="/do-exams" element={<DOExamsPage />} />
+        <Route path="/do-create-exam" element={<DOCreateExamPage />} />       
         
 
 
