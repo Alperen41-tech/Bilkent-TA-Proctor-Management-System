@@ -8,10 +8,10 @@ const LoginPage = () => {
   const handleLogin = () => {
     // you can add validation later
     //navigate("/dashboard");   //ENABLE FOR TA
-
     //navigate("/ins-dashboard");
-    //navigate("/admin-profile");
-    navigate("do-profile"); 
+    //navigate("/admin-database"); //ENABLE FOR ADMIN
+    //navigate("/ds-dashboard"); //ENABLE FOR DS
+    navigate("/do-profile"); 
   };
 
   return (
