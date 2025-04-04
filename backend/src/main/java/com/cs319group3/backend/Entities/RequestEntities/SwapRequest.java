@@ -20,8 +20,6 @@ import lombok.Setter;
 public class SwapRequest extends Request{
 
 
-    private boolean isApproved;
-
     @ManyToOne
     @JoinColumn(name  = "class_proctoring_id")
     private ClassProctoring classProctoring;
