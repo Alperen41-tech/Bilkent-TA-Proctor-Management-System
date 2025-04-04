@@ -23,6 +23,7 @@ public class TimeInterval {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int timeIntervalId;
 
+    private String day;
 
     @OneToMany(mappedBy = "timeInterval")
     private List<OfferedCourseScheduleRelation> offeredCourseScheduleRelations;

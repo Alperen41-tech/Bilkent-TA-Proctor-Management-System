@@ -31,16 +31,13 @@ public class OfferedCourse {
 
 
     @OneToMany(mappedBy = "course")
-    private List<CourseInstructorRelation> courseInstructorRelations;
+    private List<CourseInstructorRelation> instructors;
 
     @OneToMany(mappedBy = "course")
-    private List<OfferedCourseScheduleRelation> offeredCourseScheduleRelations;
+    private List<OfferedCourseScheduleRelation> schedule;
 
     @OneToMany(mappedBy = "course")
     private List<CourseStudentRelation> courseStudentRelations;
-
-
-
 
 
     @ManyToOne
