@@ -23,7 +23,7 @@ public class Student {
     private int studentId;
 
 
-    private int bilkentId;
+    private String bilkentId;
 
     private String name;
     private String surname;

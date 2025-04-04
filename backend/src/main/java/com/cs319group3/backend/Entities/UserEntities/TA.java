@@ -1,11 +1,16 @@
 package com.cs319group3.backend.Entities.UserEntities;
 
 
+import com.cs319group3.backend.Entities.Course;
+import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RelationEntities.TAScheduleRelation;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.cs319group3.backend.Entities.RequestEntities.InstructorTAProctoringRequest;
+import com.cs319group3.backend.Entities.RequestEntities.SwapRequest;
+import com.cs319group3.backend.Entities.RequestEntities.TAAvailabilityRequest;
+import com.cs319group3.backend.Entities.RequestEntities.WorkloadRequest;
+import com.cs319group3.backend.Entities.TimeInterval;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,14 +27,44 @@ import java.util.List;
 public class TA extends User{
 
 
+    private boolean isOpenToSwap;
 
 
+    @Column(name = "class")
+    private int classYear;
 
     @OneToMany(mappedBy = "TA")
     private List<TAScheduleRelation> TAScheduleRelations;
 
     @OneToMany(mappedBy = "TA")
     private List<ClassProctoringTARelation> classProctoringTARelations;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course assignedCourse;
+
+
+    @OneToMany(mappedBy = "senderUser")
+    private List<WorkloadRequest> workloadRequests;
+
+
+    @OneToMany(mappedBy = "senderUser")
+    private List<TAAvailabilityRequest> TAAvailabilityRequests;
+
+    @OneToMany(mappedBy = "senderUser")
+    private List<SwapRequest> swapRequestsSent;
+
+    @OneToMany(mappedBy = "receiverUser")
+    private List<SwapRequest> swapRequestsReceived;
+
+
+    @OneToMany(mappedBy = "receiverUser")
+    private List<InstructorTAProctoringRequest> instructorTAProctoringRequests;
+
 
 
 }
