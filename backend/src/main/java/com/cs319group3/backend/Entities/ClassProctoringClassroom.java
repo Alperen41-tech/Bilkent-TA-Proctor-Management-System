@@ -19,11 +19,20 @@ public class ClassProctoringClassroom {
     @EmbeddedId
     private ClassProctoringClassroomKey id;
 
-    private String classroom;
-
     @ManyToOne
-    @JoinColumn(name = "class_proctoring_id")
+    @MapsId("classProctoringId")
     private ClassProctoring classProctoring;
 
+    public String getClassroom(){
+        return id != null ? id.getClassroom() : null;
+    }
+
+    public void setClassroom(String classroom){
+
+        if (id == null) {
+            id = new ClassProctoringClassroomKey();
+        }
+        id.setClassroom(classroom);
+    }
 
 }

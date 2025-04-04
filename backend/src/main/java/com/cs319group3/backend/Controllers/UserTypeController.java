@@ -2,7 +2,6 @@ package com.cs319group3.backend.Controllers;
 
 
 import com.cs319group3.backend.Entities.UserType;
-import com.cs319group3.backend.Repositories.UserTypeDAO;
 import com.cs319group3.backend.Services.UserTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +20,11 @@ public class UserTypeController {
 
     @PostMapping("createUserType")
     public ResponseEntity<String> createUserType(@RequestBody UserType userType) {
+
+        UserType u = new UserType();
+
+        System.out.println(u.equals(userType));
+
         System.out.println(userType.getUserTypeName() + "Hello World") ;
         return userTypeService.createUserType(userType);
     }
