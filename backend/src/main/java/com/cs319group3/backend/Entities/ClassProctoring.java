@@ -2,12 +2,14 @@ package com.cs319group3.backend.Entities;
 
 
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
+import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -23,12 +25,30 @@ public class ClassProctoring {
     private int classProctoringId;
 
 
+    private int sectionNo;
+    private int TACount;
+    private boolean isComplete;
+
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+
+
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
+
+
+    @ManyToOne
+    @JoinColumn(name = "task_type_id")
+    private TaskType taskType;
+
+    @ManyToOne
+    @JoinColumn(name = "instructor_id")
+    private Instructor creatorInstructor;
 
     @OneToMany(mappedBy = "classProctoring")
-    private List<ClassProctoringTARelation> classProctoringTARelations;;
+    private List<ClassProctoringTARelation> TAsOfProctoring;
 
-
-
-
-
+    @OneToMany(mappedBy = "classProctoring")
+    private List<ClassProctoringClassroom> classrooms;
 }

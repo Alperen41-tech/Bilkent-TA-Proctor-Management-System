@@ -21,8 +21,7 @@ public class Login {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int loginId;
 
-    //TODO burda db'de column açılacak 
-    private String mail;
+
     private String password;
 
 
