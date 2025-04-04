@@ -27,9 +27,6 @@ import java.util.List;
 public class TA extends User{
 
 
-    private boolean isOpenToSwap;
-
-
     @Column(name = "class")
     private int classYear;
 

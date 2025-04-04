@@ -18,6 +18,8 @@ import lombok.Setter;
 @Table(name = "ta_from_dean_request")
 public class TAFromDeanRequest extends Request{
 
+
+    //TODO TACount column should be added to table in db
     private int TACount;
 
     private boolean isComplete;
