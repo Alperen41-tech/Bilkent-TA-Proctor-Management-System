@@ -21,7 +21,7 @@ public class TimeInterval {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int intervalID;
+    private int timeIntervalId;
 
 
     @OneToMany(mappedBy = "timeInterval")

@@ -18,7 +18,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "instructor")
+@Table(name = "ta")
 public class TA extends User{
 
 
