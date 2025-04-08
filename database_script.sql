@@ -65,7 +65,8 @@ create table login(
 	user_id int not null,
     password varchar(50) not null,
 	user_type_id int not null,
-    foreign key (user_id) references user(user_id)
+    foreign key (user_id) references user(user_id),
+    foreign key (user_type_id) references user_type(user_type_id)
 );
 
 create index password_idx on login(password);
@@ -271,6 +272,7 @@ create table instructor_ta_proctoring_request(
 
 create table ta_availability_request(
 	request_id int primary key,
+    is_urgent bool,
     unavailability_start_date datetime not null,
     unavailability_end_date datetime not null,
     foreign key (request_id) references request(request_id)
@@ -281,6 +283,7 @@ create index start_date_end_date_idx on ta_availability_request(unavailability_s
 
 create table ta_from_dean_request(
 	request_id int primary key,
+    ta_count int,
     is_complete bool,
     class_proctoring_id int not null,
     foreign key (request_id) references request(request_id),
