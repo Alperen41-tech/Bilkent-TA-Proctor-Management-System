@@ -24,21 +24,10 @@ public abstract class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
-
     private int bilkentId;
-
     private String name;
-
     private String surname;
-
-
     private String mail;
-
     private String phoneNumber;
-
     private boolean isActive;
-
 }
-
-
-
