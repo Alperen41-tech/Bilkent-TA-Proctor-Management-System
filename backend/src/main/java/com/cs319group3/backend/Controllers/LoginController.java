@@ -12,7 +12,7 @@ public class LoginController {
     private LoginService loginService;
 
     @PostMapping("/login")
-    public boolean login(@RequestParam String email, @RequestParam String password) {
-        return loginService.authenticate(email, password);
+    public boolean login(@RequestParam String mail, @RequestParam String password) {
+        return loginService.authenticate(mail, password);
     }
 }

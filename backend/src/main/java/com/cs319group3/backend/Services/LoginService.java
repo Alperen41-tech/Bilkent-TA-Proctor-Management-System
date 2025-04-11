@@ -16,7 +16,7 @@ public class LoginService {
     private LoginRepository loginRepository;
 
     public boolean authenticate(String email, String password) {
-        Optional<Login> loginOptional = loginRepository.findByUserEmail(email);
+        Optional<Login> loginOptional = loginRepository.findByUserMail(email);
 
         if (!loginOptional.isPresent()) {
             return false;
