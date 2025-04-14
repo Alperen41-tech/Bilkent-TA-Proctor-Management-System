@@ -1,7 +1,9 @@
+
 .dashboard-page {
     font-family: Arial, sans-serif;
     padding: 20px;
     background-color: #f5f5f7;
+    height: 100%;
   }
   
   .dashboard-grid {
@@ -21,7 +23,7 @@
   .tab-bar {
     display: flex;
     gap: 10px;
-    border-bottom: 2px solid #ccc;
+    border-bottom: 2px solid #f9fafb;
   }
   
   .tab-bar button {
@@ -44,7 +46,7 @@
   .tab-content {
     min-height: 150px;
     padding: 10px;
-    background: #f9fafb;
+    background: white;
     border-radius: 10px;
     border: 1px solid #e5e7eb;
   }
