@@ -1,11 +1,30 @@
 .task-item {
     background-color: #f3f4f6;
-    border-radius: 8px;
+    border-radius: 20px;
     padding: 10px;
     margin-bottom: 8px;
     cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 30px;
+    padding-right: 10px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    
+  }
+  .property{
+    flex: 1;
+    margin-left: 5px;
+    margin-right: 5px;
+    text-align: left;
   }
   .task-item:hover {
     background-color: #e2e3e6;
   }
   
+  .task-item.selected {
+    background-color: #e0f7fa; /* or any highlight color */
+    border-color: #00acc1;
+  }
