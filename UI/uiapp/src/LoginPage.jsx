@@ -7,11 +7,11 @@ const LoginPage = () => {
   const [showForgotPasswordModal, setShowForgotPasswordModal] = React.useState(false);
   const handleLogin = () => {
     // you can add validation later
-    //navigate("/dashboard");   //ENABLE FOR TA
+    navigate("/dashboard");   //ENABLE FOR TA
     //navigate("/ins-dashboard");
     //navigate("/admin-database"); //ENABLE FOR ADMIN
     //navigate("/ds-dashboard"); //ENABLE FOR DS
-    navigate("/do-profile"); 
+    //navigate("/do-profile"); 
   };
 
   return (

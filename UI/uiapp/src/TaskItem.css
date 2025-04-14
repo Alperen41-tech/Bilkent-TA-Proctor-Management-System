@@ -1,0 +1,11 @@
+.task-item {
+    background-color: #f3f4f6;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .task-item:hover {
+    background-color: #e2e3e6;
+  }
+  
