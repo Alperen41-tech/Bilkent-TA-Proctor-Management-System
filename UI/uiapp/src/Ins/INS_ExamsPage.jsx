@@ -3,8 +3,11 @@ import NavbarINS from "./NavbarINS";
 import "./NavbarINS.css";
 import "./INS_ExamsPage.css";
 import TAItem from "../TAItem";
+import TaskItem from "../TaskItem";
 
 const INS_ExamsPage = () => {
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [lastTask1, setLastTask1] = useState(null);
   const [selectedTA, setSelectedTA] = useState(null);
 
   const [searchText, setSearchText] = useState("");
@@ -20,6 +23,18 @@ const INS_ExamsPage = () => {
 
   const handleSort = () => {
     console.log("Sort Name:", sortName, "Workload:", sortWorkload);
+  };
+
+
+  const createTaskItem = (id, course, name, date, timeInterval, classroom, onClickHandler, selectedTaskId) => {
+    const task = { id, course, name, date, timeInterval, classroom };
+    const isSelected = selectedTaskId === id;
+    return <TaskItem key={id} task={task} onClick={onClickHandler} isSelected={isSelected} />;
+  };
+
+  const handleTaskClick1 = (task) => {
+    setSelectedTask(task);
+    setLastTask1(task);
   };
 
   
@@ -57,7 +72,12 @@ const INS_ExamsPage = () => {
         {/* Instructor's Proctor Assignments */}
         <div className="card assignments">
           <h3>Your Assignments with Proctors</h3>
-          <div className="placeholder">[ Assignment data from DB ]</div>
+          <div className="task-row">
+              {createTaskItem(1, "CS315", "Quiz Proctor", "15/03/2025", "10:30 - 11:30", "EE - 214", handleTaskClick1, lastTask1?.id)}
+              {createTaskItem(2, "CS102", "Quiz Proctor", "16/03/2025", "09:30 - 10:30", "EE - 312", handleTaskClick1, lastTask1?.id)}
+              {createTaskItem(3, "CS555", "Midterm Proctor", "21/03/2025", "19:00 - 21:00", "B - 103", handleTaskClick1, lastTask1?.id)}
+              {createTaskItem(4, "CS2004", "Midterm Proctor", "21/03/2025", "19:00 - 21:00", "B - 104", handleTaskClick1, lastTask1?.id)}
+            </div>
         </div>
 
         {/* TAs Assigned to Selected Task */}
@@ -143,7 +163,7 @@ const INS_ExamsPage = () => {
           <div className="assigned-tas">
             {createTAItem("Ahmet", "Yılmaz", "ahmeasdt.yilmaz@example.com", handleTAClick, selectedTA)}
             {createTAItem("Merve", "Kara", "mervadse.kara@example.com", handleTAClick, selectedTA)}
-            {createTAItem("John", "Doe", "johasdn.doe@example.com", handleTAClick, selectedTA)}
+            {createTAItem("John", "Doe", "johasd  n.doe@example.com", handleTAClick, selectedTA)}
           </div>
         </div>
       </div>
