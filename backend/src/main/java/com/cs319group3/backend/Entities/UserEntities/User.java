@@ -31,7 +31,7 @@ public abstract class User implements Serializable {
 
     private String surname;
 
-    private String mail;
+    private String email;
 
     private String phoneNumber;
     
