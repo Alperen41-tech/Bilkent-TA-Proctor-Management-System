@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import NavbarINS from "./NavbarINS";
 import "./NavbarINS.css";
 import "./INS_ExamsPage.css";
+import TAItem from "../TAItem";
 
 const INS_ExamsPage = () => {
+  const [selectedTA, setSelectedTA] = useState(null);
+
   const [searchText, setSearchText] = useState("");
   const [sortName, setSortName] = useState("");
   const [sortWorkload, setSortWorkload] = useState("");
@@ -19,6 +22,33 @@ const INS_ExamsPage = () => {
     console.log("Sort Name:", sortName, "Workload:", sortWorkload);
   };
 
+  
+  const createTAItem = (firstName, lastName, email, onClickHandler, selectedTAKey) => {
+    const ta = { firstName, lastName, email };
+    const key = `${firstName}-${lastName}-${email}`;
+    const isSelected = selectedTAKey === key;
+  
+    return (
+      <TAItem
+        key={key}
+        ta={ta}
+        onClick={onClickHandler}
+        isSelected={isSelected}
+      />
+    );
+  };
+
+
+
+  const handleTAClick = (ta) => {
+    const key = `${ta.firstName}-${ta.lastName}-${ta.email}`;
+    setSelectedTA(key);
+  };
+
+
+
+
+
   return (
     <div className="exams-page">
       <NavbarINS />
@@ -33,7 +63,12 @@ const INS_ExamsPage = () => {
         {/* TAs Assigned to Selected Task */}
         <div className="card assigned-tas">
           <h3>TAs Assigned for this Task</h3>
-          <div className="placeholder">[ Assigned TA data from DB ]</div>
+          <div className="assigned-tas">
+            {createTAItem("Ahmet", "Yılmaz", "ahmet.yilmaz@example.com", handleTAClick, selectedTA)}
+            {createTAItem("Merve", "Kara", "merve.kara@example.com", handleTAClick, selectedTA)}
+            {createTAItem("John", "Doe", "john.doe@example.com", handleTAClick, selectedTA)}
+          </div>
+
         </div>
 
         {/* Create New Task */}
@@ -105,7 +140,11 @@ const INS_ExamsPage = () => {
             <button onClick={handleSearch}>Apply</button>
           </div>
 
-          <div className="placeholder">[ TA list from DB ]</div>
+          <div className="assigned-tas">
+            {createTAItem("Ahmet", "Yılmaz", "ahmeasdt.yilmaz@example.com", handleTAClick, selectedTA)}
+            {createTAItem("Merve", "Kara", "mervadse.kara@example.com", handleTAClick, selectedTA)}
+            {createTAItem("John", "Doe", "johasdn.doe@example.com", handleTAClick, selectedTA)}
+          </div>
         </div>
       </div>
     </div>

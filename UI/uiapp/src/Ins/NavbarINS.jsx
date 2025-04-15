@@ -22,7 +22,7 @@ const NavbarINS = () => {
   return (
     <>
       <header className="navbar">
-        <div className="title">Bilkent Instructor Panel</div>
+        <div className="title">Bilkent TA Management System</div>
         <nav className="nav-links">
           
           <NavLink to="/ins-tas" className={({ isActive }) => (isActive ? "active" : "")}>TAs</NavLink>

@@ -2,8 +2,10 @@
 import React, { useState } from "react";
 import NavbarINS from "./NavbarINS";
 import "./INS_TAsPage.css";
+import TAItem from "../TAItem";
 
 const TAsPage = () => {
+  const [selectedTA, setSelectedTA] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [sortDepartment, setSortDepartment] = useState("");
   const [sortWorkload, setSortWorkload] = useState("");
@@ -17,6 +19,29 @@ const TAsPage = () => {
   const handleSort = () => {
     // Later: apply sort on TA list from backend or state
     console.log("Sorting by:", sortDepartment, sortWorkload, sortName);
+  };
+
+
+  const createTAItem = (firstName, lastName, email, onClickHandler, selectedTAKey) => {
+    const ta = { firstName, lastName, email };
+    const key = `${firstName}-${lastName}-${email}`;
+    const isSelected = selectedTAKey === key;
+  
+    return (
+      <TAItem
+        key={key}
+        ta={ta}
+        onClick={onClickHandler}
+        isSelected={isSelected}
+      />
+    );
+  };
+
+
+
+  const handleTAClick = (ta) => {
+    const key = `${ta.firstName}-${ta.lastName}-${ta.email}`;
+    setSelectedTA(key);
   };
 
   return (
@@ -43,9 +68,10 @@ const TAsPage = () => {
             <span>Department</span>
           </div>
 
-          {/* Placeholder for TA list */}
-          <div className="ta-list-body">
-            <p className="placeholder">[ TA data will appear here from DB ]</p>
+          <div className="assigned-tas">
+            {createTAItem("Ahmet", "Yılmaz", "ahmet.yilmaz@example.com", handleTAClick, selectedTA)}
+            {createTAItem("Merve", "Kara", "merve.kara@example.com", handleTAClick, selectedTA)}
+            {createTAItem("John", "Doe", "john.doe@example.com", handleTAClick, selectedTA)}
           </div>
         </div>
 
