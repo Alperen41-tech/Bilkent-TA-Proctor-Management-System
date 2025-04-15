@@ -28,9 +28,9 @@ const PaidProctoringItem = ({ task, isSelected, isEnrolled, onClick }) => {
         <div className="department">{task.department}</div>
         <div>
           {isEnrolled ? (
-            <span className="status enrolled">Enrolled</span>
+            <span className="status enrolled" >Enrolled</span>
           ) : (
-            <button className="status apply">Apply Proctoring</button>
+            <button className="status apply " >Apply Proctoring</button>
           )}
         </div>
       </div>

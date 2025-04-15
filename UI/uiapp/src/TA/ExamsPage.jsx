@@ -30,6 +30,7 @@ const ExamsPage = () => {
   const [lastTask1, setLastTask1] = useState(null);
   const [lastTask2, setLastTask2] = useState(null);
   const [selectedTA, setSelectedTA] = useState(null); 
+  
   const handleTaskClick1 = (task) => {
     setSelectedTask(task);
     setLastTask1(task);
@@ -43,10 +44,6 @@ const ExamsPage = () => {
   const handleTAClick = (ta) => {
     const key = `${ta.firstName}-${ta.lastName}-${ta.email}`;
     setSelectedTA(key);
-  };
-
-  const closeModal = () => {
-    setSelectedTask(null);
   };
 
   return (

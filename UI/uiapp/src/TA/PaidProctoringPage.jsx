@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Navbar from "./Navbar";
 import PaidProctoringItem from "./PaidProctoringItem";
 import "./PaidProctoringPage.css";
+import TAItem from "../TAItem";
 
 const sampleTasks = [
   {
@@ -46,7 +47,28 @@ const sampleTasks = [
   },
 ];
 
+
+const createTAItem = (firstName, lastName, email, onClickHandler, selectedTAKey) => {
+  const ta = { firstName, lastName, email };
+  const key = `${firstName}-${lastName}-${email}`;
+  const isSelected = selectedTAKey === key;
+
+  return (
+    <TAItem
+      key={key}
+      ta={ta}
+      onClick={onClickHandler}
+      isSelected={isSelected}
+    />
+  );
+};
+
+
+
+
 const PaidProctoringPage = () => {
+  const [selectedTA, setSelectedTA] = useState(null); 
+
 
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const selectedTask = sampleTasks.find((task) => task.id === selectedTaskId);
@@ -62,6 +84,12 @@ const PaidProctoringPage = () => {
       setEnrolledTaskIds((prev) => prev.filter(id => id !== taskId));
     }
   };
+
+  const handleTAClick = (ta) => {
+    setSelectedTA(null);
+  };
+
+
 
   return (
     <div className="paid-proctoring-page">
@@ -91,11 +119,13 @@ const PaidProctoringPage = () => {
         {/* RIGHT: Selected task details */}
         <div className="proctoring-right">
           <div className="card">
-            <h3>TAs Assigned for this Task</h3>
+            <h3>TAs Applied for this Task</h3>
 
-            {/* Assigned TA Placeholder */}
+            {/* Applied TA Placeholder */}
             <div className="assigned-tas">
-              <p className="placeholder">[ Assigned TAs will load here from DB ]</p>
+              {createTAItem("Ahmet", "Yılmaz","dasdad@email", handleTAClick, selectedTA)}
+              {createTAItem("Merve", "Kara","dasdad@email", handleTAClick, selectedTA)}
+              {createTAItem("John", "Doe", "dasdad@email", handleTAClick, selectedTA)}
             </div>
           </div>
         </div>
