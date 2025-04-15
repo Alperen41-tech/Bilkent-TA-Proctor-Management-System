@@ -1,0 +1,20 @@
+.ta-item {
+    background-color: #eef1f5;
+    padding: 10px 15px;
+    margin: 6px 0;
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-align: left;
+  }
+  
+  .ta-item:hover {
+    background-color: #e0e7ff;
+  }
+  
+  .ta-item.selected {
+    background-color: #c7d2fe;
+    font-weight: bold;
+  }
+  
