@@ -14,13 +14,13 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="dashboard-page">
+    <div className="ta-dashboard-dashboard-page">
       <Navbar />
-      <div className="dashboard-grid">
+      <div className="ta-dashboard-dashboard-grid">
         {/* LEFT SIDE */}
-        <div className="dashboard-left">
+        <div className="ta-dashboard-dashboard-left">
           {/* Tabs */}
-          <div className="tab-bar">
+          <div className="ta-dashboard-tab-bar">
             <button onClick={() => handleTabClick("pending")} className={activeTab === "pending" ? "active" : ""}>Pending Requests</button>
             <button onClick={() => handleTabClick("received")} className={activeTab === "received" ? "active" : ""}>Received Requests</button>
             <button onClick={() => handleTabClick("tasks")} className={activeTab === "tasks" ? "active" : ""}>Tasks</button>
@@ -28,7 +28,7 @@ const DashboardPage = () => {
           </div>
 
           {/* Top Left Panel */}
-          <div className="tab-content">
+          <div className="ta-dashboard-tab-content">
             {activeTab === "pending" && (
               <div className="placeholder">[ Load and display SENT requests from DB — click to select one ]</div>
             )}
@@ -44,9 +44,9 @@ const DashboardPage = () => {
           </div>
 
           {/* Bottom Left Panel */}
-          <div className="bottom-left">
+          <div className="ta-dashboard-bottom-left">
             {activeTab === "pending" || activeTab === "received" ? (
-              <div className="details-panel">
+              <div className="ta-dashboard-details-panel">
                 <h3>Details</h3>
                 {selectedRequest ? (
                   <div>
@@ -55,11 +55,11 @@ const DashboardPage = () => {
                     <p><strong>Time:</strong> {selectedRequest.timestamp}</p>
                   </div>
                 ) : (
-                  <p className="placeholder">[ Click a request to see its details ]</p>
+                  <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
                 )}
               </div>
             ) : activeTab === "tasks" ? (
-              <div className="task-entry-form">
+              <div className="ta-dashboard-task-entry-form">
                 <h3>Enter Task</h3>
                 <form>
                   <label>Task Type</label>
@@ -70,7 +70,7 @@ const DashboardPage = () => {
                   </select>
 
                   <label>Time Spent</label>
-                  <div className="time-inputs">
+                  <div className="ta-dashboard-time-inputs">
                     <input type="number" placeholder="Hours" />
                     <input type="number" placeholder="Minutes" />
                   </div>
@@ -82,7 +82,7 @@ const DashboardPage = () => {
                 </form>
               </div>
             ) : activeTab === "proctorings" ? (
-              <div className="swap-form">
+              <div className="ta-dashboard-swap-form">
                 <h3>Proctoring Information</h3>
                 {selectedProctoring ? (
                   <form>
@@ -98,7 +98,7 @@ const DashboardPage = () => {
                     <button type="submit">Send Swap Request</button>
                   </form>
                 ) : (
-                  <p className="placeholder">[ Select a proctoring duty to send swap request ]</p>
+                  <p className="ta-dashboard-placeholder">[ Select a proctoring duty to send swap request ]</p>
                 )}
               </div>
             ) : null}
@@ -106,17 +106,17 @@ const DashboardPage = () => {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="dashboard-right">
-          <div className="notifications">
+        <div className="ta-dashboard-dashboard-right">
+          <div className="ta-dashboard-notifications">
             <h3>Notifications</h3>
-            <div className="placeholder">[ Pull real-time notifications from DB ]</div>
+            <div className="ta-dashboard-placeholder">[ Pull real-time notifications from DB ]</div>
           </div>
 
-          <div className="stats-box">
-            <div className="stat">Total Hours Worked: 7</div>
-            <div className="stat">Hours Awaiting Approval: 2.5</div>
-            <div className="stat">Upcoming Proctoring Duties: 1</div>
-            <div className="stat">Days Until Next Proctoring: 3</div>
+          <div className="ta-dashboard-stats-box">
+            <div className="ta-dashboard-stat">Total Hours Worked: 7</div>
+            <div className="ta-dashboard-stat">Hours Awaiting Approval: 2.5</div>
+            <div className="ta-dashboard-stat">Upcoming Proctoring Duties: 1</div>
+            <div className="ta-dashboard-stat">Days Until Next Proctoring: 3</div>
           </div>
         </div>
       </div>

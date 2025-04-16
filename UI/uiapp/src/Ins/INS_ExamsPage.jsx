@@ -65,12 +65,12 @@ const INS_ExamsPage = () => {
 
 
   return (
-    <div className="exams-page">
+    <div className="ins-exam-exams-page">
       <NavbarINS />
 
-      <div className="grid-container">
+      <div className="ins-exam-grid-container">
         {/* Instructor's Proctor Assignments */}
-        <div className="card assignments">
+        <div className="ins-exam-card ins-exam-assignments">
           <h3>Your Assignments with Proctors</h3>
           <div className="task-row">
               {createTaskItem(1, "CS315", "Quiz Proctor", "15/03/2025", "10:30 - 11:30", "EE - 214", handleTaskClick1, lastTask1?.id)}
@@ -81,9 +81,9 @@ const INS_ExamsPage = () => {
         </div>
 
         {/* TAs Assigned to Selected Task */}
-        <div className="card assigned-tas">
+        <div className="ins-exam-card ins-exam-assigned-tas">
           <h3>TAs Assigned for this Task</h3>
-          <div className="assigned-tas">
+          <div className="ins-exam-assigned-tas">
             {createTAItem("Ahmet", "Yılmaz", "ahmet.yilmaz@example.com", handleTAClick, selectedTA)}
             {createTAItem("Merve", "Kara", "merve.kara@example.com", handleTAClick, selectedTA)}
             {createTAItem("John", "Doe", "john.doe@example.com", handleTAClick, selectedTA)}
@@ -92,7 +92,7 @@ const INS_ExamsPage = () => {
         </div>
 
         {/* Create New Task */}
-        <div className="card create-task">
+        <div className="ins-exam-card ins-exam-create-task">
           <h3>Create a New Task with Proctoring</h3>
 
           <label>Select Task Type</label>
@@ -105,7 +105,7 @@ const INS_ExamsPage = () => {
           <input type="date" placeholder="Select date" />
 
           <label>Start</label>
-          <div className="interval-inputs">
+          <div className="ins-exam-interval-inputs">
             <input type="time" placeholder="start" />
             <label>End</label>
             <input type="time" placeholder="end" />
@@ -120,7 +120,7 @@ const INS_ExamsPage = () => {
           <label>TA count</label>
           <input type="number" className="ta-count-input" value={taCount} onChange={(e) => setTaCount(e.target.value)} />
 
-          <div className="assignment-buttons">
+          <div className="ins-exam-assignment-buttons">
             <button
               className={autoAssign ? "active" : ""}
               onClick={() => setAutoAssign(!autoAssign)}
@@ -137,10 +137,10 @@ const INS_ExamsPage = () => {
         </div>
 
         {/* TA List + Sort/Search */}
-        <div className="card ta-list">
+        <div className="ins-exam-card ins-exam-ta-list">
           <h3>Available TAs</h3>
 
-          <div className="filters">
+          <div className="ins-exam-filters">
             <input
               type="text"
               placeholder="🔍 Search by name"
@@ -160,7 +160,7 @@ const INS_ExamsPage = () => {
             <button onClick={handleSearch}>Apply</button>
           </div>
 
-          <div className="assigned-tas">
+          <div className="ins-exam-assigned-tas">
             {createTAItem("Ahmet", "Yılmaz", "ahmeasdt.yilmaz@example.com", handleTAClick, selectedTA)}
             {createTAItem("Merve", "Kara", "mervadse.kara@example.com", handleTAClick, selectedTA)}
             {createTAItem("John", "Doe", "johasd  n.doe@example.com", handleTAClick, selectedTA)}

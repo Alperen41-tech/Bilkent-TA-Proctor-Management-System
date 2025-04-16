@@ -1,31 +1,31 @@
 
-.dashboard-page {
+.ta-dashboard-dashboard-page {
     font-family: Arial, sans-serif;
     padding: 20px;
     background-color: #f5f5f7;
   }
   
-  .dashboard-grid {
+  .ta-dashboard-dashboard-grid {
     display: flex;
     gap: 20px;
     margin-top: 20px;
   }
   
   /* LEFT SIDE */
-  .dashboard-left {
+  .ta-dashboard-dashboard-left {
     flex: 2;
     display: flex;
     flex-direction: column;
     gap: 20px;
   }
   
-  .tab-bar {
+  .ta-dashboard-tab-bar {
     display: flex;
     gap: 10px;
     border-bottom: 2px solid #f9fafb;
   }
   
-  .tab-bar button {
+  .ta-dashboard-tab-bar button {
     background: none;
     border: none;
     padding: 10px;
@@ -35,14 +35,14 @@
     border-bottom: 3px solid transparent;
   }
   
-  .tab-bar button.active {
+  .ta-dashboard-tab-bar button.active {
     color: #6366f1;
     border-bottom: 3px solid #6366f1;
   }
 
   
   
-  .tab-content {
+  .ta-dashboard-tab-content {
     min-height: 150px;
     padding: 10px;
     background: white;
@@ -50,7 +50,7 @@
     border: 1px solid #e5e7eb;
   }
   
-  .request-details {
+  .ta-dashboard-request-details {
     background: white;
     padding: 20px;
     border-radius: 10px;
@@ -59,21 +59,21 @@
   }
   
   /* RIGHT SIDE */
-  .dashboard-right {
+  .ta-dashboard-dashboard-right {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 20px;
   }
   
-  .notifications {
+  .ta-dashboard-notifications {
     background: white;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.05);
   }
   
-  .stats-box {
+  .ta-dashboard-stats-box {
     background: white;
     padding: 20px;
     border-radius: 10px;
@@ -83,18 +83,18 @@
     gap: 10px;
   }
   
-  .stat {
+  .ta-dashboard-stat {
     border: 1px solid #202022;
     padding: 8px;
     text-align: center;
     border-radius: 6px;
   }
   
-  .placeholder {
+  .ta-dashboard-placeholder {
     font-style: italic;
     color: #aaa;
   }
-  .bottom-left {
+  .ta-dashboard-bottom-left {
     background: white;
     padding: 20px;
     border-radius: 10px;
@@ -103,20 +103,20 @@
     min-height: 200px;
   }
   
-  .task-entry-form form,
-  .swap-form form {
+  .ta-dashboard-task-entry-form form,
+  .ta-dashboard-swap-form form {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
   
-  .time-inputs {
+  .ta-dashboard-time-inputs {
     display: flex;
     gap: 10px;
   }
   
-  .task-entry-form button,
-  .swap-form button {
+  .ta-dashboard-task-entry-form button,
+  .ta-dashboard-swap-form button {
     background: #6366f1;
     color: white;
     border: none;

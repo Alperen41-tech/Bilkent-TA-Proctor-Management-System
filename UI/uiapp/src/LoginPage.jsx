@@ -11,7 +11,10 @@ const LoginPage = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
+  
   const handleLogin = async () => {
+    navigate("/dashboard");
+    /*
     try {
 
       console.log("Email:", email);
@@ -33,7 +36,7 @@ const LoginPage = () => {
     } catch (error) {
       console.error("There was an error with the login request:", error);
       alert("An error occurred. Please try again.");
-    }
+    }*/
   };
 
   return (
