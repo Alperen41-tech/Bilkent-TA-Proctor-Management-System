@@ -11,11 +11,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("userType")
 public class UserTypeController {
 
-
+    // method level comment
 
     @Autowired
     private UserTypeService userTypeService;
-
 
 
     @PostMapping("createUserType")
