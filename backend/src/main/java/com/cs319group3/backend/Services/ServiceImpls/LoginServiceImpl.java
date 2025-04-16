@@ -17,7 +17,7 @@ public class LoginServiceImpl implements LoginService {
 
     public boolean authenticate(String email, String password) {
         // Find the login by email
-        Optional<Login> loginOptional = loginDAO.findByUserEmail(email);
+        Optional<Login> loginOptional = loginDAO.findCustom(email);
 
         if (!loginOptional.isPresent()) {
             // If no login found, return false
