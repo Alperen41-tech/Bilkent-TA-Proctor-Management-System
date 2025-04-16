@@ -24,6 +24,8 @@ public class Login {
 
     private String password;
 
+    private String email;
+
 
     @OneToOne
     @JoinColumn(name = "user_id")
