@@ -3,6 +3,8 @@ package com.cs319group3.backend.Controllers;
 import com.cs319group3.backend.Services.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -38,8 +40,14 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public boolean login(@RequestBody LoginRequest loginRequest) {
-        System.out.println("Login request received for: " + loginRequest.getPassword());
-        return loginService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
+    public ResponseEntity<Boolean> login(@RequestBody LoginRequest loginRequest) {
+        try {
+            System.out.println("Login request received for: " + loginRequest.getEmail());
+            boolean success = loginService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
+            return ResponseEntity.ok(success);
+        } catch (Exception e) {
+            System.err.println("Login failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
     }
 }
