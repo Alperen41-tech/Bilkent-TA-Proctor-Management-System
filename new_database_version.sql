@@ -18,6 +18,8 @@
 --
 -- Table structure for table `class_proctoring`
 --
+create database ta_management_system_db;
+use ta_management_system_db;
 
 DROP TABLE IF EXISTS `class_proctoring`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
