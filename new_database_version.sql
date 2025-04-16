@@ -560,7 +560,6 @@ CREATE TABLE `user` (
   `email` varchar(255) DEFAULT NULL,
   `phone_number` varchar(255) DEFAULT NULL,
   `is_active` tinyint(1) DEFAULT NULL,
-  `mail` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `bilkent_id` (`bilkent_id`),
   UNIQUE KEY `email` (`email`),
