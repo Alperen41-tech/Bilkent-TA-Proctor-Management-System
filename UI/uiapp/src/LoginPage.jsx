@@ -45,9 +45,19 @@ const LoginPage = () => {
           <div className="login-box">
             <h2>Sign in</h2>
             <label>Email</label>
-            <input type="email" placeholder="example.email@bilkent.edu.tr" />
+            <input
+                type="email"
+                placeholder="example.email@bilkent.edu.tr"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+            />
             <label>Password</label>
-            <input type="password" placeholder="Enter your password" />
+            <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+            />
             <div className="forgot-password">
               <a href="#" onClick={() => setShowForgotPasswordModal(true)}>Forgot password?</a>
             </div>
