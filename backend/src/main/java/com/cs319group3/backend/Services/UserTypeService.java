@@ -17,5 +17,7 @@ public interface UserTypeService {
     ResponseEntity<String> createUserType(UserType userType);
 
 
+    ResponseEntity<UserType> getUserById(int id);
+
 
 }

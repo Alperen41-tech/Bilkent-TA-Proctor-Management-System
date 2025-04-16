@@ -29,16 +29,8 @@ public class UserTypeController {
     }
 
 
-    @PostMapping("deneme")
-    public String denem(){
-        return "deneme";
+    @GetMapping("getUserTypeById")
+    public ResponseEntity<UserType> getUserTypeById(@RequestParam("id") int id) {
+        return userTypeService.getUserById(id);
     }
-
-
-
-
-
-
-
-
 }

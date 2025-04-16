@@ -2,6 +2,7 @@ package com.cs319group3.backend.Entities.UserEntities;
 
 
 import com.cs319group3.backend.Entities.Department;
+import com.cs319group3.backend.Entities.Login;
 import com.cs319group3.backend.Entities.UserType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user")
-public abstract class User implements Serializable {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,4 +37,7 @@ public abstract class User implements Serializable {
     private String phoneNumber;
     
     private boolean isActive;
+
+    @OneToOne(mappedBy = "user")
+    private Login login;
 }

@@ -16,11 +16,12 @@ public class LoginServiceImpl implements LoginService {
 
 
     public boolean authenticate(String email, String password) {
-        // Find the login by email
-        Optional<Login> loginOptional = loginDAO.findCustom(email);
+
+        Optional<Login> loginOptional = loginDAO.findByUserEmail(email);
 
         if (!loginOptional.isPresent()) {
             // If no login found, return false
+            System.out.println("present değil");
             return false;
         }
 
@@ -29,12 +30,14 @@ public class LoginServiceImpl implements LoginService {
         // Check if the stored password matches the provided password
         if (!login.getPassword().equals(password)) {
             // If passwords do not match, return false
+            System.out.println("şifre match değil");
             return false;
         }
 
         // Check if the user is active
         if (!login.getUser().isActive()) {
             // If the user is not active, return false
+            System.out.println("aktif değil");
             return false;
         }
 
