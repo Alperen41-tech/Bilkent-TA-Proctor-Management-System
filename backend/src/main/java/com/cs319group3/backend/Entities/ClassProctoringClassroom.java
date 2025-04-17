@@ -23,16 +23,5 @@ public class ClassProctoringClassroom {
     @MapsId("classProctoringId")
     private ClassProctoring classProctoring;
 
-    public String getClassroom(){
-        return id != null ? id.getClassroom() : null;
-    }
-
-    public void setClassroom(String classroom){
-
-        if (id == null) {
-            id = new ClassProctoringClassroomKey();
-        }
-        id.setClassroom(classroom);
-    }
 
 }
