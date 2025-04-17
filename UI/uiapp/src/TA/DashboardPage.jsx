@@ -20,29 +20,30 @@ const DashboardPage = () => {
         {/* LEFT SIDE */}
         <div className="ta-dashboard-dashboard-left">
           {/* Tabs */}
-          <div className="ta-dashboard-tab-bar">
-            <button onClick={() => handleTabClick("pending")} className={activeTab === "pending" ? "active" : ""}>Pending Requests</button>
-            <button onClick={() => handleTabClick("received")} className={activeTab === "received" ? "active" : ""}>Received Requests</button>
-            <button onClick={() => handleTabClick("tasks")} className={activeTab === "tasks" ? "active" : ""}>Tasks</button>
-            <button onClick={() => handleTabClick("proctorings")} className={activeTab === "proctorings" ? "active" : ""}>Proctorings</button>
-          </div>
+          <div className="ta-dashboard-left-up-panel">
+            <div className="ta-dashboard-tab-bar">
+              <button onClick={() => handleTabClick("pending")} className={activeTab === "pending" ? "active" : ""}>Pending Requests</button>
+              <button onClick={() => handleTabClick("received")} className={activeTab === "received" ? "active" : ""}>Received Requests</button>
+              <button onClick={() => handleTabClick("tasks")} className={activeTab === "tasks" ? "active" : ""}>Tasks</button>
+              <button onClick={() => handleTabClick("proctorings")} className={activeTab === "proctorings" ? "active" : ""}>Proctorings</button>
+            </div>
 
-          {/* Top Left Panel */}
-          <div className="ta-dashboard-tab-content">
-            {activeTab === "pending" && (
-              <div className="placeholder">[ Load and display SENT requests from DB — click to select one ]</div>
-            )}
-            {activeTab === "received" && (
-              <div className="placeholder">[ Load RECEIVED requests from DB — click to select one ]</div>
-            )}
-            {activeTab === "tasks" && (
-              <div className="placeholder">[ Display past submitted workload entries ]</div>
-            )}
-            {activeTab === "proctorings" && (
-              <div className="placeholder">[ Load upcoming proctoring duties — click to send swap ]</div>
-            )}
+            {/* Top Left Panel */}
+            <div className="ta-dashboard-tab-content">
+              {activeTab === "pending" && (
+                <div className="placeholder">[ Load and display SENT requests from DB — click to select one ]</div>
+              )}
+              {activeTab === "received" && (
+                <div className="placeholder">[ Load RECEIVED requests from DB — click to select one ]</div>
+              )}
+              {activeTab === "tasks" && (
+                <div className="placeholder">[ Display past submitted workload entries ]</div>
+              )}
+              {activeTab === "proctorings" && (
+                <div className="placeholder">[ Load upcoming proctoring duties — click to send swap ]</div>
+              )}
+            </div>
           </div>
-
           {/* Bottom Left Panel */}
           <div className="ta-dashboard-bottom-left">
             {activeTab === "pending" || activeTab === "received" ? (

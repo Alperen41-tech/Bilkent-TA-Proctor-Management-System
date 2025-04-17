@@ -19,10 +19,19 @@
     gap: 20px;
   }
   
+  .ta-dashboard-left-up-panel{
+    background: white;
+    border-radius: 10px;
+    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+  }
   .ta-dashboard-tab-bar {
     display: flex;
     gap: 10px;
-    border-bottom: 2px solid #f9fafb;
+    border-bottom: 2px solid #e5e7eb;
+    border-radius: 10px;
   }
   
   .ta-dashboard-tab-bar button {
@@ -46,8 +55,7 @@
     min-height: 150px;
     padding: 10px;
     background: white;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
+    
   }
   
   .ta-dashboard-request-details {
@@ -84,7 +92,7 @@
   }
   
   .ta-dashboard-stat {
-    border: 1px solid #202022;
+    border: 1px solid #6366f1;
     padding: 8px;
     text-align: center;
     border-radius: 6px;
