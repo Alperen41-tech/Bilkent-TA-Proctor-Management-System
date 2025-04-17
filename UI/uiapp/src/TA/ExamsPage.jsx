@@ -8,6 +8,7 @@ import axios from "axios";
 const createTaskItem = (id, course, name, date, timeInterval, classroom, onClickHandler, selectedTaskId) => {
   const task = { id, course, name, date, timeInterval, classroom };
   const isSelected = selectedTaskId === id;
+  console.log("Task ID:", id); 
   return <TaskItem key={id} task={task} onClick={onClickHandler} isSelected={isSelected} />;
 };
 
@@ -31,8 +32,8 @@ const ExamsPage = () => {
   const [lastTask1, setLastTask1] = useState(null);
   const [lastTask2, setLastTask2] = useState(null);
   const [selectedTA, setSelectedTA] = useState(null); 
-  const tasProctorings = [];//First declaration of tasProctorings as an empty array
-  const allDepartmantExams = [];//Declaration of allDepartmantExams as an empty array
+  const [tasProctorings, setTasProctorings] = useState([]);//First declaration of tasProctorings as an empty array
+  const [allDepartmantExams, setAllDepartmantExams] = useState(null);//Declaration of allDepartmantExams as an empty array
   const handleTaskClick1 = (task) => {
     setSelectedTask(task);
     setLastTask1(task);
@@ -51,15 +52,16 @@ const ExamsPage = () => {
   useEffect(() => {
     const fetchTasProctorings = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/classProctoring/getTAsClassProctorings?id=5"); // Adjust the URL as needed
-        tasProctorings = response.data;
+        const response = await axios.get("http://localhost:8080/classProctoring/getTAsClassProctorings?id=8"); // Adjust the URL as needed
+        setTasProctorings(response.data);
         console.log(tasProctorings); // Log the fetched tasks to the console
+        //console.log("TasProctorings:", response.data); // Log the fetched tasks to the console
         // You can set the tasks to state if needed
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
     };
-    const fetchAllDepartmantExams = async () => {
+    /*const fetchAllDepartmantExams = async () => {
       try {
         const response = await axios.get("http://localhost:8080/"); // Adjust the URL as needed
         allDepartmantExams = response.data;
@@ -70,7 +72,7 @@ const ExamsPage = () => {
       }
     };
 
-    fetchAllDepartmantExams();
+    fetchAllDepartmantExams();*/
     fetchTasProctorings();
   }, []); // Empty dependency array to run once on component mount
 
@@ -84,21 +86,16 @@ const ExamsPage = () => {
           <div className="card">
             <h3>Choose the task you wish to get</h3>
             <div className="task-row">
-              {createTaskItem(1, "CS315", "Quiz Proctor", "15/03/2025", "10:30 - 11:30", "EE - 214", handleTaskClick1, lastTask1?.id)}
-              {createTaskItem(2, "CS102", "Quiz Proctor", "16/03/2025", "09:30 - 10:30", "EE - 312", handleTaskClick1, lastTask1?.id)}
-              {createTaskItem(3, "CS555", "Midterm Proctor", "21/03/2025", "19:00 - 21:00", "B - 103", handleTaskClick1, lastTask1?.id)}
-              {createTaskItem(4, "CS2004", "Midterm Proctor", "21/03/2025", "19:00 - 21:00", "B - 104", handleTaskClick1, lastTask1?.id)}
+              
             </div>
           </div>
 
           <div className="card">
             <h3>Choose one of your tasks</h3>
             <div className="task-row">
-              {tasProctorings.map((task) => (createTaskItem(task.id, task.course, task.name, task.date, task.timeInterval, task.classroom, handleTaskClick1, lastTask1?.id)))}
+            {tasProctorings.map((proctoring, index) => (createTaskItem(proctoring.id, proctoring.courseName, proctoring.proctoringName, proctoring.startDate, proctoring.endDate, proctoring.classrooms, handleTaskClick1, lastTask1?.id)))}
               
-              {createTaskItem(5, "CS315", "Quiz Proctor", "12/03/2025", "10:30 - 11:30", "EE - 214", handleTaskClick2, lastTask2?.id)}
-              {createTaskItem(6, "CS102", "Quiz Proctor", "16/04/2025", "09:30 - 10:30", "EE - 319", handleTaskClick2, lastTask2?.id)}
-              {createTaskItem(7, "CS102", "Midterm Proctor", "21/03/2025", "14:30 - 16:30", "B - 103", handleTaskClick2, lastTask2?.id)}
+              
             </div>
           </div>
         </div>
