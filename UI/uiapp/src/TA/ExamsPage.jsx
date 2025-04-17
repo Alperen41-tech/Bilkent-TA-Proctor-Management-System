@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect ,useState } from "react";
 import "./ExamsPage.css";
 import Navbar from "./Navbar";
 import TaskItem from "../TaskItem";
 import TAItem from "../TAItem";
+import axios from "axios";
 
 const createTaskItem = (id, course, name, date, timeInterval, classroom, onClickHandler, selectedTaskId) => {
   const task = { id, course, name, date, timeInterval, classroom };
@@ -30,7 +31,8 @@ const ExamsPage = () => {
   const [lastTask1, setLastTask1] = useState(null);
   const [lastTask2, setLastTask2] = useState(null);
   const [selectedTA, setSelectedTA] = useState(null); 
-  
+  const myExams = [];//First declaration of myExams as an empty array
+  const allDepartmantExams = [];//Declaration of allDepartmantExams as an empty array
   const handleTaskClick1 = (task) => {
     setSelectedTask(task);
     setLastTask1(task);
@@ -45,6 +47,33 @@ const ExamsPage = () => {
     const key = `${ta.firstName}-${ta.lastName}-${ta.email}`;
     setSelectedTA(key);
   };
+  
+  useEffect(() => {
+    const fetchMyExams = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/"); // Adjust the URL as needed
+        myExams = response.data;
+        console.log(myExams); // Log the fetched tasks to the console
+        // You can set the tasks to state if needed
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+    const fetchAllDepartmantExams = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/"); // Adjust the URL as needed
+        allDepartmantExams = response.data;
+        console.log(allDepartmantExams); // Log the fetched tasks to the console
+        // You can set the tasks to state if needed
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+
+    fetchAllDepartmantExams();
+    fetchMyExams();
+  }, []); // Empty dependency array to run once on component mount
+
 
   return (
     <div className="exams-container">
@@ -65,6 +94,8 @@ const ExamsPage = () => {
           <div className="card">
             <h3>Choose one of your tasks</h3>
             <div className="task-row">
+              {myExams.map((task) => (createTaskItem(task.id, task.course, task.name, task.date, task.timeInterval, task.classroom, handleTaskClick1, lastTask1?.id)))}
+              
               {createTaskItem(5, "CS315", "Quiz Proctor", "12/03/2025", "10:30 - 11:30", "EE - 214", handleTaskClick2, lastTask2?.id)}
               {createTaskItem(6, "CS102", "Quiz Proctor", "16/04/2025", "09:30 - 10:30", "EE - 319", handleTaskClick2, lastTask2?.id)}
               {createTaskItem(7, "CS102", "Midterm Proctor", "21/03/2025", "14:30 - 16:30", "B - 103", handleTaskClick2, lastTask2?.id)}
