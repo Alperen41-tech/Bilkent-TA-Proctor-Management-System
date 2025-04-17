@@ -1,0 +1,49 @@
+.proctoring-duty-item-duty-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #dddddd;
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+  
+  .proctoring-duty-item-duty-item.proctoring-duty-item-locked {
+    cursor: not-allowed;
+    background-color: #dddddd;
+    border: 2px solid transparent;
+  }
+  
+  .proctoring-duty-item-duty-item.proctoring-duty-item-selected {
+    background-color: #e2d9fe;
+  }
+  
+  .proctoring-duty-item-duty-item:hover:not(.locked) {
+    box-shadow: 0 0 0 2px #c4b5fd;
+  }
+  
+  .proctoring-duty-item-duty-field {
+    flex: 1;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  
+  .proctoring-duty-item-status-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+  }
+  
+  .proctoring-duty-item-status-text {
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .proctoring-duty-item-duty-field input[type="checkbox"] {
+    accent-color: #6366f1;
+  }
+  

@@ -1,17 +1,89 @@
 import React, { useState } from "react";
 import Navbar from "./Navbar";
 import "./DashboardPage.css";
+import PendingRequestItem from "../PendingRequestItem";
+import ReceivedRequestItem from "../ReceivedRequestItem";
+import WorkloadEntryItem from "../WorkloadEntryItem";
+import ProctoringDutyItem from "../ProctoringDutyItem";
 
 const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [selectedProctoring, setSelectedProctoring] = useState(null);
+  const [selectedProctoringId, setSelectedProctoringId] = useState(null);
+
+  const handleSelect = (id) => {
+    setSelectedProctoringId(id); // Only one selected at a time
+  };
+
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setSelectedRequest(null);
     setSelectedProctoring(null);
   };
+
+  const createPendingRequest = (date, time, role, duration, name, email, status, onCancelHandler) => {
+    return <PendingRequestItem date={date} time={time} role={role} duration={duration} name={name} email={email} status={status} onCancel={onCancelHandler}/>;
+  }
+  const createReceivedRequest = (date, time, role, duration, name, email, status, onAcceptHandler, onRejectHandler) => {
+    return <ReceivedRequestItem date={date} time={time} role={role} duration={duration} name={name} email={email} status={status} onAccept={onAcceptHandler} onReject={onRejectHandler}/>;
+  }
+  const createWorkloadEntry = (courseCode, taskTitle, date, duration, comment, status) => {
+    return <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status}/>;
+  }
+  // Sample data for pending requests
+  const pendingRequests = [
+    {
+      date: { month: "March", day: "23", weekday: "Fri" },
+      time: { start: "8:00AM", end: "10:30AM" },
+      role: "Quiz Proctoring",
+      duration: 1.5,
+      name: "Ali Kılıç",
+      email: "ali.kilic@ug.bilkent.edu.tr",
+      status: "Pending TA’s answer",
+      onCancelHandler: () => console.log("Ali's request canceled"),
+      onAcceptHandler: () => console.log("Ali's request accepted"),
+      onRejectHandler: () => console.log("Ali's request rejected"),
+    },
+    {
+      date: { month: "April", day: "2", weekday: "Tue" },
+      time: { start: "1:00PM", end: "3:00PM" },
+      role: "Midterm Invigilation",
+      duration: 2,
+      name: "Ayşe Yılmaz",
+      email: "ayse.yilmaz@ug.bilkent.edu.tr",
+      status: "Pending TA’s answer",
+      onCancelHandler: () => console.log("Ayşe's request canceled"),
+      onAcceptHandler: () => console.log("Ayşe's request accepted"),
+      onRejectHandler: () => console.log("Ayşe's request rejected"),
+    },
+  ];
+  //Sample data for workload entries
+  const workloadEntries = [
+    {
+      courseCode: "CS 476",
+      taskTitle: "Quiz Reading",
+      date: "15/02/2025",
+      duration: 3.5,
+      comment: "It took longer then expected.",
+    },
+    {
+      courseCode: "CS 319",
+      taskTitle: "Assignment Check",
+      date: "20/02/2025",
+      duration: 2,
+      comment: "",
+    },
+  ];
+  // Sample data for proctoring duties
+  const proctoringDuties = [
+    { id: 1, title: "Quiz Proctor", date: "15/03/2025", time: "10.30 - 11.30", location: "EE - 214", status: "locked" },
+    { id: 2, title: "Quiz Proctor", date: "16/03/2025", time: "9.30 - 10.30", location: "EE - 312", status: "open" },
+    { id: 3, title: "Midterm Proctor", date: "21/03/2025", time: "19.00 - 21.00", location: "B - 103", status: "open" },
+    { id: 4, title: "Midterm Proctor", date: "21/03/2025", time: "19.00 - 21.00", location: "B - 104", status: "open" },
+  ];
+  //--------------------------------------------------------------
 
   return (
     <div className="ta-dashboard-dashboard-page">
@@ -31,16 +103,64 @@ const DashboardPage = () => {
             {/* Top Left Panel */}
             <div className="ta-dashboard-tab-content">
               {activeTab === "pending" && (
-                <div className="placeholder">[ Load and display SENT requests from DB — click to select one ]</div>
+                <div>
+                {pendingRequests.map((req, index) =>
+                  createPendingRequest(
+                    req.date,
+                    req.time,
+                    req.role,
+                    req.duration,
+                    req.name,
+                    req.email,
+                    req.status,
+                    req.onCancelHandler
+                  )
+                )}
+              </div>
               )}
               {activeTab === "received" && (
-                <div className="placeholder">[ Load RECEIVED requests from DB — click to select one ]</div>
+                <div>
+                {pendingRequests.map((req, index) =>
+                  createReceivedRequest(
+                    req.date,
+                    req.time,
+                    req.role,
+                    req.duration,
+                    req.name,
+                    req.email,
+                    req.status,
+                    req.onAcceptHandler,
+                    req.onRejectHandler
+                  )
+                )}
+              </div>
               )}
               {activeTab === "tasks" && (
-                <div className="placeholder">[ Display past submitted workload entries ]</div>
+                <div>{workloadEntries.map((ent, idx) =>
+                  createWorkloadEntry(
+                    ent.courseCode,
+                    ent.taskTitle,
+                    ent.date,
+                    ent.duration,
+                    ent.comment,
+                    "rejected" // Assuming all entries are accepted for simplicity
+                  )
+                )}</div>
               )}
               {activeTab === "proctorings" && (
-                <div className="placeholder">[ Load upcoming proctoring duties — click to send swap ]</div>
+                <div>
+                {proctoringDuties.map((duty) => (
+                  <ProctoringDutyItem
+                    key={duty.id}
+                    duty={duty}
+                    isSelected={selectedProctoringId === duty.id}
+                    onSelect={handleSelect}
+                    onLockedStatusChange={() => {
+                      console.log(`Locked status changed for duty ID: ${duty.id}`); //Will push new lock status of the duty to the database
+                    }}
+                  />
+                ))}
+              </div>
               )}
             </div>
           </div>

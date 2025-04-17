@@ -31,7 +31,7 @@ const ExamsPage = () => {
   const [lastTask1, setLastTask1] = useState(null);
   const [lastTask2, setLastTask2] = useState(null);
   const [selectedTA, setSelectedTA] = useState(null); 
-  const myExams = [];//First declaration of myExams as an empty array
+  const tasProctorings = [];//First declaration of tasProctorings as an empty array
   const allDepartmantExams = [];//Declaration of allDepartmantExams as an empty array
   const handleTaskClick1 = (task) => {
     setSelectedTask(task);
@@ -49,11 +49,11 @@ const ExamsPage = () => {
   };
   
   useEffect(() => {
-    const fetchMyExams = async () => {
+    const fetchTasProctorings = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/"); // Adjust the URL as needed
-        myExams = response.data;
-        console.log(myExams); // Log the fetched tasks to the console
+        const response = await axios.get("http://localhost:8080/classProctoring/getTAsClassProctorings?id=5"); // Adjust the URL as needed
+        tasProctorings = response.data;
+        console.log(tasProctorings); // Log the fetched tasks to the console
         // You can set the tasks to state if needed
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -71,7 +71,7 @@ const ExamsPage = () => {
     };
 
     fetchAllDepartmantExams();
-    fetchMyExams();
+    fetchTasProctorings();
   }, []); // Empty dependency array to run once on component mount
 
 
@@ -94,7 +94,7 @@ const ExamsPage = () => {
           <div className="card">
             <h3>Choose one of your tasks</h3>
             <div className="task-row">
-              {myExams.map((task) => (createTaskItem(task.id, task.course, task.name, task.date, task.timeInterval, task.classroom, handleTaskClick1, lastTask1?.id)))}
+              {tasProctorings.map((task) => (createTaskItem(task.id, task.course, task.name, task.date, task.timeInterval, task.classroom, handleTaskClick1, lastTask1?.id)))}
               
               {createTaskItem(5, "CS315", "Quiz Proctor", "12/03/2025", "10:30 - 11:30", "EE - 214", handleTaskClick2, lastTask2?.id)}
               {createTaskItem(6, "CS102", "Quiz Proctor", "16/04/2025", "09:30 - 10:30", "EE - 319", handleTaskClick2, lastTask2?.id)}
