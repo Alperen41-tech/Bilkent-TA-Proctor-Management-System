@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-@AllArgsConstructor
 @ComponentScan(basePackages = {"com.cs319group3.backend.Controllers"})
 @CrossOrigin(origins = "http://localhost:3000")
 public class LoginController {

@@ -26,10 +26,12 @@ public class ClassProctoringTARelation{
 
     @ManyToOne
     @MapsId("classProctoringId")
+    @JoinColumn(name = "class_proctoring_id")
     private ClassProctoring classProctoring;
 
 
     @ManyToOne
     @MapsId("TAId")
+    @JoinColumn(name = "ta_id")
     private TA TA;
 }
