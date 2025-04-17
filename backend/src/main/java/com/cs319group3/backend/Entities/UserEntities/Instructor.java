@@ -22,11 +22,6 @@ import java.util.List;
 @Table(name = "instructor")
 public class Instructor extends User{
 
-
-
-
-
-
     @OneToMany(mappedBy = "instructor")
     private List<CourseInstructorRelation> courseInstructorRelations;
 
