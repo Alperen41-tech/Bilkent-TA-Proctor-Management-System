@@ -21,6 +21,7 @@ public class ClassProctoringClassroom {
 
     @ManyToOne
     @MapsId("classProctoringId")
+    @JoinColumn(name = "class_proctoring_id")
     private ClassProctoring classProctoring;
 
 

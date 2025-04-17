@@ -26,7 +26,10 @@ public class ClassProctoring {
 
 
     private int sectionNo;
+
+    @Column(name = "ta_count")
     private int TACount;
+
     private boolean isComplete;
 
     private LocalDateTime startDate;
