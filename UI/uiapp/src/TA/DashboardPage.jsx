@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import "./DashboardPage.css";
 import PendingRequestItem from "../PendingRequestItem";
 import ReceivedRequestItem from "../ReceivedRequestItem";
 import WorkloadEntryItem from "../WorkloadEntryItem";
 import ProctoringDutyItem from "../ProctoringDutyItem";
+import axios from "axios";
 
 const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [selectedProctoring, setSelectedProctoring] = useState(null);
   const [selectedProctoringId, setSelectedProctoringId] = useState(null);
+  const [tasProctorings, setTasProctorings] = useState([]); // Initialize as an empty array
 
   const handleSelect = (id) => {
     setSelectedProctoringId(id); // Only one selected at a time
@@ -33,10 +35,41 @@ const DashboardPage = () => {
     return <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status}/>;
   }
 
-  
+  useEffect(() => {
+    const fetchTasProctorings = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/classProctoring/getTAsClassProctorings?id=3"); // Adjust the URL as needed
+        setTasProctorings(response.data);
+        console.log(tasProctorings);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+    fetchTasProctorings();
+  }, []);
 
+  const handleLockedStatusChange = async (id) => {
+    try {
+      const proctoringToBeLocked = tasProctorings.find((duty) => duty.id === id);
+      console.log(proctoringToBeLocked);
+      const responseLocked = await axios.put("http://localhost:8080/classProctoring/updateTAsClassProctorings?id=3", {
+        id:proctoringToBeLocked.id,
+        proctoringName:proctoringToBeLocked.proctoringName,
+        courseName: proctoringToBeLocked.courseName,
+        startDate: proctoringToBeLocked.startDate,
+        endDate: proctoringToBeLocked.endDate,
+        classrooms: proctoringToBeLocked.classrooms,
+        isOpenToSwap: !proctoringToBeLocked.isOpenToSwap, 
+      });
 
-
+      if (!responseLocked.data) {
+        alert("Could not locked the swap. Try again.");
+      } 
+    } catch (error) {
+      console.error("There was an error with the login request:", error);
+      alert("An error occurred. Please try again.");
+    }
+  }
   // Sample data for pending requests
   const pendingRequests = [
     {
@@ -154,13 +187,14 @@ const DashboardPage = () => {
               )}
               {activeTab === "proctorings" && (
                 <div>
-                {proctoringDuties.map((duty) => (
+                {tasProctorings.map((duty) => (
                   <ProctoringDutyItem
                     key={duty.id}
                     duty={duty}
                     isSelected={selectedProctoringId === duty.id}
                     onSelect={handleSelect}
                     onLockedStatusChange={() => {
+                       handleLockedStatusChange(duty.id); // Function to handle the locked status change
                       console.log(`Locked status changed for duty ID: ${duty.id}`); //Will push new lock status of the duty to the database
                     }}
                   />

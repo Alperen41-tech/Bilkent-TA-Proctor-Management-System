@@ -39,7 +39,7 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
     }
 
     @Override
-    public void updateClassProctoringDTO(ClassProctoringDTO dto, int userId) {
+    public boolean updateClassProctoringDTO(ClassProctoringDTO dto, int userId) {
         // Step 1: Find the existing entity
         Optional<ClassProctoringTARelation> optionalRelation = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(dto.getId(), userId);
 
@@ -56,5 +56,6 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
 
         // Step 3: Save the updated entity
         classProctoringTARelationRepo.save(relation);
+        return true;
     }
 }

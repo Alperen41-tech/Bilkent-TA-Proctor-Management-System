@@ -13,11 +13,9 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchProfileInformation = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/ta/profile?id=2"); // Adjust the URL as needed
+        const response = await axios.get("http://localhost:8080/ta/profile?id=2");
         setTaProfileInfo(response.data);
-        console.log(taProfileInfo); // Log the fetched tasks to the console
-        //console.log("TasProctorings:", response.data); // Log the fetched tasks to the console
-        // You can set the tasks to state if needed
+        console.log(taProfileInfo);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
