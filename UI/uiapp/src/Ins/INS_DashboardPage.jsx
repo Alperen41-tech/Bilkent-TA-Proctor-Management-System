@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import NavbarINS from "./NavbarINS";
 import "./INS_DashboardPage.css";
+import PendingRequestItem from "../PendingRequestItem";
+import ReceivedRequestItem from "../ReceivedRequestItem";
+import WorkloadEntryItem from "../WorkloadEntryItem";
 
 const INS_DashboardPage = () => {
   const [activeTab, setActiveTab] = useState("pending");
@@ -10,6 +13,69 @@ const INS_DashboardPage = () => {
     setActiveTab(tab);
     setSelectedRequest(null);
   };
+
+
+  const createPendingRequest = (date, time, role, duration, name, email, status, onCancelHandler) => {
+    return <PendingRequestItem date={date} time={time} role={role} duration={duration} name={name} email={email} status={status} onCancel={onCancelHandler}/>;
+  }
+  const createReceivedRequest = (date, time, role, duration, name, email, status, onAcceptHandler, onRejectHandler) => {
+    return <ReceivedRequestItem date={date} time={time} role={role} duration={duration} name={name} email={email} status={status} onAccept={onAcceptHandler} onReject={onRejectHandler}/>;
+  }
+
+  const createWorkloadEntry = (courseCode, taskTitle, date, duration, comment, status) => {
+    return <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status}/>;
+  }
+
+  /// normally there is no email part but inst should see who did what for now it is like this
+  const workloadEntries = [
+    {
+      courseCode: "CS 476",
+      taskTitle: "Quiz Reading",
+      date: "15/02/2025",
+      duration: 3.5,
+      comment: "someTA1@ug.bilkent.edu.tr",
+      status: "accepted",
+    },
+    {
+      courseCode: "CS 319",
+      taskTitle: "Assignment Check",
+      date: "20/02/2025",
+      duration: 2,
+      comment: "someTA2@ug.bilkent.edu.tr",
+      status: "rejected",
+    },
+  ];
+
+
+
+    // örnek datalar pending req
+    const pendingRequests = [
+      {
+        date: { month: "Feb", day: "10", weekday: "Fri" },
+        time: { start: "8:00AM", end: "10:30AM" },
+        role: "Paid Proctoring Request",
+        duration: 1.5,
+        name: "Ali Kılıç",
+        email: "ali.kilic@ug.bilkent.edu.tr",
+        status: "Pending Dean's Office’s answer",
+        onCancelHandler: () => console.log("Ali's request canceled"),
+        onAcceptHandler: () => console.log("Ali's request accepted"),
+        onRejectHandler: () => console.log("Ali's request rejected"),
+      },
+      {
+        date: { month: "May", day: "3", weekday: "Wed" },
+        time: { start: "07:00PM", end: "09:00PM" },
+        role: "Paid Proctoring Request",
+        duration: 2,
+        name: "Ayşe Yılmaz",
+        email: "ayse.yilmaz@ug.bilkent.edu.tr",
+        status: "Pending Dean's Office’s answer",
+        onCancelHandler: () => console.log("Ayşe's request canceled"),
+        onAcceptHandler: () => console.log("Ayşe's request accepted"),
+        onRejectHandler: () => console.log("Ayşe's request rejected"),
+      },
+    ];
+
 
   return (
     <div className="dashboard-page">
@@ -27,15 +93,58 @@ const INS_DashboardPage = () => {
 
           {/* Top Left Panel */}
           <div className="tab-content">
-            {activeTab === "pending" && (
-              <div className="placeholder">[ Load and display SENT requests from DB — click to select one ]</div>
-            )}
-            {activeTab === "received" && (
-              <div className="placeholder">[ Load RECEIVED requests from DB — click to select one ]</div>
-            )}
-            {activeTab === "tasks" && (
-              <div className="placeholder">[ Display past submitted workload entries ]</div>
-            )}
+          {activeTab === "pending" && (
+                <div>
+                {pendingRequests.map((req, index) =>
+                  createPendingRequest(
+                    req.date,
+                    req.time,
+                    req.role,
+                    req.duration,
+                    req.name,
+                    req.email,
+                    req.status,
+                    req.onCancelHandler
+                  )
+                )}
+              </div>
+              )}
+
+
+
+              {activeTab === "received" && (
+                <div>
+                {pendingRequests.map((req, index) =>
+                  createReceivedRequest(
+                    req.date,
+                    req.time,
+                    req.role,
+                    req.duration,
+                    req.name,
+                    req.email,
+                    req.status,
+                    req.onAcceptHandler,
+                    req.onRejectHandler
+                  )
+                )}
+              </div>
+              )}
+
+
+              {activeTab === "tasks" && (
+                              <div>{workloadEntries.map((ent, idx) =>
+                                createWorkloadEntry(
+                                  ent.courseCode,
+                                  ent.taskTitle,
+                                  ent.date,
+                                  ent.duration,
+                                  ent.comment,
+                                  ent.status // Assuming all entries are accepted for simplicity
+                                )
+                              )}</div>
+                            )}
+
+
           </div>
           </div>
           {/* Bottom Left Panel */}

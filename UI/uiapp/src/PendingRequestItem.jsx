@@ -12,7 +12,7 @@ const PendingRequestItem = ({ date, time, role, duration, name, email, status, o
       <div className="pending-request-item-details">
         <div className="pending-request-item-time-row">{time.start} - {time.end}</div>
         <div className="pending-request-item-info-row">{role} • {duration} hours</div>
-        <div className="pending-request-item-info-row">{name}</div>
+        <div className="pending-request-item-info-row">Sent to: {name}</div>
         <div className="pending-request-item-info-row pending-request-item-email">{email}</div>
       </div>
       <div className="pending-request-item-status-box">

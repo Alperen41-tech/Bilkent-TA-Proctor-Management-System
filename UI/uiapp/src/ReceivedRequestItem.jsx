@@ -13,7 +13,7 @@ const ReceivedRequestItem = ({ date, time, role, duration, name, email, status, 
       <div className="received-request-item-details">
         <div className="received-request-item-time-row">{time.start} - {time.end}</div>
         <div className="received-request-item-info-row">{role} • {duration} hours</div>
-        <div className="received-request-item-info-row">{name}</div>
+        <div className="received-request-item-info-row">Sender: {name}</div>
         <div className="received-request-item-info-row received-request-item-email">{email}</div>
       </div>
 

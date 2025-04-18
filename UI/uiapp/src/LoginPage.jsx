@@ -13,7 +13,8 @@ const LoginPage = () => {
 
   
   const handleLogin = async () => {
-    navigate("/dashboard");
+    navigate("/ins-tas");
+    //navigate("/dashboard");
     /*
     try {
 
