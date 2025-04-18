@@ -12,6 +12,6 @@ import java.util.Optional;
 @Repository
 public interface ClassProctoringTARelationRepo extends JpaRepository<ClassProctoringTARelation, ClassProctoringTAKey> {
 
-
-    List<ClassProctoringTARelation> findById_TAId(Integer id);
+    List<ClassProctoringTARelation> findById_TAId(Integer taId);
+    Optional<ClassProctoringTARelation> findById_ClassProctoringIdAndId_TAId(Integer classProctoringId, Integer taId);
 }

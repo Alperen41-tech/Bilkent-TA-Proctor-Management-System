@@ -26,14 +26,12 @@ public class ClassProctoringController {
         return classProctoringTARelationService.getTAsClassProctoringDTOs(id);
     }
 
-
-
-
-
-
-
-
-
+    @PostMapping("updateTAsClassProctorings")
+    public List<ClassProctoringDTO> updateTAsClassProctorings(@RequestBody ClassProctoringDTO classProctoringDTO,@RequestParam("id") int id ){
+        System.out.println("request received");
+        classProctoringTARelationService.updateClassProctoringDTO(classProctoringDTO, id);
+        return classProctoringTARelationService.getTAsClassProctoringDTOs(id);
+    }
 
 
 }

@@ -25,7 +25,7 @@ public class ClassProctoringDTO {
     LocalDateTime startDate;
     LocalDateTime endDate;
     String classrooms;
-
+    boolean isOpenToSwap;
 
 
 
