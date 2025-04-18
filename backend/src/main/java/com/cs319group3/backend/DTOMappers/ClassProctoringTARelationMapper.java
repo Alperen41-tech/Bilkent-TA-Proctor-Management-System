@@ -17,7 +17,7 @@ public class ClassProctoringTARelationMapper {
 
         classProctoringTARelationDTO.setPaid(classProctoringTARelation.isPaid());
         classProctoringTARelationDTO.setComplete(classProctoringTARelation.isComplete());
-        classProctoringTARelationDTO.setOpenToSwap(classProctoringTARelation.isOpenToSwap());
+        classProctoringTARelationDTO.setIsOpenToSwap(classProctoringTARelation.isOpenToSwap());
 
         return classProctoringTARelationDTO;
     }

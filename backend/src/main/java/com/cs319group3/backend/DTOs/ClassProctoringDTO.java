@@ -20,11 +20,11 @@ public class ClassProctoringDTO {
 
 
 
-    int id;
-    String proctoringName;
-    String courseName;
-    LocalDateTime startDate;
-    LocalDateTime endDate;
-    String classrooms;
+    private int id;
+    private String proctoringName;
+    private String courseName;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private String classrooms;
 
 }

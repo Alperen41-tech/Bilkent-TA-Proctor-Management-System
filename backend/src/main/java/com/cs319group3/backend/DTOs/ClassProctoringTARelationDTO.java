@@ -6,27 +6,15 @@ import lombok.*;
 @Data
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class ClassProctoringTARelationDTO {
 
 
 
-    ClassProctoringDTO classProctoringDTO;
-    int TAId;
+    private ClassProctoringDTO classProctoringDTO;
+    private int TAId;
 
-    boolean isPaid;
-    boolean isComplete;
-    Boolean isOpenToSwap;
-
-    public boolean isOpenToSwap() {
-        return isOpenToSwap;
-    }
-    public void setOpenToSwap(boolean isOpenToSwap) {
-        this.isOpenToSwap = isOpenToSwap;
-    }
-
-
-
+    private boolean isPaid;
+    private boolean isComplete;
+    private Boolean isOpenToSwap;
 
 }
