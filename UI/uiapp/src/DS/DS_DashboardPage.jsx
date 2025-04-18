@@ -4,6 +4,7 @@ import "./DS_DashboardPage.css";
 import DS_PaidProctoringRequestItem from "./DS_PaidProctoringRequestItem";
 import { id } from "date-fns/locale";
 import DS_DashboardTAItem from "./DS_DashboardTAItem";
+import DS_SelectPaidProctoringTAItem from "./DS_SelectPaidProctoringTAItem";
 
 const DS_DashboardPage = () => {
   const [selectedAppliedStudentsId, setSelectedAppliedStudentsId] = useState([]);
@@ -76,6 +77,33 @@ const DS_DashboardPage = () => {
       <DS_PaidProctoringRequestItem id={request.id} {...request} onInform={() => console.log("TAs informed for this request")} isSelected={selectedPPRId === request.id} onSelect={handlePPRClick} />
     ));
   }
+  const createSelectPaidProctoringTAs = () => {
+    const paidProctoringApplied = [
+      {
+        id: 3,
+        date: { month: "Jan", day: 1, weekday: "Mon" },
+        time: { start: "10:00 AM", end: "12:00 PM" },
+        role: "Proctor",
+        duration: 2,
+        name: "Ali",
+        numOfTaNeeded: 2,
+        taSApplied: 3,
+      },
+      {
+        id: 4,
+        date: { month: "Jan", day: 1, weekday: "Mon" },
+        time: { start: "10:00 AM", end: "12:00 PM" },
+        role: "Proctor",
+        duration: 2,
+        name: "Ali",
+        numOfTaNeeded: 2,
+        taSApplied: 2,
+      },
+    ];
+    return paidProctoringApplied.map((request) => (
+      <DS_SelectPaidProctoringTAItem id={request.id} {...request} onInform={() => console.log("TAs informed for this request")} isSelected={selectedPPRId === request.id} onSelect={handlePPRClick} />
+    ));
+  }
 
   const createAppliedTAItems = () => {
     return tas.map((ta) => (
@@ -88,6 +116,7 @@ const DS_DashboardPage = () => {
     ));
   }
 
+  
 
   return (
     <div className="dashboard-page">
@@ -108,7 +137,7 @@ const DS_DashboardPage = () => {
               <div>{createPaidProctoringRequests()}</div>
             )}
             {activeTab === "received" && (
-              <div className="placeholder">[ Load RECEIVED requests from DB — click to select one ]</div>
+              <div>{createSelectPaidProctoringTAs()}</div>
             )}
           </div>
           </div>

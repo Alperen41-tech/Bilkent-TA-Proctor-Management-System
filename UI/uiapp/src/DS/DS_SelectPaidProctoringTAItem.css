@@ -1,0 +1,64 @@
+.ds-select-paid-proctoring-ta-item-request-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ececec;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    margin-top: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: sans-serif;
+  }
+  .ds-select-paid-proctoring-ta-item-request-card:hover {
+    background-color: #d1d2ff;
+    cursor: pointer;
+  }
+  .ds-select-paid-proctoring-ta-item-selected {
+    background-color: #d1d2ff;
+  }
+  
+  .ds-select-paid-proctoring-ta-item-date-box {
+    text-align: center;
+    margin-right: 16px;
+    width: 60px;
+  }
+  
+  .ds-select-paid-proctoring-ta-item-month {
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .ds-select-paid-proctoring-ta-item-day {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .ds-select-paid-proctoring-ta-item-weekday {
+    font-size: 12px;
+    color: #777;
+  }
+  
+  .ds-select-paid-proctoring-ta-item-details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+  
+  .ds-select-paid-proctoring-ta-item-time-row {
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .ds-select-paid-proctoring-ta-item-info-row {
+    font-size: 14px;
+    color: #555;
+  }
+
+  .ds-select-paid-proctoring-ta-item-status-text {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 8px;
+  }

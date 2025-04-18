@@ -26,7 +26,7 @@ const DashboardPage = () => {
   };
 
   const createPendingRequest = (date, time, role, duration, name, email, status, onCancelHandler) => {
-    return <PendingRequestItem date={date} time={time} role={role} duration={duration} name={name} email={email} status={status} onCancel={onCancelHandler}/>;
+    return <PendingRequestItem key={name} date={date} time={time} role={role} duration={duration} name={name} email={email} status={status} onCancel={onCancelHandler}/>;
   }
   const createReceivedRequest = (date, time, role, duration, name, email, status, onAcceptHandler, onRejectHandler) => {
     return <ReceivedRequestItem date={date} time={time} role={role} duration={duration} name={name} email={email} status={status} onAccept={onAcceptHandler} onReject={onRejectHandler}/>;
@@ -35,36 +35,35 @@ const DashboardPage = () => {
     return <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status}/>;
   }
 
-  useEffect(() => {
-    const fetchTasProctorings = async () => {
+  const fetchTasProctorings = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/classProctoring/getTAsClassProctorings?id=3"); // Adjust the URL as needed
+        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=3"); // Adjust the URL as needed
         setTasProctorings(response.data);
         console.log(tasProctorings);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
     };
-    fetchTasProctorings();
+  
+  useEffect(() => {
+    fetchTasProctorings(tasProctorings);
   }, []);
 
   const handleLockedStatusChange = async (id) => {
     try {
-      const proctoringToBeLocked = tasProctorings.find((duty) => duty.id === id);
+      const proctoringToBeLocked = tasProctorings.find((duty) => duty.classProctoringDTO.id === id);
       console.log(proctoringToBeLocked);
-      const responseLocked = await axios.put("http://localhost:8080/classProctoring/updateTAsClassProctorings?id=3", {
-        id:proctoringToBeLocked.id,
-        proctoringName:proctoringToBeLocked.proctoringName,
-        courseName: proctoringToBeLocked.courseName,
-        startDate: proctoringToBeLocked.startDate,
-        endDate: proctoringToBeLocked.endDate,
-        classrooms: proctoringToBeLocked.classrooms,
-        isOpenToSwap: !proctoringToBeLocked.isOpenToSwap, 
+      const responseLocked = await axios.put("http://localhost:8080/classProctoringTARelation/updateTAsClassProctorings?id=3", {
+        classProctoringDTO: {
+          id: proctoringToBeLocked.classProctoringDTO.id,
+        },
+        isOpenToSwap: !proctoringToBeLocked.isOpenToSwap,
       });
 
       if (!responseLocked.data) {
         alert("Could not locked the swap. Try again.");
       } 
+      fetchTasProctorings(tasProctorings);
     } catch (error) {
       console.error("There was an error with the login request:", error);
       alert("An error occurred. Please try again.");
@@ -189,13 +188,13 @@ const DashboardPage = () => {
                 <div>
                 {tasProctorings.map((duty) => (
                   <ProctoringDutyItem
-                    key={duty.id}
+                    key={duty.classProctoringDTO.id}
                     duty={duty}
-                    isSelected={selectedProctoringId === duty.id}
+                    isSelected={selectedProctoringId === duty.classProctoringDTO.id}
                     onSelect={handleSelect}
                     onLockedStatusChange={() => {
-                       handleLockedStatusChange(duty.id); // Function to handle the locked status change
-                      console.log(`Locked status changed for duty ID: ${duty.id}`); //Will push new lock status of the duty to the database
+                       handleLockedStatusChange(duty.classProctoringDTO.id); // Function to handle the locked status change
+                      console.log(`Locked status changed for duty ID: ${duty.classProctoringDTO.id}`); //Will push new lock status of the duty to the database
                     }}
                   />
                 ))}

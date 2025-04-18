@@ -2,17 +2,18 @@ import React from "react";
 import './ProctoringDutyItem.css';
 
 const ProctoringDutyItem = ({ duty, isSelected, onSelect, onLockedStatusChange }) => {
-  const isLocked = duty.isOpenToSwap;
+  const isLocked = !duty.isOpenToSwap;
+  console.log("Duty item props:", duty.isOpenToSwap);
 
   return (
     <div
       className={`proctoring-duty-item-duty-item ${isLocked ? 'proctoring-duty-item-locked' : ''} ${isSelected ? 'proctoring-duty-item-selected' : ''}`}
-      onClick={() => onSelect(duty.id)}
+      onClick={() => onSelect(duty.classProctoringDTO.id)}
     >
-      <span className="proctoring-duty-item-duty-field">{duty.proctoringName}</span>
-      <span className="proctoring-duty-item-duty-field">{duty.startDate}</span>
-      <span className="proctoring-duty-item-duty-field">{duty.endDate}</span>
-      <span className="proctoring-duty-item-duty-field">{duty.classrooms}</span>
+      <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.proctoringName}</span>
+      <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.startDate}</span>
+      <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.endDate}</span>
+      <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.classrooms}</span>
       <div className="proctoring-duty-item-duty-field proctoring-duty-item-status-container">
         <input
           type="checkbox"

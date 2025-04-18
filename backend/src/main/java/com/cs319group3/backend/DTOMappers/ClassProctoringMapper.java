@@ -23,9 +23,13 @@ public class ClassProctoringMapper {
         List<String> tempClassrooms = classProctoring.getClassrooms().stream().map(cpc -> cpc.getId().getClassroom()).collect(Collectors.toList());
 
         StringBuffer strBuffer = new StringBuffer();
-
+        int i= 0;
         for (String classroom : tempClassrooms) {
-            strBuffer.append(" + " + classroom);
+            if (i != 0) {
+                strBuffer.append(" + ");
+            }
+            strBuffer.append(classroom);
+            i++;
         }
 
         classProctoringDTO.setClassrooms(strBuffer.toString());

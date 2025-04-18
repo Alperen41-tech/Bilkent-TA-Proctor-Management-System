@@ -52,7 +52,7 @@ const ExamsPage = () => {
   useEffect(() => {
     const fetchTasProctorings = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/classProctoring/getTAsClassProctorings?id=8"); // Adjust the URL as needed
+        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=3"); // Adjust the URL as needed
         setTasProctorings(response.data);
         console.log(tasProctorings); // Log the fetched tasks to the console
         //console.log("TasProctorings:", response.data); // Log the fetched tasks to the console
@@ -93,7 +93,7 @@ const ExamsPage = () => {
           <div className="card">
             <h3>Choose one of your tasks</h3>
             <div className="task-row">
-            {tasProctorings.map((proctoring, index) => (createTaskItem(proctoring.id, proctoring.courseName, proctoring.proctoringName, proctoring.startDate, proctoring.endDate, proctoring.classrooms, handleTaskClick1, lastTask1?.id)))}
+            {tasProctorings.map((proctoring, index) => (createTaskItem(proctoring.classProctoringDTO.id, proctoring.classProctoringDTO.courseName, proctoring.classProctoringDTO.proctoringName, proctoring.classProctoringDTO.startDate, proctoring.classProctoringDTO.endDate, proctoring.classProctoringDTO.classrooms, handleTaskClick1, lastTask1?.id)))}
               
               
             </div>
