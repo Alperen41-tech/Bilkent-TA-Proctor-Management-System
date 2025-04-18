@@ -1,21 +1,30 @@
 import React, { act, useState } from "react";
 import NavbarDS from "./NavbarDS";
 import "./DS_DashboardPage.css";
+import DS_PaidProctoringRequestItem from "./DS_PaidProctoringRequestItem";
+import { id } from "date-fns/locale";
+import DS_DashboardTAItem from "./DS_DashboardTAItem";
 
 const DS_DashboardPage = () => {
+  const [selectedAppliedStudentsId, setSelectedAppliedStudentsId] = useState([]);
+  const [selectedPPRId, setSelectedPPRId] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [sortName, setSortName] = useState("");  
   const [sortWorkload, setSortWorkload] = useState("");
   const [tas, setTas] = useState([
-    { name: 'Ali 1' },
-    { name: 'Ali 12' },
-    { name: 'Ali 15' },
-    { name: 'Ali 15' },
-    { name: 'Ali 15' },
-    { name: 'Ali 15' },
-    { name: 'Ali 15' },{ name: 'Ali 15' },{ name: 'Ali 15' },{ name: 'Ali 15' },{ name: 'Ali 15' },{ name: 'Ali 15' }, // You can dynamically add or remove TAs here
+    { name: 'Ali 1', id: 1 , email: "basdaas@gmail.com"},
+    { name: 'Ali 12', id: 2 , email: "basdaas@gmail.com"},
+    { name: 'Ali 13', id: 3, email: "basdaas@gmail.com" },
+    { name: 'Ali 14', id: 4, email: "basdaas@gmail.com" },
+    { name: 'Ali 15', id: 5, email: "basdaas@gmail.com" },
+    { name: 'Ali 16', id: 6, email: "basdaas@gmail.com" },
+    { name: 'Ali 17', id: 7, email: "basdaas@gmail.com" },
+    { name: 'Ali 18', id: 8, email: "basdaas@gmail.com" },
+    { name: 'Ali 19', id: 9, email: "basdaas@gmail.com" },
+    { name: 'Ali 20', id: 10, email: "basdaas@gmail.com" },
+    { name: 'Ali 21', id: 11, email: "basdaas@gmail.com" },
     // You can add more TAs dynamically later
   ]);
   
@@ -26,7 +35,59 @@ const DS_DashboardPage = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setSelectedRequest(null);
+    setSelectedPPRId(null);
   };
+  const handlePPRClick = (id) => {
+    setSelectedPPRId(id);
+  }
+  const handleASC = (id) => { // Handle applied students click
+    if (!selectedAppliedStudentsId.includes(id)) {
+      setSelectedAppliedStudentsId((prev) => [...prev, id]);
+    }
+    else {
+      setSelectedAppliedStudentsId((prev) => prev.filter((studentId) => studentId !== id));
+    }
+    console.log("Selected TA:", id);
+  }
+
+  const createPaidProctoringRequests = () => {
+    const paidProctoringRequests = [
+      {
+        id: 1,
+        date: { month: "Jan", day: 1, weekday: "Mon" },
+        time: { start: "10:00 AM", end: "12:00 PM" },
+        role: "Proctor",
+        duration: 2,
+        name: "Ali",
+        numOfTaNeeded: 2,
+      },
+      {
+        id: 2,
+        date: { month: "Jan", day: 1, weekday: "Mon" },
+        time: { start: "10:00 AM", end: "12:00 PM" },
+        role: "Proctor",
+        duration: 2,
+        name: "Ali",
+        numOfTaNeeded: 2,
+      },
+      // Add more requests as needed
+    ];
+    return paidProctoringRequests.map((request) => (
+      <DS_PaidProctoringRequestItem id={request.id} {...request} onInform={() => console.log("TAs informed for this request")} isSelected={selectedPPRId === request.id} onSelect={handlePPRClick} />
+    ));
+  }
+
+  const createAppliedTAItems = () => {
+    return tas.map((ta) => (
+      <DS_DashboardTAItem name={ta.name} onSelect={handleASC} isSelected={selectedAppliedStudentsId.includes(ta.id)} id={ta.id} bgColor={""} email={ta.email}/>
+    ));
+  }
+  const createAvaliableTAItems = () => {
+    return tas.map((ta) => (
+      <DS_DashboardTAItem name={ta.name} onSelect={handleASC} isSelected={selectedAppliedStudentsId.includes(ta.id)} id={ta.id} bgColor={""} email={ta.email}/>
+    ));
+  }
+
 
   return (
     <div className="dashboard-page">
@@ -44,7 +105,7 @@ const DS_DashboardPage = () => {
           {/* Top Left Panel */}
           <div className="tab-content">
             {activeTab === "pending" && (
-              <div className="placeholder">[ Load and display SENT requests from DB — click to select one ]</div>
+              <div>{createPaidProctoringRequests()}</div>
             )}
             {activeTab === "received" && (
               <div className="placeholder">[ Load RECEIVED requests from DB — click to select one ]</div>
@@ -71,12 +132,9 @@ const DS_DashboardPage = () => {
                     <h3 className="ta-list-title">Applied Studens</h3>
                     <div className="ta-list">
                     {tas.length > 0 ? (
-                        tas.map((ta, index) => (
-                      <div key={index} className="ta-item">
-                        {ta.name}
-                      </div>
-                    ))
-                  ) : (
+                        <div>{createAppliedTAItems()}</div>
+                    )
+                   : (
                     <div className="no-ta">No TAs available</div>
                   )}
                 </div>
@@ -130,11 +188,19 @@ const DS_DashboardPage = () => {
                 <h3 className="ta-list-title">TA List</h3>
                 <div className="ta-list">
                   {tas.length > 0 ? (
-                    tas.map((ta, index) => (
-                      <div key={index} className="ta-item">
-                        {ta.name}
-                      </div>
-                    ))
+                    <div>
+                      {selectedAppliedStudentsId.map((id) => {
+                        return (
+                          tas.filter((ta) => ta.id === id).map(({ name, id }) => (
+                          <div className="ds-dashboard-ta-list-item-content">
+                            <div className="ds-dashboard-ta-list-item-name">Name: {name}</div>
+                            <div className="ds-dashboard-ta-list-item-id">Student ID: {id}</div>
+                          </div>
+                        )))
+                      }               
+                      )}
+                    </div>
+                    
                   ) : (
                     <div className="no-ta">No TAs available</div>
                   )}
