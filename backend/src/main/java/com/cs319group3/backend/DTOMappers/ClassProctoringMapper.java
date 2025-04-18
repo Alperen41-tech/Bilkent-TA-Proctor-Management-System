@@ -25,7 +25,7 @@ public class ClassProctoringMapper {
         StringBuffer strBuffer = new StringBuffer();
 
         for (String classroom : tempClassrooms) {
-            strBuffer.append(classroom);
+            strBuffer.append(" + " + classroom);
         }
 
         classProctoringDTO.setClassrooms(strBuffer.toString());
