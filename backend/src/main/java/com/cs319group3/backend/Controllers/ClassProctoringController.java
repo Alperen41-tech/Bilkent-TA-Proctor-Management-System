@@ -2,6 +2,7 @@ package com.cs319group3.backend.Controllers;
 
 
 import com.cs319group3.backend.DTOs.ClassProctoringDTO;
+import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
 import com.cs319group3.backend.Services.ClassProctoringTARelationService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,9 @@ public class ClassProctoringController {
     }
 
     @PutMapping("updateTAsClassProctorings")
-    public boolean updateTAsClassProctorings(@RequestBody ClassProctoringDTO classProctoringDTO,@RequestParam("id") int id ){
+    public boolean updateTAsClassProctorings(@RequestBody ClassProctoringTARelationDTO classProctoringTARelationDTO, @RequestParam("id") int id ){
         System.out.println("request received");
-        boolean hh = classProctoringDTO.isOpenToSwap();
-        return classProctoringTARelationService.updateClassProctoringDTO(classProctoringDTO, id);
+        return classProctoringTARelationService.updateClassProctoringDTO(classProctoringTARelationDTO, id);
     }
 
 

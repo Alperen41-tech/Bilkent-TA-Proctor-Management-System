@@ -5,6 +5,7 @@ import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.ClassProctoringClassroom;
 import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.TimeInterval;
+import jdk.jfr.DataAmount;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -25,13 +26,5 @@ public class ClassProctoringDTO {
     LocalDateTime startDate;
     LocalDateTime endDate;
     String classrooms;
-    Boolean isOpenToSwap;
 
-    public Boolean isOpenToSwap() {
-        return isOpenToSwap;
-    }
-
-    public void setOpenToSwap(Boolean openToSwap) {
-        isOpenToSwap = openToSwap;
-    }
 }

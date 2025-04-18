@@ -2,6 +2,7 @@ package com.cs319group3.backend.Services.ServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.ClassProctoringMapper;
 import com.cs319group3.backend.DTOs.ClassProctoringDTO;
+import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 
@@ -39,18 +40,17 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
     }
 
     @Override
-    public boolean updateClassProctoringDTO(ClassProctoringDTO dto, int userId) {
+    public boolean updateClassProctoringDTO(ClassProctoringTARelationDTO dto, int userId) {
         // Step 1: Find the existing entity
-        Optional<ClassProctoringTARelation> optionalRelation = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(dto.getId(), userId);
+        Optional<ClassProctoringTARelation> optionalRelation = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(dto.getClassProctoringId(), userId);
 
         if (optionalRelation.isEmpty()) {
-            throw new RuntimeException("No ClassProctoringTARelation found with id " + dto.getId());
+            throw new RuntimeException("No ClassProctoringTARelation found with id " + dto.getClassProctoringId());
         }
 
         ClassProctoringTARelation relation = optionalRelation.get();
 
         // Step 2: Update fields
-        boolean hh = dto.isOpenToSwap();
         relation.setOpenToSwap(dto.isOpenToSwap());
         // If you want to update more fields later, add them here
         // e.g., relation.setIsConfirmed(dto.isConfirmed());
