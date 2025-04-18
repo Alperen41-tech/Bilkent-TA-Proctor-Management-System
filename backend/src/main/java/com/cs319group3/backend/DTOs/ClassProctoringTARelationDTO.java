@@ -12,7 +12,7 @@ public class ClassProctoringTARelationDTO {
 
 
 
-    int classProctoringId;
+    ClassProctoringDTO classProctoringDTO;
     int TAId;
 
     boolean isPaid;

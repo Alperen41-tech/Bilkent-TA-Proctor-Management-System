@@ -1,9 +1,8 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
-import com.cs319group3.backend.DTOMappers.ClassProctoringMapper;
-import com.cs319group3.backend.DTOs.ClassProctoringDTO;
+import com.cs319group3.backend.DTOMappers.ClassProctoringTARelationMapper;
 import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
-import com.cs319group3.backend.Entities.ClassProctoring;
+
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 
 import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
@@ -22,19 +21,15 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
     private ClassProctoringTARelationRepo classProctoringTARelationRepo;
 
     @Override
-    public List<ClassProctoringDTO> getTAsClassProctoringDTOs(int id) {
+    public List<ClassProctoringTARelationDTO> getTAsClassProctoringDTOs(int id) {
         List<ClassProctoringTARelation> relations = classProctoringTARelationRepo.findById_TAId(id);
 
-        List<ClassProctoringDTO> proctorings = new ArrayList<>();
+        List<ClassProctoringTARelationDTO> proctorings = new ArrayList<>();
 
         for (ClassProctoringTARelation relation : relations) {
 
-
-            ClassProctoring proctoring = relation.getClassProctoring();
-            ClassProctoringDTO dto = ClassProctoringMapper.essentialMapper(proctoring);
-
-            proctorings.add(dto);
-
+            ClassProctoringTARelationDTO cdto = ClassProctoringTARelationMapper.essentialMapper(relation);
+            proctorings.add(cdto);
         }
         return proctorings;
     }
@@ -42,10 +37,12 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
     @Override
     public boolean updateClassProctoringDTO(ClassProctoringTARelationDTO dto, int userId) {
         // Step 1: Find the existing entity
-        Optional<ClassProctoringTARelation> optionalRelation = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(dto.getClassProctoringId(), userId);
+
+        int classpId = dto.getClassProctoringDTO().getId();
+        Optional<ClassProctoringTARelation> optionalRelation = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classpId, userId);
 
         if (optionalRelation.isEmpty()) {
-            throw new RuntimeException("No ClassProctoringTARelation found with id " + dto.getClassProctoringId());
+            throw new RuntimeException("No ClassProctoringTARelation found with id " + classpId);
         }
 
         ClassProctoringTARelation relation = optionalRelation.get();
