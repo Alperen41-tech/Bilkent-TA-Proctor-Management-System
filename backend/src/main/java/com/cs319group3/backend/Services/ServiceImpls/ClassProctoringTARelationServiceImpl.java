@@ -50,6 +50,7 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
         ClassProctoringTARelation relation = optionalRelation.get();
 
         // Step 2: Update fields
+        boolean hh = dto.isOpenToSwap();
         relation.setOpenToSwap(dto.isOpenToSwap());
         // If you want to update more fields later, add them here
         // e.g., relation.setIsConfirmed(dto.isConfirmed());

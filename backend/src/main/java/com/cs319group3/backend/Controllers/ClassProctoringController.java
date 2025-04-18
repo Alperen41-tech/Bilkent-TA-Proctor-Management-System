@@ -29,6 +29,7 @@ public class ClassProctoringController {
     @PutMapping("updateTAsClassProctorings")
     public boolean updateTAsClassProctorings(@RequestBody ClassProctoringDTO classProctoringDTO,@RequestParam("id") int id ){
         System.out.println("request received");
+        boolean hh = classProctoringDTO.isOpenToSwap();
         return classProctoringTARelationService.updateClassProctoringDTO(classProctoringDTO, id);
     }
 

@@ -25,10 +25,13 @@ public class ClassProctoringDTO {
     LocalDateTime startDate;
     LocalDateTime endDate;
     String classrooms;
-    boolean isOpenToSwap;
+    Boolean isOpenToSwap;
 
+    public Boolean isOpenToSwap() {
+        return isOpenToSwap;
+    }
 
-
-
-
+    public void setOpenToSwap(Boolean openToSwap) {
+        isOpenToSwap = openToSwap;
+    }
 }
