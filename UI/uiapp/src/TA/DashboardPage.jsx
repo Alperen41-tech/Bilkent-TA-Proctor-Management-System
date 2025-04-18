@@ -32,6 +32,11 @@ const DashboardPage = () => {
   const createWorkloadEntry = (courseCode, taskTitle, date, duration, comment, status) => {
     return <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status}/>;
   }
+
+  
+
+
+
   // Sample data for pending requests
   const pendingRequests = [
     {

@@ -168,16 +168,6 @@
     overflow-y: auto; /* Enable vertical scrollbar when content overflows */
   }
   
-  .ta-item {
-    background-color: #d1f7d1;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 16px;
-    color: #333;
-    transition: transform 0.3s, background-color 0.3s;
-    cursor: pointer;
-  }
-  
   .no-ta {
     color: #666;
     font-style: italic;
@@ -197,4 +187,22 @@
     justify-content: space-between;
     flex-direction: row;
     gap: 10px;
+  }
+
+  .ds-dashboard-ta-list-item-content{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: #1dd75b8c;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    border-radius: 999px;
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+  .ds-dashboard-ta-list-item-name{
+    flex: 2;
+  }
+  .ds-dashboard-ta-list-item-id{
+    flex: 1;
   }

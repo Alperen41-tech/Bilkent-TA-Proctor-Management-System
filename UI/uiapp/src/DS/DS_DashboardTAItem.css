@@ -1,0 +1,42 @@
+/* DS_DashboardTAItem.css */
+.ds-dashboard-ta-item {
+    padding: 8px 16px;
+    border-radius: 999px; /* pill shape */
+    font-size: 16px;
+    display: inline-block;
+    min-width: 60px;
+    text-align: left;
+    transition: background-color 0.3s ease;
+    display: flex;
+    cursor: pointer;
+    background-color: #efb134a4; /* light gray background */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* subtle shadow */
+    flex-direction: column;
+    margin-top: 10px; /* spacing between items */
+  }
+
+  .ds-dashboard-ta-item-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+.ds-dashboard-ta-item:hover {
+    background-color: #efb134; /* darker gray on hover */
+}
+
+.ds-dashboard-ta-item-name{
+    flex: 2;
+}
+.ds-dashboard-ta-item-email{
+    flex: 2;
+}
+.ds-dashboard-ta-item-id{
+    flex: 1;
+}
+.ds-dashboard-ta-item-selected {
+    background-color: #1dd75b8c;
+    color: black;
+}
+.ds-dashboard-ta-item-selected:hover {
+    background-color: #1dd75bdd; 
+}
