@@ -22,10 +22,12 @@ public class CourseInstructorRelation{
 
     @ManyToOne
     @MapsId("offeredCourseId")
+    @JoinColumn(name = "offered_course_id")
     private OfferedCourse course;
 
     @ManyToOne
     @MapsId("instructorId")
+    @JoinColumn(name = "instructor_id")
     private Instructor instructor;
 
 }
