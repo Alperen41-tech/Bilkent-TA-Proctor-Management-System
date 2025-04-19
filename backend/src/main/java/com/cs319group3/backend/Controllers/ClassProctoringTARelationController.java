@@ -31,5 +31,9 @@ public class ClassProctoringTARelationController {
         return classProctoringTARelationService.updateClassProctoringDTO(classProctoringTARelationDTO, id);
     }
 
-
+    @GetMapping("getDepartmentTAsClassProctorings")
+    public List<ClassProctoringTARelationDTO> getDepartmentTAsClassProctorings(@RequestParam("id") int id){
+        System.out.println("request received");
+        return classProctoringTARelationService.getTAsClassProctoringDTOs(id);
+    }
 }

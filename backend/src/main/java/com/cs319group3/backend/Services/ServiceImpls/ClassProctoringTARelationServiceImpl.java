@@ -1,11 +1,17 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
+import com.cs319group3.backend.DTOMappers.ClassProctoringMapper;
 import com.cs319group3.backend.DTOMappers.ClassProctoringTARelationMapper;
+import com.cs319group3.backend.DTOs.ClassProctoringDTO;
 import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
 
+import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 
+import com.cs319group3.backend.Entities.UserEntities.TA;
+import com.cs319group3.backend.Repositories.ClassProctoringRepo;
 import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
+import com.cs319group3.backend.Repositories.TARepo;
 import com.cs319group3.backend.Services.ClassProctoringTARelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARelationService {
@@ -55,5 +62,41 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
         // Step 3: Save the updated entity
         classProctoringTARelationRepo.save(relation);
         return true;
+    }
+
+    @Autowired
+    private TARepo taRepo;
+
+    @Autowired
+    private ClassProctoringRepo classProctoringRepo;
+
+    @Override
+    public List<ClassProctoringTARelationDTO> getDepartmentTAsClassProctorings(int userId){
+        // Step 1: Find TA by user ID
+        Optional<TA> ta = taRepo.findByUserId(userId);
+        if (!ta.isPresent()) {
+            throw new RuntimeException("No TA found with user ID " + userId);
+        }
+
+        int departmentId = ta.get().getDepartment().getDepartmentId();
+
+        // Step 2: Find all class proctorings for this department
+        List<ClassProctoring> classProctorings = classProctoringRepo.findByCourse_Department_DepartmentId(departmentId);
+
+        // Step 3: Extract IDs of these proctorings
+        List<Integer> classProctoringIds = classProctorings.stream()
+                .map(ClassProctoring::getClassProctoringId) // or getClassProctoringId()
+                .collect(Collectors.toList());
+
+        // Step 4: Find all relations that point to these proctorings
+        List<ClassProctoringTARelation> relations = classProctoringTARelationRepo.findByClassProctoring_ClassProctoringIdIn(classProctoringIds);
+
+        // Step 5: Convert to DTOs
+        List<ClassProctoringTARelationDTO> dtos = new ArrayList<>();
+        for (ClassProctoringTARelation relation : relations) {
+            dtos.add(ClassProctoringTARelationMapper.essentialMapper(relation));
+        }
+
+        return dtos;
     }
 }

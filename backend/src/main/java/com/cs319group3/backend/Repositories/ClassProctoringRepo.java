@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface ClassProctoringRepo extends JpaRepository<ClassProctoring, Integer> {
 
-
+    List<ClassProctoring> findByCourse_Department_DepartmentId(int departmentId);
 }
