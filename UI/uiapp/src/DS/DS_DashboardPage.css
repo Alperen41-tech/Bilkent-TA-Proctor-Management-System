@@ -167,6 +167,13 @@
     max-height: 300px; /* Set a max height */
     overflow-y: auto; /* Enable vertical scrollbar when content overflows */
   }
+  .ds-dashboard-avaliable-ta-list{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 300px; /* Set a max height */
+    overflow-y: auto;
+  }
   
   .no-ta {
     color: #666;

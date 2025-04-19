@@ -8,6 +8,7 @@ import DS_SelectPaidProctoringTAItem from "./DS_SelectPaidProctoringTAItem";
 
 const DS_DashboardPage = () => {
   const [selectedAppliedStudentsId, setSelectedAppliedStudentsId] = useState([]);
+  const [selectedATAIds, setSelectedATAIds] = useState([]);
   const [selectedPPRId, setSelectedPPRId] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -47,6 +48,15 @@ const DS_DashboardPage = () => {
     }
     else {
       setSelectedAppliedStudentsId((prev) => prev.filter((studentId) => studentId !== id));
+    }
+    console.log("Selected TA:", id);
+  }
+  const handleAvaTAClick = (id) => { 
+    if (!selectedATAIds.includes(id)) {
+      setSelectedATAIds((prev) => [...prev, id]);
+    }
+    else {
+      setSelectedATAIds((prev) => prev.filter((studentId) => studentId !== id));
     }
     console.log("Selected TA:", id);
   }
@@ -112,7 +122,7 @@ const DS_DashboardPage = () => {
   }
   const createAvaliableTAItems = () => {
     return tas.map((ta) => (
-      <DS_DashboardTAItem name={ta.name} onSelect={handleASC} isSelected={selectedAppliedStudentsId.includes(ta.id)} id={ta.id} bgColor={""} email={ta.email}/>
+      <DS_DashboardTAItem name={ta.name} onSelect={handleAvaTAClick} isSelected={selectedATAIds.includes(ta.id)} id={ta.id} bgColor={""} email={ta.email}/>
     ));
   }
 
@@ -185,7 +195,7 @@ const DS_DashboardPage = () => {
 
           <div className="right-bottom">
             {activeTab === "pending" && (
-                <div className="card ta-list">
+              <div className="card">
                 <h3>Available TAs</h3>
       
                 <div className="filters">
@@ -209,7 +219,7 @@ const DS_DashboardPage = () => {
                   <button onClick={handleSearch}>Automatic Assign</button>
                 </div>
       
-                <div className="placeholder">[ TA list from DB ]</div>
+                <div className="ds-dashboard-avaliable-ta-list">{createAvaliableTAItems()}</div>
               </div>
             )}
             {activeTab === "received" && (
