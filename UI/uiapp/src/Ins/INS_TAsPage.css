@@ -90,4 +90,18 @@
     font-weight: bold;
     cursor: pointer;
   }
+
+  .insTA-bottom-btn {
+    margin-top: 20px;
+    padding: 10px 16px;
+    background-color: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    display: block;
+    margin-left: auto;
+  }
+  
   
