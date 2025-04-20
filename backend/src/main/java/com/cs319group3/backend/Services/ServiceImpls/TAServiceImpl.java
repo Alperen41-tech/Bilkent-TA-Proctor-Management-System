@@ -4,14 +4,14 @@ import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.DTOMappers.TAProfileMapper;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.TARepo;
-import com.cs319group3.backend.Services.TAProfileService;
+import com.cs319group3.backend.Services.TAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class TAProfileServiceImpl implements TAProfileService {
+public class TAServiceImpl implements TAService {
 
     @Autowired
     private TARepo taRepository;

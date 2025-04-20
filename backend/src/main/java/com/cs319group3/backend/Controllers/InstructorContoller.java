@@ -1,8 +1,7 @@
 package com.cs319group3.backend.Controllers;
 
 import com.cs319group3.backend.DTOs.InstructorProfileDTO;
-import com.cs319group3.backend.DTOs.TAProfileDTO;
-import com.cs319group3.backend.Services.InstructorProfileService;
+import com.cs319group3.backend.Services.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class InstructorContoller {
 
     @Autowired
-    private InstructorProfileService instructorProfileServiceImpl;
+    private InstructorService instructorProfileServiceImpl;
 
     @GetMapping("profile")
     public InstructorProfileDTO getInstructorProfile(@RequestParam("id") int id){

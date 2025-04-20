@@ -3,12 +3,10 @@ package com.cs319group3.backend.Controllers;
 
 
 import com.cs319group3.backend.DTOs.TAProfileDTO;
-import com.cs319group3.backend.Services.TAProfileService;
+import com.cs319group3.backend.Services.TAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("ta")
@@ -17,7 +15,7 @@ import java.util.List;
 public class TAController {
 
     @Autowired
-    private TAProfileService TAProfileServiceImplService;
+    private TAService TAProfileServiceImplService;
 
     @GetMapping("profile")
     public TAProfileDTO getTAProfile(@RequestParam("id") int id){
