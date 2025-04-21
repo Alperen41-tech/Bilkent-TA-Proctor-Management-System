@@ -20,13 +20,13 @@ create table user_type(
 
 create table faculty(
 	faculty_id int primary key auto_increment,
-	faculty_name varchar(50) not null
+	faculty_name varchar(100) not null
 );
 
 
 create table department(
 	department_id int primary key auto_increment,
-    department_name varchar(50) not null,
+    department_name varchar(100) not null,
 	department_code varchar(10) unique not null,
     faculty_id int,
     foreign key (faculty_id) references faculty(faculty_id)
@@ -63,7 +63,7 @@ create index surname_name_idx on user(surname, name);
 create table login(
 	login_id int primary key auto_increment,
 	user_id int not null,
-    password varchar(50) not null,
+    password varchar(100) not null,
 	user_type_id int not null,
     foreign key (user_id) references user(user_id),
     foreign key (user_type_id) references user_type(user_type_id)
@@ -151,7 +151,8 @@ create table offered_course(
 create table task_type(
 	task_type_id int primary key auto_increment,
 	course_id int,
-    task_type_name varchar(50),
+    task_type_name varchar(100),
+    time_limit int,
     foreign key (course_id) references course(course_id)
 );
 
@@ -159,7 +160,7 @@ create table task_type(
 create table class_proctoring(
 	class_proctoring_id int primary key auto_increment,
     course_id int not null,
-    task_type_id int,
+    event_name varchar(100),
     instructor_id int not null,
     section_no int,
 	start_date datetime,
@@ -167,7 +168,6 @@ create table class_proctoring(
     ta_count int,
     isComplete bool,
     foreign key (course_id) references course(course_id),
-    foreign key (task_type_id) references task_type(task_type_id),
     foreign key (instructor_id) references instructor(user_id)
 );
 
@@ -235,7 +235,7 @@ create table request(
     reciever_user_id int not null,
     sent_date datetime not null,
     is_approved bool,
-    description varchar(400),
+    description varchar(500),
     foreign key (sender_user_id) references user(user_id),
     foreign key (reciever_user_id) references user(user_id)
 );
