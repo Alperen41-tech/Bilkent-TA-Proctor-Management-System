@@ -20,7 +20,7 @@
     flex: 2;
     background-color: white;
     border-radius: 10px;
-    padding: 10px;
+    padding: 20px;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   }
   
@@ -30,12 +30,20 @@
     margin-bottom: 20px;
   }
   
-  .admin-database-search-bar input,
+  .admin-database-search-bar input{
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    flex: 3;
+  }
+
+
+
   .admin-database-search-bar select {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    flex: 2;
+    flex: 1;
   }
   
   .admin-database-search-button {
@@ -61,11 +69,21 @@
     margin-bottom: 10px;
   }
   
-  .admin-database-table-body .admin-database-table-row {
+  .admin-database-table-body {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    padding: 10px 0;
     border-bottom: 1px solid #eee;
+  }
+  
+  .admin-database-table-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
+    max-height: 400px; 
+    overflow-y: auto;
+    padding-right: 10px;
   }
   
   .admin-database-delete-btn {

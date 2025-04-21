@@ -1,11 +1,73 @@
 import React, { useState } from "react";
 import NavbarAdmin from "./NavbarAdmin";
 import "./AdminDatabasePage.css";
+import AdminDatabaseItem from "./AdminDatabaseItem";
 
 const AdminDatabasePage = () => {
   const [selectedType, setSelectedType] = useState("");
   const [taCount, setTaCount] = useState(2);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedData, setSelectedData] = useState({});
+
+  // Sample data for the database items
+  const adminDatabaseItems = [
+    {
+      type: 'ta',
+      data: {
+        id: 1,
+        name: "Ali Kılıç",
+        email: "ali.kilic@ug.bilkent.edu.tr",
+        department: "Computer Engineering"
+      }
+    },
+    {
+      type: 'instructor',
+      data: {
+        id: 2,
+        name: "Dr. Zeynep Aslan",
+        email: "zeynep.aslan@bilkent.edu.tr",
+        title: "Associate Professor"
+      }
+    },
+    {
+      type: 'exam',
+      data: {
+        id: 3,
+        course: "CS 319",
+        date: "2025-03-15",
+        time: "10:00 AM",
+        location: "EE-214"
+      }
+    },
+    {
+      type: 'course',
+      data: {
+        id: 4,
+        code: "CS 319",
+        name: "Object-Oriented Software Engineering",
+        instructor: "Dr. Zeynep Aslan"
+      }
+    },
+    {
+      type: 'class',
+      data: {
+        id: 5,
+        room: "EE-214",
+        capacity: 35
+      }
+    },
+    {
+      type: 'student',
+      data: {
+        id: 6,
+        name: "Elif Kaya",
+        email: "elif.kaya@ug.bilkent.edu.tr",
+        studentId: "22123478"
+      }
+    }
+  ];
+
+
 
   const handleTypeChange = (e) => {
     setSelectedType(e.target.value);
@@ -16,6 +78,21 @@ const AdminDatabasePage = () => {
       setSelectedFile(e.target.files[0]);
     }
   };
+
+  const createDatabaseItems = () => {
+    return(
+    adminDatabaseItems.map((item) => (
+      <AdminDatabaseItem
+        key={`${item.type}-${item.data.id}`}
+        type={item.type}
+        data={item.data}
+        onDelete={(id) => console.log(`Deleted ${item.type} with ID: ${id}`)}
+        onSelect={(data) => setSelectedData(data)}
+        isSelected={selectedData.id === item.data.id}
+        inLog={false} // Assuming this is not a log item
+      />
+    )))
+  }
 
   return (
     <div className="admin-database-database-container">
@@ -36,18 +113,7 @@ const AdminDatabasePage = () => {
           <div className="admin-database-data-table">
             <div className="admin-database-table-body">
               <div className="admin-database-table-row">
-                <div> </div>
-                <div> </div>
-                <div> </div>
-                <div> </div>
-                <div> </div>
-              </div>
-              <div className="admin-database-table-row">
-                <div> </div>
-                <div> </div>
-                <div> </div>
-                <div> </div>
-                <div> </div>
+                  {createDatabaseItems()}
               </div>
             </div>
           </div>
