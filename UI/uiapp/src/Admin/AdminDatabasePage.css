@@ -1,56 +1,58 @@
 /* Container for the whole page */
-.database-container {
+.admin-database-database-container {
     font-family: Arial, sans-serif;
     padding: 20px;
     background-color: #f5f5f7;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    
   }
   
   /* Top Section: Two columns */
-  .database-top {
+  .admin-database-database-top {
     display: flex;
     gap: 20px;
     margin-bottom: 30px;
   }
   
   /* Left part: Search & Data Table */
-  .search-data-section {
+  .admin-database-search-data-section {
     flex: 2;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   }
   
-  .search-bar {
+  .admin-database-search-bar {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
   }
   
-  .search-bar input,
-  .search-bar select {
+  .admin-database-search-bar input,
+  .admin-database-search-bar select {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    flex: 1;
+    flex: 2;
   }
   
-  .search-button {
+  .admin-database-search-button {
     background-color: #6366f1;
     color: white;
     padding: 8px 12px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
+    flex: 1;
   }
   
-  .data-table {
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  .admin-database-data-table {
     padding: 20px;
   }
   
-  .table-header {
+  .admin-database-table-header {
     display: flex;
     justify-content: space-between;
     font-weight: bold;
@@ -59,19 +61,19 @@
     margin-bottom: 10px;
   }
   
-  .table-body .table-row {
+  .admin-database-table-body .admin-database-table-row {
     display: flex;
     justify-content: space-between;
     padding: 10px 0;
     border-bottom: 1px solid #eee;
   }
   
-  .delete-btn {
+  .admin-database-delete-btn {
     cursor: pointer;
   }
   
   /* Right part: View Data Details */
-  .view-data-details {
+  .admin-database-view-data-details {
     flex: 1;
     background-color: white;
     border-radius: 10px;
@@ -80,14 +82,21 @@
   }
   
   /* Bottom Section: Two panels side by side */
-  .database-bottom {
+  .admin-database-database-bottom {
     display: flex;
     gap: 20px;
   }
   
   /* Panels for Create New Type and Dump New Data */
-  .create-new-type,
-  .dump-new-data {
+  .admin-database-create-new-type{
+    flex: 2;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+
+  }
+  .admin-database-dump-new-data {
     flex: 1;
     background-color: white;
     padding: 20px;
@@ -95,47 +104,48 @@
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   }
   
-  .create-new-type h3,
-  .dump-new-data h3 {
+  .admin-database-create-new-type h3,
+  .admin-database-dump-new-data h3 {
     margin-bottom: 15px;
   }
   
   /* Create New Type Section */
-  .type-selector {
+  .admin-database-type-selector {
     margin-bottom: 15px;
   }
   
-  .type-selector label {
+  .admin-database-type-selector label {
     margin-bottom: 5px;
     display: block;
   }
   
-  .type-selector select {
+  .admin-database-type-selector select {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 6px;
     width: 100%;
   }
   
-  .type-form label {
+  .admin-database-type-form label {
     margin-top: 10px;
     margin-bottom: 5px;
     display: block;
   }
   
-  .type-form input,
-  .type-form select {
-    width: 100%;
+  .admin-database-type-form input,
+  .admin-database-type-form select {
+    width: 95%;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 6px;
   }
   
-  .type-form input[type="time"] {
+  .admin-database-type-form input[type="time"] {
     padding: 4px;
+    width: 95%;
   }
   
-  .create-type-button {
+  .admin-database-create-type-button {
     background-color: #6366f1;
     color: white;
     padding: 10px;
@@ -143,26 +153,26 @@
     border-radius: 6px;
     cursor: pointer;
     margin-top: 15px;
-    width: 100%;
+    width: 95%;
   }
   
   /* Dump New Data Section */
-  .upload-container {
+  .admin-database-upload-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
   }
   
-  .drag-drop-area {
+  .admin-database-drag-drop-area {
     border: 2px dashed #6366f1;
     padding: 20px;
-    width: 100%;
+    width: 80%;
     text-align: center;
     border-radius: 10px;
   }
   
-  .choose-file-label {
+  .admin-database-choose-file-label {
     display: inline-block;
     background-color: #6366f1;
     color: white;
@@ -172,13 +182,13 @@
     margin-top: 10px;
   }
   
-  .upload-buttons {
+  .admin-database-upload-buttons {
     display: flex;
     gap: 10px;
   }
   
-  .import-button,
-  .cancel-button {
+  .admin-database-import-button,
+  .admin-database-cancel-button {
     background-color: #6366f1;
     color: white;
     padding: 10px 15px;

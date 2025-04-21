@@ -18,34 +18,31 @@ const AdminDatabasePage = () => {
   };
 
   return (
-    <div className="database-container">
+    <div className="admin-database-database-container">
       <NavbarAdmin />
 
       {/* Top Section: Left side for search and data table, right side for view data details */}
-      <div className="database-top">
-        <div className="search-data-section">
-          <div className="search-bar">
+      <div className="admin-database-database-top">
+        <div className="admin-database-search-data-section">
+          <div className="admin-database-search-bar">
             <input type="text" placeholder="Name: ex. CS 202, Ahmet" />
             <select>
               <option value="">Data Type</option>
               <option value="Midterm">Midterm</option>
               <option value="Exam">Exam</option>
             </select>
-            <button className="search-button">Search</button>
+            <button className="admin-database-search-button">Search</button>
           </div>
-          <div className="data-table">
-            <div className="table-header">
-              {/*buraya header başlığı gelecek*/}
-            </div>
-            <div className="table-body">
-              <div className="table-row">
+          <div className="admin-database-data-table">
+            <div className="admin-database-table-body">
+              <div className="admin-database-table-row">
                 <div> </div>
                 <div> </div>
                 <div> </div>
                 <div> </div>
                 <div> </div>
               </div>
-              <div className="table-row">
+              <div className="admin-database-table-row">
                 <div> </div>
                 <div> </div>
                 <div> </div>
@@ -55,18 +52,18 @@ const AdminDatabasePage = () => {
             </div>
           </div>
         </div>
-        <div className="view-data-details">
+        <div className="admin-database-view-data-details">
           <h3>View Data Details</h3>
           <p>Select an entry from the table to see details.</p>
         </div>
       </div>
 
       {/* Bottom Section: Two panels side by side */}
-      <div className="database-bottom">
+      <div className="admin-database-database-bottom">
         {/* Left Panel: Create New Type */}
-        <div className="create-new-type">
-          <h3>Create New Type</h3>
-          <div className="type-selector">
+        <div className="admin-database-create-new-type">
+          <h3>Create New Data</h3>
+          <div className="admin-database-type-selector">
             <label>Select Type:</label>
             <select value={selectedType} onChange={handleTypeChange}>
               <option value="">--Select Type--</option>
@@ -76,7 +73,7 @@ const AdminDatabasePage = () => {
             </select>
           </div>
           {selectedType === "Exam" && (
-            <div className="type-form">
+            <div className="admin-database-type-form">
               <label>Title</label>
               <input type="text" placeholder="e.g., Midterm Exam" />
 
@@ -110,12 +107,12 @@ const AdminDatabasePage = () => {
                 onChange={(e) => setTaCount(Number(e.target.value))}
               />
 
-              <button className="create-type-button">Create</button>
+              <button className="admin-database-create-type-button">Create</button>
             </div>
           )}
 
           {selectedType === "Quiz" && (
-            <div className="type-form">
+            <div className="admin-database-type-form">
               <label>Title</label>
               <input type="text" placeholder="e.g., Quiz" />
 
@@ -149,12 +146,12 @@ const AdminDatabasePage = () => {
                 onChange={(e) => setTaCount(Number(e.target.value))}
               />
 
-              <button className="create-type-button">Create</button>
+              <button className="admin-database-create-type-button">Create</button>
             </div>
           )}
 
           {selectedType === "TA" && (
-            <div className="type-form">
+            <div className="admin-database-type-form">
               <label>TA Name</label>
               <input type="text" placeholder="enter name" />
 
@@ -182,19 +179,19 @@ const AdminDatabasePage = () => {
                 <option value="PT">Part Time</option>
               </select>
 
-              <button className="create-type-button">Create</button>
+              <button className="admin-database-create-type-button">Create</button>
             </div>
           )}
         </div>
 
         {/* Right Panel: Dump New Data */}
-        <div className="dump-new-data">
+        <div className="admin-database-dump-new-data">
           <h3>Dump New Data</h3>
-          <div className="upload-container">
-            <div className="drag-drop-area">
+          <div className="admin-database-upload-container">
+            <div className="admin-database-drag-drop-area">
               <p>Drag &amp; Drop file here</p>
               <p>or</p>
-              <label htmlFor="file-upload" className="choose-file-label">
+              <label htmlFor="file-upload" className="admin-database-choose-file-label">
                 Choose File
               </label>
               <input
@@ -205,9 +202,9 @@ const AdminDatabasePage = () => {
               />
               <p>Supported formats: Excel</p>
             </div>
-            <div className="upload-buttons">
-              <button className="import-button">Import</button>
-              <button className="cancel-button">Cancel</button>
+            <div className="admin-database-upload-buttons">
+              <button className="admin-database-import-button">Import</button>
+              <button className="admin-database-cancel-button">Cancel</button>
             </div>
           </div>
         </div>
