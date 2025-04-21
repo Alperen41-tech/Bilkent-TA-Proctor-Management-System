@@ -1,0 +1,28 @@
+.taskv2-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #eef1f5;
+  padding: 12px 18px;
+  border-radius: 10px;
+  margin: 6px 0;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.taskv2-item-row:hover {
+  background-color: #e0e7ff;
+}
+
+.taskv2-item-row.selected {
+  background-color: #c7d2fe;
+  font-weight: bold;
+}
+
+.taskv2-cell {
+  flex: 1;
+  text-align: left;
+  padding: 0 8px;
+  font-size: 0.95em;
+}
