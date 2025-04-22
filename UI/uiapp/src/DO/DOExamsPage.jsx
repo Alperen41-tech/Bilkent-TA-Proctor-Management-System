@@ -10,14 +10,14 @@ import TAItem from "../TAItem";
 const DOExamsPage = () => {
   // Example exam data
     const [selectedTA, setSelectedTA] = useState(null);
+    const [selectedExamKey, setSelectedExamKey] = useState(null);
   
-
 
   const adminDatabaseItems = [
     {
       type: 'exam',
       data: {
-        id: 3,
+        id: 1,
         course: "CS 319",
         date: "2025-03-15",
         time: "10:00 AM",
@@ -27,7 +27,7 @@ const DOExamsPage = () => {
     {
       type: 'exam',
       data: {
-        id: 3,
+        id: 2,
         course: "CS 315",
         date: "2025-04-17",
         time: "10:30 AM",
@@ -47,13 +47,14 @@ const DOExamsPage = () => {
     {
       type: 'exam',
       data: {
-        id: 3,
+        id: 4,
         course: "CS 202",
         date: "2025-06-05",
         time: "8:00 AM",
         location: "EE-214"
       }
     },
+    
   ];
 
 
@@ -90,19 +91,24 @@ const DOExamsPage = () => {
 
 
   const createLogsDatabaseItems = () => {
-    return(
-    adminDatabaseItems.map((item) => (
-      <AdminDatabaseItem
-        key={`${item.type}-${item.data.id}`}
-        type={item.type}
-        data={item.data}
-        onDelete={(id) => console.log(`Deleted ${item.type} with ID: ${id}`)}
-        onSelect={(data) => false}
-        isSelected={false}
-        inLog={true} // Assuming this is not a log item
-      />
-    )))
-  }
+    return adminDatabaseItems.map((item) => {
+      const key = `${item.data.course}-${item.data.date}`;
+      const isSelected = selectedExamKey === key;
+  
+      return (
+        <AdminDatabaseItem
+          key={key}
+          type={item.type}
+          data={item.data}
+          onDelete={(id) => console.log(`Deleted ${item.type} with ID: ${id}`)}
+          onSelect={(data) => setSelectedExamKey(key)}
+          isSelected={isSelected}
+          inLog={true}
+        />
+      );
+    });
+  };
+  
 
 
 
