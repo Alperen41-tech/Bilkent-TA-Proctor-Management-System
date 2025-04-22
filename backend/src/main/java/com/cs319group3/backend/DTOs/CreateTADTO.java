@@ -1,6 +1,5 @@
 package com.cs319group3.backend.DTOs;
 
-
 import lombok.*;
 
 @Data
@@ -8,8 +7,9 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginDTO {
-    private String email;
-    private String password;
-    private String userTypeName;
+public class CreateTADTO {
+    //User
+    TAProfileDTO profile;
+    //Login
+    LoginDTO login;
 }

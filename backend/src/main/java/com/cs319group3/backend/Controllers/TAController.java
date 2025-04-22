@@ -2,6 +2,7 @@ package com.cs319group3.backend.Controllers;
 
 
 
+import com.cs319group3.backend.DTOs.CreateTADTO;
 import com.cs319group3.backend.DTOs.DateIntervalDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.DTOs.TAScheduleDTO;
@@ -31,6 +32,12 @@ public class TAController {
     public List<TAScheduleDTO> getSchedule(@RequestBody DateIntervalDTO dateIntervalDTO, @RequestParam("id") int id){
         System.out.println("request received");
         return taService.getTAScheduleById(dateIntervalDTO, id);
+    }
+
+    @PostMapping("create")
+    public boolean createTA(@RequestBody CreateTADTO dto) {
+        System.out.println("create request received");
+        return taService.createNewTA(dto);
     }
 
 }

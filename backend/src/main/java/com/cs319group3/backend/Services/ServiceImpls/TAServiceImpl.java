@@ -1,18 +1,15 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.TAScheduleMapper;
-import com.cs319group3.backend.DTOs.DateIntervalDTO;
-import com.cs319group3.backend.DTOs.TAProfileDTO;
+import com.cs319group3.backend.DTOs.*;
 import com.cs319group3.backend.DTOMappers.TAProfileMapper;
-import com.cs319group3.backend.DTOs.TAScheduleDTO;
+import com.cs319group3.backend.Entities.*;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RelationEntities.CourseStudentRelation;
 import com.cs319group3.backend.Entities.RelationEntities.OfferedCourseScheduleRelation;
-import com.cs319group3.backend.Entities.Student;
-import com.cs319group3.backend.Entities.TimeInterval;
 import com.cs319group3.backend.Entities.UserEntities.TA;
-import com.cs319group3.backend.Repositories.StudentRepo;
-import com.cs319group3.backend.Repositories.TARepo;
+import com.cs319group3.backend.Entities.UserEntities.User;
+import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.TAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +30,16 @@ public class TAServiceImpl implements TAService {
     private TARepo taRepository;
     @Autowired
     private StudentRepo studentRepo;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private UserTypeRepo userTypeRepo;
+    @Autowired
+    private LoginRepo loginRepo;
+    @Autowired
+    private CourseRepo courseRepo;
+    @Autowired
+    private DepartmentRepo departmentRepo;
 
     @Override
     public TAProfileDTO getTAProfileById(int id) {
@@ -95,5 +102,56 @@ public class TAServiceImpl implements TAService {
         }
 
         return schedule;
+    }
+
+    @Override
+    public boolean createNewTA(CreateTADTO dto) {
+        try {
+            TAProfileDTO profile = dto.getProfile();
+            LoginDTO login = dto.getLogin();
+
+            // Check duplicate by bilkentId or email
+            if (userRepo.findByBilkentId(profile.getBilkentId()).isPresent() ||
+                    userRepo.findByEmail(profile.getEmail()).isPresent()) {
+                return false; // Duplicate
+            }
+
+            // 1. Create TA entity directly (also fills user table)
+            TA ta = new TA();
+            ta.setName(profile.getName());
+            ta.setSurname(profile.getSurname());
+            ta.setEmail(profile.getEmail());
+            ta.setBilkentId(profile.getBilkentId());
+            ta.setPhoneNumber(profile.getPhoneNumber());
+            ta.setActive(profile.isActive());
+            ta.setClassYear(profile.getClassYear());
+
+            Department department = departmentRepo.findByDepartmentName(profile.getDepartmentName())
+                    .orElse(null);
+            Course course = courseRepo.findByCourseName(profile.getCourseName())
+                    .orElse(null);
+
+            if (department == null || course == null) {
+                return false; // invalid input
+            }
+
+            ta.setDepartment(department);
+            ta.setAssignedCourse(course);
+
+            taRepository.save(ta); // saves both into user and ta tables
+
+            // 2. Create Login entity
+            Login loginEntity = new Login();
+            loginEntity.setUser(ta); // because TA extends User
+            loginEntity.setPassword(login.getPassword());
+            loginEntity.setUserType(userTypeRepo.findByUserTypeName("ta"));
+            loginRepo.save(loginEntity);
+
+            return true;
+        } catch (Exception e) {
+            // Log the exception for debugging
+            e.printStackTrace();
+            return false;
+        }
     }
 }
