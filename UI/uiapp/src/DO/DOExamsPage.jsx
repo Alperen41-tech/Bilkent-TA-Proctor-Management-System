@@ -1,39 +1,63 @@
 import React, { useState } from "react";
 import NavbarDO from "./NavbarDO";
 import "./DOExamsPage.css";
+import AdminDatabaseItem from "../Admin/AdminDatabaseItem";
+import TAItem from "../TAItem";
+
+
+
 
 const DOExamsPage = () => {
   // Example exam data
-  const [exams, setExams] = useState([
-    {
-      date: "March 29, Wed",
-      time: "9:00AM - 10:30AM",
-      course: "CS 102",
-      type: "Midterm",
-      taAssigned: "2 TAs assigned",
-    },
-    {
-      date: "March 31, Fri",
-      time: "1:00PM - 2:30PM",
-      course: "CS 319",
-      type: "Quiz",
-      taAssigned: "1 TA assigned",
-    },
-    {
-      date: "April 2, Sun",
-      time: "10:00AM - 12:00PM",
-      course: "CS 476",
-      type: "Midterm",
-      taAssigned: "3 TAs assigned",
-    },
-  ]);
+    const [selectedTA, setSelectedTA] = useState(null);
+  
 
-  // Example assigned TAs
-  const [assignedTAs, setAssignedTAs] = useState([
-    { name: "Ali YS", department: "CS" },
-    { name: "Hasan B", department: "CS" },
-    { name: "Zeynep T", department: "IE" },
-  ]);
+
+  const adminDatabaseItems = [
+    {
+      type: 'exam',
+      data: {
+        id: 3,
+        course: "CS 319",
+        date: "2025-03-15",
+        time: "10:00 AM",
+        location: "EE-214"
+      }
+    },
+    {
+      type: 'exam',
+      data: {
+        id: 3,
+        course: "CS 315",
+        date: "2025-04-17",
+        time: "10:30 AM",
+        location: "EE-212"
+      }
+    },
+    {
+      type: 'exam',
+      data: {
+        id: 3,
+        course: "CS 376",
+        date: "2025-05-25",
+        time: "11:00 AM",
+        location: "BZ-04"
+      }
+    },
+    {
+      type: 'exam',
+      data: {
+        id: 3,
+        course: "CS 202",
+        date: "2025-06-05",
+        time: "8:00 AM",
+        location: "EE-214"
+      }
+    },
+  ];
+
+
+
 
   // Example available TAs
   const [availableTAs, setAvailableTAs] = useState([
@@ -46,13 +70,7 @@ const DOExamsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("");
 
-  // Handle TA dismissal
-  const handleDismissTA = (index) => {
-    // Remove the TA from assignedTAs
-    const newAssigned = [...assignedTAs];
-    newAssigned.splice(index, 1);
-    setAssignedTAs(newAssigned);
-  };
+
 
   // Dummy logic for "Automatic Assign"
   const handleAutomaticAssign = () => {
@@ -63,6 +81,46 @@ const DOExamsPage = () => {
   const handleManualAssign = () => {
     alert("Manual assignment logic goes here.");
   };
+
+
+  const handleTAClick = (ta) => {
+    const key = `${ta.firstName}-${ta.lastName}-${ta.email}`;
+    setSelectedTA(key);
+  };
+
+
+  const createLogsDatabaseItems = () => {
+    return(
+    adminDatabaseItems.map((item) => (
+      <AdminDatabaseItem
+        key={`${item.type}-${item.data.id}`}
+        type={item.type}
+        data={item.data}
+        onDelete={(id) => console.log(`Deleted ${item.type} with ID: ${id}`)}
+        onSelect={(data) => false}
+        isSelected={false}
+        inLog={true} // Assuming this is not a log item
+      />
+    )))
+  }
+
+
+
+  const createTAItem = (firstName, lastName, email, onClickHandler, selectedTAKey) => {
+    const ta = { firstName, lastName, email };
+    const key = `${firstName}-${lastName}-${email}`;
+    const isSelected = selectedTAKey === key;
+  
+    return (
+      <TAItem
+        key={key}
+        ta={ta}
+        onClick={onClickHandler}
+        isSelected={isSelected}
+      />
+    );
+  };
+
 
   return (
     <div className="do-exams-container">
@@ -91,22 +149,9 @@ const DOExamsPage = () => {
           </div>
 
           <div className="exams-table">
-            <div className="table-row header">
-              <div>Date</div>
-              <div>Time</div>
-              <div>Course</div>
-              <div>Type</div>
-              <div>TA Assigned</div>
-            </div>
-            {exams.map((exam, index) => (
-              <div className="table-row" key={index}>
-                <div>{exam.date}</div>
-                <div>{exam.time}</div>
-                <div>{exam.course}</div>
-                <div>{exam.type}</div>
-                <div>{exam.taAssigned}</div>
-              </div>
-            ))}
+
+            {createLogsDatabaseItems()}
+
           </div>
         </div>
 
@@ -116,16 +161,14 @@ const DOExamsPage = () => {
           <div className="assigned-tas">
             <h3>Assigned TAs</h3>
             <div className="assigned-list">
-              {assignedTAs.map((ta, idx) => (
-                <div className="ta-item" key={idx}>
-                  <span>{ta.name}</span>
-                  <span>{ta.department}</span>
-                  <button className="dismiss-button" onClick={() => handleDismissTA(idx)}>
-                    dismiss
-                  </button>
-                </div>
-              ))}
+              {createTAItem("Ahmet", "Yılmaz", "ahmet.yilmaz@example.com", handleTAClick, selectedTA)}
+              {createTAItem("Merve", "Kara", "merve.kara@example.com", handleTAClick, selectedTA)}
+              {createTAItem("John", "Doe", "john.doe@example.com", handleTAClick, selectedTA)}
+
             </div>
+            <button className="dismissTA-button" >
+                Dismiss
+            </button>
           </div>
 
           {/* Choose TAs */}
@@ -140,12 +183,9 @@ const DOExamsPage = () => {
               </select>
             </div>
             <div className="choose-list">
-              {availableTAs.map((ta, idx) => (
-                <div className="ta-item" key={idx}>
-                  <span>{ta.name}</span>
-                  <span>{ta.department}</span>
-                </div>
-              ))}
+              {createTAItem("Cemil", "Yılmaz", "ahmet.yilmaz@example.com", handleTAClick, selectedTA)}
+              {createTAItem("Yusuf", "Kara", "merve.kara@example.com", handleTAClick, selectedTA)}
+              {createTAItem("Suat", "Doe", "john.doe@example.com", handleTAClick, selectedTA)}
             </div>
             <div className="choose-actions">
               <button className="assign-button" onClick={handleAutomaticAssign}>

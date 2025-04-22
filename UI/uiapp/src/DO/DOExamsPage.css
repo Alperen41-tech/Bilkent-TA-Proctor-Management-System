@@ -63,11 +63,7 @@
     padding: 10px;
   }
   
-  .table-row.header {
-    font-weight: bold;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
-  }
+
   
   .table-row:not(.header) {
     border-bottom: 1px solid #eee;
@@ -113,16 +109,6 @@
     border-radius: 6px;
   }
   
-  /* Dismiss Button */
-  .dismiss-button {
-    margin-left: auto;
-    background-color: #f87171; /* red color */
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
   
   /* Choose TAs Panel */
   .choose-header {
