@@ -13,7 +13,7 @@ const DOExamsPage = () => {
     const [selectedExamKey, setSelectedExamKey] = useState(null);
   
 
-  const adminDatabaseItems = [
+  const ExamItems = [
     {
       type: 'exam',
       data: {
@@ -59,14 +59,6 @@ const DOExamsPage = () => {
 
 
 
-
-  // Example available TAs
-  const [availableTAs, setAvailableTAs] = useState([
-    { name: "Kemal D", department: "CS" },
-    { name: "Elif R", department: "CS" },
-    { name: "Merve K", department: "IE" },
-  ]);
-
   // For the search bar
   const [searchQuery, setSearchQuery] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("");
@@ -91,7 +83,7 @@ const DOExamsPage = () => {
 
 
   const createLogsDatabaseItems = () => {
-    return adminDatabaseItems.map((item) => {
+    return ExamItems.map((item) => {
       const key = `${item.data.course}-${item.data.date}`;
       const isSelected = selectedExamKey === key;
   

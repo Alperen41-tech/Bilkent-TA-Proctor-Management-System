@@ -1,29 +1,14 @@
 import React, { useState } from "react";
 import NavbarDO from "./NavbarDO";
 import "./DOCreateExamPage.css";
+import AdminDatabaseItem from "../Admin/AdminDatabaseItem";
+import TAItem from "../TAItem";
+
 
 const DOCreateExamPage = () => {
-  // Dummy exam data
-  const [exams, setExams] = useState([
-    { title: "Midterm Proctor", date: "29/01/2025", time: "15:00 - 18:00", room: "B - 103" },
-    { title: "Midterm Proctor", date: "29/01/2025", time: "15:00 - 18:00", room: "B - 103" },
-    { title: "Midterm Proctor", date: "29/01/2025", time: "15:00 - 18:00", room: "B - 103" },
-  ]);
 
-  // Assigned TAs
-  const [assignedTAs, setAssignedTAs] = useState([
-    { name: "Ali 25", dept: "CS" },
-    { name: "Ali 17", dept: "IE" },
-  ]);
 
-  // Unassigned TAs (for bottom-right box)
-  const [unassignedTAs, setUnassignedTAs] = useState([
-    { name: "Ali 1" },
-    { name: "Ali 2" },
-    { name: "Ali 3" },
-    { name: "Ali 4" },
-    { name: "Ali 5" },
-  ]);
+
 
   // Form fields for creating a new task
   const [taskType, setTaskType] = useState("");
@@ -34,12 +19,55 @@ const DOCreateExamPage = () => {
   const [isAutoAssigning, setIsAutoAssigning] = useState(false);
   const [isUnpaidProctoring, setIsUnpaidProctoring] = useState(false);
 
-  // Handle "dismiss" from assigned TAs
-  const handleDismissTA = (index) => {
-    const newAssigned = [...assignedTAs];
-    newAssigned.splice(index, 1);
-    setAssignedTAs(newAssigned);
-  };
+      
+  
+  
+  const [selectedTA, setSelectedTA] = useState(null);
+  const [selectedExamKey, setSelectedExamKey] = useState(null);
+  const ExamItems = [
+    {
+      type: 'exam',
+      data: {
+        id: 1,
+        course: "CS 319",
+        date: "2025-03-15",
+        time: "10:00 AM",
+        location: "EE-214"
+      }
+    },
+    {
+      type: 'exam',
+      data: {
+        id: 2,
+        course: "CS 315",
+        date: "2025-04-17",
+        time: "10:30 AM",
+        location: "EE-212"
+      }
+    },
+    {
+      type: 'exam',
+      data: {
+        id: 3,
+        course: "CS 376",
+        date: "2025-05-25",
+        time: "11:00 AM",
+        location: "BZ-04"
+      }
+    },
+    {
+      type: 'exam',
+      data: {
+        id: 4,
+        course: "CS 202",
+        date: "2025-06-05",
+        time: "8:00 AM",
+        location: "EE-214"
+      }
+    },
+    
+  ];
+
 
   // Handle creation of a new task
   const handleCreateTask = () => {
@@ -59,6 +87,48 @@ const DOCreateExamPage = () => {
     alert("Manually assigning TAs...");
   };
 
+
+
+  const createLogsDatabaseItems = () => {
+    return ExamItems.map((item) => {
+      const key = `${item.data.course}-${item.data.date}`;
+      const isSelected = selectedExamKey === key;
+  
+      return (
+        <AdminDatabaseItem
+          key={key}
+          type={item.type}
+          data={item.data}
+          onDelete={(id) => console.log(`Deleted ${item.type} with ID: ${id}`)}
+          onSelect={(data) => setSelectedExamKey(key)}
+          isSelected={isSelected}
+          inLog={true}
+        />
+      );
+    });
+  };
+
+  const handleTAClick = (ta) => {
+    const key = `${ta.firstName}-${ta.lastName}-${ta.email}`;
+    setSelectedTA(key);
+  };
+
+  const createTAItem = (firstName, lastName, email, onClickHandler, selectedTAKey) => {
+    const ta = { firstName, lastName, email };
+    const key = `${firstName}-${lastName}-${email}`;
+    const isSelected = selectedTAKey === key;
+  
+    return (
+      <TAItem
+        key={key}
+        ta={ta}
+        onClick={onClickHandler}
+        isSelected={isSelected}
+      />
+    );
+  };
+
+
   return (
     <div className="do-create-exam-container">
       <NavbarDO />
@@ -70,14 +140,8 @@ const DOCreateExamPage = () => {
           <div className="your-exams box">
             <h3>Your Exams</h3>
             <div className="exam-list">
-              {exams.map((exam, idx) => (
-                <div className="exam-item" key={idx}>
-                  <span>{exam.title}</span>
-                  <span>{exam.date}</span>
-                  <span>{exam.time}</span>
-                  <span>{exam.room}</span>
-                </div>
-              ))}
+            {createLogsDatabaseItems()}
+
             </div>
           </div>
 
@@ -85,16 +149,14 @@ const DOCreateExamPage = () => {
           <div className="assigned-tas box">
             <h3>TAs Assigned for This Task</h3>
             <div className="ta-assigned-list">
-              {assignedTAs.map((ta, idx) => (
-                <div className="ta-row" key={idx}>
-                  <span>{ta.name}</span>
-                  <span>{ta.dept}</span>
-                  <button className="dismiss-btn" onClick={() => handleDismissTA(idx)}>
-                    dismiss
-                  </button>
-                </div>
-              ))}
+              {createTAItem("Ahmet", "Yılmaz", "ahmet.yilmaz@example.com", handleTAClick, selectedTA)}
+              {createTAItem("Merve", "Kara", "merve.kara@example.com", handleTAClick, selectedTA)}
+              {createTAItem("John", "Doe", "john.doe@example.com", handleTAClick, selectedTA)}
             </div>
+
+            <button className="dismissTA-button" >
+                Dismiss
+            </button>
           </div>
         </div>
 
@@ -149,11 +211,9 @@ const DOCreateExamPage = () => {
           <div className="choose-tas box">
             <h3>Choose TAs</h3>
             <div className="ta-list">
-              {unassignedTAs.map((ta, idx) => (
-                <div className="ta-item" key={idx}>
-                  {ta.name}
-                </div>
-              ))}
+              {createTAItem("Cazi", "Yılmaz", "ahmet.yilmaz@example.com", handleTAClick, selectedTA)}
+              {createTAItem("Cemil", "Kara", "merve.kara@example.com", handleTAClick, selectedTA)}
+              {createTAItem("Jakir", "Doe", "john.doe@example.com", handleTAClick, selectedTA)}
             </div>
             <div className="assign-buttons">
               <button className="assign-btn" onClick={handleAutomaticAssign}>
