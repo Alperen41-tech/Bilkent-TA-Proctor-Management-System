@@ -35,7 +35,7 @@ create table department(
 
 create table semester(
 	semester_id int primary key auto_increment,
-	year int not null,
+	year varchar(10) not null,
     term int not null
 );
 
@@ -166,7 +166,7 @@ create table class_proctoring(
 	start_date datetime,
     end_date datetime,
     ta_count int,
-    isComplete bool,
+    is_complete bool,
     foreign key (course_id) references course(course_id),
     foreign key (instructor_id) references instructor(user_id)
 );
