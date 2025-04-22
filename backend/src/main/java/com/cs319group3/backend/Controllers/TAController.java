@@ -2,11 +2,15 @@ package com.cs319group3.backend.Controllers;
 
 
 
+import com.cs319group3.backend.DTOs.DateIntervalDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
+import com.cs319group3.backend.DTOs.TAScheduleDTO;
 import com.cs319group3.backend.Services.TAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("ta")
@@ -15,12 +19,18 @@ import org.springframework.web.bind.annotation.*;
 public class TAController {
 
     @Autowired
-    private TAService TAProfileServiceImplService;
+    private TAService taService;
 
     @GetMapping("profile")
     public TAProfileDTO getTAProfile(@RequestParam("id") int id){
         System.out.println("request received");
-        return TAProfileServiceImplService.getTAProfileById(id);
+        return taService.getTAProfileById(id);
+    }
+
+    @GetMapping("schedule")
+    public List<TAScheduleDTO> getSchedule(@RequestBody DateIntervalDTO dateIntervalDTO, @RequestParam("id") int id){
+        System.out.println("request received");
+        return taService.getTAScheduleById(dateIntervalDTO, id);
     }
 
 }
