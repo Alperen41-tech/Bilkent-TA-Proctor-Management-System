@@ -25,10 +25,12 @@ public class OfferedCourseScheduleRelation {
 
     @ManyToOne
     @MapsId("offeredCourseId")
+    @JoinColumn(name = "offered_course_id")
     private OfferedCourse course;
 
     @ManyToOne
     @MapsId("timeIntervalId")
+    @JoinColumn(name = "time_interval_id")
     private TimeInterval timeInterval;
 
 }

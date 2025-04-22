@@ -27,10 +27,12 @@ public class CourseStudentRelation {
 
     @ManyToOne
     @MapsId("offeredCourseId")
+    @JoinColumn(name = "offered_course_id")
     private OfferedCourse course;
 
     @ManyToOne
     @MapsId("studentId")
+    @JoinColumn(name = "student_id")
     private Student student;
 
 }

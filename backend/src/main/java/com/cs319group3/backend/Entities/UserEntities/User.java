@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 
 @Entity
@@ -38,6 +39,6 @@ public class User implements Serializable {
     
     private boolean isActive;
 
-    @OneToOne(mappedBy = "user")
-    private Login login;
+    @OneToMany(mappedBy = "user")
+    private List<Login> logins;
 }
