@@ -40,10 +40,7 @@ public class ClassProctoring {
     @JoinColumn(name = "course_id")
     private Course course;
 
-
-    @ManyToOne
-    @JoinColumn(name = "task_type_id")
-    private TaskType taskType;
+    private String eventName;
 
     @ManyToOne
     @JoinColumn(name = "instructor_id")

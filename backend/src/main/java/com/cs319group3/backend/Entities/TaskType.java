@@ -21,7 +21,10 @@ public class TaskType {
 
     private String taskTypeName;
 
+    private int timeLimit;
+
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
+
 }

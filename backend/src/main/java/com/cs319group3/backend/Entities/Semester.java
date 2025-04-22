@@ -19,7 +19,7 @@ public class Semester {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int semesterId;
 
-    private int year;
+    private String year;
 
     private int term;
 

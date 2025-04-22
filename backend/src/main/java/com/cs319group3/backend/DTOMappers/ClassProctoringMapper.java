@@ -16,7 +16,7 @@ public class ClassProctoringMapper {
         ClassProctoringDTO classProctoringDTO = new ClassProctoringDTO();
 
         classProctoringDTO.setId(classProctoring.getClassProctoringId());
-        classProctoringDTO.setProctoringName(classProctoring.getTaskType().getTaskTypeName());
+        classProctoringDTO.setProctoringName(classProctoring.getEventName());
         classProctoringDTO.setCourseName(classProctoring.getCourse().getCourseName());
         classProctoringDTO.setStartDate(classProctoring.getStartDate());
         classProctoringDTO.setEndDate(classProctoring.getEndDate());
