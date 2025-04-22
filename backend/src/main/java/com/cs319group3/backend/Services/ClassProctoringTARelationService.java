@@ -12,9 +12,6 @@ public interface ClassProctoringTARelationService {
 
 
 
-
-
-
     public List<ClassProctoringTARelationDTO> getTAsClassProctoringDTOs(int id);
 
     public boolean updateClassProctoringDTO(ClassProctoringTARelationDTO dto, int userId);
