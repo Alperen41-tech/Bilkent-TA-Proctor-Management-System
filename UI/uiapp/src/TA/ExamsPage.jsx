@@ -3,7 +3,7 @@ import "./ExamsPage.css";
 import Navbar from "./Navbar";
 import TaskItem from "../TaskItem";
 import TAItem from "../TAItem";
-import axios from "axios";
+import axios, { all } from "axios";
 
 const createTaskItem = (id, course, name, date, timeInterval, classroom, onClickHandler, selectedTaskId) => {
   const task = { id, course, name, date, timeInterval, classroom };
@@ -33,15 +33,16 @@ const ExamsPage = () => {
   const [lastTask2, setLastTask2] = useState(null);
   const [selectedTA, setSelectedTA] = useState(null); 
   const [tasProctorings, setTasProctorings] = useState([]);//First declaration of tasProctorings as an empty array
-  const [allDepartmantExams, setAllDepartmantExams] = useState(null);//Declaration of allDepartmantExams as an empty array
+  const [allDepartmantExams, setAllDepartmantExams] = useState([]);//Declaration of allDepartmantExams as an empty array
   const handleTaskClick1 = (task) => {
-    setSelectedTask(task);
+    //setSelectedTask(task);
     setLastTask1(task);
   };
 
   const handleTaskClick2 = (task) => {
-    setSelectedTask(task);
+    //setSelectedTask(task);
     setLastTask2(task);
+    console.log("Fetched all tasks:", allDepartmantExams);
   };
 
   const handleTAClick = (ta) => {
@@ -52,19 +53,17 @@ const ExamsPage = () => {
   useEffect(() => {
     const fetchTasProctorings = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=3"); // Adjust the URL as needed
+        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=2");
         setTasProctorings(response.data);
-        console.log(tasProctorings); // Log the fetched tasks to the console
-        //console.log("TasProctorings:", response.data); // Log the fetched tasks to the console
-        // You can set the tasks to state if needed
+        console.log(tasProctorings);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
     };
-    /*const fetchAllDepartmantExams = async () => {
+    const fetchAllDepartmantExams = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/"); // Adjust the URL as needed
-        allDepartmantExams = response.data;
+        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getDepartmentTAsClassProctorings?id=2"); // Adjust the URL as needed
+        setAllDepartmantExams(response.data);
         console.log(allDepartmantExams); // Log the fetched tasks to the console
         // You can set the tasks to state if needed
       } catch (error) {
@@ -72,8 +71,8 @@ const ExamsPage = () => {
       }
     };
 
-    fetchAllDepartmantExams();*/
-    fetchTasProctorings();
+    fetchAllDepartmantExams();
+    fetchTasProctorings();   
   }, []); // Empty dependency array to run once on component mount
 
 
@@ -86,7 +85,7 @@ const ExamsPage = () => {
           <div className="card">
             <h3>Choose the task you wish to get</h3>
             <div className="task-row">
-              
+              {allDepartmantExams.map((proctoring, index) => (createTaskItem(proctoring.classProctoringDTO.id, proctoring.classProctoringDTO.courseName, proctoring.classProctoringDTO.proctoringName, proctoring.classProctoringDTO.startDate, proctoring.classProctoringDTO.endDate, proctoring.classProctoringDTO.classrooms, handleTaskClick2, lastTask2?.id)))}
             </div>
           </div>
 

@@ -2,9 +2,26 @@
 import React from "react";
 import "./InstructorProfilePage.css"; // Reusing the same CSS
 import Navbar from "./NavbarINS";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 const InstructorProfilePage = () => {
-  const [showChangePasswordModal, setShowChangePasswordModal] = React.useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [insProfileInfo, setInsProfileInfo] = useState({courses: []});
+
+  useEffect(() => {
+    const fetchProfileInformation = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/instructor/profile?id=6");
+        setInsProfileInfo(response.data);
+        console.log(insProfileInfo);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+    fetchProfileInformation();
+  }, []);
+
 
   return (
     <div className="profile-container">
@@ -14,13 +31,20 @@ const InstructorProfilePage = () => {
         {/* Info Section */}
         <div className="info-card">
           <h3>Personal Information</h3>
-          <p><strong>Name</strong><br />Mehmet Fatih</p>
-          <p><strong>Surname</strong><br />Sultan</p>
-          <p><strong>Email</strong><br />ahmet.yilmaz@bilkent.edu.tr</p>
-          <p><strong>ID</strong><br />34346543</p>
-          <p><strong>Role</strong><br />Instructor</p>
-          <p><strong>Department</strong><br />Computer Science</p>
-          <p><strong>Course(s)</strong><br />CS 202, CS 898</p>
+          <p><strong>Name</strong><br />{insProfileInfo.name}</p>
+          <p><strong>Surname</strong><br />{insProfileInfo.surname}</p>
+          <p><strong>Email</strong><br />{insProfileInfo.email}</p>
+          <p><strong>ID</strong><br />{insProfileInfo.bilkentId}</p>
+          <p><strong>Role</strong><br />{insProfileInfo.role}</p>
+          <p><strong>Department</strong><br />{insProfileInfo.departmentName}</p>
+          <p><strong>Course(s)</strong><br />{insProfileInfo.courses.map((courseName, index) => {
+            console.log(courseName);
+            return (
+              <span key={index}>
+                {courseName}{index < insProfileInfo.courses.length - 1 ? ", " : ""}
+              </span>
+            );
+          })}</p>
         </div>
 
         {/* Manage Account Section */}

@@ -37,7 +37,7 @@ const DashboardPage = () => {
 
   const fetchTasProctorings = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=3"); // Adjust the URL as needed
+        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=2"); // Adjust the URL as needed
         setTasProctorings(response.data);
         console.log(tasProctorings);
       } catch (error) {
@@ -53,7 +53,7 @@ const DashboardPage = () => {
     try {
       const proctoringToBeLocked = tasProctorings.find((duty) => duty.classProctoringDTO.id === id);
       console.log(proctoringToBeLocked);
-      const responseLocked = await axios.put("http://localhost:8080/classProctoringTARelation/updateTAsClassProctorings?id=3", {
+      const responseLocked = await axios.put("http://localhost:8080/classProctoringTARelation/updateTAsClassProctorings?id=2", {
         classProctoringDTO: {
           id: proctoringToBeLocked.classProctoringDTO.id,
         },
