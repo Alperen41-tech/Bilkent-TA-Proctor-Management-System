@@ -41,6 +41,9 @@ const DS_DashboardPage = () => {
   };
   const handlePPRClick = (id) => {
     setSelectedPPRId(id);
+
+    const request = paidProctoringRequests.find((req) => req.id === id);
+    setSelectedRequest(request);
   }
   const handleASC = (id) => { // Handle applied students click
     if (!selectedAppliedStudentsId.includes(id)) {
@@ -59,30 +62,35 @@ const DS_DashboardPage = () => {
       setSelectedATAIds((prev) => prev.filter((studentId) => studentId !== id));
     }
     console.log("Selected TA:", id);
+
+
   }
 
+
+  const paidProctoringRequests = [
+    {
+      id: 1,
+      date: { month: "Jan", day: 1, weekday: "Mon" },
+      time: { start: "10:00 AM", end: "12:00 PM" },
+      role: "Proctor",
+      duration: 2,
+      name: "Ali",
+      numOfTaNeeded: 2,
+    },
+    {
+      id: 2,
+      date: { month: "Feb", day: 2, weekday: "Tues" },
+      time: { start: "9:00 AM", end: "11:00 PM" },
+      role: "Proctor",
+      duration: 2,
+      name: "Ali",
+      numOfTaNeeded: 7,
+    },
+    // Add more requests as needed
+  ];
+
   const createPaidProctoringRequests = () => {
-    const paidProctoringRequests = [
-      {
-        id: 1,
-        date: { month: "Jan", day: 1, weekday: "Mon" },
-        time: { start: "10:00 AM", end: "12:00 PM" },
-        role: "Proctor",
-        duration: 2,
-        name: "Ali",
-        numOfTaNeeded: 2,
-      },
-      {
-        id: 2,
-        date: { month: "Jan", day: 1, weekday: "Mon" },
-        time: { start: "10:00 AM", end: "12:00 PM" },
-        role: "Proctor",
-        duration: 2,
-        name: "Ali",
-        numOfTaNeeded: 2,
-      },
-      // Add more requests as needed
-    ];
+
     return paidProctoringRequests.map((request) => (
       <DS_PaidProctoringRequestItem id={request.id} {...request} onInform={() => console.log("TAs informed for this request")} isSelected={selectedPPRId === request.id} onSelect={handlePPRClick} />
     ));
@@ -155,17 +163,21 @@ const DS_DashboardPage = () => {
           <div className="bottom-left">
             {activeTab === "pending"  ? (
               <div className="details-panel">
-                <h3>Details</h3>
-                {selectedRequest ? (
-                  <div>
-                    <p><strong>To:</strong> {selectedRequest.receiver}</p>
-                    <p><strong>Reason:</strong> {selectedRequest.reason}</p>
-                    <p><strong>Time:</strong> {selectedRequest.timestamp}</p>
-                  </div>
-                ) : (
-                  <p className="placeholder">[ Click a request to see its details ]</p>
-                )}
+                  <h3>Details</h3>
+                  {selectedPPRId ? (
+                    <div>
+                      <p><strong>Date:</strong> {selectedRequest.date.weekday}, {selectedRequest.date.month} {selectedRequest.date.day}</p>
+                      <p><strong>Time:</strong> {selectedRequest.time.start} - {selectedRequest.time.end}</p>
+                      <p><strong>Role:</strong> {selectedRequest.role}</p>
+                      <p><strong>Duration:</strong> {selectedRequest.duration} hours</p>
+                      <p><strong>Requested By:</strong> {selectedRequest.name}</p>
+                      <p><strong>TAs Needed:</strong> {selectedRequest.numOfTaNeeded}</p>
+                    </div>
+                  ) : (
+                    <p className="placeholder">[ Click a request to see its details ]</p>
+                  )}
               </div>
+
             ) : activeTab === "received" ? (
                 <div className="ta-list-container">
                     <h3 className="ta-list-title">Applied Studens</h3>
