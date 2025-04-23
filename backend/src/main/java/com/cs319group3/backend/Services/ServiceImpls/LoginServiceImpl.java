@@ -4,44 +4,35 @@ import com.cs319group3.backend.Entities.Login;
 import com.cs319group3.backend.Repositories.LoginRepo;
 import com.cs319group3.backend.Services.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
-public class LoginServiceImpl implements LoginService {
+public class LoginServiceImpl implements LoginService, UserDetailsService {
 
     @Autowired
     protected LoginRepo loginDAO;
 
+    @Override
+    public UserDetails loadUserByUsername(String entrance) throws UsernameNotFoundException {
 
-    public boolean authenticate(String email, String password) {
+        String[] parts = entrance.split("::");
+        String email = parts[0];
+        String userTypeFromFrontend = parts[1];
 
-        Optional<Login> loginOptional = loginDAO.findByUserEmail(email);
+        Login currLogin = loginDAO.findByUser_EmailAndUserType_UserTypeName(email, userTypeFromFrontend).orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + entrance));
 
-        if (!loginOptional.isPresent()) {
-            // If no login found, return false
-            System.out.println("present değil");
-            return false;
-        }
-
-        Login login = loginOptional.get();  // Get the Login entity
-
-        // Check if the stored password matches the provided password
-        if (!login.getPassword().equals(password)) {
-            // If passwords do not match, return false
-            System.out.println("şifre match değil");
-            return false;
-        }
-
-        // Check if the user is active
-        if (!login.getUser().isActive()) {
-            // If the user is not active, return false
-            System.out.println("aktif değil");
-            return false;
-        }
-
-        // If password matches and user is active, authentication is successful
-        return true;
+        return new org.springframework.security.core.userdetails.User(
+                entrance,
+                currLogin.getPassword(),
+                Collections.singleton(new SimpleGrantedAuthority(currLogin.getUserType().getUserTypeName()))
+        );
     }
 }

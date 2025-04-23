@@ -6,6 +6,4 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public interface LoginService {
 
-
-    public boolean authenticate(String email, String password);
 }
