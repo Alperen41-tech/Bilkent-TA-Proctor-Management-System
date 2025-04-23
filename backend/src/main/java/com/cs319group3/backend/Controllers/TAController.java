@@ -28,7 +28,7 @@ public class TAController {
         return taService.getTAProfileById(id);
     }
 
-    @GetMapping("schedule")
+    @PostMapping("schedule")
     public List<TAScheduleDTO> getSchedule(@RequestBody DateIntervalDTO dateIntervalDTO, @RequestParam("id") int id){
         System.out.println("request received");
         return taService.getTAScheduleById(dateIntervalDTO, id);
