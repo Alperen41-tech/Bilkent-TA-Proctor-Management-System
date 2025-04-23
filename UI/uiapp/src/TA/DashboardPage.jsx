@@ -25,26 +25,36 @@ const DashboardPage = () => {
     setSelectedProctoring(null);
   };
 
-  const createPendingRequest = (date, time, role, duration, name, email, status, onCancelHandler) => {
-    return <PendingRequestItem key={name} date={date} time={time} role={role} duration={duration} name={name} email={email} status={status} onCancel={onCancelHandler}/>;
-  }
-  const createReceivedRequest = (date, time, role, duration, name, email, status, onAcceptHandler, onRejectHandler) => {
-    return <ReceivedRequestItem date={date} time={time} role={role} duration={duration} name={name} email={email} status={status} onAccept={onAcceptHandler} onReject={onRejectHandler}/>;
-  }
+  const createPendingRequest = (request, index) => {
+    return (
+      <div key={index} onClick={() => setSelectedRequest(request)}>
+        <PendingRequestItem {...request} />
+      </div>
+    );
+  };
+
+  const createReceivedRequest = (request, index) => {
+    return (
+      <div key={index} onClick={() => setSelectedRequest(request)}>
+        <ReceivedRequestItem {...request} />
+      </div>
+    );
+  };
+
   const createWorkloadEntry = (courseCode, taskTitle, date, duration, comment, status) => {
-    return <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status}/>;
+    return <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status} />;
   }
 
   const fetchTasProctorings = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=2"); // Adjust the URL as needed
-        setTasProctorings(response.data);
-        console.log(tasProctorings);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-  
+    try {
+      const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=2"); // Adjust the URL as needed
+      setTasProctorings(response.data);
+      console.log(tasProctorings);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
   useEffect(() => {
     fetchTasProctorings(tasProctorings);
   }, []);
@@ -62,7 +72,7 @@ const DashboardPage = () => {
 
       if (!responseLocked.data) {
         alert("Could not locked the swap. Try again.");
-      } 
+      }
       fetchTasProctorings(tasProctorings);
     } catch (error) {
       console.error("There was an error with the login request:", error);
@@ -141,36 +151,15 @@ const DashboardPage = () => {
             <div className="ta-dashboard-tab-content">
               {activeTab === "pending" && (
                 <div>
-                {pendingRequests.map((req, index) =>
-                  createPendingRequest(
-                    req.date,
-                    req.time,
-                    req.role,
-                    req.duration,
-                    req.name,
-                    req.email,
-                    req.status,
-                    req.onCancelHandler
-                  )
-                )}
-              </div>
+                  {pendingRequests.map((req, index) => createPendingRequest(req, index))}
+
+                </div>
               )}
               {activeTab === "received" && (
                 <div>
-                {pendingRequests.map((req, index) =>
-                  createReceivedRequest(
-                    req.date,
-                    req.time,
-                    req.role,
-                    req.duration,
-                    req.name,
-                    req.email,
-                    req.status,
-                    req.onAcceptHandler,
-                    req.onRejectHandler
-                  )
-                )}
-              </div>
+                  {pendingRequests.map((req, index) => createReceivedRequest(req, index))}
+
+                </div>
               )}
               {activeTab === "tasks" && (
                 <div>{workloadEntries.map((ent, idx) =>
@@ -186,19 +175,19 @@ const DashboardPage = () => {
               )}
               {activeTab === "proctorings" && (
                 <div>
-                {tasProctorings.map((duty) => (
-                  <ProctoringDutyItem
-                    key={duty.classProctoringDTO.id}
-                    duty={duty}
-                    isSelected={selectedProctoringId === duty.classProctoringDTO.id}
-                    onSelect={handleSelect}
-                    onLockedStatusChange={() => {
-                       handleLockedStatusChange(duty.classProctoringDTO.id); // Function to handle the locked status change
-                      console.log(`Locked status changed for duty ID: ${duty.classProctoringDTO.id}`); //Will push new lock status of the duty to the database
-                    }}
-                  />
-                ))}
-              </div>
+                  {tasProctorings.map((duty) => (
+                    <ProctoringDutyItem
+                      key={duty.classProctoringDTO.id}
+                      duty={duty}
+                      isSelected={selectedProctoringId === duty.classProctoringDTO.id}
+                      onSelect={handleSelect}
+                      onLockedStatusChange={() => {
+                        handleLockedStatusChange(duty.classProctoringDTO.id); // Function to handle the locked status change
+                        console.log(`Locked status changed for duty ID: ${duty.classProctoringDTO.id}`); //Will push new lock status of the duty to the database
+                      }}
+                    />
+                  ))}
+                </div>
               )}
             </div>
           </div>
@@ -209,13 +198,17 @@ const DashboardPage = () => {
                 <h3>Details</h3>
                 {selectedRequest ? (
                   <div>
-                    <p><strong>To:</strong> {selectedRequest.receiver}</p>
-                    <p><strong>Reason:</strong> {selectedRequest.reason}</p>
-                    <p><strong>Time:</strong> {selectedRequest.timestamp}</p>
+                    <p><strong>Name:</strong> {selectedRequest.name}</p>
+                    <p><strong>Email:</strong> {selectedRequest.email}</p>
+                    <p><strong>Date:</strong> {selectedRequest.date.weekday}, {selectedRequest.date.month} {selectedRequest.date.day}</p>
+                    <p><strong>Time:</strong> {selectedRequest.time.start} - {selectedRequest.time.end}</p>
+                    <p><strong>Role:</strong> {selectedRequest.role}</p>
+                    <p><strong>Status:</strong> {selectedRequest.status}</p>
                   </div>
                 ) : (
                   <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
                 )}
+
               </div>
             ) : activeTab === "tasks" ? (
               <div className="ta-dashboard-task-entry-form">
