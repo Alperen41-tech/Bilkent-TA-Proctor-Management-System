@@ -1,7 +1,9 @@
 package com.cs319group3.backend.Controllers;
 
 
+import com.cs319group3.backend.DTOs.ClassProctoringAndTAsDTO;
 import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
+import com.cs319group3.backend.Services.ClassProctoringAndTAs;
 import com.cs319group3.backend.Services.ClassProctoringTARelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -17,6 +19,8 @@ public class ClassProctoringTARelationController {
 
     @Autowired
     public ClassProctoringTARelationService classProctoringTARelationService;
+    @Autowired
+    private ClassProctoringAndTAs classProctoringAndTAs;
 
 
     @GetMapping("getTAsClassProctorings")
@@ -32,8 +36,8 @@ public class ClassProctoringTARelationController {
     }
 
     @GetMapping("getDepartmentTAsClassProctorings")
-    public List<ClassProctoringTARelationDTO> getDepartmentTAsClassProctorings(@RequestParam("id") int id){
+    public List<ClassProctoringAndTAsDTO> getDepartmentTAsClassProctorings(@RequestParam("id") int id){
         System.out.println("request received");
-        return classProctoringTARelationService.getDepartmentTAsClassProctorings(id);
+        return classProctoringAndTAs.getDepartmentTAsClassProctorings(id);
     }
 }

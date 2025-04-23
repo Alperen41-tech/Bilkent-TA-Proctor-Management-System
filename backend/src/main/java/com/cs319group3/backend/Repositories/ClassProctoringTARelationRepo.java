@@ -17,4 +17,5 @@ public interface ClassProctoringTARelationRepo extends JpaRepository<ClassProcto
     Optional<ClassProctoringTARelation> findById_ClassProctoringIdAndId_TAId(Integer classProctoringId, Integer taId);
     List<ClassProctoringTARelation> findByClassProctoring_ClassProctoringIdIn(List<Integer> ids);
     List<ClassProctoringTARelation> findByClassProctoring_Course_Department_DepartmentId(Integer departmentId);
+    List<ClassProctoringTARelation> findByClassProctoring_ClassProctoringId(Integer id);
 }

@@ -64,36 +64,4 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
         classProctoringTARelationRepo.save(relation);
         return true;
     }
-
-    @Autowired
-    private TARepo taRepo;
-
-    @Autowired
-    private ClassProctoringRepo classProctoringRepo;
-
-    @Override
-    public List<ClassProctoringTARelationDTO> getDepartmentTAsClassProctorings(int userId){
-        // Step 1: Find TA by user ID
-        Optional<TA> ta = taRepo.findByUserId(userId);
-        if (!ta.isPresent()) {
-            throw new RuntimeException("No TA found with user ID " + userId);
-        }
-
-        System.out.println("Burada1");
-        int departmentId = ta.get().getDepartment().getDepartmentId();
-
-        // Step 2: Find all relations in this department (not just for this TA)
-        System.out.println("Burada2");
-        List<ClassProctoringTARelation> relations =
-                classProctoringTARelationRepo.findByClassProctoring_Course_Department_DepartmentId(departmentId);
-
-        System.out.println("Burada3");
-        // Step 3: Convert to DTOs
-        List<ClassProctoringTARelationDTO> dtos = new ArrayList<>();
-        for (ClassProctoringTARelation relation : relations) {
-            dtos.add(ClassProctoringTARelationMapper.essentialMapper(relation));
-        }
-
-        return dtos;
-    }
 }
