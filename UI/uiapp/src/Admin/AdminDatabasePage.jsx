@@ -131,7 +131,11 @@ const AdminDatabasePage = () => {
           courseName: newTaCourseName,
           phoneNumber: newTaPhoneNum,
           active: true,
+<<<<<<< Updated upstream
           classYear: parseInt(newTaClassYear, 10),
+=======
+          classYear: parseInt(newTaClassYear,10),
+>>>>>>> Stashed changes
         },
         login: {
           password: newTaPassword,
