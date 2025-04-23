@@ -27,7 +27,12 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
         String email = parts[0];
         String userTypeFromFrontend = parts[1];
 
-        Login currLogin = loginDAO.findByUser_EmailAndUserType_UserTypeName(email, userTypeFromFrontend).orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + entrance));
+        Login currLogin = loginDAO.findByUser_EmailAndUserType_UserTypeName(email, userTypeFromFrontend);
+
+
+
+
+        System.out.println("hello world 2");
 
         return new org.springframework.security.core.userdetails.User(
                 entrance,

@@ -13,6 +13,6 @@ public class ClassProctoringController {
 
     public boolean createClassProctoring(CreateClassProctoringDTO dto) {
         System.out.println("Creating class proctoring");
-        
+        return true;
     }
 }

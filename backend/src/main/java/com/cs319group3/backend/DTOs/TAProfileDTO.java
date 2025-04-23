@@ -8,14 +8,14 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TAProfileDTO {
-    String name;
-    String surname;
-    String email;
-    String bilkentId;
-    String role;
-    String departmentName;
-    String courseName;
-    String phoneNumber;
-    boolean active;
-    int classYear;
+    private String name;
+    private String surname;
+    private String email;
+    private String bilkentId;
+    private String role;
+    private String departmentName;
+    private String courseName;
+    private String phoneNumber;
+    private Boolean active;
+    private int classYear;
 }

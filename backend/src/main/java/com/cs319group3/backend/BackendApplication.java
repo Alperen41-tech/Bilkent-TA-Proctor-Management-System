@@ -2,6 +2,7 @@ package com.cs319group3.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
 public class BackendApplication {
@@ -10,6 +11,18 @@ public class BackendApplication {
 
 
 		SpringApplication.run(BackendApplication.class, args);
+
+//		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//
+//		// Your plain password
+//		String plainPassword = "passwordKey";
+//
+//		// Hash the password
+//		String hashedPassword = passwordEncoder.encode(plainPassword);
+//
+//		// Print the hashed password
+//		System.out.println("Hashed password: " + hashedPassword);
+
 
 
 

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("ta")
+@RequestMapping("/ta")
 @ComponentScan(basePackages = {"com.cs319group3.backend.Controllers"})
 @CrossOrigin(origins = "http://localhost:3000")
 public class TAController {
@@ -34,7 +34,7 @@ public class TAController {
         return taService.getTAScheduleById(dateIntervalDTO, id);
     }
 
-    @PostMapping("create")
+    @PostMapping("createTA")
     public boolean createTA(@RequestBody CreateTADTO dto) {
         System.out.println("create request received");
         return taService.createNewTA(dto);

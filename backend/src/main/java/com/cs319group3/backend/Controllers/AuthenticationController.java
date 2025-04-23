@@ -4,6 +4,7 @@ import com.cs319group3.backend.Components.JwtUtil;
 import com.cs319group3.backend.DTOs.LoginDTO;
 import com.cs319group3.backend.Services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -32,21 +33,23 @@ public class AuthenticationController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<Boolean> login(@RequestBody LoginDTO loginRequest) {
+    public ResponseEntity<String> login(@RequestBody LoginDTO loginRequest) {
 
-        System.out.println("hello llellelelelel");
+        String combinedUsername = loginRequest.getEmail() + "::" + loginRequest.getUserTypeName();
+
         try {
             Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+                    new UsernamePasswordAuthenticationToken(combinedUsername, loginRequest.getPassword())
             );
 
-            String token = jwtUtil.generateToken(loginRequest.getEmail());
-            return ResponseEntity.ok(true);
-        }
-        catch (BadCredentialsException e) {
-            return ResponseEntity.ok(false);
+            String token = jwtUtil.generateToken(combinedUsername);  // Note: use combinedUsername here too
+            return ResponseEntity.ok(token);
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
+
+
 
 
 

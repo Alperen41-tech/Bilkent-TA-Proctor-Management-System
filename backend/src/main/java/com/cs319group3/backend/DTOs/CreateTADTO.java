@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 public class CreateTADTO {
     //User
-    TAProfileDTO profile;
+    private TAProfileDTO profile;
     //Login
-    LoginDTO login;
+    private LoginDTO login;
 }

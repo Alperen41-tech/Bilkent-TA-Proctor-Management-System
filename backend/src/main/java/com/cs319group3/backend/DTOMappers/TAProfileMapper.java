@@ -49,7 +49,7 @@ public class TAProfileMapper {
     public TA essentialEntityToTA(TAProfileDTO dto) {
         Course course = courseRepo.findByCourseName(dto.getCourseName())
                 .orElse(null);
-        Department department = departmentRepo.findByDepartmentName(dto.getDepartmentName())
+        Department department = departmentRepo.findByDepartmentCode(dto.getDepartmentName())
                 .orElse(null);
 
         if (department == null || course == null) {
@@ -62,7 +62,7 @@ public class TAProfileMapper {
         ta.setSurname(dto.getSurname());
         ta.setBilkentId(dto.getBilkentId());
         ta.setPhoneNumber(dto.getPhoneNumber());
-        ta.setActive(dto.isActive());
+        ta.setActive(dto.getActive());
         ta.setClassYear(dto.getClassYear());
         ta.setAssignedCourse(course);
         ta.setDepartment(department);

@@ -131,7 +131,7 @@ const AdminDatabasePage = () => {
           courseName: newTaCourseName,
           phoneNumber: newTaPhoneNum,
           active: true,
-          classYear: newTaClassYear,
+          classYear: parseInt(newTaClassYear, 10),
         },
         login: {
           password: newTaPassword,
