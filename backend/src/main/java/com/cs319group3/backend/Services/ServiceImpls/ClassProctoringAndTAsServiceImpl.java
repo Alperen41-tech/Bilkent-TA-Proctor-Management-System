@@ -7,18 +7,16 @@ import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.UserEntities.TA;
-import com.cs319group3.backend.Repositories.ClassProctoringRepo;
 import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
 import com.cs319group3.backend.Repositories.TARepo;
-import com.cs319group3.backend.Services.ClassProctoringAndTAs;
+import com.cs319group3.backend.Services.ClassProctoringAndTAsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
-public class ClassProctoringAndTAsImpl implements ClassProctoringAndTAs {
+public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsService {
     @Autowired
     private TARepo taRepo;
 
@@ -27,13 +25,15 @@ public class ClassProctoringAndTAsImpl implements ClassProctoringAndTAs {
 
     @Override
     public List<ClassProctoringAndTAsDTO> getDepartmentTAsClassProctorings(int userId) {
-        Optional<TA> ta = taRepo.findByUserId(userId);
-        if (!ta.isPresent()) {
+        Optional<TA> taOptional = taRepo.findByUserId(userId);
+        if (taOptional.isEmpty()) {
             throw new RuntimeException("No TA found with user ID " + userId);
         }
 
-        int departmentId = ta.get().getDepartment().getDepartmentId();
+        TA currentTA = taOptional.get();
+        int departmentId = currentTA.getDepartment().getDepartmentId();
 
+        // Fetch all relations in the department
         List<ClassProctoringTARelation> relations =
                 classProctoringTARelationRepo.findByClassProctoring_Course_Department_DepartmentId(departmentId);
 
@@ -43,22 +43,30 @@ public class ClassProctoringAndTAsImpl implements ClassProctoringAndTAs {
         for (ClassProctoringTARelation relation : relations) {
             int proctoringId = relation.getClassProctoring().getClassProctoringId();
 
-            // skip if already processed
+            // Skip already processed proctorings
             if (processedProctoringIds.contains(proctoringId)) {
                 continue;
             }
 
-            // mark as processed
-            processedProctoringIds.add(proctoringId);
-
-            // get all relations (TAs) for this proctoring
+            // Get all TAs assigned to this proctoring
             List<ClassProctoringTARelation> otherRelations =
                     classProctoringTARelationRepo.findByClassProctoring_ClassProctoringId(proctoringId);
 
-            // Map the first relation to ClassProctoringTARelationDTO
+            // Check if the current TA is already assigned to this proctoring
+            boolean alreadyAssigned = otherRelations.stream()
+                    .anyMatch(r -> r.getTA().getUserId() == userId);
+
+            if (alreadyAssigned) {
+                continue; // skip this proctoring
+            }
+
+            // Mark as processed
+            processedProctoringIds.add(proctoringId);
+
+            // Pick any relation to represent the proctoring info (doesn't matter which)
             ClassProctoringTARelationDTO relationDTO = ClassProctoringTARelationMapper.essentialMapper(relation);
 
-            // Build TA list
+            // Convert all other TAs to profile DTOs
             List<TAProfileDTO> taDTOs = new ArrayList<>();
             for (ClassProctoringTARelation other : otherRelations) {
                 TA ta1 = other.getTA();

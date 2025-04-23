@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 public class CreateClassProctoringDTO {
     private int id;
-    private String proctoringName;
     private String courseName;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

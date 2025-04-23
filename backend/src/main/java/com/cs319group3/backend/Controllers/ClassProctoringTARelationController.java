@@ -3,7 +3,7 @@ package com.cs319group3.backend.Controllers;
 
 import com.cs319group3.backend.DTOs.ClassProctoringAndTAsDTO;
 import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
-import com.cs319group3.backend.Services.ClassProctoringAndTAs;
+import com.cs319group3.backend.Services.ClassProctoringAndTAsService;
 import com.cs319group3.backend.Services.ClassProctoringTARelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,7 +20,7 @@ public class ClassProctoringTARelationController {
     @Autowired
     public ClassProctoringTARelationService classProctoringTARelationService;
     @Autowired
-    private ClassProctoringAndTAs classProctoringAndTAs;
+    private ClassProctoringAndTAsService classProctoringAndTAs;
 
 
     @GetMapping("getTAsClassProctorings")
