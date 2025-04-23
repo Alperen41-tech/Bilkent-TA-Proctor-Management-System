@@ -55,21 +55,21 @@ public class ClassProctoringMapper {
     CourseRepo courseRepo;
 
     public ClassProctoring essentialEntityTo(CreateClassProctoringDTO createClassProctoringDTO) {
-        Optional<Instructor> instructorOpt = instructorRepo.findByName(createClassProctoringDTO.getInstructorName());
         Optional<Course> courseOpt = courseRepo.findByCourseName(createClassProctoringDTO.getCourseName());
-
-        if (instructorOpt.isEmpty() || courseOpt.isEmpty()) {
+        /*
+        if (courseOpt.isEmpty()) {
             return null;
         }
-
-        Instructor instructor = instructorOpt.get();
+        */
         Course course = courseOpt.get();
+        Optional<Instructor> instructor = instructorRepo.findByUserId(course.getCoordinator().getUserId());
+
 
         ClassProctoring classProctoring = new ClassProctoring();
         classProctoring.setEventName(createClassProctoringDTO.getEventName());
         classProctoring.setTACount(createClassProctoringDTO.getTaCount());
         classProctoring.setSectionNo(createClassProctoringDTO.getSectionNo());
-        classProctoring.setCreatorInstructor(instructor);
+        classProctoring.setCreatorInstructor(instructor.get());
         classProctoring.setCourse(course);
         classProctoring.setStartDate(createClassProctoringDTO.getStartDate());
         classProctoring.setEndDate(createClassProctoringDTO.getEndDate());

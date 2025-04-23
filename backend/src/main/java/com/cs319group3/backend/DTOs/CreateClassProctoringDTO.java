@@ -18,6 +18,5 @@ public class CreateClassProctoringDTO {
     private List<String> classrooms;
     private int taCount;
     private int sectionNo;
-    private String instructorName;
     private String eventName;
 }
