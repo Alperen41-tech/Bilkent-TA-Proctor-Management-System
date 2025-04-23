@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
+import com.cs319group3.backend.DTOMappers.LoginMapper;
 import com.cs319group3.backend.DTOMappers.TAScheduleMapper;
 import com.cs319group3.backend.DTOs.*;
 import com.cs319group3.backend.DTOMappers.TAProfileMapper;
@@ -104,6 +105,11 @@ public class TAServiceImpl implements TAService {
         return schedule;
     }
 
+    @Autowired
+    LoginMapper loginMapper;
+    @Autowired
+    TAProfileMapper taProfileMapper;
+
     @Override
     public boolean createNewTA(CreateTADTO dto) {
         try {
@@ -116,35 +122,12 @@ public class TAServiceImpl implements TAService {
                 return false; // Duplicate
             }
 
-            // 1. Create TA entity directly (also fills user table)
-            TA ta = new TA();
-            ta.setName(profile.getName());
-            ta.setSurname(profile.getSurname());
-            ta.setEmail(profile.getEmail());
-            ta.setBilkentId(profile.getBilkentId());
-            ta.setPhoneNumber(profile.getPhoneNumber());
-            ta.setActive(profile.isActive());
-            ta.setClassYear(profile.getClassYear());
 
-            Department department = departmentRepo.findByDepartmentName(profile.getDepartmentName())
-                    .orElse(null);
-            Course course = courseRepo.findByCourseName(profile.getCourseName())
-                    .orElse(null);
-
-            if (department == null || course == null) {
-                return false; // invalid input
-            }
-
-            ta.setDepartment(department);
-            ta.setAssignedCourse(course);
-
+            TA ta = taProfileMapper.essentialEntityToTA(profile);
             taRepository.save(ta); // saves both into user and ta tables
 
-            // 2. Create Login entity
-            Login loginEntity = new Login();
-            loginEntity.setUser(ta); // because TA extends User
-            loginEntity.setPassword(login.getPassword());
-            loginEntity.setUserType(userTypeRepo.findByUserTypeName("ta"));
+
+            Login loginEntity = loginMapper.essentialEntityToLogin(login, ta);
             loginRepo.save(loginEntity);
 
             return true;
