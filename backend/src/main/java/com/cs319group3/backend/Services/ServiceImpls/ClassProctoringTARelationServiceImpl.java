@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.cs319group3.backend.DTOMappers.ClassProctoringMapper;
 import com.cs319group3.backend.DTOMappers.ClassProctoringTARelationMapper;
 import com.cs319group3.backend.DTOs.ClassProctoringDTO;
@@ -78,20 +79,16 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
             throw new RuntimeException("No TA found with user ID " + userId);
         }
 
+        System.out.println("Burada1");
         int departmentId = ta.get().getDepartment().getDepartmentId();
 
-        // Step 2: Find all class proctorings for this department
-        List<ClassProctoring> classProctorings = classProctoringRepo.findByCourse_Department_DepartmentId(departmentId);
+        // Step 2: Find all relations in this department (not just for this TA)
+        System.out.println("Burada2");
+        List<ClassProctoringTARelation> relations =
+                classProctoringTARelationRepo.findByClassProctoring_Course_Department_DepartmentId(departmentId);
 
-        // Step 3: Extract IDs of these proctorings
-        List<Integer> classProctoringIds = classProctorings.stream()
-                .map(ClassProctoring::getClassProctoringId) // or getClassProctoringId()
-                .collect(Collectors.toList());
-
-        // Step 4: Find all relations that point to these proctorings
-        List<ClassProctoringTARelation> relations = classProctoringTARelationRepo.findByClassProctoring_ClassProctoringIdIn(classProctoringIds);
-
-        // Step 5: Convert to DTOs
+        System.out.println("Burada3");
+        // Step 3: Convert to DTOs
         List<ClassProctoringTARelationDTO> dtos = new ArrayList<>();
         for (ClassProctoringTARelation relation : relations) {
             dtos.add(ClassProctoringTARelationMapper.essentialMapper(relation));

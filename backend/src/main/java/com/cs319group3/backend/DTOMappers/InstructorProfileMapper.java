@@ -5,7 +5,9 @@ import com.cs319group3.backend.Entities.RelationEntities.CourseInstructorRelatio
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class InstructorProfileMapper {
 
@@ -19,9 +21,15 @@ public class InstructorProfileMapper {
         instructorProfileDTO.setDepartmentName(instructor.getDepartment().getDepartmentName());
 
         List<String> courseNames = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
+
         for (CourseInstructorRelation relation : instructor.getCourseInstructorRelations()) {
-            courseNames.add(relation.getCourse().getCourse().getCourseName());
+            String courseName = relation.getCourse().getCourse().getCourseName();
+            if (seen.add(courseName)) { // add returns false if courseName is already in the set
+                courseNames.add(courseName);
+            }
         }
+
         instructorProfileDTO.setCourses(courseNames);
         return instructorProfileDTO;
     }
