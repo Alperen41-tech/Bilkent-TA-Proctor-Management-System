@@ -2,9 +2,26 @@
 import React from "react";
 import "./DO_ProfilePage.css"; // Reusing the same CSS
 import NavbarDO from "./NavbarDO";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 const DO_ProfilePage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = React.useState(false);
+  const [doProfileInfo, setDoProfileInfo] = useState({courses: []});
+
+  useEffect(() => {
+    const fetchProfileInformation = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/deansOffice/profile?id=9");
+        setDoProfileInfo(response.data);
+        console.log(doProfileInfo);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+    fetchProfileInformation();
+  }, []);
+
 
   return (
     <div className="profile-container">
@@ -14,13 +31,12 @@ const DO_ProfilePage = () => {
         {/* Info Section */}
         <div className="info-card">
           <h3>Personal Information</h3>
-          <p><strong>Name</strong><br />Mehmet Fatih</p>
-          <p><strong>Surname</strong><br />Sultan</p>
-          <p><strong>Email</strong><br />ahmet.yilmaz@bilkent.edu.tr</p>
-          <p><strong>ID</strong><br />34346543</p>
-          <p><strong>Role</strong><br />Deans Office</p>
-          <p><strong>Department</strong><br />Computer Science</p>
-          <p><strong>Course(s)</strong><br />CS 202, CS 898</p>
+          <p><strong>Name</strong><br />{doProfileInfo.name}</p>
+          <p><strong>Surname</strong><br />{doProfileInfo.surname}</p>
+          <p><strong>Email</strong><br />{doProfileInfo.email}</p>
+          <p><strong>ID</strong><br />{doProfileInfo.bilkentId}</p>
+          <p><strong>Role</strong><br />{doProfileInfo.role}</p>
+          <p><strong>Faculty</strong><br />{doProfileInfo.faculty}</p>
         </div>
 
         {/* Manage Account Section */}

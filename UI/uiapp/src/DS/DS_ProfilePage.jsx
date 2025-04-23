@@ -2,9 +2,26 @@
 import React from "react";
 import "./DS_ProfilePage.css"; // Reusing the same CSS
 import NavbarDS from "./NavbarDS";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 const DSProfilePage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = React.useState(false);
+  const [dsProfileInfo, setDsProfileInfo] = useState({courses: []});
+
+  useEffect(() => {
+    const fetchProfileInformation = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/departmentSecretary/profile?id=7");
+        setDsProfileInfo(response.data);
+        console.log(dsProfileInfo);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+    fetchProfileInformation();
+  }, []);
+
 
   return (
     <div className="profile-container">
@@ -14,13 +31,12 @@ const DSProfilePage = () => {
         {/* Info Section */}
         <div className="info-card">
           <h3>Personal Information</h3>
-          <p><strong>Name</strong><br />Mehmet Fatih</p>
-          <p><strong>Surname</strong><br />Sultan</p>
-          <p><strong>Email</strong><br />ahmet.yilmaz@bilkent.edu.tr</p>
-          <p><strong>ID</strong><br />34346543</p>
-          <p><strong>Role</strong><br />Instructor</p>
-          <p><strong>Department</strong><br />Computer Science</p>
-          <p><strong>Course(s)</strong><br />CS 202, CS 898</p>
+          <p><strong>Name</strong><br />{dsProfileInfo.name}</p>
+          <p><strong>Surname</strong><br />{dsProfileInfo.surname}</p>
+          <p><strong>Email</strong><br />{dsProfileInfo.email}</p>
+          <p><strong>ID</strong><br />{dsProfileInfo.bilkentId}</p>
+          <p><strong>Role</strong><br />{dsProfileInfo.role}</p>
+          <p><strong>Department</strong><br />{dsProfileInfo.departmentName}</p>
         </div>
 
         {/* Manage Account Section */}

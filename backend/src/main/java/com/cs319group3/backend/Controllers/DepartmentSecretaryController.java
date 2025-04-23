@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("DepartmentSecretary")
+@RequestMapping("departmentSecretary")
 @ComponentScan(basePackages = {"com.cs319group3.backend.Controllers"})
 @CrossOrigin(origins = "http://localhost:3000")
 public class DepartmentSecretaryController {
@@ -15,7 +15,7 @@ public class DepartmentSecretaryController {
     @Autowired
     private DepartmentSecretaryService departmentSecretaryService;
 
-    @GetMapping("Profile")
+    @GetMapping("profile")
     public DepartmentSecretaryProfileDTO getProfile(@RequestParam("id") int id) {
         System.out.println("request received");
         return departmentSecretaryService.getDepartmentSecretaryProfileById(id);

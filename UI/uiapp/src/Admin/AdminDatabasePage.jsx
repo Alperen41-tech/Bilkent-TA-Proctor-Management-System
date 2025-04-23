@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import NavbarAdmin from "./NavbarAdmin";
 import "./AdminDatabasePage.css";
 import AdminDatabaseItem from "./AdminDatabaseItem";
+import axios from "axios";
 
 const AdminDatabasePage = () => {
   const [selectedType, setSelectedType] = useState("");
   const [taCount, setTaCount] = useState(2);
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedData, setSelectedData] = useState({});
+  const [departmentSelection, setDepartmentSelection] = useState("");
+  const [selectTaWorktime, setSelectTaWorktime] = useState("");
 
   // Sample data for the database items
   const adminDatabaseItems = [
@@ -92,6 +95,31 @@ const AdminDatabasePage = () => {
         inLog={false} // Assuming this is not a log item
       />
     )))
+  }
+  const createNewTa = async (newTaName,newTaSurname, newTaEmail, newTaId, departmentSelection, newTaCourseName, newTaPhoneNum, newTaClassYear, newTaUsername, newTaPassword) => {
+    try {
+      const response = await axios.put("http://localhost:8080/ta/create", {
+        name: newTaName,
+        surname: newTaSurname,
+        email: newTaEmail,
+        id: newTaId,
+        department: departmentSelection,
+        courseName: newTaCourseName,
+        phoneNum: newTaPhoneNum,
+        active: true,
+        classYear: newTaClassYear,
+        username: newTaUsername,
+        password: newTaPassword
+      });
+
+      if (!response.data) {
+        alert("Could not locked the swap. Try again.");
+      } 
+    } catch (error) {
+      console.error("There was an error with the ta creation:", error);
+      alert("An error occurred. Please try again.");
+    }
+
   }
 
   return (
@@ -219,19 +247,22 @@ const AdminDatabasePage = () => {
           {selectedType === "TA" && (
             <div className="admin-database-type-form">
               <label>TA Name</label>
-              <input type="text" placeholder="enter name" />
+              <input id="newTaName" type="text" placeholder="enter name" />
 
               <label>Surname</label>
-              <input type="text" placeholder="enter surname" />
+              <input id="newTaSurname" type="text" placeholder="enter surname" />
 
               <label>Email</label>
-              <input type="text" placeholder="enter email" />
+              <input id="newTaEmail" type="text" placeholder="enter email" />
 
               <label>ID</label>
-              <input type="text" placeholder="enter ID" />
+              <input id="newTaId" type="text" placeholder="enter ID" />
 
               <label>Department</label>
-              <select>
+              <select value={departmentSelection} onChange={(e) => {setDepartmentSelection(e.target.value)
+                console.log("Selected Department:", e.target.value)
+
+              }}>
                 <option value="">Select Department</option>
                 <option value="CS">CS</option>
                 <option value="IE">IE</option>
@@ -239,17 +270,33 @@ const AdminDatabasePage = () => {
               </select>
 
               <label>Select Type</label>
-              <select>
+              <select value={selectTaWorktime} onChange={(e) => {setSelectTaWorktime(e.target.value)
+                console.log("Selected Worktime For TA:", e.target.value)
+              }}>
                 <option value="">Select Type</option>
                 <option value="FT">Full Time</option>
                 <option value="PT">Part Time</option>
               </select>
 
-              <button className="admin-database-create-type-button">Create</button>
+              <label>Course Name</label>
+              <input id="newTaCourseName" type="text" placeholder="enter course name" />
+
+              <label>Phone Number</label>
+              <input id="newTaPhoneNum" type="text" placeholder="enter phone number" />
+
+              <label>Class Year</label>
+              <input id="newTaClassYear" type="text" placeholder="enter class year" />
+
+              <label>Login Informaitons</label>
+              <input id="newTaUsername" type="text" placeholder="enter username" />
+              <p></p>
+              <input id="newTaPassword" type="password" placeholder="enter password" />
+
+              <button className="admin-database-create-type-button" onClick={createNewTa(document.getElementById("newTaName").value,document.getElementById("newTaSurname").value, document.getElementById("newTaEmail").value, document.getElementById("newTaId").value, departmentSelection, document.getElementById("newTaCourseName").value, document.getElementById("newTaPhoneNum").value, document.getElementById("newTaClassYear").value, document.getElementById("newTaUsername").value, document.getElementById("newTaPassword").value)}>Create</button>
             </div>
           )}
         </div>
-
+        
         {/* Right Panel: Dump New Data */}
         <div className="admin-database-dump-new-data">
           <h3>Dump New Data</h3>

@@ -53,7 +53,7 @@ const ExamsPage = () => {
   useEffect(() => {
     const fetchTasProctorings = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=2");
+        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=1");
         setTasProctorings(response.data);
         console.log(tasProctorings);
       } catch (error) {
@@ -62,7 +62,7 @@ const ExamsPage = () => {
     };
     const fetchAllDepartmantExams = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getDepartmentTAsClassProctorings?id=2"); // Adjust the URL as needed
+        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getDepartmentTAsClassProctorings?id=1"); // Adjust the URL as needed
         setAllDepartmantExams(response.data);
         console.log(allDepartmantExams); // Log the fetched tasks to the console
         // You can set the tasks to state if needed

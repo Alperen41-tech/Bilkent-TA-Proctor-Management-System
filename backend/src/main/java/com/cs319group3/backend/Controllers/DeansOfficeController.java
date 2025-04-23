@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("DeansOffice")
+@RequestMapping("deansOffice")
 @ComponentScan(basePackages = {"com.cs319group3.backend.Controllers"})
 @CrossOrigin(origins = "http://localhost:3000")
 public class DeansOfficeController {
@@ -16,7 +16,7 @@ public class DeansOfficeController {
     @Autowired
     private DeansOfficeService deansOfficeService;
 
-    @GetMapping("Profile")
+    @GetMapping("profile")
     public DeansOfficeProfileDTO getProfile(@RequestParam("id") int id) {
         System.out.println("request received");
         return deansOfficeService.getDeansOfficeProfileById(id);
