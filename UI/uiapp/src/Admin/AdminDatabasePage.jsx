@@ -121,7 +121,7 @@ const AdminDatabasePage = () => {
         password: newTaPassword
       });
 
-      const response = await axios.post("http://localhost:8080/ta/createTA", {
+      const response = await axios.post("http://localhost:8080/ta/create", {
         profile: {
           name: newTaName,
           surname: newTaSurname,
