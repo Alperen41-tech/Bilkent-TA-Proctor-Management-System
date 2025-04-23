@@ -38,16 +38,24 @@ public class AuthenticationController {
         String combinedUsername = loginRequest.getEmail() + "::" + loginRequest.getUserTypeName();
 
         try {
+            // Authenticate the user with the combined username (email + userType)
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(combinedUsername, loginRequest.getPassword())
             );
 
-            String token = jwtUtil.generateToken(combinedUsername);  // Note: use combinedUsername here too
+            // Extract additional information from loginRequest (assuming they exist in the LoginDTO)
+            String email = loginRequest.getEmail();
+            String userType = loginRequest.getUserTypeName();
+
+            // Generate the token using all required parameters
+            String token = jwtUtil.generateToken(combinedUsername, email, userType);
+
             return ResponseEntity.ok(token);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
+
 
 
 
