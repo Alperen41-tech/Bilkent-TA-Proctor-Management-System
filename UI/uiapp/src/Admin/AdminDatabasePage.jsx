@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import NavbarAdmin from "./NavbarAdmin";
 import "./AdminDatabasePage.css";
 import AdminDatabaseItem from "./AdminDatabaseItem";
@@ -11,6 +11,17 @@ const AdminDatabasePage = () => {
   const [selectedData, setSelectedData] = useState({});
   const [departmentSelection, setDepartmentSelection] = useState("");
   const [selectTaWorktime, setSelectTaWorktime] = useState("");
+
+  // Refs for new TA creation
+  const newTaNameRef = useRef();
+  const newTaSurnameRef = useRef();
+  const newTaEmailRef = useRef();
+  const newTaIdRef = useRef();
+  const newTaCourseNameRef = useRef();
+  const newTaPhoneNumRef = useRef();
+  const newTaClassYearRef = useRef();
+  const newTaPasswordRef = useRef();
+  //-----------------------------
 
   // Sample data for the database items
   const adminDatabaseItems = [
@@ -96,23 +107,39 @@ const AdminDatabasePage = () => {
       />
     )))
   }
-  const createNewTa = async (newTaName,newTaSurname, newTaEmail, newTaId, departmentSelection, newTaCourseName, newTaPhoneNum, newTaClassYear, newTaUsername, newTaPassword) => {
+  const createNewTa = async (newTaName,newTaSurname, newTaEmail, newTaId, departmentSelection, newTaCourseName, newTaPhoneNum, newTaClassYear, newTaPassword) => {
     try {
-      const response = await axios.put("http://localhost:8080/ta/create", {
+      console.log("Submitting new TA:", {
         name: newTaName,
         surname: newTaSurname,
         email: newTaEmail,
-        id: newTaId,
-        department: departmentSelection,
+        bilkentId: newTaId,
+        departmentName: departmentSelection,
         courseName: newTaCourseName,
-        phoneNum: newTaPhoneNum,
-        active: true,
+        phoneNumber: newTaPhoneNum,
         classYear: newTaClassYear,
-        username: newTaUsername,
         password: newTaPassword
       });
 
-      if (!response.data) {
+      const response = await axios.post("http://localhost:8080/ta/createTA", {
+        profile: {
+          name: newTaName,
+          surname: newTaSurname,
+          email: newTaEmail,
+          bilkentId: newTaId,
+          departmentName: departmentSelection,
+          courseName: newTaCourseName,
+          phoneNumber: newTaPhoneNum,
+          active: true,
+          classYear: newTaClassYear,
+        },
+        login: {
+          password: newTaPassword,
+          userTypeName: "ta"
+        }
+      });
+
+      if (!response) {
         alert("Could not locked the swap. Try again.");
       } 
     } catch (error) {
@@ -247,16 +274,16 @@ const AdminDatabasePage = () => {
           {selectedType === "TA" && (
             <div className="admin-database-type-form">
               <label>TA Name</label>
-              <input id="newTaName" type="text" placeholder="enter name" />
+              <input ref={newTaNameRef} type="text" placeholder="enter name" />
 
               <label>Surname</label>
-              <input id="newTaSurname" type="text" placeholder="enter surname" />
+              <input ref={newTaSurnameRef} type="text" placeholder="enter surname" />
 
               <label>Email</label>
-              <input id="newTaEmail" type="text" placeholder="enter email" />
+              <input ref={newTaEmailRef} type="text" placeholder="enter email" />
 
               <label>ID</label>
-              <input id="newTaId" type="text" placeholder="enter ID" />
+              <input ref={newTaIdRef} type="text" placeholder="enter ID" />
 
               <label>Department</label>
               <select value={departmentSelection} onChange={(e) => {setDepartmentSelection(e.target.value)
@@ -279,20 +306,30 @@ const AdminDatabasePage = () => {
               </select>
 
               <label>Course Name</label>
-              <input id="newTaCourseName" type="text" placeholder="enter course name" />
+              <input ref={newTaCourseNameRef} type="text" placeholder="enter course name" />
 
               <label>Phone Number</label>
-              <input id="newTaPhoneNum" type="text" placeholder="enter phone number" />
+              <input ref={newTaPhoneNumRef} type="text" placeholder="enter phone number" />
 
               <label>Class Year</label>
-              <input id="newTaClassYear" type="text" placeholder="enter class year" />
+              <input ref={newTaClassYearRef} type="text" placeholder="enter class year" />
 
-              <label>Login Informaitons</label>
-              <input id="newTaUsername" type="text" placeholder="enter username" />
-              <p></p>
-              <input id="newTaPassword" type="password" placeholder="enter password" />
+              <label>Login Informations</label>
+              <input ref={newTaPasswordRef} type="password" placeholder="enter password" />
 
-              <button className="admin-database-create-type-button" onClick={createNewTa(document.getElementById("newTaName").value,document.getElementById("newTaSurname").value, document.getElementById("newTaEmail").value, document.getElementById("newTaId").value, departmentSelection, document.getElementById("newTaCourseName").value, document.getElementById("newTaPhoneNum").value, document.getElementById("newTaClassYear").value, document.getElementById("newTaUsername").value, document.getElementById("newTaPassword").value)}>Create</button>
+              <button className="admin-database-create-type-button" onClick={() => {
+                createNewTa(
+                  newTaNameRef.current.value,
+                  newTaSurnameRef.current.value,
+                  newTaEmailRef.current.value,
+                  newTaIdRef.current.value,
+                  departmentSelection,
+                  newTaCourseNameRef.current.value,
+                  newTaPhoneNumRef.current.value,
+                  newTaClassYearRef.current.value,
+                  newTaPasswordRef.current.value
+                );
+              }}>Create</button>
             </div>
           )}
         </div>
