@@ -121,7 +121,7 @@ const AdminDatabasePage = () => {
         password: newTaPassword
       });
 
-      const response = await axios.post("http://localhost:8080/ta/create", {
+      const response = await axios.post("http://localhost:8080/ta/createTA", {
         profile: {
           name: newTaName,
           surname: newTaSurname,
@@ -131,11 +131,7 @@ const AdminDatabasePage = () => {
           courseName: newTaCourseName,
           phoneNumber: newTaPhoneNum,
           active: true,
-<<<<<<< Updated upstream
           classYear: parseInt(newTaClassYear, 10),
-=======
-          classYear: parseInt(newTaClassYear,10),
->>>>>>> Stashed changes
         },
         login: {
           password: newTaPassword,

@@ -28,20 +28,17 @@ const createTAItem = (firstName, lastName, email, onClickHandler, selectedTAKey)
 };
 
 const ExamsPage = () => {
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [lastTask1, setLastTask1] = useState(null);
-  const [lastTask2, setLastTask2] = useState(null);
+  const [lastSelectedTask1, setLastSelectedTask1] = useState(null);
+  const [lastSelectedTask2, setLastSelectedTask2] = useState(null);
   const [selectedTA, setSelectedTA] = useState(null); 
   const [tasProctorings, setTasProctorings] = useState([]);//First declaration of tasProctorings as an empty array
   const [allDepartmantExams, setAllDepartmantExams] = useState([]);//Declaration of allDepartmantExams as an empty array
   const handleTaskClick1 = (task) => {
-    //setSelectedTask(task);
-    setLastTask1(task);
+    setLastSelectedTask1(task);
   };
 
   const handleTaskClick2 = (task) => {
-    //setSelectedTask(task);
-    setLastTask2(task);
+    setLastSelectedTask2(task);
     console.log("Fetched all tasks:", allDepartmantExams);
   };
 
@@ -62,18 +59,16 @@ const ExamsPage = () => {
     };
     const fetchAllDepartmantExams = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getDepartmentTAsClassProctorings?id=1"); // Adjust the URL as needed
+        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getDepartmentTAsClassProctorings?id=1");
         setAllDepartmantExams(response.data);
-        console.log(allDepartmantExams); // Log the fetched tasks to the console
-        // You can set the tasks to state if needed
+        console.log(allDepartmantExams);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
     };
-
+    fetchTasProctorings(); 
     fetchAllDepartmantExams();
-    fetchTasProctorings();   
-  }, []); // Empty dependency array to run once on component mount
+  }, []);
 
 
   return (
@@ -85,14 +80,14 @@ const ExamsPage = () => {
           <div className="card">
             <h3>Choose the task you wish to get</h3>
             <div className="task-row">
-              {allDepartmantExams.map((proctoring, index) => (createTaskItem(proctoring.classProctoringDTO.id, proctoring.classProctoringDTO.courseName, proctoring.classProctoringDTO.proctoringName, proctoring.classProctoringDTO.startDate, proctoring.classProctoringDTO.endDate, proctoring.classProctoringDTO.classrooms, handleTaskClick2, lastTask2?.id)))}
+              {allDepartmantExams.map((proctoring, index) => (createTaskItem(proctoring.classProctoringTARelationDTO.classProctoringDTO.id, proctoring.classProctoringTARelationDTO.classProctoringDTO.courseName, proctoring.classProctoringTARelationDTO.classProctoringDTO.proctoringName, proctoring.classProctoringTARelationDTO.classProctoringDTO.startDate, proctoring.classProctoringTARelationDTO.classProctoringDTO.endDate, proctoring.classProctoringTARelationDTO.classProctoringDTO.classrooms, handleTaskClick2, lastSelectedTask2?.id)))}
             </div>
           </div>
 
           <div className="card">
             <h3>Choose one of your tasks</h3>
             <div className="task-row">
-            {tasProctorings.map((proctoring, index) => (createTaskItem(proctoring.classProctoringDTO.id, proctoring.classProctoringDTO.courseName, proctoring.classProctoringDTO.proctoringName, proctoring.classProctoringDTO.startDate, proctoring.classProctoringDTO.endDate, proctoring.classProctoringDTO.classrooms, handleTaskClick1, lastTask1?.id)))}
+            {tasProctorings.map((proctoring, index) => (createTaskItem(proctoring.classProctoringDTO.id, proctoring.classProctoringDTO.courseName, proctoring.classProctoringDTO.proctoringName, proctoring.classProctoringDTO.startDate, proctoring.classProctoringDTO.endDate, proctoring.classProctoringDTO.classrooms, handleTaskClick1, lastSelectedTask1?.id)))}
               
               
             </div>
@@ -103,9 +98,11 @@ const ExamsPage = () => {
           <div className="card">
             <h3>TAs Assigned for this Task</h3>
             <div className="assigned-tas">
-              {createTAItem("Ahmet", "Yılmaz","dasdad@email", handleTAClick, selectedTA)}
-              {createTAItem("Merve", "Kara","dasdad@email", handleTAClick, selectedTA)}
-              {createTAItem("John", "Doe", "dasdad@email", handleTAClick, selectedTA)}
+              {allDepartmantExams.filter((proctoring) => proctoring.classProctoringTARelationDTO.classProctoringDTO.id === lastSelectedTask2?.id).map((proctoring, index) => (
+                proctoring.taProfileDTOList.map((ta) => (
+                  createTAItem(ta.name, ta.surname, ta.email, handleTAClick, selectedTA)
+                ))
+              ))}
             </div>
 
             <div className="details-section">
