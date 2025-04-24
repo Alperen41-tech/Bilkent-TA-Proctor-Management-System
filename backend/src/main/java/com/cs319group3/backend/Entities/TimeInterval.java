@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -26,9 +26,9 @@ public class TimeInterval {
 
     private String day;
 
-    private Time startTime;
+    private LocalTime startTime;
 
-    private Time endTime;
+    private LocalTime endTime;
 
     @OneToMany(mappedBy = "timeInterval")
     private List<OfferedCourseScheduleRelation> offeredCourseScheduleRelations;

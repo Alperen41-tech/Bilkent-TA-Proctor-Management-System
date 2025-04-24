@@ -18,11 +18,9 @@ import java.time.LocalDateTime;
 @Table(name = "ta_availability_request")
 public class TAAvailabilityRequest extends Request{
 
-    //TODO isUrgent columnshould be added to table in db
     private boolean isUrgent;
 
     private LocalDateTime unavailabilityStartDate;
     private LocalDateTime unavailabilityEndDate;
-
 
 }

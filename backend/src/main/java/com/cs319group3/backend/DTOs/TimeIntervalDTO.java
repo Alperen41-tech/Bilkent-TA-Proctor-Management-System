@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TAScheduleDTO {
+public class TimeIntervalDTO {
     String eventName;
     String dayOfWeek;
     String startTime;

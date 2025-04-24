@@ -3,9 +3,7 @@ package com.cs319group3.backend.Controllers;
 
 
 import com.cs319group3.backend.DTOs.CreateTADTO;
-import com.cs319group3.backend.DTOs.DateIntervalDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
-import com.cs319group3.backend.DTOs.TAScheduleDTO;
 import com.cs319group3.backend.Services.TAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,12 +24,6 @@ public class TAController {
     public TAProfileDTO getTAProfile(@RequestParam("id") int id){
         System.out.println("request received");
         return taService.getTAProfileById(id);
-    }
-
-    @GetMapping("schedule")
-    public List<TAScheduleDTO> getSchedule(@RequestBody DateIntervalDTO dateIntervalDTO, @RequestParam("id") int id){
-        System.out.println("request received");
-        return taService.getTAScheduleById(dateIntervalDTO, id);
     }
 
     @PostMapping("createTA")
