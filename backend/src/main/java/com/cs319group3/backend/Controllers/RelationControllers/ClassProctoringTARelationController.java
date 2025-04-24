@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/classProctoringTARelation")
-@ComponentScan(basePackages = {"com.cs319group3.backend.Controllers"})
+@ComponentScan(basePackages = {"com.cs319group3.backend.Controllers.RelationControllers"})
 @CrossOrigin(origins = "http://localhost:3000")
 public class ClassProctoringTARelationController {
 

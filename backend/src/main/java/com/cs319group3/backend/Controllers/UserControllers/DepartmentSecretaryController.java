@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("departmentSecretary")
-@ComponentScan(basePackages = {"com.cs319group3.backend.Controllers"})
+@ComponentScan(basePackages = {"com.cs319group3.backend.Controllers.UserControllers"})
 @CrossOrigin(origins = "http://localhost:3000")
 public class DepartmentSecretaryController {
 
