@@ -232,12 +232,12 @@ create table class_proctoring_ta_relation(
 create table request(
 	request_id int primary key auto_increment,
     sender_user_id int not null,
-    reciever_user_id int not null,
+    receiver_user_id int not null,
     sent_date datetime not null,
     is_approved bool,
     description varchar(500),
     foreign key (sender_user_id) references user(user_id),
-    foreign key (reciever_user_id) references user(user_id)
+    foreign key (receiver_user_id) references user(user_id)
 );
 
 create index sent_date_idx on request(sent_date);

@@ -131,7 +131,7 @@ INSERT INTO task_type (task_type_id, course_id, task_type_name, time_limit) VALU
 	(4, 1, 'Task Type 4', 2),
 	(5, 3, 'Task Type 5', 1);
 
-INSERT INTO request (request_id, sender_user_id, reciever_user_id, sent_date, is_approved, description) VALUES
+INSERT INTO request (request_id, sender_user_id, receiver_user_id, sent_date, is_approved, description) VALUES
 	(1, 7, 8, '2025-05-06 10:00:00', true, 'Request 1 for swap'),
 	(2, 3, 6, '2025-05-07 10:00:00', false, 'Request 2 for swap'),
 	(3, 2, 10, '2025-05-08 10:00:00', false, 'Request 3 for swap'),
@@ -146,8 +146,8 @@ INSERT INTO request (request_id, sender_user_id, reciever_user_id, sent_date, is
 	(12, 3, 10, '2025-05-17 10:00:00', true, 'Request 12 for instructor_ta'),
 	(13, 3, 9, '2025-05-18 10:00:00', false, 'Request 13 for availability'),
 	(14, 2, 4, '2025-05-19 10:00:00', true, 'Request 14 for availability'),
-	(15, 1, 2, '2025-05-20 10:00:00', false, 'Request 15 for availability'),
-	(16, 1, 4, '2025-05-21 10:00:00', false, 'Request 16 for availability'),
+	(15, 1, 2, '2025-05-20 10:00:00', true, 'Request 15 for availability'),
+	(16, 1, 4, '2025-05-21 10:00:00', true, 'Request 16 for availability'),
 	(17, 1, 6, '2025-05-22 10:00:00', true, 'Request 17 for from_dean'),
 	(18, 1, 3, '2025-05-23 10:00:00', false, 'Request 18 for from_dean'),
 	(19, 7, 4, '2025-05-24 10:00:00', true, 'Request 19 for from_dean'),
@@ -173,9 +173,9 @@ INSERT INTO instructor_ta_proctoring_request (request_id, class_proctoring_id) V
     
 INSERT INTO ta_availability_request (request_id, is_urgent, unavailability_start_date, unavailability_end_date) VALUES
 	(13, false, '2025-05-18 10:00:00', '2025-05-19 10:00:00'),
-	(14, true, '2025-05-19 10:00:00', '2025-05-20 10:00:00'),
-	(15, false, '2025-05-20 10:00:00', '2025-05-21 10:00:00'),
-	(16, false, '2025-05-21 10:00:00', '2025-05-22 10:00:00');
+	(14, true, '2025-05-19 10:00:00', '2025-05-21 23:00:00'),
+	(15, false, '2025-05-20 07:00:00', '2025-05-24 14:00:00'),
+	(16, false, '2025-05-21 23:00:00', '2025-05-23 07:00:00');
     
 INSERT INTO ta_from_dean_request (request_id, ta_count, is_complete, class_proctoring_id) VALUES
 	(17, 2, true, 3),
