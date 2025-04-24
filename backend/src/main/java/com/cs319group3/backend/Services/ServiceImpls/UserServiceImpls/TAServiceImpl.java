@@ -1,20 +1,15 @@
-package com.cs319group3.backend.Services.ServiceImpls;
+package com.cs319group3.backend.Services.ServiceImpls.UserServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.LoginMapper;
 import com.cs319group3.backend.DTOs.*;
 import com.cs319group3.backend.DTOMappers.TAProfileMapper;
 import com.cs319group3.backend.Entities.*;
-import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
-import com.cs319group3.backend.Entities.RelationEntities.CourseStudentRelation;
-import com.cs319group3.backend.Entities.RelationEntities.OfferedCourseScheduleRelation;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.TAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service

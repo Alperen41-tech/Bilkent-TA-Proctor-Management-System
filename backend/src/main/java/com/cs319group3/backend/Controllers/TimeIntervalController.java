@@ -18,7 +18,7 @@ public class TimeIntervalController {
     @Autowired
     private TimeIntervalService timeIntervalService;
 
-    @PostMapping("ta")
+    @PostMapping("schedule")
     public List<TimeIntervalDTO> getTASchedule(@RequestBody DateIntervalDTO dateIntervalDTO, @RequestParam("id") int id){
         System.out.println("request received");
         return timeIntervalService.getTAScheduleById(dateIntervalDTO, id);

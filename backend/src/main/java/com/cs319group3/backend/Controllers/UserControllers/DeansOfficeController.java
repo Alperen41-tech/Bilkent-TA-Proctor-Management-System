@@ -1,7 +1,6 @@
-package com.cs319group3.backend.Controllers;
+package com.cs319group3.backend.Controllers.UserControllers;
 
 import com.cs319group3.backend.DTOs.DeansOfficeProfileDTO;
-import com.cs319group3.backend.Entities.UserEntities.DeansOffice;
 import com.cs319group3.backend.Services.DeansOfficeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;

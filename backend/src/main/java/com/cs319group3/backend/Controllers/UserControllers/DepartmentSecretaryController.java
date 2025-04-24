@@ -1,4 +1,4 @@
-package com.cs319group3.backend.Controllers;
+package com.cs319group3.backend.Controllers.UserControllers;
 
 import com.cs319group3.backend.DTOs.DepartmentSecretaryProfileDTO;
 import com.cs319group3.backend.Services.DepartmentSecretaryService;

@@ -1,4 +1,4 @@
-package com.cs319group3.backend.Controllers;
+package com.cs319group3.backend.Controllers.RelationControllers;
 
 
 import com.cs319group3.backend.DTOs.ClassProctoringAndTAsDTO;

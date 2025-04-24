@@ -1,4 +1,4 @@
-package com.cs319group3.backend.Services.ServiceImpls;
+package com.cs319group3.backend.Services.ServiceImpls.UserServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.DepartmentSecretaryProfileMapper;
 import com.cs319group3.backend.DTOs.DepartmentSecretaryProfileDTO;
