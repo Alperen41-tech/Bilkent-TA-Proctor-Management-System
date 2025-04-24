@@ -3,16 +3,18 @@ package com.cs319group3.backend.Services.ServiceImpls;
 import com.cs319group3.backend.DTOMappers.TimeIntervalMapper;
 import com.cs319group3.backend.DTOs.DateIntervalDTO;
 import com.cs319group3.backend.DTOs.TimeIntervalDTO;
+import com.cs319group3.backend.Entities.ClassProctoring;
+import com.cs319group3.backend.Entities.OfferedCourse;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
+import com.cs319group3.backend.Entities.RelationEntities.CourseInstructorRelation;
 import com.cs319group3.backend.Entities.RelationEntities.CourseStudentRelation;
 import com.cs319group3.backend.Entities.RelationEntities.OfferedCourseScheduleRelation;
 import com.cs319group3.backend.Entities.RequestEntities.TAAvailabilityRequest;
 import com.cs319group3.backend.Entities.Student;
 import com.cs319group3.backend.Entities.TimeInterval;
+import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import com.cs319group3.backend.Entities.UserEntities.TA;
-import com.cs319group3.backend.Repositories.StudentRepo;
-import com.cs319group3.backend.Repositories.TARepo;
-import com.cs319group3.backend.Repositories.UserRepo;
+import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.TimeIntervalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,10 +34,13 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
     private TARepo taRepository;
 
     @Autowired
+    private InstructorRepo instructorRepo;
+
+    @Autowired
     private StudentRepo studentRepo;
 
     @Autowired
-    private UserRepo userRepo;
+    private ClassProctoringRepo classProctoringRepo;
 
     @Override
     public List<TimeIntervalDTO> getTAScheduleById(DateIntervalDTO dateIntervalDTO, int id) {
@@ -165,6 +170,55 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
 
     @Override
     public List<TimeIntervalDTO> getInstructorScheduleById(DateIntervalDTO dateIntervalDTO, int id) {
-        return null;
+        Optional<Instructor> optionalInstructor = instructorRepo.findByUserId(id);
+
+        if (optionalInstructor.isEmpty()) {
+            throw new RuntimeException("Instructor with ID " + id + " not found.");
+        }
+
+        List<TimeIntervalDTO> schedule = new ArrayList<>();
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //date format might be different
+        LocalDate from = LocalDate.parse(dateIntervalDTO.getStartDate(), dtf);
+        LocalDate to = LocalDate.parse(dateIntervalDTO.getEndDate(), dtf);
+        LocalDateTime fromDate = LocalDateTime.of(from.getYear(), from.getMonth(), from.getDayOfMonth(), 0, 0, 0);
+        LocalDateTime toDate = LocalDateTime.of(to.getYear(), to.getMonth(), to.getDayOfMonth() + 1, 0, 0, 0);
+
+        //add schedule of courses
+        List<CourseInstructorRelation> courses = optionalInstructor.get().getCourseInstructorRelations();
+        for (CourseInstructorRelation course : courses) {
+            String name = course.getCourse().getCourse().getDepartmentCourseCode() + " - " + course.getCourse().getSectionNo();
+            List<OfferedCourseScheduleRelation> courseSchedule = course.getCourse().getSchedule();
+            for (OfferedCourseScheduleRelation offeredCourseScheduleRelation : courseSchedule) {
+                TimeInterval timeInterval = offeredCourseScheduleRelation.getTimeInterval();
+                TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(timeInterval, name);
+                schedule.add(timeIntervalDTO);
+            }
+        }
+
+        //add schedule of proctorings
+        for(CourseInstructorRelation course : courses) {
+            int courseId = course.getCourse().getCourse().getCourseId();
+            List<ClassProctoring> proctorings = classProctoringRepo.findByCourse_CourseId(courseId);
+
+            for (ClassProctoring classProctoring : proctorings) {
+                LocalDateTime eventStart = classProctoring.getStartDate();
+                LocalDateTime eventEnd = classProctoring.getEndDate();
+
+                if (eventStart.isAfter(fromDate) && eventStart.isBefore(toDate)) {
+                    TimeInterval proctoringInterval = new TimeInterval();
+                    proctoringInterval.setDay(eventStart.getDayOfWeek().toString());
+                    proctoringInterval.setStartTime(eventStart.toLocalTime());
+                    proctoringInterval.setEndTime(eventEnd.toLocalTime());
+                    String eventName = classProctoring.getCourse().getDepartmentCourseCode() + " - " + classProctoring.getEventName();
+                    TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(proctoringInterval, eventName);
+                    schedule.add(timeIntervalDTO);
+                }
+
+            }
+        }
+
+        return schedule;
+
     }
 }
