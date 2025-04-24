@@ -12,6 +12,8 @@ const SchedulePage = () => {
   const [taScheduleTimes, setTaScheduleTimes] = useState([]);
   const [cellHeight, setCellHeight] = useState(0);
   const cellRef = useRef(null);
+  const latestRequest = useRef(0);
+
 
   const times = [
     "8:00 am", "9:00 am", "10:00 am", "11:00 am", "12:00 pm",
@@ -32,23 +34,27 @@ const SchedulePage = () => {
   };
 
   const fetchScheduleInformation = async () => {
+    const requestId = ++latestRequest.current;
     try {
-      const response = await axios.post("http://localhost:8080/timeInterval/schedule?id=2", {
+      const response = await axios.post("http://localhost:8080/timeInterval/taSchedule?id=2", {
         startDate: format(currentStartDate, "yyyy-MM-dd"),
         endDate: format(currentEndDate, "yyyy-MM-dd"),
       });
-
-
-
-      setTaScheduleTimes(response.data);
+      console.log("Fetched schedule data:", response.data);
+  
+      if (requestId === latestRequest.current) {
+        setTaScheduleTimes(response.data);
+      }
     } catch (error) {
-      console.error("Error fetching tasks:", error);
+      if (requestId === latestRequest.current) {
+        console.error("Error fetching tasks:", error);
+      }
     }
   };
 
   useEffect(() => {
     fetchScheduleInformation();
-  }, []);
+  }, [currentStartDate, currentEndDate]);
 
   useEffect(() => {
     if (cellRef.current) {
@@ -106,10 +112,11 @@ const SchedulePage = () => {
                     {cellEvents.map((event, i) => (
                       <div
                         key={i}
-                        className="inner-event"
+                        className="ta-schedule-inner-event"
                         style={{
                           height: `${(event.duration / 60) * cellHeight}px`,
-                          marginTop: `${(event.offset / 60) * cellHeight}px`
+                          marginTop: `${(event.offset / 60) * cellHeight}px`,
+                          backgroundColor: event.eventType === "lecture" ? "#a8d5ff" : event.eventType === "proctoring" ?  "#9DC08B": event.eventType === "leave of absence" ? "#e03e3e" : "white",
                         }}
                       >
                         <div>

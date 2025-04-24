@@ -66,7 +66,7 @@
     border: 1px solid #eee;
     transition: background 0.2s ease;
   }
-  .inner-event {
+  .ta-schedule-inner-event {
     background-color: #a8d5ff;
     border-radius: 4px;
     font-size: 14px;

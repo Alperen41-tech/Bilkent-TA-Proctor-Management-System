@@ -67,3 +67,12 @@
     transition: background 0.2s ease;
   }
   
+  .ins-schedule-inner-event {
+    background-color: #a8d5ff;
+    border-radius: 4px;
+    font-size: 14px;
+    padding: 2px 4px;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+  }

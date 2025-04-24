@@ -1,25 +1,81 @@
 // src/SchedulePage.jsx
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import NavbarINS from "./NavbarINS";
 import "./INS_SchedulePage.css";
-import { format, addWeeks, subWeeks, startOfWeek } from "date-fns";
+import { format, addWeeks, subWeeks, startOfWeek, addDays } from "date-fns";
+import axios from "axios";
 
 const INS_SchedulePage = () => {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const [currentStartDate, setCurrentStartDate] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [currentEndDate, setCurrentEndDate] = useState(addDays(addWeeks(currentStartDate, 1), -1));
+  const [insScheduleTimes, setInsScheduleTimes] = useState([]);
+  const [cellHeight, setCellHeight] = useState(0);
+  const cellRef = useRef(null);
+  const latestRequest = useRef(0);
 
   const times = [
-    "8:30 am", "9:30 am", "10:30 am", "11:30 am", "12:30 pm",
-    "1:30 pm", "2:30 pm", "3:30 pm", "4:30 pm", "5:30 pm",
+    "8:00 am", "9:00 am", "10:00 am", "11:00 am", "12:00 pm",
+    "1:00 pm", "2:00 pm", "3:00 pm", "4:00 pm", "5:00 pm",
+    "6:00 pm", "7:00 pm", "8:00 pm", "9:00 pm", "10:00 pm"
   ];
 
   const handleNextWeek = () => {
-    setCurrentStartDate((prev) => addWeeks(prev, 1));
-  };
+      setCurrentStartDate(prev => addWeeks(prev, 1));
+      setCurrentEndDate(prev => addWeeks(prev, 1));
+      fetchScheduleInformation();
+    };
+  
+    const handlePrevWeek = () => {
+      setCurrentStartDate(prev => subWeeks(prev, 1));
+      setCurrentEndDate(prev => subWeeks(prev, 1));
+      fetchScheduleInformation();
+    };
 
-  const handlePrevWeek = () => {
-    setCurrentStartDate((prev) => subWeeks(prev, 1));
-  };
+    const fetchScheduleInformation = async () => {
+      const requestId = ++latestRequest.current;
+      try {
+        const response = await axios.post("http://localhost:8080/timeInterval/instructorSchedule?id=5", {
+          startDate: format(currentStartDate, "yyyy-MM-dd"),
+          endDate: format(currentEndDate, "yyyy-MM-dd"),
+        });
+        console.log("Fetched schedule data:", response.data);
+    
+        if (requestId === latestRequest.current) {
+          setInsScheduleTimes(response.data);
+        }
+      } catch (error) {
+        if (requestId === latestRequest.current) {
+          console.error("Error fetching tasks:", error);
+        }
+      }
+    };
+  
+    useEffect(() => {
+      fetchScheduleInformation();
+    }, [currentStartDate, currentEndDate]);
+  
+    useEffect(() => {
+      if (cellRef.current) {
+        setCellHeight(cellRef.current.offsetHeight);
+      }
+    }, [insScheduleTimes]);
+  
+    const buildScheduleLookup = () => {
+      const lookup = {};
+      insScheduleTimes.forEach(event => {
+        const dayKey = event.dayOfWeek.slice(0, 3);
+        const [startHour, startMinute] = event.startTime.split(":" ).map(Number);
+        const [endHour, endMinute] = event.endTime.split(":" ).map(Number);
+        const duration = (endHour * 60 + endMinute) - (startHour * 60 + startMinute);
+        const key = `${dayKey}-${startHour}`;
+        if (!lookup[key]) lookup[key] = [];
+        lookup[key].push({ ...event, offset: startMinute, duration });
+      });
+      return lookup;
+    };
+  
+    const eventLookup = buildScheduleLookup();
 
   return (
     <div className="schedule-page">
@@ -36,20 +92,44 @@ const INS_SchedulePage = () => {
 
         <div className="calendar-grid">
           <div className="grid-header empty"></div>
-          {days.map((day, idx) => (
-            <div key={idx} className="grid-header">{day}</div>
-          ))}
-
-          {times.map((time, timeIdx) => (
-            <React.Fragment key={timeIdx}>
-              <div className="time-label">{time}</div>
-              {days.map((_, dayIdx) => (
-                <div key={`${timeIdx}-${dayIdx}`} className="grid-cell">
-                  {/* Future: Display busy cell here */}
-                </div>
-              ))}
-            </React.Fragment>
-          ))}
+                    {days.map((day, idx) => (
+                      <div key={idx} className="grid-header">{day}</div>
+                    ))}
+          
+                    {times.map((time, timeIdx) => (
+                      <React.Fragment key={timeIdx}>
+                        <div className="time-label">{time}</div>
+                        {days.map((day, dayIdx) => {
+                          const hour = 8 + timeIdx;
+                          const key = `${day}-${hour}`;
+                          const cellEvents = eventLookup[key] || [];
+                          return (
+                            <div
+                              key={`${timeIdx}-${dayIdx}`}
+                              className="grid-cell"
+                              ref={timeIdx === 0 && dayIdx === 0 ? cellRef : null}
+                            >
+                              {cellEvents.map((event, i) => (
+                                <div
+                                  key={i}
+                                  className="ta-schedule-inner-event"
+                                  style={{
+                                    height: `${(event.duration / 60) * cellHeight}px`,
+                                    marginTop: `${(event.offset / 60) * cellHeight}px`,
+                                    backgroundColor: event.eventType == "lecture" ? "#a8d5ff" : event.eventType == "proctoring" ?  "#9DC08B": event.eventType == "leave of absence" ? "#e03e3e" : "white",
+                                  }}
+                                >
+                                  <div>
+                                    {event.eventName}
+                                  </div>
+                                   {event.startTime} to {event.endTime }
+                                </div>
+                              ))}
+                            </div>
+                          );
+                        })}
+                      </React.Fragment>
+                    ))}
         </div>
       </div>
     </div>
