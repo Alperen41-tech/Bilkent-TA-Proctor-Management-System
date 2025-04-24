@@ -100,7 +100,7 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
                     timeInterval.setDay(start.getDayOfWeek().toString());
                     timeInterval.setStartTime(start.toLocalTime());
                     timeInterval.setEndTime(LocalTime.of(endHour, endMinute));
-                    TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(timeInterval, "Leave of Absence");
+                    TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(timeInterval,"leave of absence", "Leave of Absence");
                     schedule.add(timeIntervalDTO);
                     if (isEnd) {
                         break;
@@ -142,7 +142,7 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
                 if (isOverlap) {
                     continue;
                 }
-                TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(timeInterval, name);
+                TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(timeInterval, "lecture", name);
                 schedule.add(timeIntervalDTO);
             }
         }
@@ -160,7 +160,7 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
                 proctoringInterval.setStartTime(eventStart.toLocalTime());
                 proctoringInterval.setEndTime(eventEnd.toLocalTime());
                 String eventName = classProctoringTARelation.getClassProctoring().getCourse().getDepartmentCourseCode() + " - " + classProctoringTARelation.getClassProctoring().getEventName();
-                TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(proctoringInterval, eventName);
+                TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(proctoringInterval, "proctoring", eventName);
                 schedule.add(timeIntervalDTO);
             }
         }
@@ -191,7 +191,7 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
             List<OfferedCourseScheduleRelation> courseSchedule = course.getCourse().getSchedule();
             for (OfferedCourseScheduleRelation offeredCourseScheduleRelation : courseSchedule) {
                 TimeInterval timeInterval = offeredCourseScheduleRelation.getTimeInterval();
-                TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(timeInterval, name);
+                TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(timeInterval, "lecture", name);
                 schedule.add(timeIntervalDTO);
             }
         }
@@ -211,7 +211,7 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
                     proctoringInterval.setStartTime(eventStart.toLocalTime());
                     proctoringInterval.setEndTime(eventEnd.toLocalTime());
                     String eventName = classProctoring.getCourse().getDepartmentCourseCode() + " - " + classProctoring.getEventName();
-                    TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(proctoringInterval, eventName);
+                    TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(proctoringInterval, "proctoring", eventName);
                     schedule.add(timeIntervalDTO);
                 }
 

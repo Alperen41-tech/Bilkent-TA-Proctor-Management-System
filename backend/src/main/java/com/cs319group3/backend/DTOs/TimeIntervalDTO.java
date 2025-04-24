@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TimeIntervalDTO {
+    String eventType;
     String eventName;
     String dayOfWeek;
     String startTime;
