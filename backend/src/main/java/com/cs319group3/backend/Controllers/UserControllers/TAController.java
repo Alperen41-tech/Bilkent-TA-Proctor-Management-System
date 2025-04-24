@@ -1,4 +1,4 @@
-package com.cs319group3.backend.Controllers;
+package com.cs319group3.backend.Controllers.UserControllers;
 
 
 
@@ -8,8 +8,6 @@ import com.cs319group3.backend.Services.TAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/ta")

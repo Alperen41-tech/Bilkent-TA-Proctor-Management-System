@@ -1,4 +1,4 @@
-package com.cs319group3.backend.Services.ServiceImpls;
+package com.cs319group3.backend.Services.ServiceImpls.UserServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.InstructorProfileMapper;
 import com.cs319group3.backend.DTOs.InstructorProfileDTO;
