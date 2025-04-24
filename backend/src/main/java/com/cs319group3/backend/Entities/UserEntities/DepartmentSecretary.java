@@ -2,7 +2,7 @@ package com.cs319group3.backend.Entities.UserEntities;
 
 
 import com.cs319group3.backend.Entities.Department;
-import com.cs319group3.backend.Entities.RequestEntities.TAAvailabilityRequest;
+import com.cs319group3.backend.Entities.RequestEntities.TALeaveRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class DepartmentSecretary extends User{
     private Department department;
 
     @OneToMany(mappedBy = "receiverUser")
-    private List<TAAvailabilityRequest> availabilityRequests;
+    private List<TALeaveRequest> availabilityRequests;
 
 
 }

@@ -2,7 +2,7 @@ package com.cs319group3.backend.Entities.UserEntities;
 
 
 import com.cs319group3.backend.Entities.Faculty;
-import com.cs319group3.backend.Entities.RequestEntities.TAFromDeanRequest;
+import com.cs319group3.backend.Entities.RequestEntities.InstructorAdditionalTARequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +24,6 @@ public class DeansOffice extends User {
     private Faculty faculty;
 
     @OneToMany(mappedBy = "receiverUser")
-    private List<TAFromDeanRequest> TARequestsFromInstructors;
+    private List<InstructorAdditionalTARequest> TARequestsFromInstructors;
 
 }

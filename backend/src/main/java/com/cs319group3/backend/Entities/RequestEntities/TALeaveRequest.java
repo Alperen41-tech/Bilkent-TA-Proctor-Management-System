@@ -15,12 +15,13 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ta_availability_request")
-public class TAAvailabilityRequest extends Request{
+@Table(name = "ta_leave_request")
+public class TALeaveRequest extends Request{
+
 
     private boolean isUrgent;
 
-    private LocalDateTime unavailabilityStartDate;
-    private LocalDateTime unavailabilityEndDate;
+    private LocalDateTime leaveStartDate;
+    private LocalDateTime leaveEndDate;
 
 }

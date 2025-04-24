@@ -4,12 +4,11 @@ import com.cs319group3.backend.DTOMappers.TimeIntervalMapper;
 import com.cs319group3.backend.DTOs.DateIntervalDTO;
 import com.cs319group3.backend.DTOs.TimeIntervalDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
-import com.cs319group3.backend.Entities.OfferedCourse;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RelationEntities.CourseInstructorRelation;
 import com.cs319group3.backend.Entities.RelationEntities.CourseStudentRelation;
 import com.cs319group3.backend.Entities.RelationEntities.OfferedCourseScheduleRelation;
-import com.cs319group3.backend.Entities.RequestEntities.TAAvailabilityRequest;
+import com.cs319group3.backend.Entities.RequestEntities.TALeaveRequest;
 import com.cs319group3.backend.Entities.Student;
 import com.cs319group3.backend.Entities.TimeInterval;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
@@ -62,12 +61,12 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
         int scheduleStart = 8; //can be changed
         int scheduleEnd = 22; //can be changed
 
-        List<TAAvailabilityRequest> requests = optionalTA.get().getTAAvailabilityRequests();
+        List<TALeaveRequest> requests = optionalTA.get().getTAAvailabilityRequests();
         requests.removeIf(tAAvailabilityRequest -> !tAAvailabilityRequest.isApproved());
 
-        for(TAAvailabilityRequest tAAvailabilityRequest : requests) {
-            LocalDateTime availabilityStart = tAAvailabilityRequest.getUnavailabilityStartDate();
-            LocalDateTime availabilityEnd = tAAvailabilityRequest.getUnavailabilityEndDate();
+        for(TALeaveRequest tAAvailabilityRequest : requests) {
+            LocalDateTime availabilityStart = tAAvailabilityRequest.getLeaveStartDate();
+            LocalDateTime availabilityEnd = tAAvailabilityRequest.getLeaveEndDate();
 
             if (availabilityStart.isBefore(toDate) && availabilityEnd.isAfter(fromDate)) {
                 LocalDateTime start = availabilityStart;

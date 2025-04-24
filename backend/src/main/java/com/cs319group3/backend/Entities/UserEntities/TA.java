@@ -4,12 +4,11 @@ package com.cs319group3.backend.Entities.UserEntities;
 import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
-import com.cs319group3.backend.Entities.RequestEntities.InstructorTAProctoringRequest;
-import com.cs319group3.backend.Entities.RequestEntities.SwapRequest;
-import com.cs319group3.backend.Entities.RequestEntities.TAAvailabilityRequest;
-import com.cs319group3.backend.Entities.RequestEntities.WorkloadRequest;
+import com.cs319group3.backend.Entities.RequestEntities.AuthStaffProctoringRequest;
+import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
+import com.cs319group3.backend.Entities.RequestEntities.TALeaveRequest;
+import com.cs319group3.backend.Entities.RequestEntities.TAWorkloadRequest;
 import com.cs319group3.backend.Entities.TAType;
-import com.cs319group3.backend.Entities.TimeInterval;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,21 +46,21 @@ public class TA extends User{
 
 
     @OneToMany(mappedBy = "senderUser")
-    private List<WorkloadRequest> workloadRequests;
+    private List<TAWorkloadRequest> workloadRequests;
 
 
     @OneToMany(mappedBy = "senderUser")
-    private List<TAAvailabilityRequest> TAAvailabilityRequests;
+    private List<TALeaveRequest> TAAvailabilityRequests;
 
     @OneToMany(mappedBy = "senderUser")
-    private List<SwapRequest> swapRequestsSent;
+    private List<TASwapRequest> swapRequestsSent;
 
     @OneToMany(mappedBy = "receiverUser")
-    private List<SwapRequest> swapRequestsReceived;
+    private List<TASwapRequest> swapRequestsReceived;
 
 
     @OneToMany(mappedBy = "receiverUser")
-    private List<InstructorTAProctoringRequest> instructorTAProctoringRequests;
+    private List<AuthStaffProctoringRequest> instructorTAProctoringRequests;
 
 
 

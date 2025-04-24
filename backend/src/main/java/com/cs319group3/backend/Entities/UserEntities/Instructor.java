@@ -3,9 +3,9 @@ package com.cs319group3.backend.Entities.UserEntities;
 
 import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.RelationEntities.CourseInstructorRelation;
-import com.cs319group3.backend.Entities.RequestEntities.InstructorTAProctoringRequest;
-import com.cs319group3.backend.Entities.RequestEntities.TAFromDeanRequest;
-import com.cs319group3.backend.Entities.RequestEntities.WorkloadRequest;
+import com.cs319group3.backend.Entities.RequestEntities.AuthStaffProctoringRequest;
+import com.cs319group3.backend.Entities.RequestEntities.InstructorAdditionalTARequest;
+import com.cs319group3.backend.Entities.RequestEntities.TAWorkloadRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,13 +32,13 @@ public class Instructor extends User{
 
 
     @OneToMany(mappedBy = "receiverUser")
-    private List<WorkloadRequest> workloadRequests;
+    private List<TAWorkloadRequest> workloadRequests;
 
 
     @OneToMany(mappedBy = "senderUser")
-    private List<TAFromDeanRequest> TAFromDeanRequests;
+    private List<InstructorAdditionalTARequest> TAFromDeanRequests;
 
     @OneToMany(mappedBy = "senderUser")
-    private List<InstructorTAProctoringRequest> instructorTAProctoringRequests;
+    private List<AuthStaffProctoringRequest> instructorTAProctoringRequests;
 
 }

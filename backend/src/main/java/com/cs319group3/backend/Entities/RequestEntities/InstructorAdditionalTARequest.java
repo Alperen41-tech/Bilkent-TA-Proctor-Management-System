@@ -15,8 +15,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ta_from_dean_request")
-public class TAFromDeanRequest extends Request{
+@Table(name = "instructor_additional_ta_request")
+public class InstructorAdditionalTARequest extends Request{
 
 
     //TODO TACount column should be added to table in db

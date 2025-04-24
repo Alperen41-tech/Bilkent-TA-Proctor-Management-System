@@ -158,31 +158,31 @@ INSERT INTO request (request_id, sender_user_id, receiver_user_id, sent_date, is
 	(19, 7, 4, '2025-05-24 10:00:00', true, '2025-05-27 10:00:00', 'Request 19 for from_dean'),
 	(20, 7, 8, '2025-05-25 10:00:00', false, null, 'Request 20 for from_dean');
 
-INSERT INTO swap_request (request_id, class_proctoring_id) VALUES
+INSERT INTO ta_swap_request (request_id, class_proctoring_id) VALUES
 	(1, 2),
 	(2, 4),
 	(3, 1),
 	(4, 5);
     
-INSERT INTO workload_request (request_id, task_type_id, time_spent, course_id) VALUES
+INSERT INTO ta_workload_request (request_id, task_type_id, time_spent, course_id) VALUES
 	(5, 4, 5, 4),
 	(6, 1, 5, 4),
 	(7, 1, 1, 3),
 	(8, 3, 4, 2);
     
-INSERT INTO instructor_ta_proctoring_request (request_id, class_proctoring_id) VALUES
+INSERT INTO auth_staff_proctoring_request (request_id, class_proctoring_id) VALUES
 	(9, 3),
 	(10, 4),
 	(11, 3),
 	(12, 2);
     
-INSERT INTO ta_availability_request (request_id, is_urgent, unavailability_start_date, unavailability_end_date) VALUES
+INSERT INTO ta_leave_request (request_id, is_urgent, leave_start_date, leave_end_date) VALUES
 	(13, false, '2025-05-18 10:00:00', '2025-05-19 10:00:00'),
 	(14, true, '2025-05-19 10:00:00', '2025-05-21 23:00:00'),
 	(15, false, '2025-05-20 07:00:00', '2025-05-24 14:00:00'),
 	(16, false, '2025-05-21 23:00:00', '2025-05-23 07:00:00');
     
-INSERT INTO ta_from_dean_request (request_id, ta_count, is_complete, class_proctoring_id) VALUES
+INSERT INTO instructor_additional_ta_request (request_id, ta_count, is_complete, class_proctoring_id) VALUES
 	(17, 2, true, 3),
 	(18, 2, false, 2),
 	(19, 2, true, 1),
