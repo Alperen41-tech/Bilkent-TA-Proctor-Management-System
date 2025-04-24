@@ -29,9 +29,6 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
 
         Login currLogin = loginDAO.findByUser_EmailAndUserType_UserTypeName(email, userTypeFromFrontend);
 
-
-
-
         System.out.println("hello world 2");
 
         return new org.springframework.security.core.userdetails.User(

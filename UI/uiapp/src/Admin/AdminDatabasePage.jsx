@@ -109,17 +109,6 @@ const AdminDatabasePage = () => {
   }
   const createNewTa = async (newTaName,newTaSurname, newTaEmail, newTaId, departmentSelection, newTaCourseName, newTaPhoneNum, newTaClassYear, newTaPassword) => {
     try {
-      console.log("Submitting new TA:", {
-        name: newTaName,
-        surname: newTaSurname,
-        email: newTaEmail,
-        bilkentId: newTaId,
-        departmentName: departmentSelection,
-        courseName: newTaCourseName,
-        phoneNumber: newTaPhoneNum,
-        classYear: newTaClassYear,
-        password: newTaPassword
-      });
 
       const response = await axios.post("http://localhost:8080/ta/createTA", {
         profile: {
