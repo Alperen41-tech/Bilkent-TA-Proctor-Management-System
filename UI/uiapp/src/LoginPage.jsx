@@ -11,6 +11,11 @@ const LoginPage = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
+  // ta
+  // instructor
+  // depart sec
+  // deans office
+  // admin
   
   const handleLogin = async () => {
     navigate("/dashboard"); // Change this to the appropriate page for your role

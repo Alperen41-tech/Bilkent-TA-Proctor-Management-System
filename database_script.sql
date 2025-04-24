@@ -294,6 +294,13 @@ create table instructor_additional_ta_request(
     foreign key (class_proctoring_id) references class_proctoring(class_proctoring_id)
 );
 
+create table notification(
+	notification_id int primary key auto_increment,
+    request_id int,
+    notification_type varchar(50),
+    foreign key (request_id) references request(request_id)
+);
+
 
 
 
@@ -549,4 +556,10 @@ INSERT INTO class_proctoring_classroom (class_proctoring_id, classroom) VALUES
 	(3, 'A-049'),
 	(4, 'A-324'),
 	(5, 'BC-232');
+    
+INSERT INTO notification (notification_id, request_id, notification_type) VALUES
+	(1, 2, "REQUEST"),
+    (2, 3, "APPROVAL"),
+    (3, 4, "ASSIGNMENT");
+    
 
