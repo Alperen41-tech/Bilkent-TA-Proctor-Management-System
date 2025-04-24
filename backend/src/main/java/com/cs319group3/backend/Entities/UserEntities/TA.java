@@ -30,7 +30,8 @@ public class TA extends User{
     @Column(name = "class")
     private int classYear;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "ta_type_id")
     private TAType taType;
 
     @OneToMany(mappedBy = "TA")
