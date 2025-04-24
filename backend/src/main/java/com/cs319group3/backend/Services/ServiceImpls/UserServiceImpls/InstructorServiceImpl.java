@@ -1,12 +1,18 @@
 package com.cs319group3.backend.Services.ServiceImpls.UserServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.InstructorProfileMapper;
+import com.cs319group3.backend.DTOMappers.TaskTypeMapper;
 import com.cs319group3.backend.DTOs.InstructorProfileDTO;
+import com.cs319group3.backend.DTOs.TaskTypeDTO;
+import com.cs319group3.backend.Entities.TaskType;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
+import com.cs319group3.backend.Repositories.CourseRepo;
 import com.cs319group3.backend.Repositories.InstructorRepo;
+import com.cs319group3.backend.Repositories.TaskTypeRepo;
 import com.cs319group3.backend.Services.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 
@@ -25,5 +31,22 @@ public class InstructorServiceImpl implements InstructorService {
         }
 
         return InstructorProfileMapper.essentialMapper(optionalInstructor.get());
+    }
+
+    @Autowired
+    CourseRepo courseRepo;
+
+    @Autowired
+    TaskTypeRepo taskTypeRepo;
+
+    @Override
+    public boolean createTaskType(TaskTypeDTO dto, int courseId) {
+        if(taskTypeRepo.findByTaskTypeName(dto.getTaskTypeName()).isPresent()) {
+            return false;
+        }
+        TaskType taskType = TaskTypeMapper.essentialMapper(dto);
+        taskType.setCourse(courseRepo.findByCourseId(courseId).get());
+        taskTypeRepo.save(taskType);
+        return true;
     }
 }
