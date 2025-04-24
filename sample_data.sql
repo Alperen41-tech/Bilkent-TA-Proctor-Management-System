@@ -102,10 +102,15 @@ insert into course (course_id, department_id, course_code, course_name, coordina
     (3, 1, 466, 'Cacirology', 5),
     (4, 2, 176, 'What Is IE', 6);
     
-insert into ta (user_id, department_id, course_id, class) values
-	(1, 1, 1, 9),
-    (2, 1, 2, 5),
-    (3, 2, 4, 5);
+insert into ta_type (ta_type_id, type_name, ta_load) values
+	(1, "regular", 2),
+    (2, "scholarship", 1),
+    (3, "part time", 1);
+    
+insert into ta (user_id, department_id, course_id, class, ta_type_id) values
+	(1, 1, 1, 9, 1),
+    (2, 1, 2, 5, 2),
+    (3, 2, 4, 5, 3);
     
 insert into student (student_id, bilkent_id, name, surname, email, phone_number, is_active, department_id, class) values
 	(1, '23103131', 'Emir', 'Atlas', 'emirinmaili@bilkent.edu.tr', '+905353533535', true, 1, 9),
@@ -131,27 +136,27 @@ INSERT INTO task_type (task_type_id, course_id, task_type_name, time_limit) VALU
 	(4, 1, 'Task Type 4', 2),
 	(5, 3, 'Task Type 5', 1);
 
-INSERT INTO request (request_id, sender_user_id, receiver_user_id, sent_date, is_approved, description) VALUES
-	(1, 7, 8, '2025-05-06 10:00:00', true, 'Request 1 for swap'),
-	(2, 3, 6, '2025-05-07 10:00:00', false, 'Request 2 for swap'),
-	(3, 2, 10, '2025-05-08 10:00:00', false, 'Request 3 for swap'),
-	(4, 6, 10, '2025-05-09 10:00:00', true, 'Request 4 for swap'),
-	(5, 1, 3, '2025-05-10 10:00:00', false, 'Request 5 for workload'),
-	(6, 5, 3, '2025-05-11 10:00:00', false, 'Request 6 for workload'),
-	(7, 10, 8, '2025-05-12 10:00:00', true, 'Request 7 for workload'),
-	(8, 6, 7, '2025-05-13 10:00:00', false, 'Request 8 for workload'),
-	(9, 5, 3, '2025-05-14 10:00:00', true, 'Request 9 for instructor_ta'),
-	(10, 4, 7, '2025-05-15 10:00:00', false, 'Request 10 for instructor_ta'),
-	(11, 6, 2, '2025-05-16 10:00:00', false, 'Request 11 for instructor_ta'),
-	(12, 3, 10, '2025-05-17 10:00:00', true, 'Request 12 for instructor_ta'),
-	(13, 3, 9, '2025-05-18 10:00:00', false, 'Request 13 for availability'),
-	(14, 2, 4, '2025-05-19 10:00:00', true, 'Request 14 for availability'),
-	(15, 1, 2, '2025-05-20 10:00:00', true, 'Request 15 for availability'),
-	(16, 1, 4, '2025-05-21 10:00:00', true, 'Request 16 for availability'),
-	(17, 1, 6, '2025-05-22 10:00:00', true, 'Request 17 for from_dean'),
-	(18, 1, 3, '2025-05-23 10:00:00', false, 'Request 18 for from_dean'),
-	(19, 7, 4, '2025-05-24 10:00:00', true, 'Request 19 for from_dean'),
-	(20, 7, 8, '2025-05-25 10:00:00', false, 'Request 20 for from_dean');
+INSERT INTO request (request_id, sender_user_id, receiver_user_id, sent_date, is_approved, approved_date, description) VALUES
+	(1, 7, 8, '2025-05-06 10:00:00', true, '2025-05-10 10:00:00' , 'Request 1 for swap'),
+	(2, 3, 6, '2025-05-07 10:00:00', false, null, 'Request 2 for swap'),
+	(3, 2, 10, '2025-05-08 10:00:00', false, null, 'Request 3 for swap'),
+	(4, 6, 10, '2025-05-09 10:00:00', true, '2025-05-10 10:00:00', 'Request 4 for swap'),
+	(5, 1, 3, '2025-05-10 10:00:00', false, null, 'Request 5 for workload'),
+	(6, 5, 3, '2025-05-11 10:00:00', false, null, 'Request 6 for workload'),
+	(7, 10, 8, '2025-05-12 10:00:00', true, '2025-05-15 10:00:00', 'Request 7 for workload'),
+	(8, 6, 7, '2025-05-13 10:00:00', false, null, 'Request 8 for workload'),
+	(9, 5, 3, '2025-05-14 10:00:00', true, '2025-05-15 10:00:00', 'Request 9 for instructor_ta'),
+	(10, 4, 7, '2025-05-15 10:00:00', false, null, 'Request 10 for instructor_ta'),
+	(11, 6, 2, '2025-05-16 10:00:00', false, null, 'Request 11 for instructor_ta'),
+	(12, 3, 10, '2025-05-17 10:00:00', true, '2025-05-20 10:00:00', 'Request 12 for instructor_ta'),
+	(13, 3, 9, '2025-05-18 10:00:00', false, null, 'Request 13 for availability'),
+	(14, 2, 4, '2025-05-19 10:00:00', true, '2025-05-27 10:00:00', 'Request 14 for availability'),
+	(15, 1, 2, '2025-05-20 10:00:00', true, '2025-05-27 10:00:00', 'Request 15 for availability'),
+	(16, 1, 4, '2025-05-21 10:00:00', true, '2025-05-27 10:00:00', 'Request 16 for availability'),
+	(17, 1, 6, '2025-05-22 10:00:00', true, '2025-05-27 10:00:00', 'Request 17 for from_dean'),
+	(18, 1, 3, '2025-05-23 10:00:00', false, null, 'Request 18 for from_dean'),
+	(19, 7, 4, '2025-05-24 10:00:00', true, '2025-05-27 10:00:00', 'Request 19 for from_dean'),
+	(20, 7, 8, '2025-05-25 10:00:00', false, null, 'Request 20 for from_dean');
 
 INSERT INTO swap_request (request_id, class_proctoring_id) VALUES
 	(1, 2),
@@ -238,11 +243,6 @@ INSERT INTO offered_course_schedule_relation (offered_course_id, time_interval_i
 INSERT INTO course_instructor_relation (offered_course_id, instructor_id) VALUES
 	(1, 4), (2, 4), (3, 5), (4, 4), (5, 6), (6, 6),
 	(7, 6), (8, 6), (9, 5), (10, 6), (11, 4), (12, 6);
-    
-INSERT INTO ta_schedule_relation (ta_id, time_interval_id) VALUES
-	(1, 6), (1, 22), (1, 28),
-	(2, 2), (2, 45), (2, 35),
-	(3, 9), (3, 31), (3, 7);
     
 INSERT INTO class_proctoring_classroom (class_proctoring_id, classroom) VALUES
 	(1, 'B-160'),

@@ -2,7 +2,6 @@ package com.cs319group3.backend.Entities;
 
 
 import com.cs319group3.backend.Entities.RelationEntities.OfferedCourseScheduleRelation;
-import com.cs319group3.backend.Entities.RelationEntities.TAScheduleRelation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,6 +32,4 @@ public class TimeInterval {
     @OneToMany(mappedBy = "timeInterval")
     private List<OfferedCourseScheduleRelation> offeredCourseScheduleRelations;
 
-    @OneToMany(mappedBy = "timeInterval")
-    private List<TAScheduleRelation> TAScheduleRelations;
 }

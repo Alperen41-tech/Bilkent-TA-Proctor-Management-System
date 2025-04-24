@@ -110,14 +110,25 @@ create table course(
 create index course_name_idx on course(course_name);
 
 
+create table ta_type(
+	 ta_type_id int primary key auto_increment,
+	 type_name varchar(50),
+	 ta_load int
+);
+
+create index type_name_idx on ta_type(type_name);
+
+
 create table ta(
 	user_id int primary key,
     department_id int,
 	course_id int,
     class int,
+    ta_type_id int,
     foreign key (user_id) references user(user_id),
     foreign key (department_id) references department(department_id),
-    foreign key (course_id) references course(course_id)
+    foreign key (course_id) references course(course_id),
+    foreign key (ta_type_id) references ta_type(ta_type_id)
 );
 
 
@@ -208,15 +219,6 @@ create table course_instructor_relation(
 );
 
 
-create table ta_schedule_relation(
-	ta_id int,
-    time_interval_id int,
-	primary key (ta_id, time_interval_id),
-    foreign key (ta_id) references ta(user_id),
-    foreign key (time_interval_id) references time_interval(time_interval_id)
-);
-
-
 create table class_proctoring_ta_relation(
 	class_proctoring_id int,
     ta_id int,
@@ -235,12 +237,14 @@ create table request(
     receiver_user_id int not null,
     sent_date datetime not null,
     is_approved bool,
+    approved_date datetime,
     description varchar(500),
     foreign key (sender_user_id) references user(user_id),
     foreign key (receiver_user_id) references user(user_id)
 );
 
 create index sent_date_idx on request(sent_date);
+create index approved_date_idx on request(approved_date);
 
 
 create table swap_request(

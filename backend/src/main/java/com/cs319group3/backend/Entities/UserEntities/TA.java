@@ -4,11 +4,11 @@ package com.cs319group3.backend.Entities.UserEntities;
 import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
-import com.cs319group3.backend.Entities.RelationEntities.TAScheduleRelation;
 import com.cs319group3.backend.Entities.RequestEntities.InstructorTAProctoringRequest;
 import com.cs319group3.backend.Entities.RequestEntities.SwapRequest;
 import com.cs319group3.backend.Entities.RequestEntities.TAAvailabilityRequest;
 import com.cs319group3.backend.Entities.RequestEntities.WorkloadRequest;
+import com.cs319group3.backend.Entities.TAType;
 import com.cs319group3.backend.Entities.TimeInterval;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,8 +30,8 @@ public class TA extends User{
     @Column(name = "class")
     private int classYear;
 
-    @OneToMany(mappedBy = "TA")
-    private List<TAScheduleRelation> TAScheduleRelations;
+    @OneToOne
+    private TAType taType;
 
     @OneToMany(mappedBy = "TA")
     private List<ClassProctoringTARelation> classProctoringTARelations;
