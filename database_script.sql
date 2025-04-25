@@ -298,6 +298,7 @@ create table notification(
 	notification_id int primary key auto_increment,
     request_id int,
     notification_type varchar(50),
+    is_read boolean,
     foreign key (request_id) references request(request_id)
 );
 
@@ -557,9 +558,9 @@ INSERT INTO class_proctoring_classroom (class_proctoring_id, classroom) VALUES
 	(4, 'A-324'),
 	(5, 'BC-232');
     
-INSERT INTO notification (notification_id, request_id, notification_type) VALUES
-	(1, 2, "REQUEST"),
-    (2, 3, "APPROVAL"),
-    (3, 4, "ASSIGNMENT");
+INSERT INTO notification (notification_id, request_id, notification_type, is_read) VALUES
+	(1, 2, "REQUEST", true),
+    (2, 3, "APPROVAL", false),
+    (3, 4, "ASSIGNMENT", true);
     
 
