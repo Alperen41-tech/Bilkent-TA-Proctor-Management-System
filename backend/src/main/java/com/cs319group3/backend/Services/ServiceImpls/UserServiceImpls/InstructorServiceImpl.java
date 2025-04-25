@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -60,5 +61,10 @@ public class InstructorServiceImpl implements InstructorService {
         else{
             throw new RuntimeException("Task type with name " + taskTypeName + " not found.");
         }
+    }
+
+    @Override
+    public List<String> getTaskTypeNames(int courseId) {
+        return taskTypeRepo.findTaskTypeNamesByCourseId(courseId);
     }
 }

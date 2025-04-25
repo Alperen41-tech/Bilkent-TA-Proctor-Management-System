@@ -2,9 +2,14 @@ package com.cs319group3.backend.Repositories;
 
 import com.cs319group3.backend.Entities.TaskType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface TaskTypeRepo extends JpaRepository<TaskType, Integer> {
     Optional<TaskType> findByTaskTypeName(String taskTypeName);
+    @Query("SELECT t.taskTypeName FROM TaskType t WHERE t.course.courseId = :courseId")
+    List<String> findTaskTypeNamesByCourseId(@Param("courseId") int courseId);
 }

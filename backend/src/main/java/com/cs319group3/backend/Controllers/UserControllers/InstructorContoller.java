@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("instructor")
 @ComponentScan(basePackages = {"com.cs319group3.backend.Controllers.UserControllers"})
@@ -32,5 +34,11 @@ public class InstructorContoller {
     public boolean deleteTaskType(@RequestParam int courseId, @RequestParam String taskTypeName) {
         System.out.println("Deleting task type.");
         return instructorServiceImpl.deleteTaskType(courseId, taskTypeName);
+    }
+
+    @GetMapping("getTaskTypeNames")
+    public List<String> getTaskTypeNames(@RequestParam int courseId) {
+        System.out.println("Extracting task type names.");
+        return instructorServiceImpl.getTaskTypeNames(courseId);
     }
 }
