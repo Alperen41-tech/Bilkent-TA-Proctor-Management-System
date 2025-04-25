@@ -164,7 +164,8 @@ create table task_type(
 	course_id int,
     task_type_name varchar(100),
     time_limit int,
-    foreign key (course_id) references course(course_id)
+    foreign key (course_id) references course(course_id),
+    unique key (course_id, task_type_name)
 );
 
 
