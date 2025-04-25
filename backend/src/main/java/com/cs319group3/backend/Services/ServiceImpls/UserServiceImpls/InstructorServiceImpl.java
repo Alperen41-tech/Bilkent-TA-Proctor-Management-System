@@ -49,4 +49,16 @@ public class InstructorServiceImpl implements InstructorService {
         taskTypeRepo.save(taskType);
         return true;
     }
+
+    @Override
+    public boolean deleteTaskType(int courseId, @RequestParam String taskTypeName) {
+        if(taskTypeRepo.findByTaskTypeName(taskTypeName).isPresent()){
+            TaskType taskType = taskTypeRepo.findByTaskTypeName(taskTypeName).get();
+            taskTypeRepo.delete(taskType);
+            return true;
+        }
+        else{
+            throw new RuntimeException("Task type with name " + taskTypeName + " not found.");
+        }
+    }
 }

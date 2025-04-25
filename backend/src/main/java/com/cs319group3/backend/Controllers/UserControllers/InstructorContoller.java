@@ -23,8 +23,14 @@ public class InstructorContoller {
     }
 
     @PostMapping("createTaskType")
-    public boolean createTaskType(@RequestBody TaskTypeDTO dto, @RequestParam int id, @RequestParam int courseId) {
+    public boolean createTaskType(@RequestBody TaskTypeDTO dto, @RequestParam int courseId) {
         System.out.println("Creating task type.");
         return instructorServiceImpl.createTaskType(dto, courseId);
+    }
+
+    @DeleteMapping("deleteTaskType")
+    public boolean deleteTaskType(@RequestParam int courseId, @RequestParam String taskTypeName) {
+        System.out.println("Deleting task type.");
+        return instructorServiceImpl.deleteTaskType(courseId, taskTypeName);
     }
 }
