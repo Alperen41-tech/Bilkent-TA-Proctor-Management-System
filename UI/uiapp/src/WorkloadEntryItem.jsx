@@ -14,12 +14,12 @@ const getStatusColor = (status) => {
   }
 };
 
-const WorkloadEntryItem = ({ courseCode, taskTitle, date, duration, comment, status }) => {
+const WorkloadEntryItem = ({ taskTitle, date, duration, comment, status }) => {
   const backgroundColor = getStatusColor(status);
 
   return (
     <div className="workload-entry-item-workload-entry" style={{ backgroundColor }}>
-      <span className="workload-entry-item-entry-item">{courseCode}</span>
+      
       <span className="workload-entry-item-entry-item">{taskTitle}</span>
       <span className="workload-entry-item-entry-item">{date}</span>
       <span className="workload-entry-item-entry-item">{duration} Hours</span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Navbar from "./Navbar";
 import "./DashboardPage.css";
 import PendingRequestItem from "../PendingRequestItem";
@@ -12,12 +12,19 @@ const DashboardPage = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [selectedProctoring, setSelectedProctoring] = useState(null);
   const [selectedProctoringId, setSelectedProctoringId] = useState(null);
-  const [tasProctorings, setTasProctorings] = useState([]); // Initialize as an empty array
+  const [tasProctorings, setTasProctorings] = useState([]);
+  const [taskType, setTaskType] = useState([]);
 
+  //Refs for the new workload entry
+  const newTaskTypeEntry = useRef();
+  const newTimeSpendHoursEntry = useRef();
+  const newTimeSpendMinutesEntry = useRef();
+  const newDetailsEntry = useRef();
+  //-----------------------------
+  
   const handleSelect = (id) => {
-    setSelectedProctoringId(id); // Only one selected at a time
+    setSelectedProctoringId(id);
   };
-
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -41,13 +48,13 @@ const DashboardPage = () => {
     );
   };
 
-  const createWorkloadEntry = (courseCode, taskTitle, date, duration, comment, status) => {
-    return <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status} />;
+  const createWorkloadEntry = (taskTitle, date, duration, comment, status) => {
+    return <WorkloadEntryItem taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status} />;
   }
 
   const fetchTasProctorings = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=2"); // Adjust the URL as needed
+      const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=1"); // Adjust the URL as needed
       setTasProctorings(response.data);
       console.log(tasProctorings);
     } catch (error) {
@@ -55,15 +62,40 @@ const DashboardPage = () => {
     }
   };
 
+  const fetchWorkloadTypes = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/taskType/getTaskTypeNames?courseId=1"); // Adjust the URL as needed
+      setTaskType(response.data);
+      console.log(taskType);
+    } catch (error) {
+      console.error("Error fetching task types:", error);
+    }
+  };
+
+  const postNewWorkloadEntry = async () => {
+    try {
+      const response = await axios.post("http://localhost:8080//?courseId=1", {
+        taskType: newTaskTypeEntry.current.value,
+        timeSpent: newTimeSpendHoursEntry.current.value*60 + newTimeSpendMinutesEntry.current.value,
+        details: newDetailsEntry.current.value,
+      });
+      setTaskType(response.data);
+      console.log(taskType);
+    } catch (error) {
+      console.error("Error fetching task types:", error);
+    }
+  };
+
   useEffect(() => {
-    fetchTasProctorings(tasProctorings);
+    fetchTasProctorings();
+    fetchWorkloadTypes();
   }, []);
 
   const handleLockedStatusChange = async (id) => {
     try {
       const proctoringToBeLocked = tasProctorings.find((duty) => duty.classProctoringDTO.id === id);
       console.log(proctoringToBeLocked);
-      const responseLocked = await axios.put("http://localhost:8080/classProctoringTARelation/updateTAsClassProctorings?id=2", {
+      const responseLocked = await axios.put("http://localhost:8080/classProctoringTARelation/updateTAsClassProctorings?id=1", {
         classProctoringDTO: {
           id: proctoringToBeLocked.classProctoringDTO.id,
         },
@@ -73,13 +105,13 @@ const DashboardPage = () => {
       if (!responseLocked.data) {
         alert("Could not locked the swap. Try again.");
       }
-      fetchTasProctorings(tasProctorings);
+      fetchTasProctorings();
     } catch (error) {
       console.error("There was an error with the login request:", error);
       alert("An error occurred. Please try again.");
     }
   }
-  // Sample data for pending requests
+  
   const pendingRequests = [
     {
       date: { month: "March", day: "23", weekday: "Fri" },
@@ -123,13 +155,6 @@ const DashboardPage = () => {
       comment: "",
     },
   ];
-  // Sample data for proctoring duties
-  const proctoringDuties = [
-    { id: 1, title: "Quiz Proctor", date: "15/03/2025", time: "10.30 - 11.30", location: "EE - 214", status: "locked" },
-    { id: 2, title: "Quiz Proctor", date: "16/03/2025", time: "9.30 - 10.30", location: "EE - 312", status: "open" },
-    { id: 3, title: "Midterm Proctor", date: "21/03/2025", time: "19.00 - 21.00", location: "B - 103", status: "open" },
-    { id: 4, title: "Midterm Proctor", date: "21/03/2025", time: "19.00 - 21.00", location: "B - 104", status: "open" },
-  ];
   //--------------------------------------------------------------
 
   return (
@@ -152,19 +177,16 @@ const DashboardPage = () => {
               {activeTab === "pending" && (
                 <div>
                   {pendingRequests.map((req, index) => createPendingRequest(req, index))}
-
                 </div>
               )}
               {activeTab === "received" && (
                 <div>
                   {pendingRequests.map((req, index) => createReceivedRequest(req, index))}
-
                 </div>
               )}
               {activeTab === "tasks" && (
                 <div>{workloadEntries.map((ent, idx) =>
                   createWorkloadEntry(
-                    ent.courseCode,
                     ent.taskTitle,
                     ent.date,
                     ent.duration,
@@ -215,22 +237,24 @@ const DashboardPage = () => {
                 <h3>Enter Task</h3>
                 <form>
                   <label>Task Type</label>
-                  <select>
-                    <option>Quiz Reading</option>
-                    <option>Homework Grading</option>
-                    <option>Project Evaluation</option>
+                  <select ref={newTaskTypeEntry}>
+                    <option>Select a Task Type</option>
+                    {taskType.map((type, index) => (
+                      <option key={index}>{type}</option>
+                    ))}
+                    <option>Other</option>
                   </select>
 
                   <label>Time Spent</label>
                   <div className="ta-dashboard-time-inputs">
-                    <input type="number" placeholder="Hours" />
-                    <input type="number" placeholder="Minutes" />
+                    <input ref={newTimeSpendHoursEntry} type="number" min={0}  placeholder="Hours" />
+                    <input ref={newTimeSpendMinutesEntry} type="number" min={0} placeholder="Minutes" />
                   </div>
 
                   <label>Details</label>
-                  <textarea placeholder="Optional comments" />
+                  <textarea ref={newDetailsEntry} placeholder="Optional comments" />
 
-                  <button type="submit">Send</button>
+                  <button onClick={postNewWorkloadEntry} type="submit">Send</button>
                 </form>
               </div>
             ) : activeTab === "proctorings" ? (
