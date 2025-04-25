@@ -22,7 +22,7 @@ public class TaskTypeServiceImpl implements TaskTypeService {
 
     @Override
     public boolean createTaskType(TaskTypeDTO dto, int courseId) {
-        if(taskTypeRepo.findByTaskTypeName(dto.getTaskTypeName()).isPresent()) {
+        if(taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(dto.getTaskTypeName(), courseId).isPresent()) {
             return false;
         }
         TaskType taskType = TaskTypeMapper.essentialMapper(dto);
@@ -32,9 +32,9 @@ public class TaskTypeServiceImpl implements TaskTypeService {
     }
 
     @Override
-    public boolean deleteTaskType(int courseId, @RequestParam String taskTypeName) {
-        if(taskTypeRepo.findByTaskTypeName(taskTypeName).isPresent()){
-            TaskType taskType = taskTypeRepo.findByTaskTypeName(taskTypeName).get();
+    public boolean deleteTaskType(int courseId, String taskTypeName) {
+        if(taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(taskTypeName, courseId).isPresent()){
+            TaskType taskType = taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(taskTypeName, courseId).get();
             taskTypeRepo.delete(taskType);
             return true;
         }

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TaskTypeRepo extends JpaRepository<TaskType, Integer> {
-    Optional<TaskType> findByTaskTypeName(String taskTypeName);
+    Optional<TaskType> findByTaskTypeNameAndCourse_CourseId(String taskTypeName, int courseId);
     @Query("SELECT t.taskTypeName FROM TaskType t WHERE t.course.courseId = :courseId")
     List<String> findTaskTypeNamesByCourseId(@Param("courseId") int courseId);
 }
