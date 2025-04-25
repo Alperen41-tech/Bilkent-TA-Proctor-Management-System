@@ -40,4 +40,16 @@ public class ClassProctoringTARelationController {
         System.out.println("request received");
         return classProctoringAndTAs.getDepartmentTAsClassProctorings(id);
     }
+
+    @GetMapping("getDepartmentClassProctorings")
+    public List<ClassProctoringAndTAsDTO> getDepartmentClassProctorings(@RequestParam int departmentId){
+        System.out.println("Get department class proctorings");
+        return classProctoringAndTAs.getDepartmentClassProctorings(departmentId);
+    }
+
+    @GetMapping("getFacultyClassProctorings")
+    public List<ClassProctoringAndTAsDTO> getFacultyClassProctorings(@RequestParam int facultyId){
+        System.out.println("Get department class proctorings");
+        return classProctoringAndTAs.getFacultyClassProctorings(facultyId);
+    }
 }

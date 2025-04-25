@@ -31,7 +31,7 @@ public class Department {
     private String departmentCode;
 
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "faculty_id")
     private Faculty faculty;
 

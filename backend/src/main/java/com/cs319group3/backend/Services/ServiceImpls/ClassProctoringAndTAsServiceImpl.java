@@ -6,8 +6,11 @@ import com.cs319group3.backend.DTOs.ClassProctoringAndTAsDTO;
 import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
+import com.cs319group3.backend.Entities.UserEntities.DeansOffice;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
+import com.cs319group3.backend.Repositories.DeansOfficeRepo;
+import com.cs319group3.backend.Repositories.DepartmentRepo;
 import com.cs319group3.backend.Repositories.TARepo;
 import com.cs319group3.backend.Services.ClassProctoringAndTAsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,8 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
 
     @Autowired
     private ClassProctoringTARelationRepo classProctoringTARelationRepo;
+    @Autowired
+    private DepartmentRepo departmentRepo;
 
     @Override
     public List<ClassProctoringAndTAsDTO> getDepartmentTAsClassProctorings(int userId) {
@@ -80,6 +85,67 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
             dto.setTaProfileDTOList(taDTOs);
 
             results.add(dto);
+        }
+
+        return results;
+    }
+
+    @Autowired
+    DeansOfficeRepo deansOfficeRepo;
+    @Override
+    public List<ClassProctoringAndTAsDTO> getDepartmentClassProctorings(int departmentId) {
+        // Fetch all relations in the department
+        List<ClassProctoringTARelation> relations =
+                classProctoringTARelationRepo.findByClassProctoring_Course_Department_DepartmentId(departmentId);
+
+        List<ClassProctoringAndTAsDTO> results = new ArrayList<>();
+        Set<Integer> processedProctoringIds = new HashSet<>();
+
+        for (ClassProctoringTARelation relation : relations) {
+            int proctoringId = relation.getClassProctoring().getClassProctoringId();
+
+            // Skip already processed proctorings
+            if (processedProctoringIds.contains(proctoringId)) {
+                continue;
+            }
+
+            // Get all TAs assigned to this proctoring
+            List<ClassProctoringTARelation> otherRelations =
+                    classProctoringTARelationRepo.findByClassProctoring_ClassProctoringId(proctoringId);
+
+            // Mark as processed
+            processedProctoringIds.add(proctoringId);
+
+            // Pick any relation to represent the proctoring info (doesn't matter which)
+            ClassProctoringTARelationDTO relationDTO = ClassProctoringTARelationMapper.essentialMapper(relation);
+
+            // Convert all other TAs to profile DTOs
+            List<TAProfileDTO> taDTOs = new ArrayList<>();
+            for (ClassProctoringTARelation other : otherRelations) {
+                TA ta1 = other.getTA();
+                TAProfileDTO dto = TAProfileMapper.essentialMapper(ta1);
+                taDTOs.add(dto);
+            }
+
+            // Build final DTO
+            ClassProctoringAndTAsDTO dto = new ClassProctoringAndTAsDTO();
+            dto.setClassProctoringTARelationDTO(relationDTO);
+            dto.setTaProfileDTOList(taDTOs);
+
+            results.add(dto);
+        }
+
+        return results;
+    }
+
+    @Override
+    public List<ClassProctoringAndTAsDTO> getFacultyClassProctorings(int facultyId) {
+        List<Integer> departmentIds = departmentRepo.findDepartmentIdsByFacultyId(facultyId);
+
+        List<ClassProctoringAndTAsDTO> results = new ArrayList<>();
+        for (int departmentId : departmentIds) {
+            // Fetch all relations in the department
+            results.addAll(getDepartmentClassProctorings(departmentId));
         }
 
         return results;
