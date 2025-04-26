@@ -173,14 +173,14 @@ create table class_proctoring(
 	class_proctoring_id int primary key auto_increment,
     course_id int not null,
     event_name varchar(100),
-    instructor_id int not null,
+    creator_id int not null,
     section_no int,
 	start_date datetime,
     end_date datetime,
     ta_count int,
     is_complete bool,
     foreign key (course_id) references course(course_id),
-    foreign key (instructor_id) references instructor(user_id)
+    foreign key (creator_id) references user(user_id)
 );
 
 create index date_time_idx on class_proctoring(start_date, end_date);
@@ -432,12 +432,12 @@ insert into student (student_id, bilkent_id, name, surname, email, phone_number,
     (7, '23143153', 'Ata', 'Kılıç', 'atatata@bilkent.edu.tr', '+9048792378624', true, 1, 3),
     (8, '23472546', 'Alp Eren', 'Karslıoğlu', 'alpkarslıoglueren@bilkent.edu.tr', '+902434624626', true, 2, 4);
     
-INSERT INTO class_proctoring (class_proctoring_id, course_id, event_name, instructor_id, section_no, start_date, end_date, ta_count, is_complete) VALUES
+INSERT INTO class_proctoring (class_proctoring_id, course_id, event_name, creator_id, section_no, start_date, end_date, ta_count, is_complete) VALUES
 	(1, 1, 'Midterm 2', 6, 5, '2025-05-06 20:00:00', '2025-05-06 23:00:00', 3, false),
 	(2, 2, 'Final Exam', 4, 3, '2025-05-07 17:00:00', '2025-05-07 20:00:00', 2, false),
 	(3, 2, 'Midweek', 4, 1, '2025-05-08 10:00:00', '2025-05-08 12:00:00', 2, false),
 	(4, 1, 'Event 4', 5, 1, '2025-05-09 10:00:00', '2025-05-09 12:00:00', 1, false),
-	(5, 3, 'Event 5', 6, 2, '2025-05-10 10:00:00', '2025-05-10 12:00:00', 2, false);
+	(5, 3, 'Event 5', 9, 2, '2025-05-10 10:00:00', '2025-05-10 12:00:00', 2, false);
 
 INSERT INTO task_type (task_type_id, course_id, task_type_name, time_limit) VALUES
 	(1, 4, 'Lab Grading', 2),
