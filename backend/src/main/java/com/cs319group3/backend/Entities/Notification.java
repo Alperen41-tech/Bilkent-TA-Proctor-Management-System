@@ -2,6 +2,7 @@ package com.cs319group3.backend.Entities;
 
 
 import com.cs319group3.backend.Entities.RequestEntities.Request;
+import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,4 +32,7 @@ public class Notification {
 
     private boolean isRead;
 
+    @ManyToOne
+    @JoinColumn(name = "receiver_id")
+    private User receiver;
 }

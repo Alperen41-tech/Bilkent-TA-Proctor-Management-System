@@ -238,14 +238,14 @@ create table request(
     receiver_user_id int not null,
     sent_date datetime not null,
     is_approved bool,
-    approved_date datetime,
+    response_date datetime,
     description varchar(500),
     foreign key (sender_user_id) references user(user_id),
     foreign key (receiver_user_id) references user(user_id)
 );
 
 create index sent_date_idx on request(sent_date);
-create index approved_date_idx on request(approved_date);
+create index response_date_idx on request(response_date);
 
 
 create table ta_swap_request(
@@ -297,9 +297,11 @@ create table instructor_additional_ta_request(
 
 create table notification(
 	notification_id int primary key auto_increment,
+    receiver_id int,
     request_id int,
     notification_type varchar(50),
     is_read boolean,
+    foreign key (receiver_id) references user(user_id),
     foreign key (request_id) references request(request_id)
 );
 
@@ -444,7 +446,7 @@ INSERT INTO task_type (task_type_id, course_id, task_type_name, time_limit) VALU
 	(4, 1, 'Task Type 4', 2),
 	(5, 3, 'Task Type 5', 1);
 
-INSERT INTO request (request_id, sender_user_id, receiver_user_id, sent_date, is_approved, approved_date, description) VALUES
+INSERT INTO request (request_id, sender_user_id, receiver_user_id, sent_date, is_approved, response_date, description) VALUES
 	(1, 7, 8, '2025-05-06 10:00:00', true, '2025-05-10 10:00:00' , 'Request 1 for swap'),
 	(2, 3, 6, '2025-05-07 10:00:00', false, null, 'Request 2 for swap'),
 	(3, 2, 10, '2025-05-08 10:00:00', false, null, 'Request 3 for swap'),
@@ -559,9 +561,9 @@ INSERT INTO class_proctoring_classroom (class_proctoring_id, classroom) VALUES
 	(4, 'A-324'),
 	(5, 'BC-232');
     
-INSERT INTO notification (notification_id, request_id, notification_type, is_read) VALUES
-	(1, 2, "REQUEST", true),
-    (2, 3, "APPROVAL", false),
-    (3, 4, "ASSIGNMENT", true);
+INSERT INTO notification (notification_id, receiver_id, request_id, notification_type, is_read) VALUES
+	(1, 6, 2, "REQUEST", true),
+    (2, 10, 3, "APPROVAL", false),
+    (3, 10, 4, "ASSIGNMENT", true);
     
 

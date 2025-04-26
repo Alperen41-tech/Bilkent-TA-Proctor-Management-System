@@ -20,7 +20,7 @@ public class InstructorAdditionalTARequest extends Request{
 
 
     //TODO TACount column should be added to table in db
-    private int TACount;
+    private int taCount;
 
     private boolean isComplete;
 

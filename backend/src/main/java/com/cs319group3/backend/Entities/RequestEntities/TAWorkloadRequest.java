@@ -20,8 +20,6 @@ import lombok.Setter;
 @Table(name = "ta_workload_request")
 public class TAWorkloadRequest extends Request{
 
-    private int TACount;
-
     @ManyToOne
     @JoinColumn(name = "task_type_id")
     private TaskType taskType;
