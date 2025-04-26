@@ -52,4 +52,16 @@ public class ClassProctoringTARelationController {
         System.out.println("Get department class proctorings");
         return classProctoringAndTAs.getFacultyClassProctorings(facultyId);
     }
+
+    @DeleteMapping("removeTAFromClassProctoring")
+    public boolean removeTAFromClassProctoring(@RequestParam int taId, @RequestParam int classProctoringId){
+        System.out.println("Remove ta from class proctoring");
+        return classProctoringTARelationService.removeTAFromClassProctoring(taId, classProctoringId);
+    }
+
+    @PostMapping("createClassProctoringTARelation")
+    public boolean createClassProctoringTARelation(@RequestParam int taId, @RequestParam int classProctoringId){
+        System.out.println("Create classProctoringTARelation");
+        return classProctoringTARelationService.createClassProctoringTARelation(taId, classProctoringId);
+    }
 }

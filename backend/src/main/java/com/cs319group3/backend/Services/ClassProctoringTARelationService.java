@@ -13,7 +13,7 @@ public interface ClassProctoringTARelationService {
 
 
     public List<ClassProctoringTARelationDTO> getTAsClassProctoringDTOs(int id);
-
     public boolean updateClassProctoringDTO(ClassProctoringTARelationDTO dto, int userId);
-
+    public boolean removeTAFromClassProctoring(int taId, int classProctoringId);
+    public boolean createClassProctoringTARelation(int taId, int classProctoringId);
 }

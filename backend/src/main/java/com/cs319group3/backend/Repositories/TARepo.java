@@ -34,4 +34,11 @@ public interface TARepo extends JpaRepository<TA, Integer> {
       )
 """)
     List<TA> findAvailableTAsByFaculty(int facultyId, int classProctoringId);
+
+    @Query("""
+    SELECT t.department.departmentId
+    FROM TA t
+    WHERE t.userId = :userId
+""")
+    Integer findDepartmentIdByUserId(@Param("userId") int userId);
 }

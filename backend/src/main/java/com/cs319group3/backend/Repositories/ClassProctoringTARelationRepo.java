@@ -18,4 +18,11 @@ public interface ClassProctoringTARelationRepo extends JpaRepository<ClassProcto
     List<ClassProctoringTARelation> findByClassProctoring_ClassProctoringIdIn(List<Integer> ids);
     List<ClassProctoringTARelation> findByClassProctoring_Course_Department_DepartmentId(Integer departmentId);
     List<ClassProctoringTARelation> findByClassProctoring_ClassProctoringId(Integer id);
+
+    @Query("""
+    SELECT COUNT(ctr)
+    FROM ClassProctoringTARelation ctr
+    WHERE ctr.classProctoring.classProctoringId = :classProctoringId
+""")
+    int countByClassProctoringId(int classProctoringId);
 }
