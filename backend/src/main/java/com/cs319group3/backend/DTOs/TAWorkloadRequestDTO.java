@@ -1,0 +1,17 @@
+package com.cs319group3.backend.DTOs;
+
+import lombok.*;
+
+@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class TAWorkloadRequestDTO {
+    private String taskTypeName;
+    private int timeSpent;
+    private String courseCode;
+    private String description;
+    private String sentDate;
+    private String responseDate;
+}
