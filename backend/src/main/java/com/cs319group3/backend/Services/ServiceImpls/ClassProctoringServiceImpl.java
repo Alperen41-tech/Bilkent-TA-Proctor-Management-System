@@ -22,8 +22,10 @@ public class ClassProctoringServiceImpl implements ClassProctoringService {
 
     @Autowired
     ClassProctoringMapper classProctoringMapper;
+
     @Autowired
     ClassProctoringRepo classProctoringRepo;
+
     @Override
     public boolean createClassProctoring(CreateClassProctoringDTO dto){
         ClassProctoring classProctoring = classProctoringMapper.essentialEntityTo(dto);
@@ -33,4 +35,5 @@ public class ClassProctoringServiceImpl implements ClassProctoringService {
         classProctoringRepo.save(classProctoring);
         return true;
     }
+
 }

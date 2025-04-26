@@ -66,10 +66,11 @@ public class ClassProctoringMapper {
 
 
         ClassProctoring classProctoring = new ClassProctoring();
+        classProctoring.setTACount(createClassProctoringDTO.getTaCount());
         classProctoring.setEventName(createClassProctoringDTO.getEventName());
         classProctoring.setTACount(createClassProctoringDTO.getTaCount());
         classProctoring.setSectionNo(createClassProctoringDTO.getSectionNo());
-        classProctoring.setCreatorInstructor(instructor.get());
+        classProctoring.setCreator(instructor.get());
         classProctoring.setCourse(course);
         classProctoring.setStartDate(createClassProctoringDTO.getStartDate());
         classProctoring.setEndDate(createClassProctoringDTO.getEndDate());

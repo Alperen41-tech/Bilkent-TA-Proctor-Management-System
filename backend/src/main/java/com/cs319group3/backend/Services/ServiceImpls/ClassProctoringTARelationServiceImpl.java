@@ -48,11 +48,11 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
     public boolean updateClassProctoringDTO(ClassProctoringTARelationDTO dto, int userId) {
         // Step 1: Find the existing entity
 
-        int classpId = dto.getClassProctoringDTO().getId();
-        Optional<ClassProctoringTARelation> optionalRelation = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classpId, userId);
+        int classId = dto.getClassProctoringDTO().getId();
+        Optional<ClassProctoringTARelation> optionalRelation = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classId, userId);
 
         if (optionalRelation.isEmpty()) {
-            throw new RuntimeException("No ClassProctoringTARelation found with id " + classpId);
+            throw new RuntimeException("No ClassProctoringTARelation found with id " + classId);
         }
 
         ClassProctoringTARelation relation = optionalRelation.get();

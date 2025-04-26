@@ -3,6 +3,7 @@ package com.cs319group3.backend.Entities;
 
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
+import com.cs319group3.backend.Entities.UserEntities.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,8 +44,8 @@ public class ClassProctoring {
     private String eventName;
 
     @ManyToOne
-    @JoinColumn(name = "instructor_id")
-    private Instructor creatorInstructor;
+    @JoinColumn(name = "creator_id")
+    private User creator;
 
     @OneToMany(mappedBy = "classProctoring")
     private List<ClassProctoringTARelation> TAsOfProctoring;

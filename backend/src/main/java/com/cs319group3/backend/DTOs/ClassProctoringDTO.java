@@ -24,5 +24,5 @@ public class ClassProctoringDTO {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String classrooms;
-
+    private int TACount;
 }
