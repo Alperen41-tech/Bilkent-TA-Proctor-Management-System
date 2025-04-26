@@ -26,7 +26,7 @@ const NavbarDO = () => {
         <nav className="nav-links">
           
           <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>Dashboard</NavLink>
-          <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>TA Requests</NavLink>
+          <NavLink to="/do-ta-requests" className={({ isActive }) => (isActive ? "active" : "")}>TA Requests</NavLink>
           <NavLink to="/do-exams" className={({ isActive }) => (isActive ? "active" : "")}>Exams</NavLink>
           <NavLink to="/do-create-exam" className={({ isActive }) => (isActive ? "active" : "")}>Create Exam</NavLink>
           <NavLink to="/do-profile" className={({ isActive }) => (isActive ? "active" : "")}>Profile</NavLink>
