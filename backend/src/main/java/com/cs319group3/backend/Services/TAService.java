@@ -8,4 +8,6 @@ import java.util.List;
 public interface TAService {
     public TAProfileDTO getTAProfileById(int id);
     public boolean createNewTA(CreateTADTO createTADTO);
+    public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int proctoringId);
+    public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int proctoringId);
 }

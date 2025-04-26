@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DepartmentRepo extends JpaRepository<Department, Integer> {
-    Optional<Department> findByDepartmentName(String name);
     Optional<Department> findByDepartmentCode(String code);
 
     @Query("SELECT d.departmentId FROM Department d WHERE d.faculty.facultyId = :facultyId")
     List<Integer> findDepartmentIdsByFacultyId(@Param("facultyId") int facultyId);
+
 }

@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "request")
-public abstract class Request{
+public class Request{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

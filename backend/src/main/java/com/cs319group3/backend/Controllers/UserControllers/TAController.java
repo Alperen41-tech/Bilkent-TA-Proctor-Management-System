@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/ta")
 @ComponentScan(basePackages = {"com.cs319group3.backend.Controllers.UserControllers"})
@@ -30,4 +32,15 @@ public class TAController {
         return taService.createNewTA(dto);
     }
 
+    @GetMapping("getAvailableTAsByDepartmentExceptProctoring")
+    public List<TAProfileDTO> getAllAvailableTAsByDepartment(@RequestParam String departmentCode,@RequestParam int proctoringId) {
+        System.out.println("Getting available TA profiles by department except in proctoring " + proctoringId);
+        return taService.getAllAvailableTAsByDepartmentCode(departmentCode, proctoringId);
+    }
+
+    @GetMapping("getAvailableTAsByFacultyExceptProctoring")
+    public List<TAProfileDTO> getAllAvailableTAsByFaculty(@RequestParam int facultyId, @RequestParam int proctoringId) {
+        System.out.println("Getting available TA profiles by Faculty");
+        return taService.getAllAvailableTAsByFacultyId(facultyId, proctoringId);
+    }
 }

@@ -10,29 +10,26 @@ import com.cs319group3.backend.Services.TAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class TAServiceImpl implements TAService {
 
     @Autowired
-    private TARepo taRepository;
-    @Autowired
-    private StudentRepo studentRepo;
+    private TARepo taRepo;
+
     @Autowired
     private UserRepo userRepo;
-    @Autowired
-    private UserTypeRepo userTypeRepo;
+
     @Autowired
     private LoginRepo loginRepo;
-    @Autowired
-    private CourseRepo courseRepo;
-    @Autowired
-    private DepartmentRepo departmentRepo;
+
 
     @Override
     public TAProfileDTO getTAProfileById(int id) {
-        Optional<TA> optionalTA = taRepository.findByUserId(id);
+        Optional<TA> optionalTA = taRepo.findByUserId(id);
 
         if (optionalTA.isEmpty()) {
             throw new RuntimeException("TA with ID " + id + " not found.");
@@ -43,6 +40,7 @@ public class TAServiceImpl implements TAService {
 
     @Autowired
     LoginMapper loginMapper;
+
     @Autowired
     TAProfileMapper taProfileMapper;
 
@@ -60,7 +58,7 @@ public class TAServiceImpl implements TAService {
 
 
             TA ta = taProfileMapper.essentialEntityToTA(profile);
-            taRepository.save(ta); // saves both into user and ta tables
+            taRepo.save(ta); // saves both into user and ta tables
 
 
             Login loginEntity = loginMapper.essentialEntityToLogin(login, ta);
@@ -72,5 +70,30 @@ public class TAServiceImpl implements TAService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Autowired
+    DepartmentRepo departmentRepo;
+
+    @Override
+    public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int classProctoringId) {
+        List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(departmentCode, classProctoringId);
+        List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
+        for (TA ta : availableTAs) {
+            TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
+            availableTAProfiles.add(profile);
+        }
+        return availableTAProfiles;
+    }
+
+    @Override
+    public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int classProctoringId) {
+        List<TA> availableTAs = taRepo.findAvailableTAsByFaculty(facultyId, classProctoringId);
+        List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
+        for (TA ta : availableTAs) {
+            TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
+            availableTAProfiles.add(profile);
+        }
+        return availableTAProfiles;
     }
 }
