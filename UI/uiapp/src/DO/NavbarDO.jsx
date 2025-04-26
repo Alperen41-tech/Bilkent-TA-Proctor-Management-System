@@ -25,7 +25,7 @@ const NavbarDO = () => {
         <div className="title">Bilkent TA Managament System</div>
         <nav className="nav-links">
           
-          <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>Dashboard</NavLink>
+          <NavLink to="/do-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>Dashboard</NavLink>
           <NavLink to="/do-ta-requests" className={({ isActive }) => (isActive ? "active" : "")}>TA Requests</NavLink>
           <NavLink to="/do-exams" className={({ isActive }) => (isActive ? "active" : "")}>Exams</NavLink>
           <NavLink to="/do-create-exam" className={({ isActive }) => (isActive ? "active" : "")}>Create Exam</NavLink>
