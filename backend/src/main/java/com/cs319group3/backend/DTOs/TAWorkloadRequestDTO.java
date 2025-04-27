@@ -10,6 +10,7 @@ import lombok.*;
 public class TAWorkloadRequestDTO {
     private String taskTypeName;
     private int timeSpent;
+    private int requestId;
     private String courseCode;
     private String description;
     private String sentDate;

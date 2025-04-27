@@ -83,8 +83,6 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
         List<TAWorkloadRequestDTO> dtos = new ArrayList<>();
         for (TAWorkloadRequest request : requests) {
             dtos.add(TAWorkloadRequestMapper.essentialMapper(request));
-            dtos.get(dtos.size()-1).setTaName(request.getSenderUser().getName() + " " + request.getSenderUser().getSurname());
-            dtos.get(dtos.size()-1).setTaMail(request.getSenderUser().getEmail());
         }
         return dtos;
     }

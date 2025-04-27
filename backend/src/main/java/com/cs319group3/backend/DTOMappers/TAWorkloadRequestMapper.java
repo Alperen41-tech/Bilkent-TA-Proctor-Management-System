@@ -14,7 +14,9 @@ public class TAWorkloadRequestMapper {
         if ((taWorkloadRequest.getIsApproved()) != null && taWorkloadRequest.getIsApproved())
             dto.setResponseDate(taWorkloadRequest.getResponseDate().toString());
         dto.setTaskTypeName(taWorkloadRequest.getTaskType().getTaskTypeName());
-
+        dto.setRequestId(taWorkloadRequest.getRequestId());
+        dto.setTaMail(taWorkloadRequest.getSenderUser().getEmail());
+        dto.setTaName(taWorkloadRequest.getSenderUser().getName() + " " + taWorkloadRequest.getSenderUser().getSurname());
         if ((taWorkloadRequest.getIsApproved()) != null && taWorkloadRequest.getIsApproved())
             dto.setStatus("accepted");
         if ((taWorkloadRequest.getIsApproved()) != null && !taWorkloadRequest.getIsApproved())
