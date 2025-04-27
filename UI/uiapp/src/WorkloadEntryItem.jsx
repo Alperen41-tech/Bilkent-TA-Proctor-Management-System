@@ -5,7 +5,7 @@ const getStatusColor = (status) => {
   switch (status) {
     case "rejected":
       return "#f8d7da"; // red-ish
-    case "waitingForResponse":
+    case null:
       return "#fff3cd"; // yellow-ish
     case "accepted":
       return "#c7f5d5"; // green-ish
@@ -14,15 +14,16 @@ const getStatusColor = (status) => {
   }
 };
 
-const WorkloadEntryItem = ({ taskTitle, date, duration, comment, status }) => {
+const WorkloadEntryItem = ({ taskTitle, courseCode, date, duration, comment, status}) => {
   const backgroundColor = getStatusColor(status);
 
   return (
     <div className="workload-entry-item-workload-entry" style={{ backgroundColor }}>
       
       <span className="workload-entry-item-entry-item">{taskTitle}</span>
+      <span className="workload-entry-item-entry-item">{courseCode}</span>
       <span className="workload-entry-item-entry-item">{date}</span>
-      <span className="workload-entry-item-entry-item">{duration} Hours</span>
+      <span className="workload-entry-item-entry-item">{Math.floor(parseInt(duration, 10) / 60)} Hours {parseInt(duration,10)%60} Min</span>
       <span className="workload-entry-item-entry-item">{comment.length != 0 ? comment : "-"}</span>
     </div>
   );

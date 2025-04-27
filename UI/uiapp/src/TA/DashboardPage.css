@@ -21,6 +21,7 @@
   
   .ta-dashboard-left-up-panel{
     background: white;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
     border-radius: 10px;
     gap: 20px;
     display: flex;

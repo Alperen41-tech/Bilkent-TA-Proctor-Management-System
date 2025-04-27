@@ -12,6 +12,7 @@ const INS_DashboardPage = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [taskTypes, setTaskTypes] = useState([]);
+  const [showRespondedWorkloadDetails, setShowRespondedWorkloadDetails] = useState(false);
 
   const newTaskTypeNameRef = useRef();
   const newTaskLimitRef = useRef();
@@ -195,7 +196,7 @@ const INS_DashboardPage = () => {
 
 
               {activeTab === "tasks" && (
-                <div>{workloadEntries.map((ent, idx) =>
+                <div onClick={() => setShowRespondedWorkloadDetails(true)}>{workloadEntries.map((ent, idx) =>
                   createWorkloadEntry(
                     ent.courseCode,
                     ent.taskTitle,
@@ -203,8 +204,9 @@ const INS_DashboardPage = () => {
                     ent.duration,
                     ent.comment,
                     ent.status // Assuming all entries are accepted for simplicity
-                  )
-                )}</div>
+                  ) 
+                )}
+                </div>
               )}
 
 
@@ -276,6 +278,22 @@ const INS_DashboardPage = () => {
           </div>
         </div>
       </div>
+                    {showRespondedWorkloadDetails && (
+                    <div className="modal-overlay">
+                      <div className="modal">
+                        <h3>Workload Request Details</h3>
+                        <label>Old Password</label>
+                        <input type="password" placeholder="Enter your old password" />
+                        <label>New Password</label>
+                        <input type="password" placeholder="At least 8 characters long" />
+                        <label>Confirm New Password</label>
+                        <input type="password" placeholder="Confirm new password" />
+                        <div className="modal-buttons">
+                          <button className="cancel-button" onClick={() => setShowRespondedWorkloadDetails(false)}>Return</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
     </div>
   );
 };

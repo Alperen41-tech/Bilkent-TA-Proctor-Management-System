@@ -14,6 +14,8 @@ const DashboardPage = () => {
   const [selectedProctoringId, setSelectedProctoringId] = useState(null);
   const [tasProctorings, setTasProctorings] = useState([]);
   const [taskType, setTaskType] = useState([]);
+  const [taWorkloadRequests, setTaWorkloadRequests] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
   //Refs for the new workload entry
   const newTaskTypeEntry = useRef();
@@ -48,8 +50,8 @@ const DashboardPage = () => {
     );
   };
 
-  const createWorkloadEntry = (taskTitle, date, duration, comment, status) => {
-    return <WorkloadEntryItem taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status} />;
+  const createWorkloadEntry = (taskTitle, courseCode ,date, duration, comment, status) => {
+    return <WorkloadEntryItem taskTitle={taskTitle} courseCode={courseCode} date={date} duration={duration} comment={comment} status={status} />;
   }
 
   const fetchTasProctorings = async () => {
@@ -72,23 +74,50 @@ const DashboardPage = () => {
     }
   };
 
+  const fetchTaWorkloadRequests = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/taWorkloadRequest/get?id=1");
+      setTaWorkloadRequests(response.data);
+      console.log(taWorkloadRequests);
+    } catch (error) {
+      console.error("Error fetching task types:", error);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/notification/get?id=4");
+      setNotifications(response.data);
+      console.log(notifications);
+    } catch (error) {
+      console.error("Error fetching task types:", error);
+    }
+  };
+
   const postNewWorkloadEntry = async () => {
     try {
-      const response = await axios.post("http://localhost:8080//?courseId=1", {
-        taskType: newTaskTypeEntry.current.value,
-        timeSpent: newTimeSpendHoursEntry.current.value*60 + newTimeSpendMinutesEntry.current.value,
-        details: newDetailsEntry.current.value,
+      const response = await axios.post("http://localhost:8080/taWorkloadRequest/create?id=1", {
+        taskTypeName: newTaskTypeEntry.current.value,
+        timeSpent: parseInt(newTimeSpendHoursEntry.current.value,10)*60 + parseInt(newTimeSpendMinutesEntry.current.value, 10),
+        description: newDetailsEntry.current.value,
       });
-      setTaskType(response.data);
-      console.log(taskType);
+      if (!response.data) {
+        alert("Could not create the new workload entry. Try again.");
+      } else {
+        alert("New workload entry created successfully.");
+        fetchTaWorkloadRequests(); 
+      }
+      
     } catch (error) {
       console.error("Error fetching task types:", error);
     }
   };
 
   useEffect(() => {
+    fetchNotifications();
     fetchTasProctorings();
     fetchWorkloadTypes();
+    fetchTaWorkloadRequests();
   }, []);
 
   const handleLockedStatusChange = async (id) => {
@@ -138,25 +167,7 @@ const DashboardPage = () => {
       onRejectHandler: () => console.log("Ayşe's request rejected"),
     },
   ];
-  //Sample data for workload entries
-  const workloadEntries = [
-    {
-      courseCode: "CS 476",
-      taskTitle: "Quiz Reading",
-      date: "15/02/2025",
-      duration: 3.5,
-      comment: "It took longer then expected.",
-    },
-    {
-      courseCode: "CS 319",
-      taskTitle: "Assignment Check",
-      date: "20/02/2025",
-      duration: 2,
-      comment: "",
-    },
-  ];
-  //--------------------------------------------------------------
-
+  
   return (
     <div className="ta-dashboard-dashboard-page">
       <Navbar />
@@ -185,13 +196,14 @@ const DashboardPage = () => {
                 </div>
               )}
               {activeTab === "tasks" && (
-                <div>{workloadEntries.map((ent, idx) =>
-                  createWorkloadEntry(
-                    ent.taskTitle,
-                    ent.date,
-                    ent.duration,
-                    ent.comment,
-                    "rejected" // Assuming all entries are accepted for simplicity
+                <div>{taWorkloadRequests.map((ent, idx) =>
+                  createWorkloadEntry( 
+                    ent.taskTypeName,
+                    ent.courseCode,
+                    ent.sentDate,
+                    ent.timeSpent,
+                    ent.description,
+                    ent.status 
                   )
                 )}</div>
               )}
@@ -235,13 +247,13 @@ const DashboardPage = () => {
             ) : activeTab === "tasks" ? (
               <div className="ta-dashboard-task-entry-form">
                 <h3>Enter Task</h3>
-                <form>
+                <form onSubmit={(e) => {e.preventDefault();postNewWorkloadEntry();console.log(taskType);}}>
                   <label>Task Type</label>
                   <select ref={newTaskTypeEntry}>
                     <option>Select a Task Type</option>
-                    {taskType.map((type, index) => (
+                    {taskType ? taskType.map((type, index) => (
                       <option key={index}>{type}</option>
-                    ))}
+                    )): null}
                     <option>Other</option>
                   </select>
 
@@ -254,7 +266,7 @@ const DashboardPage = () => {
                   <label>Details</label>
                   <textarea ref={newDetailsEntry} placeholder="Optional comments" />
 
-                  <button onClick={postNewWorkloadEntry} type="submit">Send</button>
+                  <button type="submit">Send</button>
                 </form>
               </div>
             ) : activeTab === "proctorings" ? (
@@ -285,7 +297,18 @@ const DashboardPage = () => {
         <div className="ta-dashboard-dashboard-right">
           <div className="ta-dashboard-notifications">
             <h3>Notifications</h3>
-            <div className="ta-dashboard-placeholder">[ Pull real-time notifications from DB ]</div>
+            {notifications.map((notification, index) => (
+              <div key={index} className="ta-dashboard-notification-item">
+                <p>{notification.requestType}</p>
+              
+              
+              </div>
+            ))}
+
+
+
+
+
           </div>
 
           <div className="ta-dashboard-stats-box">
