@@ -36,8 +36,8 @@ const DOExamsPage = () => {
   const [departments, setDepartments] = useState([]); // New state for departments
   const [selectedExamItem, setSelectedExamItem] = useState(null);
 
-  const [tas, setTAs] = useState([]); // 🔥 TAs to show
-  const [allTAs, setAllTAs] = useState([]); // 🔥 Backup of all fetched TAs
+  const [tas, setTAs] = useState([]); 
+  const [allTAs, setAllTAs] = useState([]); //all fetched TAs
 
 
 
@@ -54,6 +54,7 @@ const DOExamsPage = () => {
             key={key}
             type="exam"
             data={{
+              //bura şimdilik böyle kalsın
               id: item.classProctoringTARelationDTO.classProctoringDTO.id,
               course: item.classProctoringTARelationDTO.classProctoringDTO.courseName,
               date: item.classProctoringTARelationDTO.classProctoringDTO.startDate,
@@ -68,7 +69,7 @@ const DOExamsPage = () => {
               setTaDepartmentFilter("");
 
               const proctoringId = item?.classProctoringTARelationDTO?.classProctoringDTO?.id;
-              fetchTAs("", proctoringId); // 🔥 Fetch for new exam, no department filtering initially
+              fetchTAs("", proctoringId);
             }}
 
             isSelected={isSelected}
@@ -134,7 +135,7 @@ const DOExamsPage = () => {
 
   useEffect(() => {
     fetchExams();
-    fetchTAs(); // 🔥 Also fetch TAs initially
+    fetchTAs();
   }, []);
 
 
@@ -147,7 +148,7 @@ const DOExamsPage = () => {
       try {
         const response = await axios.get('http://localhost:8080/department/getAllDepartmentsInFaculty', {
           params: {
-            facultyId: 1, // <-- Hardcoded for now, maybe dynamic later?
+            facultyId: 1, // <-- Hardcoded for now
           },
         });
         console.log("Fetched Departments: ", response.data);
@@ -265,10 +266,10 @@ const DOExamsPage = () => {
             <h3>Choose TAs</h3>
             <div className="choose-header">
               <select
-                value={taDepartmentFilter}  // 🔥 Add this line
+                value={taDepartmentFilter}
                 onChange={(e) => {
                   const selectedDepartment = e.target.value;
-                  setTaDepartmentFilter(selectedDepartment); // 🔥 Update the selection
+                  setTaDepartmentFilter(selectedDepartment);
                   const proctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
                   fetchTAs(selectedDepartment, proctoringId);
                 }}
