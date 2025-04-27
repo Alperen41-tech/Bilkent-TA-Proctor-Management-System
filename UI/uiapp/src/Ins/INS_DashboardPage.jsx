@@ -36,7 +36,7 @@ const INS_DashboardPage = () => {
   const createReceivedRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <INS_TAWorkloadRequestItem {...request} />
+        <INS_TAWorkloadRequestItem {...request} onAccept={() => postRespondRequest(request.requestId, true)} onReject={() => postRespondRequest(request.requestId, false)} />
       </div>
     );
   };
@@ -122,6 +122,27 @@ const INS_DashboardPage = () => {
     }
   };
 
+  const postRespondRequest = async (requestId, status) => {
+    try {
+      const response = await axios.post("http://localhost:8080/request/respond", null,{
+        params: {
+          id: requestId,
+          response: status,
+        },
+      });
+      if (response.data) {
+        console.log("Responded to request successfully:", response.data);
+        alert("Request responded successfully!");
+        fetchTAWorkloadRequests();
+      } else {
+        alert("Could not respond to the request. Try again.");
+      }
+    } catch (error) {
+      console.error("There was an error with responding to the request:", error);
+      alert("An error occurred. Please try again.");
+    }
+  };
+
   // örnek datalar pending req
   const pendingRequests = [
     {
@@ -179,7 +200,7 @@ const INS_DashboardPage = () => {
 
               {activeTab === "received" && (
                 <div>
-                  {taWorkloadRequests.map((req, index) => createReceivedRequest(req, index))}
+                  {taWorkloadRequests.filter((enr, index) => {return enr.status === null}).map((req, index) => createReceivedRequest(req, index))}
                 </div>
               )}
 
