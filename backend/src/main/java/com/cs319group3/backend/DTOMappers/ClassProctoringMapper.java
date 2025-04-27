@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Component
 public class ClassProctoringMapper {
@@ -55,6 +57,8 @@ public class ClassProctoringMapper {
     CourseRepo courseRepo;
 
     public ClassProctoring essentialEntityTo(CreateClassProctoringDTO createClassProctoringDTO) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
         Optional<Course> courseOpt = courseRepo.findByCourseName(createClassProctoringDTO.getCourseName());
         /*
         if (courseOpt.isEmpty()) {
@@ -72,8 +76,8 @@ public class ClassProctoringMapper {
         classProctoring.setSectionNo(createClassProctoringDTO.getSectionNo());
         classProctoring.setCreator(instructor.get());
         classProctoring.setCourse(course);
-        classProctoring.setStartDate(createClassProctoringDTO.getStartDate());
-        classProctoring.setEndDate(createClassProctoringDTO.getEndDate());
+        classProctoring.setStartDate(LocalDateTime.parse(createClassProctoringDTO.getStartDate(), formatter));
+        classProctoring.setEndDate(LocalDateTime.parse(createClassProctoringDTO.getEndDate(),formatter));
         classProctoring.setComplete(false);
 
         // Step: Create classroom entries
