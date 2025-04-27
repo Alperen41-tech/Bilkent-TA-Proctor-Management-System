@@ -23,8 +23,6 @@ public class Request{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int requestId;
 
-
-    //TODO buraya bir daha bak
     private LocalDateTime sentDate;
     private Boolean isApproved; //null if not responded yet
     private LocalDateTime responseDate;
