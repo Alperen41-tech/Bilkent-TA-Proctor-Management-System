@@ -50,7 +50,7 @@ public class ClassProctoring {
     @OneToMany(mappedBy = "classProctoring")
     private List<ClassProctoringTARelation> TAsOfProctoring;
 
-    @OneToMany(mappedBy = "classProctoring")
+    @OneToMany(mappedBy = "classProctoring", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClassProctoringClassroom> classrooms;
 
 

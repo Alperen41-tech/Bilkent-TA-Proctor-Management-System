@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.ClassProctoringMapper;
+import com.cs319group3.backend.DTOMappers.CreateClassProctoringMapper;
 import com.cs319group3.backend.DTOs.ClassProctoringDTO;
 import com.cs319group3.backend.DTOs.CreateClassProctoringDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
@@ -21,14 +22,14 @@ public class ClassProctoringServiceImpl implements ClassProctoringService {
     }
 
     @Autowired
-    ClassProctoringMapper classProctoringMapper;
+    CreateClassProctoringMapper createClassProctoringMapper;
 
     @Autowired
     ClassProctoringRepo classProctoringRepo;
 
     @Override
     public boolean createClassProctoring(CreateClassProctoringDTO dto){
-        ClassProctoring classProctoring = classProctoringMapper.essentialEntityTo(dto);
+        ClassProctoring classProctoring = createClassProctoringMapper.essentialEntityTo(dto);
         if(classProctoring == null){
             return false;
         }
