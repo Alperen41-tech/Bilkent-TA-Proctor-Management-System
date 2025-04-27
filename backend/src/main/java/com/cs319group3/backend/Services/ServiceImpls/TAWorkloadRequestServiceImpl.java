@@ -68,11 +68,23 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
     }
 
     @Override
-    public List<TAWorkloadRequestDTO> getTAWorkloadRequests(int taId) {
+    public List<TAWorkloadRequestDTO> getTAWorkloadRequestsByTA(int taId) {
         List<TAWorkloadRequest> requests = taWorkloadRequestRepo.findBySenderUser_UserId(taId);
         List<TAWorkloadRequestDTO> dtos = new ArrayList<>();
         for (TAWorkloadRequest request : requests) {
             dtos.add(TAWorkloadRequestMapper.essentialMapper(request));
+        }
+        return dtos;
+    }
+
+    @Override
+    public List<TAWorkloadRequestDTO> getTAWorkloadRequestsByInstructor(int instructorId) {
+        List<TAWorkloadRequest> requests = taWorkloadRequestRepo.findByReceiverUser_UserId(instructorId);
+        List<TAWorkloadRequestDTO> dtos = new ArrayList<>();
+        for (TAWorkloadRequest request : requests) {
+            dtos.add(TAWorkloadRequestMapper.essentialMapper(request));
+            dtos.get(dtos.size()-1).setTaName(request.getSenderUser().getName() + " " + request.getSenderUser().getSurname());
+            dtos.get(dtos.size()-1).setTaMail(request.getSenderUser().getEmail());
         }
         return dtos;
     }

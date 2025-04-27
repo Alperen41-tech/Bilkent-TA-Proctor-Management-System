@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface TAWorkloadRequestService {
     public boolean createTAWorkloadRequest(TAWorkloadRequestDTO dto, int taId);
-    public List<TAWorkloadRequestDTO> getTAWorkloadRequests(int taId);
+    public List<TAWorkloadRequestDTO> getTAWorkloadRequestsByTA(int taId);
     public int getTotalWorkload(int taId);
+    public List<TAWorkloadRequestDTO> getTAWorkloadRequestsByInstructor(int instructorId);
 }

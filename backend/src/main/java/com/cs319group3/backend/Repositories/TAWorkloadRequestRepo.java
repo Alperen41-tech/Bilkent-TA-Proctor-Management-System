@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface TAWorkloadRequestRepo extends JpaRepository<TAWorkloadRequest, Integer> {
     List<TAWorkloadRequest> findBySenderUser_UserId(int senderUserUserId);
+    List<TAWorkloadRequest> findByReceiverUser_UserId(int receiverUserUserId);
 }

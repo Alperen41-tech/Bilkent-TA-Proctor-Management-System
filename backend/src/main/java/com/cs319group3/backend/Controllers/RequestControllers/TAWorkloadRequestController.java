@@ -22,8 +22,13 @@ public class TAWorkloadRequestController {
         return taWorkloadRequestService.createTAWorkloadRequest(taWorkloadRequestDTO, taId);
     }
 
-    @GetMapping("get")
-    public List<TAWorkloadRequestDTO> getTAWorkloadRequests(@RequestParam("id") int taId) {
-        return taWorkloadRequestService.getTAWorkloadRequests(taId);
+    @GetMapping("getByTA")
+    public List<TAWorkloadRequestDTO> getTAWorkloadRequestsByTA(@RequestParam("id") int taId) {
+        return taWorkloadRequestService.getTAWorkloadRequestsByTA(taId);
+    }
+
+    @GetMapping("getByInstructor")
+    public List<TAWorkloadRequestDTO> getTAWorkloadRequestsByInstructor(@RequestParam("instructorId") int instructorId) {
+        return taWorkloadRequestService.getTAWorkloadRequestsByInstructor(instructorId);
     }
 }
