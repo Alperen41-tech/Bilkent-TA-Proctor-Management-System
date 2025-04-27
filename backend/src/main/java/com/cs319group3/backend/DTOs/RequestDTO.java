@@ -9,10 +9,11 @@ import lombok.*;
 @NoArgsConstructor
 public class RequestDTO {
     int requestId;
+    String requestType;
     int senderId;
     int receiverId;
     String sentDateTime;
-    boolean isApproved;
+    Boolean isApproved;
     String responseDateTime;
     String description;
 }

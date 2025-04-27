@@ -12,10 +12,11 @@ public class RequestMapper {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         RequestDTO requestDTO = new RequestDTO();
         requestDTO.setRequestId(request.getRequestId());
-        requestDTO.setApproved(request.getIsApproved());
+        requestDTO.setRequestType(request.getClass().getSimpleName());
+        requestDTO.setIsApproved(request.getIsApproved());
         requestDTO.setDescription(request.getDescription());
-        requestDTO.setReceiverId(requestDTO.getReceiverId());
-        requestDTO.setSenderId(requestDTO.getSenderId());
+        requestDTO.setReceiverId(request.getReceiverUser().getUserId());
+        requestDTO.setSenderId(request.getSenderUser().getUserId());
         requestDTO.setSentDateTime(request.getSentDate().format(formatter));
         LocalDateTime ldt = request.getResponseDate();
         if (ldt != null) {
