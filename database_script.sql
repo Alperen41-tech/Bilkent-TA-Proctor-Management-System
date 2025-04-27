@@ -594,7 +594,7 @@ INSERT INTO proctoring_application (application_id, class_proctoring_id, visible
     (3, 3, 2, 15, true),
     (4, 5, 1, 10, true);
     
-INSERT INTO  proctoring_application_ta_relation (proctoring_application_ta_relation_id, ta_id, proctoring_application_id) VALUES
+INSERT INTO proctoring_application_ta_relation (proctoring_application_ta_relation_id, ta_id, proctoring_application_id) VALUES
 	(1, 2, 1),
     (2, 1, 1),
     (3, 3, 2),
