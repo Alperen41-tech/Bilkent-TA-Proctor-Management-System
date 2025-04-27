@@ -11,9 +11,14 @@ public class TAWorkloadRequestMapper {
         dto.setCourseCode(taWorkloadRequest.getCourse().getDepartmentCourseCode());
         dto.setDescription(taWorkloadRequest.getDescription());
         dto.setSentDate(taWorkloadRequest.getSentDate().toString());
-        if (taWorkloadRequest.isApproved())
+        if ((taWorkloadRequest.getIsApproved()) != null && taWorkloadRequest.getIsApproved())
             dto.setResponseDate(taWorkloadRequest.getResponseDate().toString());
         dto.setTaskTypeName(taWorkloadRequest.getTaskType().getTaskTypeName());
+
+        if ((taWorkloadRequest.getIsApproved()) != null && taWorkloadRequest.getIsApproved())
+            dto.setStatus("accepted");
+        if ((taWorkloadRequest.getIsApproved()) != null && !taWorkloadRequest.getIsApproved())
+            dto.setStatus("rejected");
         return dto;
     }
 }
