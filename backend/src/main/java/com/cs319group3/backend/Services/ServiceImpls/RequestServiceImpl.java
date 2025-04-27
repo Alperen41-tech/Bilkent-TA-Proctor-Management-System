@@ -29,7 +29,7 @@ public class RequestServiceImpl implements RequestService {
         if (request.isEmpty()) {
             return false;
         }
-        request.get().setApproved(response);
+        request.get().setIsApproved(response);
         request.get().setResponseDate(LocalDateTime.now());
         requestRepo.save(request.get());
 

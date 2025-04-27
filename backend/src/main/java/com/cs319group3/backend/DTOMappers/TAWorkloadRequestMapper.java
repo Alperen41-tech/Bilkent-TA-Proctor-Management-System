@@ -11,7 +11,7 @@ public class TAWorkloadRequestMapper {
         dto.setCourseCode(taWorkloadRequest.getCourse().getDepartmentCourseCode());
         dto.setDescription(taWorkloadRequest.getDescription());
         dto.setSentDate(taWorkloadRequest.getSentDate().toString());
-        if (taWorkloadRequest.isApproved())
+        if (taWorkloadRequest.getIsApproved())
             dto.setResponseDate(taWorkloadRequest.getResponseDate().toString());
         dto.setTaskTypeName(taWorkloadRequest.getTaskType().getTaskTypeName());
         return dto;
