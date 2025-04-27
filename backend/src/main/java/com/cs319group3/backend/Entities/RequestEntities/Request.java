@@ -26,7 +26,7 @@ public class Request{
 
     //TODO buraya bir daha bak
     private LocalDateTime sentDate;
-    private boolean isApproved; //null if not responded yet
+    private Boolean isApproved; //null if not responded yet
     private LocalDateTime responseDate;
     private String description;
 

@@ -12,7 +12,7 @@ public class RequestMapper {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         RequestDTO requestDTO = new RequestDTO();
         requestDTO.setRequestId(request.getRequestId());
-        requestDTO.setApproved(request.isApproved());
+        requestDTO.setApproved(request.getIsApproved());
         requestDTO.setDescription(request.getDescription());
         requestDTO.setReceiverId(requestDTO.getReceiverId());
         requestDTO.setSenderId(requestDTO.getSenderId());
