@@ -76,7 +76,7 @@ const DashboardPage = () => {
 
   const fetchTaWorkloadRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/taWorkloadRequest/get?id=1");
+      const response = await axios.get("http://localhost:8080/taWorkloadRequest/getByTA?id=1");
       setTaWorkloadRequests(response.data);
       console.log(taWorkloadRequests);
     } catch (error) {

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import NavbarINS from "./NavbarINS";
 import "./INS_DashboardPage.css";
 import PendingRequestItem from "../PendingRequestItem";
-import ReceivedRequestItem from "../ReceivedRequestItem";
+import INS_TAWorkloadRequestItem from "./INS_TAWorkloadRequestItem";
 import WorkloadEntryItem from "../WorkloadEntryItem";
 import axios from "axios";
 
@@ -13,6 +13,7 @@ const INS_DashboardPage = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [taskTypes, setTaskTypes] = useState([]);
   const [showRespondedWorkloadDetails, setShowRespondedWorkloadDetails] = useState(false);
+  const [taWorkloadRequests, setTaWorkloadRequests] = useState([]);
 
   const newTaskTypeNameRef = useRef();
   const newTaskLimitRef = useRef();
@@ -35,15 +36,29 @@ const INS_DashboardPage = () => {
   const createReceivedRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <ReceivedRequestItem {...request} />
+        <INS_TAWorkloadRequestItem {...request} />
       </div>
     );
   };
 
-
   const createWorkloadEntry = (courseCode, taskTitle, date, duration, comment, status) => {
     return <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status} />;
   }
+
+  const fetchTAWorkloadRequests = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/taWorkloadRequest/getByInstructor?instructorId=4");
+      if (response.data) {
+        console.log("Fetched TA Workload Requests:", response.data);
+        setTaWorkloadRequests(response.data);
+      } else {
+        alert("Could not fetch TA Workload Requests. Try again.");
+      }
+    } catch (error) {
+      console.error("There was an error with fetching TA Workload Requests:", error);
+      alert("An error occurred. Please try again.");
+    }
+  };
 
   const postTaskType = async (taskTypeName, taskLimit) => {
     try {
@@ -107,29 +122,6 @@ const INS_DashboardPage = () => {
     }
   };
 
-
-  /// normally there is no email part but inst should see who did what for now it is like this
-  const workloadEntries = [
-    {
-      courseCode: "CS 476",
-      taskTitle: "Quiz Reading",
-      date: "15/02/2025",
-      duration: 3.5,
-      comment: "someTA1@ug.bilkent.edu.tr",
-      status: "accepted",
-    },
-    {
-      courseCode: "CS 319",
-      taskTitle: "Assignment Check",
-      date: "20/02/2025",
-      duration: 2,
-      comment: "someTA2@ug.bilkent.edu.tr",
-      status: "rejected",
-    },
-  ];
-
-
-
   // örnek datalar pending req
   const pendingRequests = [
     {
@@ -160,6 +152,7 @@ const INS_DashboardPage = () => {
 
   useEffect(() => {
     fetchTaskTypes();
+    fetchTAWorkloadRequests();
   }, []);
 
   return (
@@ -184,25 +177,24 @@ const INS_DashboardPage = () => {
                 </div>
               )}
 
-
-
-
               {activeTab === "received" && (
                 <div>
-                  {pendingRequests.map((req, index) => createReceivedRequest(req, index))}
+                  {taWorkloadRequests.map((req, index) => createReceivedRequest(req, index))}
                 </div>
               )}
 
 
 
               {activeTab === "tasks" && (
-                <div onClick={() => setShowRespondedWorkloadDetails(true)}>{workloadEntries.map((ent, idx) =>
+                <div onClick={() => setShowRespondedWorkloadDetails(true)}>{taWorkloadRequests.filter((rq,index) =>{
+                  return rq.status === "accepted" || rq.status === "rejected";
+                }).map((ent, idx) =>
                   createWorkloadEntry(
                     ent.courseCode,
-                    ent.taskTitle,
-                    ent.date,
-                    ent.duration,
-                    ent.comment,
+                    ent.taskTypeName,
+                    ent.sentDate,
+                    ent.timeSpent,
+                    ent.description,
                     ent.status // Assuming all entries are accepted for simplicity
                   ) 
                 )}
@@ -219,12 +211,13 @@ const INS_DashboardPage = () => {
                 <h3>Details</h3>
                 {selectedRequest ? (
   <div>
-    <p><strong>Name:</strong> {selectedRequest.name}</p>
-    <p><strong>Email:</strong> {selectedRequest.email}</p>
-    <p><strong>Date:</strong> {selectedRequest.date.weekday}, {selectedRequest.date.month} {selectedRequest.date.day}</p>
-    <p><strong>Time:</strong> {selectedRequest.time.start} - {selectedRequest.time.end}</p>
-    <p><strong>Role:</strong> {selectedRequest.role}</p>
-    <p><strong>Status:</strong> {selectedRequest.status}</p>
+    <p><strong>Course Code:</strong> {selectedRequest.courseCode}</p>
+    <p><strong>Name:</strong> {selectedRequest.taskTypeName}</p>
+    <p><strong>Email:</strong> {selectedRequest.taMail}</p>
+    <p><strong>Date:</strong> {selectedRequest.sentDate.split("T")[0] + "," + selectedRequest.sentDate.split("T")[1]}</p>
+    <p><strong>Time Spent:</strong> {Math.floor(parseInt(selectedRequest.timeSpent, 10) / 60)} Hours {parseInt(selectedRequest.timeSpent,10)%60} Minutes</p>
+    <p><strong>Comment:</strong> {selectedRequest.description}</p>
+    <p><strong>Status:</strong>Waiting for response</p>
   </div>
 ) : (
   <p className="placeholder">[ Click a request to see its details ]</p>

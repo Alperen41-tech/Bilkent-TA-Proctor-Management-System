@@ -1,0 +1,104 @@
+.ins-ta-workload-item-received-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ececec;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    font-family: sans-serif;
+  }
+  
+  .ins-ta-workload-item-date-box {
+    text-align: center;
+    margin-right: 16px;
+    width: 60px;
+  }
+  
+  .ins-ta-workload-item-date-box .ins-ta-workload-item-month {
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .ins-ta-workload-item-date-box .ins-ta-workload-item-day {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .ins-ta-workload-item-date-box .ins-ta-workload-item-weekday {
+    font-size: 12px;
+    color: #777;
+  }
+  
+  .ins-ta-workload-item-details {
+    flex-grow: 1;
+  }
+  
+  .ins-ta-workload-item-time-row {
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .ins-ta-workload-item-info-row {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .ins-ta-workload-item-email {
+    color: #888;
+  }
+  
+  .ins-ta-workload-item-status-actions {
+    text-align: right;
+    min-width: 220px;
+  }
+  
+  .ins-ta-workload-item-status-text {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 4px;
+  }
+  
+  .ins-ta-workload-item-status-label {
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    display: inline-block;
+  }
+  
+  .ins-ta-workload-item-button-group {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .ins-ta-workload-item-accept-button {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .ins-ta-workload-item-accept-button:hover {
+    background-color: #27ae60;
+  }
+  
+  .ins-ta-workload-item-reject-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .ins-ta-workload-item-reject-button:hover {
+    background-color: #c0392b;
+  }
+  
