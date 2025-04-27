@@ -18,7 +18,7 @@ const LoginPage = () => {
   // admin
   
   const handleLogin = async () => {
-    navigate("/dashboard"); // Change this to the appropriate page for your role
+    navigate("/do-dashboard"); // Change this to the appropriate page for your role
     //navigate("ds-dashboard"); // Change this to the appropriate page for your role
     /*
     try {

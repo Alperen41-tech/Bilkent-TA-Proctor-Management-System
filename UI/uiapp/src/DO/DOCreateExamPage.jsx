@@ -6,7 +6,7 @@ import TAItem from "../TAItem";
 import axios from "axios";
 
 const DOCreateExamPage = () => {
-  const creatorId = 9; // Dean's ID
+  const creatorId = 9;
 
   const [createdExams, setCreatedExams] = useState([]);
   const [selectedExamKey, setSelectedExamKey] = useState(null);
@@ -22,10 +22,22 @@ const DOCreateExamPage = () => {
   const [endTime, setEndTime] = useState("");
   const [taCount, setTaCount] = useState(2);
 
+  const [taDepartmentFilter, setTaDepartmentFilter] = useState("");
+const [tas, setTAs] = useState([]);
+const [departmentsList, setDepartmentsList] = useState([]);
+
+
+  // For Choose TAs section
+  const [chooseDepartmentFilter, setChooseDepartmentFilter] = useState("");
+  const [availableTAs, setAvailableTAs] = useState([]);
+
   const departments = ["CS", "IE", "Other"];
 
   useEffect(() => {
     fetchCreatedExams();
+    fetchAvailableTAs();
+    fetchTAs();
+    fetchDepartments();
   }, []);
 
   const fetchCreatedExams = async () => {
@@ -39,6 +51,42 @@ const DOCreateExamPage = () => {
       console.error("Failed to fetch created exams:", error);
     }
   };
+
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/department/getAllDepartmentsInFaculty', {
+        params: { facultyId: 1 },
+      });
+      console.log("Fetched Departments:", response.data);
+      setDepartmentsList(response.data);
+    } catch (error) {
+      console.error('Error fetching departments:', error);
+    }
+  };
+  
+  const fetchTAs = async (departmentCode, proctoringId) => {
+    try {
+      let response;
+  
+      if (!departmentCode || departmentCode === "") {
+        // Fetch all available TAs in faculty
+        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoring', {
+          params: { facultyId: 1, proctoringId: proctoringId },
+        });
+      } else {
+        // Fetch available TAs in selected department
+        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring', {
+          params: { departmentCode: departmentCode, proctoringId: proctoringId },
+        });
+      }
+  
+      console.log("Fetched Available TAs:", response.data);
+      setTAs(response.data || []);
+    } catch (error) {
+      console.error('Error fetching available TAs:', error);
+    }
+  };
+  
 
   const handleCreateExam = () => {
     alert(`
@@ -54,6 +102,47 @@ const DOCreateExamPage = () => {
     `);
     // later, axios.post() to create exam
   };
+
+  const fetchAvailableTAs = async (departmentCode) => {
+    try {
+      if (!selectedExamKey) {
+        console.warn("No exam selected yet, can't fetch TAs!");
+        return;
+      }
+      const selectedExam = createdExams.find((item) => {
+        const dto = item.classProctoringTARelationDTO.classProctoringDTO;
+        const key = `${dto.courseName}-${dto.startDate}`;
+        return key === selectedExamKey;
+      });
+  
+      const proctoringId = selectedExam?.classProctoringTARelationDTO.classProctoringDTO.id;
+  
+      if (!proctoringId) {
+        console.warn("No proctoring ID found for selected exam!");
+        return;
+      }
+  
+      let response;
+      if (!departmentCode) {
+        // No department selected: fetch faculty-wide available TAs
+        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoring', {
+          params: { facultyId: 1, proctoringId: proctoringId },
+        });
+      } else {
+        // Department selected
+        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring', {
+          params: { departmentCode: departmentCode, proctoringId: proctoringId },
+        });
+      }
+  
+      console.log("Fetched Available TAs:", response.data);
+      setAvailableTAs(response.data || []);
+    } catch (error) {
+      console.error('Error fetching available TAs:', error);
+      setAvailableTAs([]);
+    }
+  };
+  
 
   const handleTAClick = (ta) => {
     setSelectedTA(ta.email);
@@ -234,11 +323,40 @@ const DOCreateExamPage = () => {
           {/* Choose TAs */}
           <div className="choose-tas box">
             <h3>Choose TAs</h3>
-            <div className="ta-list">
-              {createTAItem("Cazi", "Yılmaz", "cazi@example.com", handleTAClick, selectedTA === "cazi@example.com")}
-              {createTAItem("Cemil", "Kara", "cemil@example.com", handleTAClick, selectedTA === "cemil@example.com")}
-              {createTAItem("Jakir", "Doe", "jakir@example.com", handleTAClick, selectedTA === "jakir@example.com")}
+            <div className="choose-header">
+              <select
+                value={chooseDepartmentFilter}
+                onChange={(e) => {
+                  const dep = e.target.value;
+                  setChooseDepartmentFilter(dep);
+                  fetchAvailableTAs(dep);
+                }}
+              >
+                <option value="">Select Department</option>
+                {departments.map((dep) => (
+                  <option key={dep} value={dep}>
+                    {dep}
+                  </option>
+                ))}
+              </select>
             </div>
+
+            <div className="ta-list">
+              {availableTAs.length ? (
+                availableTAs.map((ta) =>
+                  createTAItem(
+                    ta.name,
+                    ta.surname,
+                    ta.email,
+                    handleTAClick,
+                    selectedTA === ta.email
+                  )
+                )
+              ) : (
+                <div>No TAs available</div>
+              )}
+            </div>
+
             <div className="assign-buttons">
               <button className="assign-btn" onClick={() => alert("Automatic Assign")}>
                 Automatically Assign
