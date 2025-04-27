@@ -19,7 +19,7 @@ public class ProctoringApplicationTARelation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int proctoringApplicationTARelationId;
+    private int proctoringApplicationTaRelationId;
 
     @ManyToOne
     @JoinColumn(name = "ta_id")

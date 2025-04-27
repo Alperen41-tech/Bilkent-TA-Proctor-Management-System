@@ -1,7 +1,6 @@
 create database ta_management_system_db;
 use ta_management_system_db;
 
-
 create table time_interval(
 	time_interval_id int primary key auto_increment,
     day varchar(20) not null,
@@ -193,6 +192,17 @@ create table class_proctoring_classroom(
     foreign key (class_proctoring_id) references class_proctoring(class_proctoring_id)
 );
 
+create table proctoring_application(
+	
+    application_id int primary key auto_increment,
+    class_proctoring_id int,
+    visible_department_id int,
+    applicant_count_limit int,
+    is_visible_for_tas bool,
+    foreign key (class_proctoring_id) references class_proctoring(class_proctoring_id),
+    foreign key (visible_department_id) references department(department_id)
+);
+
 create table course_student_relation(
 	offered_course_id int,
 	student_id int,
@@ -231,6 +241,15 @@ create table class_proctoring_ta_relation(
     foreign key (ta_id) references ta(user_id)
 );
 
+create table proctoring_application_ta_relation(
+	proctoring_application_ta_relation_id int primary key auto_increment,
+    ta_id int,
+    proctoring_application_id int,
+    foreign key (ta_id) references ta (user_id),
+    foreign key (proctoring_application_id) references proctoring_application(application_id)
+);
+
+
 
 create table request(
 	request_id int primary key auto_increment,
@@ -249,7 +268,7 @@ create index response_date_idx on request(response_date);
 
 
 create table ta_swap_request(
-	request_id int primary key,
+	request_id int primary key auto_increment,
 	class_proctoring_id int,
     foreign key (request_id) references request(request_id),
     foreign key (class_proctoring_id) references class_proctoring(class_proctoring_id)
@@ -304,6 +323,9 @@ create table notification(
     foreign key (receiver_id) references user(user_id),
     foreign key (request_id) references request(request_id)
 );
+
+
+
 
 
 
@@ -565,5 +587,19 @@ INSERT INTO notification (notification_id, receiver_id, request_id, notification
 	(1, 6, 2, "REQUEST", true),
     (2, 10, 3, "APPROVAL", false),
     (3, 10, 4, "ASSIGNMENT", true);
+    
+INSERT INTO proctoring_application (application_id, class_proctoring_id, visible_department_id, applicant_count_limit, is_visible_for_tas) VALUES
+	(1, 2, 2, 10, false),
+    (2, 4, 1, 5, false),
+    (3, 3, 2, 15, true),
+    (4, 5, 1, 10, true);
+    
+INSERT INTO  proctoring_application_ta_relation (proctoring_application_ta_relation_id, ta_id, proctoring_application_id) VALUES
+	(1, 2, 1),
+    (2, 1, 1),
+    (3, 3, 2),
+    (4, 2, 4);
+    
+    
     
 

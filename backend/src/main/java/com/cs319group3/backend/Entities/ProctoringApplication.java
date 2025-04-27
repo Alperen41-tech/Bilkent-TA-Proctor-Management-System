@@ -24,10 +24,11 @@ public class ProctoringApplication {
     private ClassProctoring classProctoring;
 
     @ManyToOne
-    @JoinColumn(name = "visible_department")
+    @JoinColumn(name = "visible_department_id")
     private Department visibleDepartment;
 
-    private int applicationCountLimit;
+    private int applicantCountLimit;
 
+    @Column(name = "is_visible_for_tas")
     private boolean isVisibleForTAs;
 }
