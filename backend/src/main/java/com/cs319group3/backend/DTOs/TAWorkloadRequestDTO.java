@@ -14,4 +14,5 @@ public class TAWorkloadRequestDTO {
     private String description;
     private String sentDate;
     private String responseDate;
+    private String status;
 }
