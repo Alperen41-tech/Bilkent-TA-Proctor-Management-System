@@ -13,8 +13,8 @@ import java.util.List;
 public class CreateClassProctoringDTO {
     private int id; //Not from frontend
     private String courseName;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private String startDate;
+    private String endDate;
     private List<String> classrooms;
     private int taCount;
     private int sectionNo;
