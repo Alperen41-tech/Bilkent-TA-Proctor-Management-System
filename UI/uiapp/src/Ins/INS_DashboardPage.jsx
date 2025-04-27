@@ -1,13 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import NavbarINS from "./NavbarINS";
 import "./INS_DashboardPage.css";
 import PendingRequestItem from "../PendingRequestItem";
 import ReceivedRequestItem from "../ReceivedRequestItem";
 import WorkloadEntryItem from "../WorkloadEntryItem";
+import axios from "axios";
+
+
 
 const INS_DashboardPage = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [taskTypes, setTaskTypes] = useState([]);
+
+  const newTaskTypeNameRef = useRef();
+  const newTaskLimitRef = useRef();
+  const selectedForDeleteTaskType = useRef();
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -35,6 +43,69 @@ const INS_DashboardPage = () => {
   const createWorkloadEntry = (courseCode, taskTitle, date, duration, comment, status) => {
     return <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status} />;
   }
+
+  const postTaskType = async (taskTypeName, taskLimit) => {
+    try {
+      const response = await axios.post("http://localhost:8080/taskType/createTaskType?courseId=3", {
+        courseName: "Cacirology",
+        taskTypeName: taskTypeName,
+        taskLimit: parseInt(taskLimit,10),       
+      });
+
+      if (!response.data) {
+        alert("Could not created the Task Type. Try again.");
+      } 
+      else {
+        alert("Task Type created successfully!");
+        console.log("Task Type created successfully:", response.data);
+        fetchTaskTypes(); 
+      }
+    } catch (error) {
+      console.error("There was an error with the Task Type creation:", error);
+      alert("An error occurred. Please try again.");
+    }
+  };
+  const deleteTaskType = async (taskTypeName) => {
+    try {
+      const response = await axios.delete("http://localhost:8080/taskType/deleteTaskType?", {
+           params: {
+            courseId: 3,
+            taskTypeName: taskTypeName,
+           }
+      });
+
+      if (!response.data) {
+        alert("Could not delete the Task Type. Try again.");
+      } 
+      else {
+        alert("Task Type deleted successfully!");
+        console.log("Task Type deleted successfully:", response.data);
+        fetchTaskTypes();
+      }
+    } catch (error) {
+      console.error("There was an error with the Task Type deletion:", error);
+      alert("An error occurred. Please try again.");
+    }
+  };
+
+  const fetchTaskTypes = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/taskType/getTaskTypeNames?courseId=3");
+      if (response.data) {
+        console.log("Fetched Task Types:", response.data);
+        setTaskTypes(response.data);
+        
+      } else {
+        alert("Could not fetch Task Types. Try again.");
+      }
+      
+
+    }catch (error) {
+      console.error("There was an error with fetching Task Types:", error);
+      alert("An error occurred. Please try again.");
+    }
+  };
+
 
   /// normally there is no email part but inst should see who did what for now it is like this
   const workloadEntries = [
@@ -86,6 +157,9 @@ const INS_DashboardPage = () => {
     },
   ];
 
+  useEffect(() => {
+    fetchTaskTypes();
+  }, []);
 
   return (
     <div className="dashboard-page">
@@ -159,24 +233,25 @@ const INS_DashboardPage = () => {
               <div className="bottom-left-task">
                 <div className="task-type-create-form">
                   <h3>Create Task Type</h3>
-                  <form>
+                  <form onSubmit={(e) => {postTaskType(newTaskTypeNameRef.current.value, newTaskLimitRef.current.value); e.preventDefault();}}>
                     <label>Task Type</label>
-                    <input type="text" placeholder="Task Type" />
+                    <input ref={newTaskTypeNameRef} type="text" placeholder="Task Type" />
                     <label>Maximum Time Limit</label>
                     <div className="time-inputs">
-                      <input type="number" placeholder="Hours" />
+                      <input ref={newTaskLimitRef} type="number" placeholder="Hours" min={0} />
                     </div>
-                    <button type="submit">Create Task Type</button>
+                    <button className="button" type="submit">Create Task Type</button>
                   </form>
                 </div>
                 <div className="task-type-delete-form">
                   <h3>Delete Task Type</h3>
                   <label>Select Task Type</label>
-                  <form>
-                    <select>
-                      <option value="task1">Task Type 1</option>
-                      <option value="task2">Task Type 2</option>
-                      <option value="task3">Task Type 3</option>
+                  <form onSubmit={(e) => {deleteTaskType(selectedForDeleteTaskType.current.value); e.preventDefault();}}>
+                    <select ref={selectedForDeleteTaskType}>
+                      <option value="task1">Select Task Type to Delete</option>
+                      {taskTypes.map((taskType, index) => (
+                        <option key={index} value={taskType}>{taskType}</option>
+                      ))}
                     </select>
                     <button type="submit">Delete Task Type</button>
                   </form>
