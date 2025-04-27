@@ -60,10 +60,13 @@ public class TAServiceImpl implements TAService {
 
 
             TA ta = taProfileMapper.essentialEntityToTA(profile);
-            taRepo.save(ta); // saves both into user and ta tables
-
-
             Login loginEntity = loginMapper.essentialEntityToLogin(login, ta);
+
+            if(ta == null || loginEntity == null) {
+                return false;
+            }
+
+            taRepo.save(ta); // saves both into user and ta tables
             loginRepo.save(loginEntity);
 
             return true;

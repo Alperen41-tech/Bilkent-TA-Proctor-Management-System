@@ -140,8 +140,8 @@ const AdminDatabasePage = () => {
         }
       });
 
-      if (!response) {
-        alert("Could not locked the swap. Try again.");
+      if (!response.data) {
+        alert("Could not created TA. Try again.");
       } 
       else {
         alert("TA created successfully!");
@@ -262,7 +262,7 @@ const AdminDatabasePage = () => {
               <label>TA Count</label>
               <input ref={newProctoringTaCountRef} type="number" min={1} placeholder="e.g., 2" required/>
 
-              <input type={"submit"} className="admin-database-create-type-button"/>
+              <input type={"submit"} value="Create" className="admin-database-create-type-button"/>
             </form>
           )}
 
