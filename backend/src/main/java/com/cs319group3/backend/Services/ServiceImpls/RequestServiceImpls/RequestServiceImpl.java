@@ -1,5 +1,7 @@
-package com.cs319group3.backend.Services.ServiceImpls;
+package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 
+import com.cs319group3.backend.DTOMappers.RequestMapper;
+import com.cs319group3.backend.DTOs.RequestDTO;
 import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
 import com.cs319group3.backend.Repositories.NotificationRepo;
@@ -9,10 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.cs319group3.backend.Enums.NotificationType.APPROVAL;
-import static com.cs319group3.backend.Enums.NotificationType.REQUEST;
 
 @Service
 public class RequestServiceImpl implements RequestService {
@@ -41,5 +44,25 @@ public class RequestServiceImpl implements RequestService {
         notificationRepo.save(notification);
 
         return true;
+    }
+
+    @Override
+    public List<RequestDTO> getRequestsByReceiverUser(int userId) {
+        List<Request> requests = requestRepo.findByReceiverUser_UserId(userId);
+        List<RequestDTO> requestDTOs = new ArrayList<>();
+        for (Request request : requests) {
+            requestDTOs.add(RequestMapper.toDTO(request));
+        }
+        return requestDTOs;
+    }
+
+    @Override
+    public List<RequestDTO> getRequestsBySenderUser(int userId) {
+        List<Request> requests = requestRepo.findBySenderUser_UserId(userId);
+        List<RequestDTO> requestDTOs = new ArrayList<>();
+        for (Request request : requests) {
+            requestDTOs.add(RequestMapper.toDTO(request));
+        }
+        return requestDTOs;
     }
 }

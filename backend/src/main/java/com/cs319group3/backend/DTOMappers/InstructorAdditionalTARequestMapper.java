@@ -16,7 +16,7 @@ public class InstructorAdditionalTARequestMapper {
         partialDTO.setReceiverId(instructorAdditionalTARequest.getReceiverUser().getUserId());
         partialDTO.setSenderId(instructorAdditionalTARequest.getSenderUser().getUserId());
         partialDTO.setSentDateTime(instructorAdditionalTARequest.getSentDate().format(formatter));
-        partialDTO.setApproved(instructorAdditionalTARequest.getIsApproved());
+        partialDTO.setIsApproved(instructorAdditionalTARequest.getIsApproved());
         partialDTO.setDescription(instructorAdditionalTARequest.getDescription());
         LocalDateTime ldt = instructorAdditionalTARequest.getResponseDate();
         if (ldt != null) {

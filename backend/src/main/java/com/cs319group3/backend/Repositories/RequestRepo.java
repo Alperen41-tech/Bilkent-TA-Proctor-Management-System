@@ -4,9 +4,12 @@ import com.cs319group3.backend.Entities.RequestEntities.Request;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface RequestRepo extends JpaRepository<Request,String> {
     Optional<Request> findByRequestId(int requestId);
+    List<Request> findByReceiverUser_UserId(int receiverUserUserId);
+    List<Request> findBySenderUser_UserId(int senderUserUserId);
 }
