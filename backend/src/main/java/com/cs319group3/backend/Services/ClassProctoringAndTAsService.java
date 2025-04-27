@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface ClassProctoringAndTAsService {
     public List<ClassProctoringAndTAsDTO> getDepartmentTAsClassProctorings(int userId);
-    public List<ClassProctoringAndTAsDTO> getDepartmentClassProctorings(int userId);
+    public List<ClassProctoringAndTAsDTO> getDepartmentClassProctoringsByCode(String departmentCode);
     public List<ClassProctoringAndTAsDTO> getFacultyClassProctorings(int userId);
+    public List<ClassProctoringAndTAsDTO> getDepartmentClassProctoringsById(int departmentId);
 }

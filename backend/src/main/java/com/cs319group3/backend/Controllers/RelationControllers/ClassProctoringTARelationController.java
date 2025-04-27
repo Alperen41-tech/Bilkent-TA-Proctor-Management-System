@@ -41,13 +41,13 @@ public class ClassProctoringTARelationController {
         return classProctoringAndTAs.getDepartmentTAsClassProctorings(id);
     }
 
-    @GetMapping("getDepartmentClassProctorings")
-    public List<ClassProctoringAndTAsDTO> getDepartmentClassProctorings(@RequestParam int departmentId){
+    @GetMapping("getDepartmentClassProctoringsByCode")
+    public List<ClassProctoringAndTAsDTO> getDepartmentClassProctorings(@RequestParam String departmentCode){
         System.out.println("Get department class proctorings");
-        return classProctoringAndTAs.getDepartmentClassProctorings(departmentId);
+        return classProctoringAndTAs.getDepartmentClassProctoringsByCode(departmentCode);
     }
 
-    @GetMapping("getFacultyClassProctorings")
+    @GetMapping("getFacultyClassProctoringsById")
     public List<ClassProctoringAndTAsDTO> getFacultyClassProctorings(@RequestParam int facultyId){
         System.out.println("Get department class proctorings");
         return classProctoringAndTAs.getFacultyClassProctorings(facultyId);
