@@ -168,7 +168,7 @@ const AdminDatabasePage = () => {
         taCount: parseInt(newProctoringTaCount, 10)
       });
 
-      if (!response) {
+      if (!response.data) {
         alert("Could not created the Proctoring. Try again.");
       } 
       else {
