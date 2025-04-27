@@ -4,6 +4,7 @@ package com.cs319group3.backend.Entities.UserEntities;
 import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
+import com.cs319group3.backend.Entities.RelationEntities.ProctoringApplicationTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.AuthStaffProctoringRequest;
 import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
 import com.cs319group3.backend.Entities.RequestEntities.TALeaveRequest;
@@ -61,6 +62,10 @@ public class TA extends User{
 
     @OneToMany(mappedBy = "receiverUser")
     private List<AuthStaffProctoringRequest> instructorTAProctoringRequests;
+
+
+    @OneToMany(mappedBy = "TA")
+    private List<ProctoringApplicationTARelation> proctoringApplicationTARelations;
 
 
 

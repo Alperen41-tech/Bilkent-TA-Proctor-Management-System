@@ -8,6 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * instructor deans office and department secretary can offer proctoring to tas
+ */
+
+
 @Entity
 @Getter
 @Setter

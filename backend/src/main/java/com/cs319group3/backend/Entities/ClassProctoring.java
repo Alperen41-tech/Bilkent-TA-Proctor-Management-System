@@ -52,4 +52,11 @@ public class ClassProctoring {
 
     @OneToMany(mappedBy = "classProctoring")
     private List<ClassProctoringClassroom> classrooms;
+
+
+    @OneToMany(mappedBy = "classProctoring")
+    private List<ProctoringApplication> applications;
+
+
+
 }

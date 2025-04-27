@@ -42,6 +42,11 @@ public class Department {
 
 
 
+    @OneToMany(mappedBy = "visibleDepartment")
+    private List<ProctoringApplication> proctoringApplications;
+
+
+
 
 
 
