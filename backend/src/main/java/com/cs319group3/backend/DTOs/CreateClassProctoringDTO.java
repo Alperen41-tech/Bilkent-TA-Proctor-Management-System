@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateClassProctoringDTO {
-    private int id;
+    private int id; //Not from frontend
     private String courseName;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

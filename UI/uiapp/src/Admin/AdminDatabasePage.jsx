@@ -3,10 +3,10 @@ import NavbarAdmin from "./NavbarAdmin";
 import "./AdminDatabasePage.css";
 import AdminDatabaseItem from "./AdminDatabaseItem";
 import axios from "axios";
+import { type } from "@testing-library/user-event/dist/type";
 
 const AdminDatabasePage = () => {
   const [selectedType, setSelectedType] = useState("");
-  const [taCount, setTaCount] = useState(2);
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedData, setSelectedData] = useState({});
   const [departmentSelection, setDepartmentSelection] = useState("");
@@ -21,6 +21,17 @@ const AdminDatabasePage = () => {
   const newTaPhoneNumRef = useRef();
   const newTaClassYearRef = useRef();
   const newTaPasswordRef = useRef();
+  //-----------------------------
+
+  // Refs for new Proctoring creation
+  const newProctoringNameRef = useRef();
+  const newProctoringCourseNameRef = useRef();
+  const newProctoringSectionNumberRef = useRef();
+  const newProctoringDateRef = useRef();
+  const newProctoringStartTimeRef = useRef();
+  const newProctoringEndTimeRef = useRef();
+  const newProctoringClassroomsRef = useRef();
+  const newProctoringTaCountRef = useRef();
   //-----------------------------
 
   // Sample data for the database items
@@ -109,7 +120,8 @@ const AdminDatabasePage = () => {
   }
   const createNewTa = async (newTaName,newTaSurname, newTaEmail, newTaId, departmentSelection, newTaCourseName, newTaPhoneNum, newTaClassYear, newTaPassword) => {
     try {
-
+      console.log("Creating new TA with the following details:");
+      console.log(typeof newTaId);
       const response = await axios.post("http://localhost:8080/ta/createTA", {
         profile: {
           name: newTaName,
@@ -131,11 +143,42 @@ const AdminDatabasePage = () => {
       if (!response) {
         alert("Could not locked the swap. Try again.");
       } 
+      else {
+        alert("TA created successfully!");
+        console.log("TA created successfully:", response.data);
+      }
     } catch (error) {
       console.error("There was an error with the ta creation:", error);
       alert("An error occurred. Please try again.");
     }
 
+  }
+
+  const createNewProctoring = async (newProctoringName, newProctoringCourseName, newProctoringSectionNumber, newProctoringDate, newProctoringStartTime, newProctoringEndTime, newProctoringClassrooms, newProctoringTaCount) => {
+    try {
+      console.log("Creating new Proctoring with the following details:");
+      console.log(typeof newProctoringSectionNumber);
+      const response = await axios.post("http://localhost:8080/classProctoring/createClassProctoring", {
+        eventName: newProctoringName,
+        courseName: newProctoringCourseName,
+        sectionNo: parseInt(newProctoringSectionNumber, 10),
+        startDate: newProctoringDate + " " + newProctoringStartTime + ":00",
+        endDate: newProctoringDate + " " + newProctoringEndTime + ":00",
+        classrooms: newProctoringClassrooms.split(","),
+        taCount: parseInt(newProctoringTaCount, 10)
+      });
+
+      if (!response) {
+        alert("Could not created the Proctoring. Try again.");
+      } 
+      else {
+        alert("Proctoring created successfully!");
+        console.log("Proctoring created successfully:", response.data);
+      }
+    } catch (error) {
+      console.error("There was an error with the proctoring creation:", error);
+      alert("An error occurred. Please try again.");
+    }
   }
 
   return (
@@ -177,102 +220,78 @@ const AdminDatabasePage = () => {
             <label>Select Type:</label>
             <select value={selectedType} onChange={handleTypeChange}>
               <option value="">--Select Type--</option>
-              <option value="Exam">Exam</option>
+              <option value="Proctoring">Proctoring</option>
               <option value="TA">TA</option>
-              <option value="Quiz">Quiz</option>
             </select>
           </div>
-          {selectedType === "Exam" && (
-            <div className="admin-database-type-form">
-              <label>Title</label>
-              <input type="text" placeholder="e.g., Midterm Exam" />
-
-              <label>Date</label>
-              <input type="date" />
-
-              <label>Classroom</label>
-              <input type="text" placeholder="e.g., A101" />
-
-              <label>Department</label>
-              <select>
-                <option value="">Select Department</option>
-                <option value="CS">CS</option>
-                <option value="IE">IE</option>
-                <option value="Other">Other</option>
-              </select>
+          {selectedType === "Proctoring" && (
+            <form className="admin-database-type-form" onSubmit={(e) => {
+              e.preventDefault();
+              createNewProctoring(
+                newProctoringNameRef.current.value,
+                newProctoringCourseNameRef.current.value,
+                newProctoringSectionNumberRef.current.value,
+                newProctoringDateRef.current.value,
+                newProctoringStartTimeRef.current.value,
+                newProctoringEndTimeRef.current.value,
+                newProctoringClassroomsRef.current.value,
+                newProctoringTaCountRef.current.value
+              );
+            }}>
+              <label>Event Name</label>
+              <input ref={newProctoringNameRef} type="text" placeholder="e.g., Midterm Exam" required/>
 
               <label>Course Name</label>
-              <input type="text" placeholder="e.g., CS 202" />
+              <input ref={newProctoringCourseNameRef} type="text" placeholder="e.g., CS 202" required/>
 
-              <label>Start Time</label>
-              <input type="time" />
-
-              <label>End Time</label>
-              <input type="time" />
-
-              <label>TA Count</label>
-              <input
-                type="number"
-                value={taCount}
-                onChange={(e) => setTaCount(Number(e.target.value))}
-              />
-
-              <button className="admin-database-create-type-button">Create</button>
-            </div>
-          )}
-
-          {selectedType === "Quiz" && (
-            <div className="admin-database-type-form">
-              <label>Title</label>
-              <input type="text" placeholder="e.g., Quiz" />
+              <label>Section Number</label>
+              <input ref={newProctoringSectionNumberRef} type="number" min={0} placeholder="e.g., 1" required/>
 
               <label>Date</label>
-              <input type="date" />
-
-              <label>Classroom</label>
-              <input type="text" placeholder="e.g., B-203" />
-
-              <label>Department</label>
-              <select>
-                <option value="">Select Department</option>
-                <option value="CS">CS</option>
-                <option value="IE">IE</option>
-                <option value="Other">Other</option>
-              </select>
-
-              <label>Course Name</label>
-              <input type="text" placeholder="e.g., CS 202" />
+              <input ref={newProctoringDateRef} type="date" required/>
 
               <label>Start Time</label>
-              <input type="time" />
+              <input ref={newProctoringStartTimeRef} type="time" required/>
 
               <label>End Time</label>
-              <input type="time" />
+              <input ref={newProctoringEndTimeRef} type="time" required/>
+
+              <label>Classrooms</label>
+              <input ref={newProctoringClassroomsRef} type="text" placeholder="e.g., EE-03,EA-534" pattern="^([A-Z]+-\d+)(,([A-Z]+-\d+))*$" title="Enter classrooms like EE-033,EA-56,B-012 — building code (capital letters), dash, room number" required/>
 
               <label>TA Count</label>
-              <input
-                type="number"
-                value={taCount}
-                onChange={(e) => setTaCount(Number(e.target.value))}
-              />
+              <input ref={newProctoringTaCountRef} type="number" min={1} placeholder="e.g., 2" required/>
 
-              <button className="admin-database-create-type-button">Create</button>
-            </div>
+              <input type={"submit"} className="admin-database-create-type-button"/>
+            </form>
           )}
 
           {selectedType === "TA" && (
-            <div className="admin-database-type-form">
+            <form className="admin-database-type-form" onSubmit={(e) => {
+              e.preventDefault();
+              createNewTa(
+                newTaNameRef.current.value,
+                newTaSurnameRef.current.value,
+                newTaEmailRef.current.value,
+                newTaIdRef.current.value,
+                departmentSelection,
+                newTaCourseNameRef.current.value,
+                newTaPhoneNumRef.current.value,
+                newTaClassYearRef.current.value,
+                newTaPasswordRef.current.value
+              );
+            }}>
               <label>TA Name</label>
-              <input ref={newTaNameRef} type="text" placeholder="enter name" />
+              <input ref={newTaNameRef} type="text" placeholder="enter name" required/>
 
               <label>Surname</label>
-              <input ref={newTaSurnameRef} type="text" placeholder="enter surname" />
+              <input ref={newTaSurnameRef} type="text" placeholder="enter surname" required/>
 
               <label>Email</label>
-              <input ref={newTaEmailRef} type="text" placeholder="enter email" />
+              <input ref={newTaEmailRef} type="email" placeholder="enter email" required />
 
               <label>ID</label>
-              <input ref={newTaIdRef} type="text" placeholder="enter ID" />
+              <input ref={newTaIdRef} type="number" min={0} placeholder="enter ID" required/>
 
               <label>Department</label>
               <select value={departmentSelection} onChange={(e) => {setDepartmentSelection(e.target.value)
@@ -295,31 +314,19 @@ const AdminDatabasePage = () => {
               </select>
 
               <label>Course Name</label>
-              <input ref={newTaCourseNameRef} type="text" placeholder="enter course name" />
+              <input ref={newTaCourseNameRef} type="text" placeholder="enter course name" required />
 
               <label>Phone Number</label>
-              <input ref={newTaPhoneNumRef} type="text" placeholder="enter phone number" />
+              <input ref={newTaPhoneNumRef} type="text" placeholder="enter phone number" pattern="^\+\d{1,3}-\d{3}-\d{3}-\d{2}-\d{2}$"  title="Phone number must be in the format +CountryCode-xxx-xxx-xx-xx" required/>
 
               <label>Class Year</label>
-              <input ref={newTaClassYearRef} type="text" placeholder="enter class year" />
+              <input ref={newTaClassYearRef} type="number" min={1} max={6} placeholder="enter class year" required/>
 
               <label>Login Informations</label>
-              <input ref={newTaPasswordRef} type="password" placeholder="enter password" />
+              <input ref={newTaPasswordRef} type="password" placeholder="enter password" required />
 
-              <button className="admin-database-create-type-button" onClick={() => {
-                createNewTa(
-                  newTaNameRef.current.value,
-                  newTaSurnameRef.current.value,
-                  newTaEmailRef.current.value,
-                  newTaIdRef.current.value,
-                  departmentSelection,
-                  newTaCourseNameRef.current.value,
-                  newTaPhoneNumRef.current.value,
-                  newTaClassYearRef.current.value,
-                  newTaPasswordRef.current.value
-                );
-              }}>Create</button>
-            </div>
+              <input type="submit" value="Create"className="admin-database-create-type-button"/>
+            </form>
           )}
         </div>
         
