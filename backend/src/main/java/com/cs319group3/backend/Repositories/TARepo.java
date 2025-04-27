@@ -14,7 +14,6 @@ import java.util.Optional;
 public interface TARepo extends JpaRepository<TA, Integer> {
     Optional<TA> findByUserId(int userId);
 
-
     @Query("""
     SELECT t FROM TA t
     WHERE t.department.departmentCode = :departmentCode
@@ -41,4 +40,6 @@ public interface TARepo extends JpaRepository<TA, Integer> {
     WHERE t.userId = :userId
 """)
     Integer findDepartmentIdByUserId(@Param("userId") int userId);
+
+
 }

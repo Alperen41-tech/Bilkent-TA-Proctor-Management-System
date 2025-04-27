@@ -5,18 +5,19 @@ import com.cs319group3.backend.DTOMappers.TAProfileMapper;
 import com.cs319group3.backend.DTOs.ClassProctoringAndTAsDTO;
 import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
+import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.UserEntities.DeansOffice;
 import com.cs319group3.backend.Entities.UserEntities.TA;
-import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
-import com.cs319group3.backend.Repositories.DeansOfficeRepo;
-import com.cs319group3.backend.Repositories.DepartmentRepo;
-import com.cs319group3.backend.Repositories.TARepo;
+import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.ClassProctoringAndTAsService;
+import com.cs319group3.backend.Services.ClassProctoringService;
+import com.cs319group3.backend.Services.TAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsService {
@@ -27,6 +28,10 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
     private ClassProctoringTARelationRepo classProctoringTARelationRepo;
     @Autowired
     private DepartmentRepo departmentRepo;
+    @Autowired
+    private CourseRepo courseRepo;
+    @Autowired
+    private ClassProctoringRepo classProctoringRepo;
 
     @Override
     public List<ClassProctoringAndTAsDTO> getDepartmentTAsClassProctorings(int userId) {
@@ -196,4 +201,44 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
 
         return results;
     }
+
+    @Autowired
+    TAService taService;
+
+    @Override
+    public List<ClassProctoringAndTAsDTO> getClassProctoringsOfCreator(int creatorId) {
+        List<ClassProctoringTARelation> cprList = classProctoringTARelationRepo.findByCreator_UserId(creatorId);
+
+        // Group by classProctoringId
+        Map<Integer, List<ClassProctoringTARelation>> groupedByProctoring = new HashMap<>();
+        for (ClassProctoringTARelation cprInstance : cprList) {
+            int classProctoringId = cprInstance.getClassProctoring().getClassProctoringId();
+            groupedByProctoring.computeIfAbsent(classProctoringId, k -> new ArrayList<>()).add(cprInstance);
+        }
+
+        List<ClassProctoringAndTAsDTO> results = new ArrayList<>();
+
+        for (Map.Entry<Integer, List<ClassProctoringTARelation>> entry : groupedByProctoring.entrySet()) {
+            Integer classProctoringId = entry.getKey();
+            List<ClassProctoringTARelation> relations = entry.getValue();
+
+            // One DTO per proctoring
+            ClassProctoringAndTAsDTO dto = new ClassProctoringAndTAsDTO();
+
+            // Set the common classProctoringTARelation (use the first one)
+            dto.setClassProctoringTARelationDTO(ClassProctoringTARelationMapper.essentialMapper(relations.get(0)));
+
+            // Set TA list
+            List<TAProfileDTO> tas = relations.stream()
+                    .map(cpr -> TAProfileMapper.essentialMapper(cpr.getTA()))
+                    .collect(Collectors.toList());
+
+            dto.setTaProfileDTOList(tas);
+
+            results.add(dto);
+        }
+
+        return results;
+    }
+
 }

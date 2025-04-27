@@ -25,6 +25,8 @@ public class TAServiceImpl implements TAService {
 
     @Autowired
     private LoginRepo loginRepo;
+    @Autowired
+    private ClassProctoringTARelationRepo classProctoringTARelationRepo;
 
 
     @Override
@@ -91,6 +93,18 @@ public class TAServiceImpl implements TAService {
         List<TA> availableTAs = taRepo.findAvailableTAsByFaculty(facultyId, classProctoringId);
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
+            TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
+            availableTAProfiles.add(profile);
+        }
+        return availableTAProfiles;
+    }
+
+
+    @Override
+    public List<TAProfileDTO> getTAsByProctoringId(int proctoringId) {
+        List<TA> tas = classProctoringTARelationRepo.findTAsByClassProctoringId(proctoringId);
+        List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
+        for (TA ta : tas) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
             availableTAProfiles.add(profile);
         }

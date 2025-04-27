@@ -3,6 +3,7 @@ package com.cs319group3.backend.Repositories;
 
 import com.cs319group3.backend.CompositeIDs.ClassProctoringTAKey;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
+import com.cs319group3.backend.Entities.UserEntities.TA;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -26,4 +27,13 @@ public interface ClassProctoringTARelationRepo extends JpaRepository<ClassProcto
     WHERE ctr.classProctoring.classProctoringId = :classProctoringId
 """)
     int countByClassProctoringId(int classProctoringId);
+
+    @Query("SELECT cptr FROM ClassProctoringTARelation cptr " +
+            "JOIN cptr.classProctoring cp " +
+            "WHERE cp.creator.userId = :creatorId")
+    List<ClassProctoringTARelation> findByCreator_UserId(int creatorId);
+
+    @Query("SELECT cptr.TA FROM ClassProctoringTARelation cptr " +
+            "WHERE cptr.classProctoring.classProctoringId = :classProctoringId")
+    List<TA> findTAsByClassProctoringId(int classProctoringId);
 }

@@ -64,4 +64,10 @@ public class ClassProctoringTARelationController {
         System.out.println("Create classProctoringTARelation");
         return classProctoringTARelationService.createClassProctoringTARelation(taId, classProctoringId);
     }
+
+    @GetMapping("getClassProctoringOfCreator")
+    public List<ClassProctoringAndTAsDTO> getClassProctoringOfCreator(@RequestParam int creatorId){
+        System.out.println("getClassProctoringOfCreator");
+        return classProctoringAndTAs.getClassProctoringsOfCreator(creatorId);
+    }
 }

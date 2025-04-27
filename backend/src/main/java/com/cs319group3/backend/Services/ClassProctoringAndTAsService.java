@@ -9,4 +9,5 @@ public interface ClassProctoringAndTAsService {
     public List<ClassProctoringAndTAsDTO> getDepartmentClassProctoringsByCode(String departmentCode);
     public List<ClassProctoringAndTAsDTO> getFacultyClassProctorings(int userId);
     public List<ClassProctoringAndTAsDTO> getDepartmentClassProctoringsById(int departmentId);
+    public List<ClassProctoringAndTAsDTO> getClassProctoringsOfCreator(int creatorId);
 }
