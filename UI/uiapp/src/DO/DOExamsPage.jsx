@@ -1,106 +1,167 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavbarDO from "./NavbarDO";
 import "./DOExamsPage.css";
 import AdminDatabaseItem from "../Admin/AdminDatabaseItem";
 import TAItem from "../TAItem";
+import axios from "axios";
+
+
 
 
 
 
 const DOExamsPage = () => {
+  const [taDepartmentFilter, setTaDepartmentFilter] = useState("");
+
   // Example exam data
-    const [selectedTA, setSelectedTA] = useState(null);
-    const [selectedExamKey, setSelectedExamKey] = useState(null);
-  
-
-  const ExamItems = [
-    {
-      type: 'exam',
-      data: {
-        id: 1,
-        course: "CS 319",
-        date: "2025-03-15",
-        time: "10:00 AM",
-        location: "EE-214"
-      }
-    },
-    {
-      type: 'exam',
-      data: {
-        id: 2,
-        course: "CS 315",
-        date: "2025-04-17",
-        time: "10:30 AM",
-        location: "EE-212"
-      }
-    },
-    {
-      type: 'exam',
-      data: {
-        id: 3,
-        course: "CS 376",
-        date: "2025-05-25",
-        time: "11:00 AM",
-        location: "BZ-04"
-      }
-    },
-    {
-      type: 'exam',
-      data: {
-        id: 4,
-        course: "CS 202",
-        date: "2025-06-05",
-        time: "8:00 AM",
-        location: "EE-214"
-      }
-    },
-    
-  ];
-
-
-
+  const [selectedTA, setSelectedTA] = useState(null);
+  const [selectedExamKey, setSelectedExamKey] = useState(null);
   // For the search bar
   const [searchQuery, setSearchQuery] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("");
-
-
-
   // Dummy logic for "Automatic Assign"
   const handleAutomaticAssign = () => {
     alert("Automatic assignment logic goes here.");
   };
-
   // Dummy logic for "Manually Assign"
   const handleManualAssign = () => {
     alert("Manual assignment logic goes here.");
   };
-
-
   const handleTAClick = (ta) => {
     const key = `${ta.firstName}-${ta.lastName}-${ta.email}`;
     setSelectedTA(key);
   };
+  const [examItems, setExamItems] = useState([]);
+  const facultyId = 1; // Hardcoded for now, you can pass dynamically later
+  const [departments, setDepartments] = useState([]); // New state for departments
+  const [selectedExamItem, setSelectedExamItem] = useState(null);
+
+  const [tas, setTAs] = useState([]); // 🔥 TAs to show
+  const [allTAs, setAllTAs] = useState([]); // 🔥 Backup of all fetched TAs
+
+
 
 
   const createLogsDatabaseItems = () => {
-    return ExamItems.map((item) => {
-      const key = `${item.data.course}-${item.data.date}`;
-      const isSelected = selectedExamKey === key;
-  
-      return (
-        <AdminDatabaseItem
-          key={key}
-          type={item.type}
-          data={item.data}
-          onDelete={(id) => console.log(`Deleted ${item.type} with ID: ${id}`)}
-          onSelect={(data) => setSelectedExamKey(key)}
-          isSelected={isSelected}
-          inLog={true}
-        />
-      );
-    });
+    return examItems
+      .filter((item) => item.classProctoringTARelationDTO && item.classProctoringTARelationDTO.classProctoringDTO)
+      .map((item) => {
+        const key = `${item.classProctoringTARelationDTO.classProctoringDTO.courseName}-${item.classProctoringTARelationDTO.classProctoringDTO.startDate}`;
+        const isSelected = selectedExamKey === key;
+
+        return (
+          <AdminDatabaseItem
+            key={key}
+            type="exam"
+            data={{
+              id: item.classProctoringTARelationDTO.classProctoringDTO.id,
+              course: item.classProctoringTARelationDTO.classProctoringDTO.courseName,
+              date: item.classProctoringTARelationDTO.classProctoringDTO.startDate,
+              time: item.classProctoringTARelationDTO.classProctoringDTO.timeInterval,
+              location: item.classProctoringTARelationDTO.classProctoringDTO.classrooms,
+            }}
+            onDelete={(id) => console.log(`Deleted exam with ID: ${id}`)}
+            onSelect={() => {
+              setSelectedExamKey(key);
+              setSelectedExamItem(item);
+
+              setTaDepartmentFilter("");
+
+              const proctoringId = item?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+              fetchTAs("", proctoringId); // 🔥 Fetch for new exam, no department filtering initially
+            }}
+
+            isSelected={isSelected}
+            inLog={true}
+          />
+        );
+      });
   };
-  
+
+
+  const fetchTAs = async (departmentCode, proctoringId) => {
+    try {
+      let response;
+
+      if (!departmentCode || departmentCode === "") {
+        // Fetch all available TAs in faculty
+        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoring', {
+          params: { facultyId: facultyId, proctoringId: proctoringId },
+        });
+      } else {
+        // Fetch available TAs in selected department
+        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring', {
+          params: { departmentCode: departmentCode, proctoringId: proctoringId },
+        });
+      }
+
+      console.log("Fetched Available TAs: ", response.data);
+      setAllTAs(response.data || []);
+      setTAs(response.data || []);
+    } catch (error) {
+      console.error('Error fetching available TAs:', error);
+    }
+  };
+
+
+
+
+
+
+  const fetchExams = async (departmentCode) => {
+    try {
+      let response;
+      if (!departmentCode || departmentCode === "") {
+        // Empty = fetch all faculty exams
+        response = await axios.get('http://localhost:8080/classProctoringTARelation/getFacultyClassProctoringsById', {
+          params: { facultyId: facultyId },
+        });
+      } else {
+        // Otherwise, fetch department-specific exams
+        response = await axios.get('http://localhost:8080/classProctoringTARelation/getDepartmentClassProctoringsByCode', {
+          params: { departmentCode: departmentCode },
+        });
+      }
+      console.log("Fetched Exams: ", response.data);
+      setExamItems(response.data || []);
+    } catch (error) {
+      console.error('Error fetching exams:', error);
+    }
+  };
+
+
+
+
+  useEffect(() => {
+    fetchExams();
+    fetchTAs(); // 🔥 Also fetch TAs initially
+  }, []);
+
+
+
+
+
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/department/getAllDepartmentsInFaculty', {
+          params: {
+            facultyId: 1, // <-- Hardcoded for now, maybe dynamic later?
+          },
+        });
+        console.log("Fetched Departments: ", response.data);
+        setDepartments(response.data);
+      } catch (error) {
+        console.error('Error fetching departments:', error);
+      }
+    };
+
+    fetchDepartments();
+
+  }, []);
+
+
 
 
 
@@ -108,7 +169,7 @@ const DOExamsPage = () => {
     const ta = { firstName, lastName, email };
     const key = `${firstName}-${lastName}-${email}`;
     const isSelected = selectedTAKey === key;
-  
+
     return (
       <TAItem
         key={key}
@@ -136,13 +197,35 @@ const DOExamsPage = () => {
             />
             <select
               value={departmentFilter}
-              onChange={(e) => setDepartmentFilter(e.target.value)}
+              onChange={(e) => {
+                const selectedDepartment = e.target.value;
+                setDepartmentFilter(selectedDepartment);
+
+                setSelectedExamKey(null);
+                setSelectedExamItem(null);
+                setTAs([]);                      
+                setAllTAs([]);                   
+                setTaDepartmentFilter("");
+
+                fetchExams(selectedDepartment);
+              }}
             >
+
+
               <option value="">Select Department</option>
-              <option value="CS">CS</option>
-              <option value="IE">IE</option>
-              <option value="Other">Other</option>
+              {departments.length > 0 ? (
+                departments.map((department) => (
+                  <option key={department.departmentCode} value={department.departmentCode}>
+                    {department.departmentName}
+                  </option>
+                ))
+              ) : (
+                <option disabled>Loading departments...</option>
+              )}
             </select>
+
+
+
             <button className="search-button">Search</button>
           </div>
 
@@ -159,31 +242,59 @@ const DOExamsPage = () => {
           <div className="assigned-tas">
             <h3>Assigned TAs</h3>
             <div className="assigned-list">
-              {createTAItem("Ahmet", "Yılmaz", "ahmet.yilmaz@example.com", handleTAClick, selectedTA)}
-              {createTAItem("Merve", "Kara", "merve.kara@example.com", handleTAClick, selectedTA)}
-              {createTAItem("John", "Doe", "john.doe@example.com", handleTAClick, selectedTA)}
+              {selectedExamItem?.taProfileDTOList?.length > 0 ? (
+                selectedExamItem.taProfileDTOList.map((ta) => (
+                  <div key={ta.email} className="ta-item">
+                    {createTAItem(ta.name, ta.surname, ta.email, handleTAClick, selectedTA)}
 
-            </div>
-            <button className="dismissTA-button" >
+                  </div>
+                ))
+              ) : (
+                <div>No TAs assigned</div>
+              )}
+
+              <button className="dismissTA-button" >
                 Dismiss
-            </button>
+              </button>
+            </div>
           </div>
+
 
           {/* Choose TAs */}
           <div className="choose-tas">
             <h3>Choose TAs</h3>
             <div className="choose-header">
-              <select>
+              <select
+                value={taDepartmentFilter}  // 🔥 Add this line
+                onChange={(e) => {
+                  const selectedDepartment = e.target.value;
+                  setTaDepartmentFilter(selectedDepartment); // 🔥 Update the selection
+                  const proctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+                  fetchTAs(selectedDepartment, proctoringId);
+                }}
+              >
+
+
                 <option value="">Select Department</option>
-                <option value="CS">CS</option>
-                <option value="IE">IE</option>
-                <option value="Other">Other</option>
+                {departments.length > 0 ? (
+                  departments.map((department) => (
+                    <option key={department.departmentCode} value={department.departmentCode}>
+                      {department.departmentName}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Loading departments...</option>
+                )}
               </select>
             </div>
             <div className="choose-list">
-              {createTAItem("Cemil", "Yılmaz", "ahmet.yilmaz@example.com", handleTAClick, selectedTA)}
-              {createTAItem("Yusuf", "Kara", "merve.kara@example.com", handleTAClick, selectedTA)}
-              {createTAItem("Suat", "Doe", "john.doe@example.com", handleTAClick, selectedTA)}
+              {tas.length > 0 ? (
+                tas.map((ta) => (
+                  createTAItem(ta.name, ta.surname, ta.email, handleTAClick, selectedTA)
+                ))
+              ) : (
+                <div>No TAs available</div>
+              )}
             </div>
             <div className="choose-actions">
               <button className="assign-button" onClick={handleAutomaticAssign}>
@@ -194,6 +305,7 @@ const DOExamsPage = () => {
               </button>
             </div>
           </div>
+
         </div>
       </div>
     </div>
