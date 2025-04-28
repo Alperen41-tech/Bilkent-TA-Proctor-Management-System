@@ -1,20 +1,29 @@
 package com.cs319group3.backend.DTOs.RequestDTOs;
 
 
+import com.cs319group3.backend.DTOs.RequestDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 public class TASwapRequestDTO {
 
 
-    private int senderTAId;
-    private int receiverTAId;
-
-
-    private String description;
+    private RequestDTO request;
     private int classProctoringId;
 
+    private String classProctoringEventName;
+    private String senderName;
+    private String receiverName;
+    private LocalDateTime sentDate;
+    private LocalDateTime responseDate;
 
+    private LocalDateTime proctoringStartDate;
+    private LocalDateTime proctoringEndDate;
+    private String receiverEmail;
+    private String senderEmail;
 }

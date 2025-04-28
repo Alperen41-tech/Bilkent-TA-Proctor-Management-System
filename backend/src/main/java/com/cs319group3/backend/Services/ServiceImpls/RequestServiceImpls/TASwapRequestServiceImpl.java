@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class TASwapRequestServiceImpl implements TASwapRequestService {
@@ -19,6 +21,24 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
     TASwapRequestMapper taswapRequestMapper;
     @Autowired
     TASwapRequestRepo taswapRequestRepo;
+
+
+
+    @Override
+    public ResponseEntity<List<TASwapRequestDTO>> getTASwapRequestsByReceiver(int TAId) {
+
+        List<TASwapRequest> swapRequests = taswapRequestRepo.findByReceiverUser_UserId(TAId);
+        return new ResponseEntity<>(taswapRequestMapper.essentialMapper(swapRequests),HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<List<TASwapRequestDTO>> getTASwapRequestsBySender(int TAId) {
+        List<TASwapRequest> swapRequests = taswapRequestRepo.findBySenderUser_UserId(TAId);
+        return new ResponseEntity<>(taswapRequestMapper.essentialMapper(swapRequests),HttpStatus.OK);
+    }
+
+
+
 
     @Override
     public ResponseEntity<Boolean> createSwapRequest(TASwapRequestDTO swapRequestReceived) {
