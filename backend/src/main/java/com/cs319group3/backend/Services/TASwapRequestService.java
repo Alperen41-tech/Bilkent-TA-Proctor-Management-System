@@ -30,6 +30,12 @@ public interface TASwapRequestService {
     public ResponseEntity<Boolean> createSwapRequest(TASwapRequestDTO swapRequestRecieved);
 
 
+    /**
+     *
+     * @param requestId take the request id and mark it as accepted
+     * @return true if successfully handled
+     */
+    public ResponseEntity<Boolean> acceptSwapRequest(int requestId) throws Exception;
 
 
 

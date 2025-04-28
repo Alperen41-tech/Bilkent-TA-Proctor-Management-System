@@ -5,6 +5,7 @@ import com.cs319group3.backend.DTOs.RequestDTOs.TASwapRequestDTO;
 import com.cs319group3.backend.Services.TASwapRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,13 +38,14 @@ public class TASwapRequestController {
         return swapRequestService.createSwapRequest(swapRequestReceived);
     }
 
+    @PutMapping("acceptSwapRequest")
+    public ResponseEntity<Boolean> acceptSwapRequest(@RequestParam(name = "id") int requestID){
 
-
-
-
-
-
-
-
-
+        try {
+            return swapRequestService.acceptSwapRequest(requestID);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+    }
 }
