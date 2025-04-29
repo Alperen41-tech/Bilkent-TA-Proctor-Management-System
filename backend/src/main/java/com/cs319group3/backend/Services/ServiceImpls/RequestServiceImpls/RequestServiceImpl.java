@@ -4,8 +4,9 @@ import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
-import com.cs319group3.backend.Repositories.NotificationRepo;
-import com.cs319group3.backend.Repositories.RequestRepo;
+import com.cs319group3.backend.Entities.RequestEntities.TALeaveRequest;
+import com.cs319group3.backend.Entities.RequestEntities.TAWorkloadRequest;
+import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,24 @@ public class RequestServiceImpl implements RequestService {
 
     @Autowired
     private NotificationRepo notificationRepo;
+
+    @Autowired
+    private TASwapRequestRepo taswapRequestRepo;
+
+    @Autowired
+    private TAWorkloadRequestRepo taWorkloadRequestRepo;
+
+    @Autowired
+    private TALeaveRequestRepo taleaveRequestRepo;
+
+    @Autowired
+    private InstructorAdditionalTARequestRepo instructorAdditionalTARequestRepo;
+
+    @Autowired
+    private AuthStaffProctoringRequestRepo authStaffProctoringRequestRepo;
+
+
+
 
     @Override
     public boolean respondToRequest(int requestId, boolean response) {

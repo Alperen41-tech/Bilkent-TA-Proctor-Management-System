@@ -27,6 +27,7 @@ public class RequestMapper {
         RequestDTO requestDTO = new RequestDTO();
 
         requestDTO.setRequestId(request.getRequestId());
+        requestDTO.setRequestId(request.getRequestId());
         requestDTO.setRequestType(request.getClass().getSimpleName());
         requestDTO.setSenderId(request.getSenderUser().getUserId());
         requestDTO.setReceiverId(request.getReceiverUser().getUserId());
