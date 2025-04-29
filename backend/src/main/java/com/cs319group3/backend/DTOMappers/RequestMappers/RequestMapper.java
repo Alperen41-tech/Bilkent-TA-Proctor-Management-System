@@ -54,8 +54,8 @@ public class RequestMapper {
         requestDTO.setIsApproved(request.getIsApproved());
         requestDTO.setDescription(request.getDescription());
 
-        requestDTO.setSenderName(request.getSenderUser().getName());
-        requestDTO.setReceiverName(request.getReceiverUser().getName());
+        requestDTO.setSenderName(request.getSenderUser().getFullName() );
+        requestDTO.setReceiverName(request.getReceiverUser().getFullName());
 
         requestDTO.setSenderEmail(request.getSenderUser().getEmail());
         requestDTO.setReceiverEmail(request.getReceiverUser().getEmail());

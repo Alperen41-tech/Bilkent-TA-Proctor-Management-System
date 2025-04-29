@@ -41,4 +41,8 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "user")
     private List<Login> logins;
+
+    public String getFullName(){
+        return name + " " + surname;
+    }
 }
