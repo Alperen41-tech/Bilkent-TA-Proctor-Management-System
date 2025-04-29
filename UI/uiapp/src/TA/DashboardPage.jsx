@@ -18,6 +18,7 @@ const DashboardPage = () => {
   const [taWorkloadRequests, setTaWorkloadRequests] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [receivedRequests, setReceivedRequests] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
 
   //Refs for the new workload entry
   const newTaskTypeEntry = useRef();
@@ -39,7 +40,7 @@ const DashboardPage = () => {
   const createPendingRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <PendingRequestItem {...request} />
+        <PendingRequestItem {...request} onCancel={() => console.log("canceled")}/>
       </div>
     );
   };
@@ -98,11 +99,21 @@ const DashboardPage = () => {
 
   const fetchReceivedRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/request/getByReceiverId?receiverId=2"); // Adjust the URL as needed
+      const response = await axios.get("http://localhost:8080/request/getByReceiverId?receiverId=3"); // Adjust the URL as needed
       setReceivedRequests(response.data);
       console.log(receivedRequests);
     } catch (error) {
       console.error("Error fetching received requests:", error);
+    }
+  };
+
+  const fetchPendingRequests = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/request/getBySenderId?senderId=2"); // Adjust the URL as needed
+      setPendingRequests(response.data);
+      console.log(receivedRequests);
+    } catch (error) {
+      console.error("Error fetching pending requests:", error);
     }
   };
 
@@ -125,10 +136,16 @@ const DashboardPage = () => {
     }
   };
 
-  const handleRequestResponse = async (requestId, response) => {
+  const handleRequestResponse = async (requestId, answer) => {
     try {
-      const response = await axios.post(`http://localhost:8080/request/respond?requestId=${requestId}&response=${response}`);
-      if (response.status === 200) {
+      const response = await axios.put(`http://localhost:8080/request/respond`,null, {
+        params: {
+          id: requestId,
+          response: answer,
+        },
+      }
+      );
+      if (response.data) {
         alert("Request accepted successfully.");
         fetchReceivedRequests(); // Refresh the received requests after accepting
       } else {
@@ -146,6 +163,7 @@ const DashboardPage = () => {
     fetchWorkloadTypes();
     fetchTaWorkloadRequests();
     fetchReceivedRequests();
+    fetchPendingRequests();
   }, []);
 
   const handleLockedStatusChange = async (id) => {
@@ -169,33 +187,6 @@ const DashboardPage = () => {
     }
   }
   
-  const pendingRequests = [
-    {
-      date: { month: "March", day: "23", weekday: "Fri" },
-      time: { start: "8:00AM", end: "10:30AM" },
-      role: "Quiz Proctoring",
-      duration: 1.5,
-      name: "Ali Kılıç",
-      email: "ali.kilic@ug.bilkent.edu.tr",
-      status: "Pending TA’s answer",
-      onCancelHandler: () => console.log("Ali's request canceled"),
-      onAcceptHandler: () => console.log("Ali's request accepted"),
-      onRejectHandler: () => console.log("Ali's request rejected"),
-    },
-    {
-      date: { month: "April", day: "2", weekday: "Tue" },
-      time: { start: "1:00PM", end: "3:00PM" },
-      role: "Midterm Invigilation",
-      duration: 2,
-      name: "Ayşe Yılmaz",
-      email: "ayse.yilmaz@ug.bilkent.edu.tr",
-      status: "Pending TA’s answer",
-      onCancelHandler: () => console.log("Ayşe's request canceled"),
-      onAcceptHandler: () => console.log("Ayşe's request accepted"),
-      onRejectHandler: () => console.log("Ayşe's request rejected"),
-    },
-  ];
-  
   return (
     <div className="ta-dashboard-dashboard-page">
       <Navbar />
@@ -216,14 +207,12 @@ const DashboardPage = () => {
               {activeTab === "pending" && (
                 <div>
                   {pendingRequests.map((req, index) => createPendingRequest(req, index))}
+                  {console.log(pendingRequests)}
                 </div>
               )}
               {activeTab === "received" && (
                 <div>
                   {receivedRequests.filter((request)=> request.status === null).map((req, index) => createReceivedRequest(req, index))}
-                  {console.log(receivedRequests)}
-                  {console.log(taWorkloadRequests)}
-                  
                 </div>
               )}
               {activeTab === "tasks" && (
@@ -280,8 +269,8 @@ const DashboardPage = () => {
                   selectedReceivedRequest.requestType === 'TASwapRequest' ? (
                     <>
                       <p><strong>Event:</strong> {selectedReceivedRequest.classProctoringEventName}</p>
-                      <p><strong>Event Start Date:</strong> {selectedReceivedRequest.classProctoringStartDate.split("T")[0]}</p>
-                      <p><strong>Event End Date:</strong> {selectedReceivedRequest.classProctoringEndDate.split("T")[0]}</p>
+                      <p><strong>Event Start Date:</strong> {selectedReceivedRequest.classProctoringStartDate ? selectedReceivedRequest.classProctoringStartDate.split("T")[0] : "—"}</p>
+                      <p><strong>Event End Date:</strong> {selectedReceivedRequest.classProctoringEndDate ? selectedReceivedRequest.classProctoringEndDate.split("T")[0] : "—"}</p>
                     </>
                   ) : null}
 

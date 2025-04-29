@@ -1,77 +1,89 @@
-.pending-request-item-request-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #ececec;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    font-family: sans-serif;
-  }
-  
-  .pending-request-item-date-box {
-    text-align: center;
-    margin-right: 16px;
-    width: 60px;
-  }
-  
-  .pending-request-item-month {
-    font-size: 14px;
-    font-weight: bold;
-    color: #555;
-  }
-  
-  .pending-request-item-day {
-    font-size: 20px;
-    font-weight: bold;
-  }
-  
-  .pending-request-item-weekday {
-    font-size: 12px;
-    color: #777;
-  }
-  
-  .pending-request-item-details {
-    flex-grow: 1;
-  }
-  
-  .pending-request-item-time-row {
-    font-weight: bold;
-    font-size: 16px;
-  }
-  
-  .pending-request-item-info-row {
-    font-size: 14px;
-    color: #555;
-  }
-  
-  .pending-request-item-email {
-    color: #888;
-  }
-  
-  .pending-request-item-status-box {
-    text-align: right;
-    min-width: 150px;
-  }
-  
-  .pending-request-item-status-text {
-    font-size: 14px;
-    color: #888;
-    margin-bottom: 8px;
-  }
-  
-  .pending-request-item-cancel-button {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  .pending-request-item-cancel-button:hover {
-    background-color: #c0392b;
-  }
-  
+.pending-request-item-received-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ececec;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  font-family: sans-serif;
+}
+
+.pending-request-item-date-box {
+  text-align: center;
+  margin-right: 16px;
+  width: 60px;
+}
+
+.pending-request-item-date-box .pending-request-item-month {
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+}
+
+.pending-request-item-date-box .pending-request-item-day {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.pending-request-item-date-box .pending-request-item-weekday {
+  font-size: 12px;
+  color: #777;
+}
+
+.pending-request-item-details {
+  flex-grow: 1;
+}
+
+.pending-request-item-time-row {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.pending-request-item-info-row {
+  font-size: 14px;
+  color: #555;
+}
+
+.pending-request-item-email {
+  color: #888;
+}
+
+.pending-request-item-status-actions {
+  text-align: right;
+  min-width: 220px;
+}
+
+.pending-request-item-status-text {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.pending-request-item-status-label {
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+.pending-request-item-button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.pending-request-item-cancel-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.pending-request-item-cancel-button:hover {
+  background-color: #c0392b;
+}
