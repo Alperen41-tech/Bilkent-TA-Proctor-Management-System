@@ -54,7 +54,6 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
             <div className="received-request-item-time-row">End: {proctoringEndDate}</div>
             <div className="received-request-item-info-row">Sender: {senderName}</div>
             <div className="received-request-item-info-row received-request-item-email">{senderEmail}</div>
-            <div className="received-request-item-info-row">Comment: {description}</div>
           </>
         );
   
@@ -66,7 +65,6 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
             <div className="received-request-item-info-row">Completed: {isComplete ? "Yes" : "No"}</div>
             <div className="received-request-item-info-row">Sender: {senderName}</div>
             <div className="received-request-item-info-row received-request-item-email">{senderEmail}</div>
-            <div className="received-request-item-info-row">Comment: {description}</div>
           </>
         );
   
@@ -77,7 +75,6 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
             <div className="received-request-item-info-row">Urgent: {isUrgent ? "Yes" : "No"}</div>
             <div className="received-request-item-info-row">Sender: {senderName}</div>
             <div className="received-request-item-info-row received-request-item-email">{senderEmail}</div>
-            <div className="received-request-item-info-row">Comment: {description}</div>
           </>
         );
   
@@ -89,7 +86,6 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
             <div className="received-request-item-time-row">End: {proctoringEndDate}</div>
             <div className="received-request-item-info-row">Sender: {senderName}</div>
             <div className="received-request-item-info-row received-request-item-email">{senderEmail}</div>
-            <div className="received-request-item-info-row">Comment: {description}</div>
           </>
         );
   
@@ -101,7 +97,6 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
             <div className="received-request-item-info-row">Course: {courseCode}</div>
             <div className="received-request-item-info-row">Sender: {senderName}</div>
             <div className="received-request-item-info-row received-request-item-email">{senderEmail}</div>
-            <div className="received-request-item-info-row">Comment: {description}</div>
           </>
         );
   
