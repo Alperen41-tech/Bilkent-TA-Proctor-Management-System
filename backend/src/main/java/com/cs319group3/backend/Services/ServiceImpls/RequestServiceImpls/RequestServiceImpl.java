@@ -3,9 +3,7 @@ package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Entities.Notification;
-import com.cs319group3.backend.Entities.RequestEntities.Request;
-import com.cs319group3.backend.Entities.RequestEntities.TALeaveRequest;
-import com.cs319group3.backend.Entities.RequestEntities.TAWorkloadRequest;
+import com.cs319group3.backend.Entities.RequestEntities.*;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,12 +65,22 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<RequestDTO> getRequestsByReceiverUser(int userId) {
-        List<Request> requests = requestRepo.findByReceiverUser_UserId(userId);
-        List<RequestDTO> requestDTOs = new ArrayList<>();
-        for (Request request : requests) {
-            requestDTOs.add(RequestMapper.essentialMapper(request));
-        }
-        return requestDTOs;
+        List<RequestDTO> requests = new ArrayList<>();
+
+
+        List<TASwapRequest> taSwapRequests = taswapRequestRepo.findByReceiverUser_UserId(userId);
+        List<TAWorkloadRequest> workloadRequests = taWorkloadRequestRepo.findByReceiverUser_UserId(userId);
+        List<TALeaveRequest> taleaveRequests = taleaveRequestRepo.findByReceiverUser_UserId(userId);
+        List<InstructorAdditionalTARequest> instructorAdditionalTARequests = instructorAdditionalTARequestRepo.findAllByReceiverUser_UserId(userId);
+        List<AuthStaffProctoringRequest>  authStaffProctoringRequests = authStaffProctoringRequestRepo.findByReceiverUser_UserId(userId);
+
+        requests.addAll(RequestMapper.taSwapRequestMapper(taSwapRequests));
+        requests.addAll(RequestMapper.taWorkloadRequestMapper(workloadRequests));
+        requests.addAll(RequestMapper.taLeaveRequestMapper(taleaveRequests));
+        requests.addAll(RequestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequests));
+        requests.addAll(RequestMapper.authStaffTARequestMapper(authStaffProctoringRequests));
+
+        return requests;
     }
 
     @Override
