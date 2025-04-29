@@ -6,6 +6,7 @@ import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.*;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.RequestService;
+import com.cs319group3.backend.Services.TASwapRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,24 +41,57 @@ public class RequestServiceImpl implements RequestService {
     @Autowired
     private AuthStaffProctoringRequestRepo authStaffProctoringRequestRepo;
 
-
+    @Autowired
+    private TASwapRequestService swapRequestService;
 
 
     @Override
     public boolean respondToRequest(int requestId, boolean response) {
-        Optional<Request> request = requestRepo.findByRequestId(requestId);
-        if (request.isEmpty()) {
+        Optional<Request> optionalRequest = requestRepo.findByRequestId(requestId);
+        if (optionalRequest.isEmpty()) {
             return false;
         }
-        request.get().setIsApproved(response);
-        request.get().setResponseDate(LocalDateTime.now());
-        requestRepo.save(request.get());
+
+        Request request = optionalRequest.get();
+
+        try{
+            if (request instanceof TAWorkloadRequest) {
+                TAWorkloadRequest req = (TAWorkloadRequest) request;
+
+
+            } else if (request instanceof TASwapRequest) {
+                TASwapRequest req = (TASwapRequest) request;
+                swapRequestService.acceptSwapRequest(requestId);
+
+            } else if (request instanceof TALeaveRequest) {
+                TALeaveRequest req = (TALeaveRequest) request;
+
+            } else if (request instanceof InstructorAdditionalTARequest) {
+                InstructorAdditionalTARequest req = (InstructorAdditionalTARequest) request;
+
+            } else if (request instanceof AuthStaffProctoringRequest) {
+                AuthStaffProctoringRequest req = (AuthStaffProctoringRequest) request;
+
+            } else {
+                return false; // unknown type
+            }
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+
+
+
+        request.setIsApproved(response);
+        request.setResponseDate(LocalDateTime.now());
+        requestRepo.save(request);
 
         Notification notification = new Notification();
-        notification.setRequest(request.get());
+        notification.setRequest(request);
         notification.setNotificationType(APPROVAL);
         notification.setRead(false);
-        notification.setReceiver(request.get().getSenderUser());
+        notification.setReceiver(request.getSenderUser());
         notificationRepo.save(notification);
 
         return true;

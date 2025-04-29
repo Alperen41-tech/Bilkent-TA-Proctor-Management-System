@@ -17,7 +17,7 @@ public class RequestController {
     @Autowired
     private RequestService requestService;
 
-    @PostMapping("respond")
+    @PutMapping("respond")
     public boolean respondToRequest(@RequestParam("id") int requestId, @RequestParam("response") boolean response) {
         return requestService.respondToRequest(requestId, response);
     }
