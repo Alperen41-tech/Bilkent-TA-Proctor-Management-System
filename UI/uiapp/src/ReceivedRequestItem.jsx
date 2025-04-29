@@ -41,7 +41,7 @@ function parseSentDate(sentDateString) {
   };
 }
 
-const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDateTime, description, senderName, receiverName, receiverEmail, senderEmail, status, classProctoringEventName, proctoringStartDate, proctoringEndDate, taCountNeeded, isComplete, isUrgent, leaveStartDate, leaveEndDate, taskTypeName, timeSpent, courseCode, onAccept, onReject}) => {
+const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDateTime, description, senderName, receiverName, receiverEmail, senderEmail, status, classProctoringEventName, classProctoringStartDate, classProctoringEndDate, taCountNeeded, isComplete, isUrgent, leaveStartDate, leaveEndDate, taskTypeName, timeSpent, courseCode, onAccept, onReject}) => {
   const { date, time } = parseSentDate(sentDateTime);
 
   const renderDetails = () => {
@@ -50,8 +50,8 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
         return (
           <>
             <div className="received-request-item-info-row">Proctoring Event: {classProctoringEventName}</div>
-            <div className="received-request-item-time-row">Start: {proctoringStartDate}</div>
-            <div className="received-request-item-time-row">End: {proctoringEndDate}</div>
+            <div className="received-request-item-time-row">Start: {classProctoringStartDate.split("T")[0]}</div>
+            <div className="received-request-item-time-row">End: {classProctoringEndDate.split("T")[0]}</div>
             <div className="received-request-item-info-row">Sender: {senderName}</div>
             <div className="received-request-item-info-row received-request-item-email">{senderEmail}</div>
           </>
@@ -82,8 +82,8 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
         return (
           <>
             <div className="received-request-item-info-row">Proctoring Event: {classProctoringEventName}</div>
-            <div className="received-request-item-time-row">Start: {proctoringStartDate}</div>
-            <div className="received-request-item-time-row">End: {proctoringEndDate}</div>
+            <div className="received-request-item-time-row">Start: {classProctoringStartDate.split("T")[0]}</div>
+            <div className="received-request-item-time-row">End: {classProctoringEndDate.split("T")[0]}</div>
             <div className="received-request-item-info-row">Sender: {senderName}</div>
             <div className="received-request-item-info-row received-request-item-email">{senderEmail}</div>
           </>

@@ -278,7 +278,11 @@ const DashboardPage = () => {
 
                   {selectedReceivedRequest.requestType === 'AuthStaffProctoringRequest' ||
                   selectedReceivedRequest.requestType === 'TASwapRequest' ? (
-                    <p><strong>Event:</strong> {selectedReceivedRequest.classProctoringEventName}</p>
+                    <>
+                      <p><strong>Event:</strong> {selectedReceivedRequest.classProctoringEventName}</p>
+                      <p><strong>Event Start Date:</strong> {selectedReceivedRequest.classProctoringStartDate.split("T")[0]}</p>
+                      <p><strong>Event End Date:</strong> {selectedReceivedRequest.classProctoringEndDate.split("T")[0]}</p>
+                    </>
                   ) : null}
 
                   {selectedReceivedRequest.requestType === 'TAWorkloadRequest' ? (
