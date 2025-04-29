@@ -5,17 +5,19 @@ import PendingRequestItem from "../PendingRequestItem";
 import ReceivedRequestItem from "../ReceivedRequestItem";
 import WorkloadEntryItem from "../WorkloadEntryItem";
 import ProctoringDutyItem from "../ProctoringDutyItem";
+import NotificationItem from "../NotificationItem";
 import axios from "axios";
 
 const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState("pending");
-  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedReceivedRequest, setSelectedRequest] = useState(null);
   const [selectedProctoring, setSelectedProctoring] = useState(null);
   const [selectedProctoringId, setSelectedProctoringId] = useState(null);
   const [tasProctorings, setTasProctorings] = useState([]);
   const [taskType, setTaskType] = useState([]);
   const [taWorkloadRequests, setTaWorkloadRequests] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [receivedRequests, setReceivedRequests] = useState([]);
 
   //Refs for the new workload entry
   const newTaskTypeEntry = useRef();
@@ -45,7 +47,7 @@ const DashboardPage = () => {
   const createReceivedRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <ReceivedRequestItem {...request} />
+        <ReceivedRequestItem {...request} onAccept={()=>console.log("Accepted")} onReject={()=>console.log("Rejected")} />
       </div>
     );
   };
@@ -94,6 +96,16 @@ const DashboardPage = () => {
     }
   };
 
+  const fetchReceivedRequests = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/request/getByReceiverId?receiverId=2"); // Adjust the URL as needed
+      setReceivedRequests(response.data);
+      console.log(receivedRequests);
+    } catch (error) {
+      console.error("Error fetching received requests:", error);
+    }
+  };
+
   const postNewWorkloadEntry = async () => {
     try {
       const response = await axios.post("http://localhost:8080/taWorkloadRequest/create?id=1", {
@@ -118,6 +130,7 @@ const DashboardPage = () => {
     fetchTasProctorings();
     fetchWorkloadTypes();
     fetchTaWorkloadRequests();
+    fetchReceivedRequests();
   }, []);
 
   const handleLockedStatusChange = async (id) => {
@@ -192,7 +205,9 @@ const DashboardPage = () => {
               )}
               {activeTab === "received" && (
                 <div>
-                  {pendingRequests.map((req, index) => createReceivedRequest(req, index))}
+                  {receivedRequests.map((req, index) => createReceivedRequest(req, index))}
+                  {console.log(receivedRequests)}
+                  
                 </div>
               )}
               {activeTab === "tasks" && (
@@ -230,18 +245,36 @@ const DashboardPage = () => {
             {activeTab === "pending" || activeTab === "received" ? (
               <div className="ta-dashboard-details-panel">
                 <h3>Details</h3>
-                {selectedRequest ? (
-                  <div>
-                    <p><strong>Name:</strong> {selectedRequest.name}</p>
-                    <p><strong>Email:</strong> {selectedRequest.email}</p>
-                    <p><strong>Date:</strong> {selectedRequest.date.weekday}, {selectedRequest.date.month} {selectedRequest.date.day}</p>
-                    <p><strong>Time:</strong> {selectedRequest.time.start} - {selectedRequest.time.end}</p>
-                    <p><strong>Role:</strong> {selectedRequest.role}</p>
-                    <p><strong>Status:</strong> {selectedRequest.status}</p>
-                  </div>
-                ) : (
-                  <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
-                )}
+                {selectedReceivedRequest ? (
+                <div>
+                  <p><strong>Name:</strong> {selectedReceivedRequest.senderName || "—"}</p>
+                  <p><strong>Email:</strong> {selectedReceivedRequest.senderEmail || "—"}</p>
+
+                  {selectedReceivedRequest.sentDateTime && (() => {
+                    const { date, time } = selectedReceivedRequest.sentDateTime.split("T");
+                    return (
+                      <>
+                        <p><strong>Date:</strong> {date}</p>
+                        <p><strong>Time:</strong> {time}</p>
+                      </>
+                    );
+                  })()}
+
+                  {selectedReceivedRequest.requestType === 'authStaffProctoringRequest' ||
+                  selectedReceivedRequest.requestType === 'taSwapRequest' ? (
+                    <p><strong>Event:</strong> {selectedReceivedRequest.classProctoringEventName}</p>
+                  ) : null}
+
+                  {selectedReceivedRequest.requestType === 'taWorkloadRequest' ? (
+                    <p><strong>Task:</strong> {selectedReceivedRequest.taskTypeName}</p>
+                  ) : null}
+
+                  <p><strong>Status:</strong> {selectedReceivedRequest.status || "—"}</p>
+                </div>
+              ) : (
+                <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
+              )}
+
 
               </div>
             ) : activeTab === "tasks" ? (
@@ -299,16 +332,14 @@ const DashboardPage = () => {
             <h3>Notifications</h3>
             {notifications.map((notification, index) => (
               <div key={index} className="ta-dashboard-notification-item">
-                <p>{notification.requestType}</p>
-              
-              
+                <NotificationItem
+                  requestType={notification.requestType}
+                  message={notification.message}
+                  date={notification.date}
+                  notificationType={notification.notificationType}
+                />
               </div>
             ))}
-
-
-
-
-
           </div>
 
           <div className="ta-dashboard-stats-box">

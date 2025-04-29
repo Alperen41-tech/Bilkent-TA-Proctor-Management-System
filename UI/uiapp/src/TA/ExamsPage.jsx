@@ -77,19 +77,17 @@ const ExamsPage = () => {
 
       <div className="exams-content">
         <div className="left-section">
-          <div className="card">
-            <h3>Choose the task you wish to get</h3>
-            <div className="task-row">
-              {allDepartmantExams.map((proctoring, index) => (createTaskItem(proctoring.classProctoringTARelationDTO.classProctoringDTO.id, proctoring.classProctoringTARelationDTO.classProctoringDTO.courseName, proctoring.classProctoringTARelationDTO.classProctoringDTO.proctoringName, proctoring.classProctoringTARelationDTO.classProctoringDTO.startDate, proctoring.classProctoringTARelationDTO.classProctoringDTO.endDate, proctoring.classProctoringTARelationDTO.classProctoringDTO.classrooms, handleTaskClick2, lastSelectedTask2?.id)))}
-            </div>
-          </div>
+          
 
           <div className="card">
             <h3>Choose one of your tasks</h3>
             <div className="task-row">
-            {tasProctorings.map((proctoring, index) => (createTaskItem(proctoring.classProctoringDTO.id, proctoring.classProctoringDTO.courseName, proctoring.classProctoringDTO.proctoringName, proctoring.classProctoringDTO.startDate, proctoring.classProctoringDTO.endDate, proctoring.classProctoringDTO.classrooms, handleTaskClick1, lastSelectedTask1?.id)))}
-              
-              
+              {tasProctorings.map((proctoring, index) => (createTaskItem(proctoring.classProctoringDTO.id, proctoring.classProctoringDTO.courseName, proctoring.classProctoringDTO.proctoringName, proctoring.classProctoringDTO.startDate, proctoring.classProctoringDTO.endDate, proctoring.classProctoringDTO.classrooms, handleTaskClick1, lastSelectedTask1?.id)))}
+            </div>
+            <div className="details-section">
+              <label htmlFor="details">Details</label>
+              <textarea id="details" placeholder="Enter details..." />
+              <button className="swap-button">Request Swap</button>
             </div>
           </div>
         </div>
@@ -105,11 +103,7 @@ const ExamsPage = () => {
               ))}
             </div>
 
-            <div className="details-section">
-              <label htmlFor="details">Details</label>
-              <textarea id="details" placeholder="Enter details..." />
-              <button className="swap-button">Request Swap</button>
-            </div>
+            
           </div>
         </div>
       </div>
