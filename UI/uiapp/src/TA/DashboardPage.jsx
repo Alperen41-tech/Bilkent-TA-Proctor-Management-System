@@ -205,8 +205,9 @@ const DashboardPage = () => {
               )}
               {activeTab === "received" && (
                 <div>
-                  {receivedRequests.map((req, index) => createReceivedRequest(req, index))}
+                  {receivedRequests.filter((request)=> request.status === null).map((req, index) => createReceivedRequest(req, index))}
                   {console.log(receivedRequests)}
+                  {console.log(taWorkloadRequests)}
                   
                 </div>
               )}
@@ -215,7 +216,7 @@ const DashboardPage = () => {
                   createWorkloadEntry( 
                     ent.taskTypeName,
                     ent.courseCode,
-                    ent.sentDate,
+                    ent.sentDateTime,
                     ent.timeSpent,
                     ent.description,
                     ent.status 

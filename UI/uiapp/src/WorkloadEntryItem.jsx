@@ -3,11 +3,11 @@ import './WorkloadEntryItem.css'; // Make sure to import your CSS file
 
 const getStatusColor = (status) => {
   switch (status) {
-    case "rejected":
+    case "REJECTED":
       return "#f8d7da"; // red-ish
     case null:
       return "#fff3cd"; // yellow-ish
-    case "accepted":
+    case "APPROVED":
       return "#c7f5d5"; // green-ish
     default:
       return "#e2e3e5"; // neutral gray

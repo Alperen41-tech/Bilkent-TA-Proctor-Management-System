@@ -2,7 +2,12 @@ import React from "react";
 import "./ReceivedRequestItem.css";
 
 function parseSentDate(sentDateString) {
-  const [datePart, timePart] = sentDateString.split(' ');
+  if (!sentDateString || typeof sentDateString !== 'string' || !sentDateString.includes('T')) {
+    return { date: "—", time: "—" };
+  }
+
+
+  const [datePart, timePart] = sentDateString.split('T');
   const [year, monthNum, day] = datePart.split('-'); 
   const [hour, minute, second] = timePart.split(':');
 
@@ -41,7 +46,7 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
 
   const renderDetails = () => {
     switch (requestType) {
-      case 'authStaffProctoringRequest':
+      case 'AuthStaffProctoringRequest':
         return (
           <>
             <div className="received-request-item-info-row">Proctoring Event: {classProctoringEventName}</div>
@@ -53,7 +58,7 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
           </>
         );
   
-      case 'instructorAdditionalTARequest':
+      case 'InstructorAdditionalTARequest':
         return (
           <>
             <div className="received-request-item-info-row">Proctoring Event: {classProctoringEventName}</div>
@@ -65,7 +70,7 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
           </>
         );
   
-      case 'taLeaveRequest':
+      case 'TALeaveRequest':
         return (
           <>
             <div className="received-request-item-info-row">Leave Period: {leaveStartDate} - {leaveEndDate}</div>
@@ -76,7 +81,7 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
           </>
         );
   
-      case 'taSwapRequest':
+      case 'TASwapRequest':
         return (
           <>
             <div className="received-request-item-info-row">Proctoring Event: {classProctoringEventName}</div>
@@ -88,7 +93,7 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
           </>
         );
   
-      case 'taWorkloadRequest':
+      case 'TAWorkloadRequest':
         return (
           <>
             <div className="received-request-item-time-row">{time.start}</div>
@@ -122,7 +127,7 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
 
       <div className="received-request-item-status-actions">
         <div className="received-request-item-status-text">Request Status:</div>
-        <div className="received-request-item-status-label">{status}</div>
+        <div className="received-request-item-status-label">Waiting For Response</div>
         <div className="received-request-item-button-group">
           <button className="received-request-item-accept-button" onClick={onAccept}>Accept Request</button>
           <button className="received-request-item-reject-button" onClick={onReject}>Reject Request</button>
