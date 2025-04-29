@@ -35,7 +35,7 @@ public class TASwapRequestController {
     }
 
     @PostMapping("createSwapRequest")
-    public ResponseEntity<Boolean> createSwapRequest(@RequestBody TASwapRequestDTO swapRequestReceived){
+    public ResponseEntity<Boolean> createSwapRequest(@RequestBody RequestDTO swapRequestReceived){
         return swapRequestService.createSwapRequest(swapRequestReceived);
     }
 

@@ -28,7 +28,7 @@ public interface TASwapRequestService {
      * @param swapRequestRecieved takes the value to create swap reqeust accoringly
      * @return ResponseEntity to indicate whether the request is successfull
      */
-    public ResponseEntity<Boolean> createSwapRequest(TASwapRequestDTO swapRequestRecieved);
+    public ResponseEntity<Boolean> createSwapRequest(RequestDTO swapRequestRecieved);
 
 
     /**

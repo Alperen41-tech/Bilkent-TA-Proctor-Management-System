@@ -2,16 +2,25 @@ package com.cs319group3.backend.DTOMappers.RequestMappers;
 
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 
+import com.cs319group3.backend.DTOs.RequestDTOs.TASwapRequestDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RequestEntities.*;
+import com.cs319group3.backend.Entities.UserEntities.User;
+import com.cs319group3.backend.Repositories.ClassProctoringRepo;
+import com.cs319group3.backend.Repositories.UserRepo;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 public class RequestMapper {
+
+    private static UserRepo userRepo;
+    private static ClassProctoringRepo classProctoringRepo;
 
     public static RequestDTO essentialMapper(Request request) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -54,6 +63,53 @@ public class RequestMapper {
 
         return requestDTO;
     }
+
+    public static void essentialToEntityMapper(Request finalRequest, RequestDTO dto) throws Exception{
+
+        finalRequest.setSentDate(dto.getSentDateTime());
+        finalRequest.setResponseDate(dto.getResponseDateTime());
+        finalRequest.setIsApproved(dto.getIsApproved());
+        finalRequest.setDescription(dto.getDescription());
+
+        Optional<User> senderUser = userRepo.findById(dto.getSenderId());
+        Optional<User> receiverUser = userRepo.findById(dto.getReceiverId());
+
+        if (senderUser.isPresent()) {
+            throw new Exception("Sender TA cannot be found in database");
+        }
+        if (receiverUser.isPresent()) {
+            throw new Exception("Receiver TA cannot be found in database");
+        }
+
+        finalRequest.setSenderUser(senderUser.get());
+        finalRequest.setReceiverUser(receiverUser.get());
+    }
+
+    public static TASwapRequest taSwapRequestToEntityMapper(RequestDTO dto) throws Exception{
+        TASwapRequest taSwapRequest = new TASwapRequest();
+        try{
+            essentialToEntityMapper(taSwapRequest, dto);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        Optional<ClassProctoring> classProctoring = classProctoringRepo.findById(dto.getClassProctoringId());
+
+        if (!classProctoring.isPresent()) {
+            throw new Exception("ClassProctoring cannot be found in database");
+        }
+
+        taSwapRequest.setClassProctoring(classProctoring.get());
+
+        return taSwapRequest;
+    }
+
+
+
+
+
+
 
     public static RequestDTO taSwapRequestMapper(TASwapRequest request) {
 
@@ -117,7 +173,7 @@ public class RequestMapper {
         RequestDTO requestDTO = essentialMapper(request);
         requestDTO.setTaskTypeName(request.getTaskType().getTaskTypeName());
         requestDTO.setTimeSpent(request.getTimeSpent());
-        requestDTO.setCourseCode(request.getCourse().getCourseId() + request.getCourse().getCourseName());
+        requestDTO.setCourseCode(request.getCourse().getDepartmentCourseCode());
         return requestDTO;
     }
 
@@ -127,9 +183,6 @@ public class RequestMapper {
                 .map(RequestMapper:: taWorkloadRequestMapper)
                 .collect(Collectors.toList());
     }
-
-
-
 
 
     private static void classProctoringMapperHelper(RequestDTO requestDTO, ClassProctoring proctoring){

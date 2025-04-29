@@ -2,7 +2,6 @@ package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 
 
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
-import com.cs319group3.backend.DTOMappers.RequestMappers.TASwapRequestMapper;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.DTOs.RequestDTOs.TASwapRequestDTO;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
@@ -27,8 +26,6 @@ import java.util.Optional;
 public class TASwapRequestServiceImpl implements TASwapRequestService {
 
     @Autowired
-    TASwapRequestMapper taswapRequestMapper;
-    @Autowired
     TASwapRequestRepo taswapRequestRepo;
     @Autowired
     ClassProctoringTARelationRepo classProctoringTARelationRepo;
@@ -52,9 +49,9 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
 
 
     @Override
-    public ResponseEntity<Boolean> createSwapRequest(TASwapRequestDTO swapRequestReceived) {
+    public ResponseEntity<Boolean> createSwapRequest(RequestDTO swapRequestReceived) {
         try {
-            TASwapRequest swapRequest = taswapRequestMapper.essentialEntityTo(swapRequestReceived);
+            TASwapRequest swapRequest = RequestMapper.taSwapRequestToEntityMapper(swapRequestReceived);
             taswapRequestRepo.save(swapRequest);
 
             return ResponseEntity.ok(true);
