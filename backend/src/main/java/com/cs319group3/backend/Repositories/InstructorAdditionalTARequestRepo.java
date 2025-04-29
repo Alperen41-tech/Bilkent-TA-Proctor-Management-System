@@ -8,5 +8,7 @@ import java.util.List;
 
 @Repository
 public interface InstructorAdditionalTARequestRepo extends JpaRepository<InstructorAdditionalTARequest, Integer> {
-    List<InstructorAdditionalTARequest> findAllByReceiverUser_UserId(int receiverId);
+    List<InstructorAdditionalTARequest> findByReceiverUser_UserId(int receiverId);
+    List<InstructorAdditionalTARequest> findBySenderUser_UserId(int receiverId);
+
 }

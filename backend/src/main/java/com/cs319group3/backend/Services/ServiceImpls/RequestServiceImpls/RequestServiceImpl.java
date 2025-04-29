@@ -71,7 +71,7 @@ public class RequestServiceImpl implements RequestService {
         List<TASwapRequest> taSwapRequests = taswapRequestRepo.findByReceiverUser_UserId(userId);
         List<TAWorkloadRequest> workloadRequests = taWorkloadRequestRepo.findByReceiverUser_UserId(userId);
         List<TALeaveRequest> taleaveRequests = taleaveRequestRepo.findByReceiverUser_UserId(userId);
-        List<InstructorAdditionalTARequest> instructorAdditionalTARequests = instructorAdditionalTARequestRepo.findAllByReceiverUser_UserId(userId);
+        List<InstructorAdditionalTARequest> instructorAdditionalTARequests = instructorAdditionalTARequestRepo.findByReceiverUser_UserId(userId);
         List<AuthStaffProctoringRequest>  authStaffProctoringRequests = authStaffProctoringRequestRepo.findByReceiverUser_UserId(userId);
 
         requests.addAll(RequestMapper.taSwapRequestMapper(taSwapRequests));
@@ -85,11 +85,20 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<RequestDTO> getRequestsBySenderUser(int userId) {
-        List<Request> requests = requestRepo.findBySenderUser_UserId(userId);
-        List<RequestDTO> requestDTOs = new ArrayList<>();
-        for (Request request : requests) {
-            requestDTOs.add(RequestMapper.essentialMapper(request));
-        }
-        return requestDTOs;
+        List<RequestDTO> requests = new ArrayList<>();
+
+
+        List<TASwapRequest> taSwapRequests = taswapRequestRepo.findBySenderUser_UserId(userId);
+        List<TAWorkloadRequest> workloadRequests = taWorkloadRequestRepo.findBySenderUser_UserId(userId);
+        List<TALeaveRequest> taleaveRequests = taleaveRequestRepo.findBySenderUser_UserId(userId);
+        List<InstructorAdditionalTARequest> instructorAdditionalTARequests = instructorAdditionalTARequestRepo.findBySenderUser_UserId(userId);
+        List<AuthStaffProctoringRequest>  authStaffProctoringRequests = authStaffProctoringRequestRepo.findBySenderUser_UserId(userId);
+
+        requests.addAll(RequestMapper.taSwapRequestMapper(taSwapRequests));
+        requests.addAll(RequestMapper.taWorkloadRequestMapper(workloadRequests));
+        requests.addAll(RequestMapper.taLeaveRequestMapper(taleaveRequests));
+        requests.addAll(RequestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequests));
+        requests.addAll(RequestMapper.authStaffTARequestMapper(authStaffProctoringRequests));
+        return requests;
     }
 }

@@ -11,5 +11,5 @@ import java.util.List;
 public interface TALeaveRequestRepo extends JpaRepository<TALeaveRequest, Integer> {
 
     List<TALeaveRequest> findByReceiverUser_UserId(int userId);
-
+    List<TALeaveRequest> findBySenderUser_UserId(int userId);
 }

@@ -10,5 +10,7 @@ import java.util.List;
 public interface AuthStaffProctoringRequestRepo extends JpaRepository<AuthStaffProctoringRequest, Integer> {
 
     List<AuthStaffProctoringRequest> findByReceiverUser_UserId(int userId);
+    List<AuthStaffProctoringRequest> findBySenderUser_UserId(int userId);
+
 
 }
