@@ -60,9 +60,10 @@ public class RequestServiceImpl implements RequestService {
 
 
             } else if (request instanceof TASwapRequest) {
-                TASwapRequest req = (TASwapRequest) request;
-                swapRequestService.acceptSwapRequest(requestId);
-
+                if (response){
+                    TASwapRequest req = (TASwapRequest) request;
+                    swapRequestService.acceptSwapRequest(requestId);
+                }
             } else if (request instanceof TALeaveRequest) {
                 TALeaveRequest req = (TALeaveRequest) request;
 
