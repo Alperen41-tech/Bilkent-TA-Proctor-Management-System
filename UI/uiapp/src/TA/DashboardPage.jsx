@@ -47,7 +47,7 @@ const DashboardPage = () => {
   const createReceivedRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <ReceivedRequestItem {...request} onAccept={()=>console.log("Accepted")} onReject={()=>console.log("Rejected")} />
+        <ReceivedRequestItem {...request} onAccept={()=>handleRequestResponse(request.requestId, true)} onReject={()=>handleRequestResponse(request.requestId, false)} />
       </div>
     );
   };
@@ -122,6 +122,21 @@ const DashboardPage = () => {
       
     } catch (error) {
       console.error("Error fetching task types:", error);
+    }
+  };
+
+  const handleRequestResponse = async (requestId, response) => {
+    try {
+      const response = await axios.post(`http://localhost:8080/request/respond?requestId=${requestId}&response=${response}`);
+      if (response.status === 200) {
+        alert("Request accepted successfully.");
+        fetchReceivedRequests(); // Refresh the received requests after accepting
+      } else {
+        alert("Failed to accept the request. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error accepting request:", error);
+      alert("An error occurred while accepting the request. Please try again.");
     }
   };
 
@@ -252,24 +267,25 @@ const DashboardPage = () => {
                   <p><strong>Email:</strong> {selectedReceivedRequest.senderEmail || "—"}</p>
 
                   {selectedReceivedRequest.sentDateTime && (() => {
-                    const { date, time } = selectedReceivedRequest.sentDateTime.split("T");
+                    const [ date, time ] = selectedReceivedRequest.sentDateTime.split("T");
                     return (
                       <>
-                        <p><strong>Date:</strong> {date}</p>
-                        <p><strong>Time:</strong> {time}</p>
+                        <p><strong>Sent Date:</strong> {date}</p>
+                        <p><strong>Sent Time:</strong> {time}</p>
                       </>
                     );
                   })()}
 
-                  {selectedReceivedRequest.requestType === 'authStaffProctoringRequest' ||
-                  selectedReceivedRequest.requestType === 'taSwapRequest' ? (
+                  {selectedReceivedRequest.requestType === 'AuthStaffProctoringRequest' ||
+                  selectedReceivedRequest.requestType === 'TASwapRequest' ? (
                     <p><strong>Event:</strong> {selectedReceivedRequest.classProctoringEventName}</p>
                   ) : null}
 
-                  {selectedReceivedRequest.requestType === 'taWorkloadRequest' ? (
+                  {selectedReceivedRequest.requestType === 'TAWorkloadRequest' ? (
                     <p><strong>Task:</strong> {selectedReceivedRequest.taskTypeName}</p>
                   ) : null}
 
+                  <p><strong>Comment:</strong> {selectedReceivedRequest.description || "—"}</p>
                   <p><strong>Status:</strong> {selectedReceivedRequest.status || "—"}</p>
                 </div>
               ) : (
