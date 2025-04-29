@@ -1,6 +1,6 @@
 package com.cs319group3.backend.Services;
 
-import com.cs319group3.backend.DTOs.RequestDTO;
+import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 
 import java.util.List;
 

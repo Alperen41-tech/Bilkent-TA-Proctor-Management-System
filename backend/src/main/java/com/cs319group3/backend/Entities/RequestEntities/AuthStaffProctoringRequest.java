@@ -20,7 +20,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "auth_staff_proctoring_request")
-public class AuthStaffProctoringRequest extends Request{
+public class
+AuthStaffProctoringRequest extends Request{
 
     @ManyToOne
     @JoinColumn(name = "class_proctoring_id")

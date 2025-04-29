@@ -1,7 +1,7 @@
 package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 
-import com.cs319group3.backend.DTOMappers.RequestMapper;
-import com.cs319group3.backend.DTOs.RequestDTO;
+import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
+import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
 import com.cs319group3.backend.Repositories.NotificationRepo;
@@ -51,7 +51,7 @@ public class RequestServiceImpl implements RequestService {
         List<Request> requests = requestRepo.findByReceiverUser_UserId(userId);
         List<RequestDTO> requestDTOs = new ArrayList<>();
         for (Request request : requests) {
-            requestDTOs.add(RequestMapper.toDTO(request));
+            requestDTOs.add(RequestMapper.essentialMapper(request));
         }
         return requestDTOs;
     }
@@ -61,7 +61,7 @@ public class RequestServiceImpl implements RequestService {
         List<Request> requests = requestRepo.findBySenderUser_UserId(userId);
         List<RequestDTO> requestDTOs = new ArrayList<>();
         for (Request request : requests) {
-            requestDTOs.add(RequestMapper.toDTO(request));
+            requestDTOs.add(RequestMapper.essentialMapper(request));
         }
         return requestDTOs;
     }

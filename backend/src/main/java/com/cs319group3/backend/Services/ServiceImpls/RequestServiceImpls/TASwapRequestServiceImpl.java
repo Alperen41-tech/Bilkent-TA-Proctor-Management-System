@@ -1,7 +1,9 @@
 package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 
 
+import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
 import com.cs319group3.backend.DTOMappers.RequestMappers.TASwapRequestMapper;
+import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.DTOs.RequestDTOs.TASwapRequestDTO;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
@@ -36,19 +38,17 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
 
 
     @Override
-    public ResponseEntity<List<TASwapRequestDTO>> getTASwapRequestsByReceiver(int TAId) {
+    public ResponseEntity<List<RequestDTO>> getTASwapRequestsByReceiver(int TAId) {
 
         List<TASwapRequest> swapRequests = taswapRequestRepo.findByReceiverUser_UserId(TAId);
-        return new ResponseEntity<>(taswapRequestMapper.essentialMapper(swapRequests),HttpStatus.OK);
+        return new ResponseEntity<>(RequestMapper.taSwapRequestMapper(swapRequests),HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<List<TASwapRequestDTO>> getTASwapRequestsBySender(int TAId) {
+    public ResponseEntity<List<RequestDTO>> getTASwapRequestsBySender(int TAId) {
         List<TASwapRequest> swapRequests = taswapRequestRepo.findBySenderUser_UserId(TAId);
-        return new ResponseEntity<>(taswapRequestMapper.essentialMapper(swapRequests),HttpStatus.OK);
+        return new ResponseEntity<>(RequestMapper.taSwapRequestMapper(swapRequests),HttpStatus.OK);
     }
-
-
 
 
     @Override

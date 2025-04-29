@@ -1,7 +1,6 @@
 package com.cs319group3.backend.Controllers.RequestControllers;
 
-import com.cs319group3.backend.DTOs.RequestDTO;
-import com.cs319group3.backend.Entities.RequestEntities.Request;
+import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Services.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;

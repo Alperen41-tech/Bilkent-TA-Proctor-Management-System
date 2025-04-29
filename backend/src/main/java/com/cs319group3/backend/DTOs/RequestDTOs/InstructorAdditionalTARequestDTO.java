@@ -1,6 +1,5 @@
-package com.cs319group3.backend.DTOs;
+package com.cs319group3.backend.DTOs.RequestDTOs;
 
-import com.cs319group3.backend.Entities.RequestEntities.Request;
 import lombok.*;
 
 @Data

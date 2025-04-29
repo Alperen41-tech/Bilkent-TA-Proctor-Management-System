@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Services;
 
 
+import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.DTOs.RequestDTOs.TASwapRequestDTO;
 import org.springframework.http.ResponseEntity;
 
@@ -13,14 +14,14 @@ public interface TASwapRequestService {
      * @param TAId that is the current ta we want to get his/her received request
      * @return list of request in terms of DTO
      */
-    public ResponseEntity<List<TASwapRequestDTO>> getTASwapRequestsByReceiver(int TAId);
+    public ResponseEntity<List<RequestDTO>> getTASwapRequestsByReceiver(int TAId);
 
 
     /**
      * @param TAId that is the current ta we want to get his/her sent request
      * @return list of request in terms of DTO
      */
-    public ResponseEntity<List<TASwapRequestDTO>> getTASwapRequestsBySender(int TAId);
+    public ResponseEntity<List<RequestDTO>> getTASwapRequestsBySender(int TAId);
 
     /**
      *

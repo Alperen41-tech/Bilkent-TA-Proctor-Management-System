@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Controllers.RequestControllers;
 
-import com.cs319group3.backend.DTOs.TAWorkloadRequestDTO;
+import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
+import com.cs319group3.backend.DTOs.RequestDTOs.TAWorkloadRequestDTO;
 import com.cs319group3.backend.Services.TAWorkloadRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -23,12 +24,12 @@ public class TAWorkloadRequestController {
     }
 
     @GetMapping("getByTA")
-    public List<TAWorkloadRequestDTO> getTAWorkloadRequestsByTA(@RequestParam("id") int taId) {
+    public List<RequestDTO> getTAWorkloadRequestsByTA(@RequestParam("id") int taId) {
         return taWorkloadRequestService.getTAWorkloadRequestsByTA(taId);
     }
 
     @GetMapping("getByInstructor")
-    public List<TAWorkloadRequestDTO> getTAWorkloadRequestsByInstructor(@RequestParam("instructorId") int instructorId) {
+    public List<RequestDTO> getTAWorkloadRequestsByInstructor(@RequestParam("instructorId") int instructorId) {
         return taWorkloadRequestService.getTAWorkloadRequestsByInstructor(instructorId);
     }
 }

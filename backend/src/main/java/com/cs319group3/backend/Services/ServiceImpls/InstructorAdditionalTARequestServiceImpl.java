@@ -1,12 +1,12 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
-import com.cs319group3.backend.DTOMappers.InstructorAdditionalTARequestMapper;
-import com.cs319group3.backend.DTOs.InstructorAdditionalTARequestDTO;
+import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
+import com.cs319group3.backend.DTOs.RequestDTOs.InstructorAdditionalTARequestDTO;
+import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Entities.RequestEntities.InstructorAdditionalTARequest;
 import com.cs319group3.backend.Repositories.InstructorAdditionalTARequestRepo;
 import com.cs319group3.backend.Services.InstructorAdditionalTARequestService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -18,11 +18,11 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
     @Autowired
     InstructorAdditionalTARequestRepo instructorAdditionalTARequestRepo;
     @Override
-    public List<InstructorAdditionalTARequestDTO> getInstructorAdditionalTARequests(@RequestParam int receiverId){
+    public List<RequestDTO> getInstructorAdditionalTARequests(@RequestParam int receiverId){
         List<InstructorAdditionalTARequest> list = instructorAdditionalTARequestRepo.findAllByReceiverUser_UserId(receiverId);
-        List<InstructorAdditionalTARequestDTO> dtos = new ArrayList<>();
+        List<RequestDTO> dtos = new ArrayList<>();
         for (InstructorAdditionalTARequest instructorAdditionalTARequest : list) {
-            dtos.add(InstructorAdditionalTARequestMapper.toDTO(instructorAdditionalTARequest));
+            dtos.add(RequestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequest));
         }
         return dtos;
     }

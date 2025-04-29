@@ -1,8 +1,8 @@
 package com.cs319group3.backend.Controllers.RequestControllers;
 
 
-import com.cs319group3.backend.DTOs.InstructorAdditionalTARequestDTO;
-import com.cs319group3.backend.Entities.RequestEntities.InstructorAdditionalTARequest;
+import com.cs319group3.backend.DTOs.RequestDTOs.InstructorAdditionalTARequestDTO;
+import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Services.InstructorAdditionalTARequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,7 +19,7 @@ public class InstructorAdditionalTARequestController {
     InstructorAdditionalTARequestService instructorAdditionalTARequestService;
     //Fetches all the instructor additional ta request from database using the give receiver id
     @GetMapping("getInstructorAdditionalTARequests")
-    public List<InstructorAdditionalTARequestDTO> getInstructorAdditionalTARequests(@RequestParam int receiverId) {
+    public List<RequestDTO> getInstructorAdditionalTARequests(@RequestParam int receiverId) {
         System.out.println("Fetching Instructor Additional TA Requests for dean");
         return instructorAdditionalTARequestService.getInstructorAdditionalTARequests(receiverId);
     }

@@ -1,4 +1,4 @@
-package com.cs319group3.backend.DTOs;
+package com.cs319group3.backend.DTOs.RequestDTOs;
 
 import lombok.*;
 

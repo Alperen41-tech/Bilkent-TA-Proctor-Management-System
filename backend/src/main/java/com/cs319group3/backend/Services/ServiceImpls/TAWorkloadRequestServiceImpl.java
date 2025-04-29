@@ -1,12 +1,12 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
-import com.cs319group3.backend.DTOMappers.TAWorkloadRequestMapper;
-import com.cs319group3.backend.DTOs.TAWorkloadRequestDTO;
+import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
+import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
+import com.cs319group3.backend.DTOs.RequestDTOs.TAWorkloadRequestDTO;
 import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.TAWorkloadRequest;
 import com.cs319group3.backend.Entities.TaskType;
 import com.cs319group3.backend.Entities.UserEntities.TA;
-import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.NotificationRepo;
 import com.cs319group3.backend.Repositories.TARepo;
 import com.cs319group3.backend.Repositories.TAWorkloadRequestRepo;
@@ -68,23 +68,15 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
     }
 
     @Override
-    public List<TAWorkloadRequestDTO> getTAWorkloadRequestsByTA(int taId) {
+    public List<RequestDTO> getTAWorkloadRequestsByTA(int taId) {
         List<TAWorkloadRequest> requests = taWorkloadRequestRepo.findBySenderUser_UserId(taId);
-        List<TAWorkloadRequestDTO> dtos = new ArrayList<>();
-        for (TAWorkloadRequest request : requests) {
-            dtos.add(TAWorkloadRequestMapper.essentialMapper(request));
-        }
-        return dtos;
+        return RequestMapper.taWorkloadRequestMapper(requests);
     }
 
     @Override
-    public List<TAWorkloadRequestDTO> getTAWorkloadRequestsByInstructor(int instructorId) {
+    public List<RequestDTO> getTAWorkloadRequestsByInstructor(int instructorId) {
         List<TAWorkloadRequest> requests = taWorkloadRequestRepo.findByReceiverUser_UserId(instructorId);
-        List<TAWorkloadRequestDTO> dtos = new ArrayList<>();
-        for (TAWorkloadRequest request : requests) {
-            dtos.add(TAWorkloadRequestMapper.essentialMapper(request));
-        }
-        return dtos;
+        return RequestMapper.taWorkloadRequestMapper(requests);
     }
 
     @Override

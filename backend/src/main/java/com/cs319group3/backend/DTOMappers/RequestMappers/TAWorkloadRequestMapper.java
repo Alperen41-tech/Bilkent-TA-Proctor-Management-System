@@ -1,8 +1,8 @@
-package com.cs319group3.backend.DTOMappers;
+package com.cs319group3.backend.DTOMappers.RequestMappers;
 
-import com.cs319group3.backend.DTOs.TAWorkloadRequestDTO;
+import com.cs319group3.backend.DTOs.RequestDTOs.TAWorkloadRequestDTO;
 import com.cs319group3.backend.Entities.RequestEntities.TAWorkloadRequest;
-
+/*
 public class TAWorkloadRequestMapper {
 
     public static TAWorkloadRequestDTO essentialMapper(TAWorkloadRequest taWorkloadRequest) {
@@ -24,3 +24,4 @@ public class TAWorkloadRequestMapper {
         return dto;
     }
 }
+*/
