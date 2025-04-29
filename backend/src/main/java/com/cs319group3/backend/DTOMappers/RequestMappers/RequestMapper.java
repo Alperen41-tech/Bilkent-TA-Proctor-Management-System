@@ -2,7 +2,7 @@ package com.cs319group3.backend.DTOMappers.RequestMappers;
 
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 
-import com.cs319group3.backend.DTOs.RequestDTOs.TASwapRequestDTO;
+
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RequestEntities.*;
 import com.cs319group3.backend.Entities.UserEntities.User;

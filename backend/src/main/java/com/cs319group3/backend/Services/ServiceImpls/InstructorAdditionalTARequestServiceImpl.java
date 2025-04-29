@@ -1,7 +1,7 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
-import com.cs319group3.backend.DTOs.RequestDTOs.InstructorAdditionalTARequestDTO;
+
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Entities.RequestEntities.InstructorAdditionalTARequest;
 import com.cs319group3.backend.Repositories.InstructorAdditionalTARequestRepo;
@@ -19,7 +19,7 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
     InstructorAdditionalTARequestRepo instructorAdditionalTARequestRepo;
     @Override
     public List<RequestDTO> getInstructorAdditionalTARequests(@RequestParam int receiverId){
-        List<InstructorAdditionalTARequest> list = instructorAdditionalTARequestRepo.findAllByReceiverUser_UserId(receiverId);
+        List<InstructorAdditionalTARequest> list = instructorAdditionalTARequestRepo.findByReceiverUser_UserId(receiverId);
         List<RequestDTO> dtos = new ArrayList<>();
         for (InstructorAdditionalTARequest instructorAdditionalTARequest : list) {
             dtos.add(RequestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequest));

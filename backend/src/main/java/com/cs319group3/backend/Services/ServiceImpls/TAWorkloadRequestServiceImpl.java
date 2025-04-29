@@ -2,7 +2,6 @@ package com.cs319group3.backend.Services.ServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
-import com.cs319group3.backend.DTOs.RequestDTOs.TAWorkloadRequestDTO;
 import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.TAWorkloadRequest;
 import com.cs319group3.backend.Entities.TaskType;
@@ -38,7 +37,7 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
     private NotificationRepo notificationRepo;
 
     @Override
-    public boolean createTAWorkloadRequest(TAWorkloadRequestDTO dto, int taId) {
+    public boolean createTAWorkloadRequest(RequestDTO dto, int taId) {
         TAWorkloadRequest taWorkloadRequest = new TAWorkloadRequest();
         Optional<TA> ta = taRepo.findById(taId);
         if (ta.isEmpty()) {

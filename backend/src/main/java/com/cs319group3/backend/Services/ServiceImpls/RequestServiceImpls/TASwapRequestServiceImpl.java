@@ -3,7 +3,6 @@ package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
-import com.cs319group3.backend.DTOs.RequestDTOs.TASwapRequestDTO;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
 import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
