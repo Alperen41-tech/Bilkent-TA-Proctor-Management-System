@@ -5,51 +5,61 @@ import TaskItem from "../TaskItem";
 import TAItem from "../TAItem";
 import axios, { all } from "axios";
 
-const createTaskItem = (id, course, name, date, timeInterval, classroom, onClickHandler, selectedTaskId) => {
-  const task = { id, course, name, date, timeInterval, classroom };
-  const isSelected = selectedTaskId === id;
-  console.log("Task ID:", id); 
-  return <TaskItem key={id} task={task} onClick={onClickHandler} isSelected={isSelected} />;
-};
-
-const createTAItem = (firstName, lastName, email, onClickHandler, selectedTAKey) => {
-  const ta = { firstName, lastName, email };
-  const key = `${firstName}-${lastName}-${email}`;
-  const isSelected = selectedTAKey === key;
-
-  return (
-    <TAItem
-      key={key}
-      ta={ta}
-      onClick={onClickHandler}
-      isSelected={isSelected}
-    />
-  );
-};
-
 const ExamsPage = () => {
-  const [lastSelectedTask1, setLastSelectedTask1] = useState(null);
-  const [lastSelectedTask2, setLastSelectedTask2] = useState(null);
-  const [selectedTA, setSelectedTA] = useState(null); 
+  const [lastSelectedTask, setLastSelectedTask] = useState(null);
+  const [selectedTA, setSelectedTA] = useState({}); 
   const [tasProctorings, setTasProctorings] = useState([]);
   const [avaliableTAs, setAvailableTAs] = useState([]);
   const handleTaskClick1 = (task) => {
-    setLastSelectedTask1(task);
+    setLastSelectedTask(task);
   };
   const swapRequestRef = useRef();
 
-
-  const handleTAClick = (ta) => {
-    const key = `${ta.firstName}-${ta.lastName}-${ta.email}`;
-    setSelectedTA(key);
+  const createTaskItem = (id, course, name, date, timeInterval, classroom, onClickHandler, selectedTaskId) => {
+    const task = { id, course, name, date, timeInterval, classroom };
+    const isSelected = selectedTaskId === id;
+    console.log("Task ID:", id); 
+    return <TaskItem key={id} task={task} onClick={onClickHandler} isSelected={isSelected} />;
+  };
+  
+  const createTAItem = (ta, onClickHandler) => {
+    const isSelected = selectedTA === ta;
+  
+    return (
+      <TAItem
+        key={ta.bilkentId}
+        ta={ta}
+        onClick={onClickHandler}
+        isSelected={isSelected}
+      />
+    );
   };
 
-  const handleRequestSwap = () => {
-    if (lastSelectedTask1 && selectedTA) {
-      
+  const handleTAClick = (ta) => {
+    setSelectedTA(ta);
+    console.log(selectedTA);
+    console.log(swapRequestRef.current.value);
+    console.log(lastSelectedTask);
 
-      console.log("Requesting swap for task ID:with TA:");
-      // Add your swap request logic here
+  };
+
+  const handleRequestSwap = async () => {
+    if (lastSelectedTask && selectedTA) {
+      const response = await axios.post("http://localhost:8080/swapRequest/createSwapRequest", {
+          senderId: 3,
+          receiverId: selectedTA.userId,
+          description: (swapRequestRef.current.value ? swapRequestRef.current.value : "-"),
+          classProctoringId: lastSelectedTask.id,
+        }
+      );
+      if (response.data) {
+        alert("Swap request sent successfully!");
+        console.log("Swap request sent successfully!");
+      }
+      else {
+        alert("Failed to send swap request. Please try again.");
+        console.log("Failed to send swap request. Please try again.");
+      }
     } else {
       alert("Please select a task and a TA to request a swap.");
       console.log("Please select a task and a TA to request a swap.");
@@ -59,7 +69,7 @@ const ExamsPage = () => {
   
   const fetchTasProctorings = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=1");
+        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=3");
         setTasProctorings(response.data);
         console.log(tasProctorings);
       } catch (error) {
@@ -68,7 +78,7 @@ const ExamsPage = () => {
   };
   const fetchAvailableTAs = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/");
+      const response = await axios.get("http://localhost:8080/swapRequest/getAvailableTAProfilesForClassProctoring?classProctoringId=1&taId=3");
       setAvailableTAs(response.data);
       console.log(avaliableTAs);
     } catch (error) {
@@ -93,7 +103,7 @@ const ExamsPage = () => {
           <div className="card">
             <h3>Choose one of your tasks</h3>
             <div className="task-row">
-              {tasProctorings.map((proctoring, index) => (createTaskItem(proctoring.classProctoringDTO.id, proctoring.classProctoringDTO.courseName, proctoring.classProctoringDTO.proctoringName, proctoring.classProctoringDTO.startDate, proctoring.classProctoringDTO.endDate, proctoring.classProctoringDTO.classrooms, handleTaskClick1, lastSelectedTask1?.id)))}
+              {tasProctorings.map((proctoring, index) => (createTaskItem(proctoring.classProctoringDTO.id, proctoring.classProctoringDTO.courseName, proctoring.classProctoringDTO.proctoringName, proctoring.classProctoringDTO.startDate, proctoring.classProctoringDTO.endDate, proctoring.classProctoringDTO.classrooms, handleTaskClick1, lastSelectedTask?.id)))}
             </div>
             <div className="details-section">
               <label htmlFor="details">Details</label>
@@ -107,11 +117,10 @@ const ExamsPage = () => {
           <div className="card">
             <h3>TAs Avaliable for this Task</h3>
             <div className="assigned-tas">
-              {avaliableTAs.filter((proctoring) => proctoring.classProctoringTARelationDTO.classProctoringDTO.id === lastSelectedTask2?.id).map((proctoring, index) => (
-                proctoring.taProfileDTOList.map((ta) => (
-                  createTAItem(ta.name, ta.surname, ta.email, handleTAClick, selectedTA)
-                ))
-              ))}
+              {avaliableTAs.map((ta, index) => (
+                  createTAItem(ta, handleTAClick)
+                )
+              )}
             </div>
 
             

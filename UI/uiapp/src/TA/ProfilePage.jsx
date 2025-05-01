@@ -1,15 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./ProfilePage.css";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import axios from "axios";
 
 const ProfilePage = () => {
-  const navigate = useNavigate();
   const [showChangePasswordModal, setShowChangePasswordModal] = React.useState(false);
   const [showUnavailabilityModal, setShowUnavailabilityModal] = React.useState(false);
   const [taProfileInfo, setTaProfileInfo] = useState({}); // Initialize as an empty object");
   const today = new Date().toISOString().split("T")[0];
+
+  // Refs for the input fields
+  const inputStartDateRef = useRef();
+  const inputStartTimeRef = useRef();
+  const inputEndDateRef = useRef();
+  const inputEndTimeRef = useRef();
+  //---------------------------------
+  const handleSetUnavailability = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/");
+      if (response.data) {
+        alert("Leave request sent successfully!");
+        console.log("Leave request sent successfully!");
+      }
+      else {
+        alert("Failed to set unavailability. Please try again.");
+        console.log("Failed to set unavailability. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+
+  }; 
+
+
   useEffect(() => {
     const fetchProfileInformation = async () => {
       try {
@@ -78,18 +102,18 @@ const ProfilePage = () => {
           <form className="modal">
             <h3>Set Unavailable Dates</h3>
             <label>Start Date</label>
-            <input type="date" min={today} required/>
+            <input ref={inputStartDateRef} type="date" min={today} required/>
             <label>Start Time</label>
-            <input type="time" min="08:00" max="22:00"required/>
+            <input ref={inputStartTimeRef} type="time" min="08:00" max="22:00"required/>
             <label>End Date</label>
-            <input type="date" min={today} required/>
+            <input ref={inputEndDateRef} type="date" min={today} required/>
             <label>End Time</label>
-            <input type="time" min="08:00" max="22:00" required/>
+            <input ref={inputEndTimeRef} type="time" min="08:00" max="22:00" required/>
             <label>Details</label>
             <textarea placeholder="Details about the unavailability" rows="3"></textarea>
             <div className="modal-buttons">
               <button className="cancel-button" onClick={() => setShowUnavailabilityModal(false)}>Cancel</button>
-              <button className="apply-button" type="submit">Apply</button>
+              <button className="apply-button" type="submit" onClick={() => handleSetUnavailability()}>Apply</button>
             </div>
           </form>
         </div>

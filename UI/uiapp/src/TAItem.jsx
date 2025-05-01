@@ -8,12 +8,10 @@ const TAItem = ({ ta, onClick, isSelected }) => {
       onClick(ta);
     }
   };
-
-  const key = `${ta.firstName}-${ta.lastName}`;
   return (
 
         <div className={`ta-item ${isSelected ? "selected" : ""}`} onClick={handleClick}>
-            <div><strong>{ta.firstName} {ta.lastName}</strong></div>
+            <div><strong>{ta.name} {ta.surname}</strong></div>
             <div style={{ fontSize: "0.9em", color: "#555" }}>{ta.email}</div>
         </div>
 
