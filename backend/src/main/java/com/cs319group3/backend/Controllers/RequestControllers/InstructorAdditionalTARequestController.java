@@ -16,11 +16,16 @@ import java.util.List;
 public class InstructorAdditionalTARequestController {
     @Autowired
     InstructorAdditionalTARequestService instructorAdditionalTARequestService;
-    //Fetches all the instructor additional ta request from database using the give receiver id
-    @GetMapping("getInstructorAdditionalTARequests")
-    public List<RequestDTO> getInstructorAdditionalTARequests(@RequestParam int receiverId) {
+    //Fetches all approved instructor additional ta request from database using the give receiver id
+    @GetMapping("getApprovedInstructorAdditionalTARequests")
+    public List<RequestDTO> getApprovedInstructorAdditionalTARequests(@RequestParam int receiverId) {
         System.out.println("Fetching Instructor Additional TA Requests for dean");
-        return instructorAdditionalTARequestService.getInstructorAdditionalTARequests(receiverId);
+        return instructorAdditionalTARequestService.getApprovedInstructorAdditionalTARequests(receiverId);
     }
-
+    //Fetches all approved instructor additional ta request from database using the give receiver id
+    @GetMapping("getUnapprovedInstructorAdditionalTARequests")
+    public List<RequestDTO> getUnapprovedInstructorAdditionalTARequests(@RequestParam int receiverId) {
+        System.out.println("Fetching Instructor Additional TA Requests for dean");
+        return instructorAdditionalTARequestService.getUnapprovedInstructorAdditionalTARequests(receiverId);
+    }
 }

@@ -7,5 +7,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 public interface InstructorAdditionalTARequestService {
-    List<RequestDTO> getInstructorAdditionalTARequests(@RequestParam int receiverId);
+    List<RequestDTO> getApprovedInstructorAdditionalTARequests(@RequestParam int receiverId);
+    List<RequestDTO> getUnapprovedInstructorAdditionalTARequests(@RequestParam int receiverId);
 }

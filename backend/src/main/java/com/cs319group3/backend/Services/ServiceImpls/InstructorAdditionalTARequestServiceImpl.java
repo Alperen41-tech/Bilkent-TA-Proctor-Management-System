@@ -22,8 +22,18 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
     RequestMapper requestMapper;
 
     @Override
-    public List<RequestDTO> getInstructorAdditionalTARequests(@RequestParam int receiverId){
-        List<InstructorAdditionalTARequest> list = instructorAdditionalTARequestRepo.findByReceiverUser_UserId(receiverId);
+    public List<RequestDTO> getApprovedInstructorAdditionalTARequests(@RequestParam int receiverId){
+        List<InstructorAdditionalTARequest> list = instructorAdditionalTARequestRepo.findByReceiverIdAndIsApprovedTrue(receiverId);
+        List<RequestDTO> dtos = new ArrayList<>();
+        for (InstructorAdditionalTARequest instructorAdditionalTARequest : list) {
+            dtos.add(requestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequest));
+        }
+        return dtos;
+    }
+
+    @Override
+    public List<RequestDTO> getUnapprovedInstructorAdditionalTARequests(@RequestParam int receiverId){
+        List<InstructorAdditionalTARequest> list = instructorAdditionalTARequestRepo.findByReceiverIdAndIsApprovedFalse(receiverId);
         List<RequestDTO> dtos = new ArrayList<>();
         for (InstructorAdditionalTARequest instructorAdditionalTARequest : list) {
             dtos.add(requestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequest));
