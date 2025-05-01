@@ -44,26 +44,28 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
     private ClassProctoringRepo classProctoringRepo;
     @Autowired
     private TimeIntervalService timeIntervalService;
+    @Autowired
+    private RequestMapper requestMapper;
 
 
     @Override
     public ResponseEntity<List<RequestDTO>> getTASwapRequestsByReceiver(int TAId) {
 
         List<TASwapRequest> swapRequests = taswapRequestRepo.findByReceiverUser_UserId(TAId);
-        return new ResponseEntity<>(RequestMapper.taSwapRequestMapper(swapRequests),HttpStatus.OK);
+        return new ResponseEntity<>(requestMapper.taSwapRequestMapper(swapRequests),HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<List<RequestDTO>> getTASwapRequestsBySender(int TAId) {
         List<TASwapRequest> swapRequests = taswapRequestRepo.findBySenderUser_UserId(TAId);
-        return new ResponseEntity<>(RequestMapper.taSwapRequestMapper(swapRequests),HttpStatus.OK);
+        return new ResponseEntity<>(requestMapper.taSwapRequestMapper(swapRequests),HttpStatus.OK);
     }
 
 
     @Override
     public ResponseEntity<Boolean> createSwapRequest(RequestDTO swapRequestReceived) {
         try {
-            TASwapRequest swapRequest = RequestMapper.taSwapRequestToEntityMapper(swapRequestReceived);
+            TASwapRequest swapRequest = requestMapper.taSwapRequestToEntityMapper(swapRequestReceived);
             taswapRequestRepo.save(swapRequest);
 
             return ResponseEntity.ok(true);

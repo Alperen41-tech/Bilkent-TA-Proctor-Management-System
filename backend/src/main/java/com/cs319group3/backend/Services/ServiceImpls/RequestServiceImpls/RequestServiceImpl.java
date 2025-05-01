@@ -44,6 +44,9 @@ public class RequestServiceImpl implements RequestService {
     @Autowired
     private TASwapRequestService swapRequestService;
 
+    @Autowired
+    private RequestMapper requestMapper;
+
 
     @Override
     public boolean respondToRequest(int requestId, boolean response) {
@@ -109,11 +112,11 @@ public class RequestServiceImpl implements RequestService {
         List<InstructorAdditionalTARequest> instructorAdditionalTARequests = instructorAdditionalTARequestRepo.findByReceiverUser_UserId(userId);
         List<AuthStaffProctoringRequest>  authStaffProctoringRequests = authStaffProctoringRequestRepo.findByReceiverUser_UserId(userId);
 
-        requests.addAll(RequestMapper.taSwapRequestMapper(taSwapRequests));
-        requests.addAll(RequestMapper.taWorkloadRequestMapper(workloadRequests));
-        requests.addAll(RequestMapper.taLeaveRequestMapper(taleaveRequests));
-        requests.addAll(RequestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequests));
-        requests.addAll(RequestMapper.authStaffTARequestMapper(authStaffProctoringRequests));
+        requests.addAll(requestMapper.taSwapRequestMapper(taSwapRequests));
+        requests.addAll(requestMapper.taWorkloadRequestMapper(workloadRequests));
+        requests.addAll(requestMapper.taLeaveRequestMapper(taleaveRequests));
+        requests.addAll(requestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequests));
+        requests.addAll(requestMapper.authStaffTARequestMapper(authStaffProctoringRequests));
 
         return requests;
     }
@@ -129,11 +132,11 @@ public class RequestServiceImpl implements RequestService {
         List<InstructorAdditionalTARequest> instructorAdditionalTARequests = instructorAdditionalTARequestRepo.findBySenderUser_UserId(userId);
         List<AuthStaffProctoringRequest>  authStaffProctoringRequests = authStaffProctoringRequestRepo.findBySenderUser_UserId(userId);
 
-        requests.addAll(RequestMapper.taSwapRequestMapper(taSwapRequests));
-        requests.addAll(RequestMapper.taWorkloadRequestMapper(workloadRequests));
-        requests.addAll(RequestMapper.taLeaveRequestMapper(taleaveRequests));
-        requests.addAll(RequestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequests));
-        requests.addAll(RequestMapper.authStaffTARequestMapper(authStaffProctoringRequests));
+        requests.addAll(requestMapper.taSwapRequestMapper(taSwapRequests));
+        requests.addAll(requestMapper.taWorkloadRequestMapper(workloadRequests));
+        requests.addAll(requestMapper.taLeaveRequestMapper(taleaveRequests));
+        requests.addAll(requestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequests));
+        requests.addAll(requestMapper.authStaffTARequestMapper(authStaffProctoringRequests));
         return requests;
     }
 }

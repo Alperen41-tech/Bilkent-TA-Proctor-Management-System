@@ -8,21 +8,29 @@ import com.cs319group3.backend.Entities.RequestEntities.*;
 import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Repositories.ClassProctoringRepo;
 import com.cs319group3.backend.Repositories.UserRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 
+@Component
 public class RequestMapper {
 
-    private static UserRepo userRepo;
-    private static ClassProctoringRepo classProctoringRepo;
 
-    public static RequestDTO essentialMapper(Request request) {
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private ClassProctoringRepo classProctoringRepo;
+
+
+    public RequestDTO essentialMapper(Request request) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         RequestDTO requestDTO = new RequestDTO();
 
@@ -65,7 +73,7 @@ public class RequestMapper {
         return requestDTO;
     }
 
-    public static void essentialToEntityMapper(Request finalRequest, RequestDTO dto) throws Exception{
+    public void essentialToEntityMapper(Request finalRequest, RequestDTO dto) throws Exception{
 
         finalRequest.setSentDate(dto.getSentDateTime());
         finalRequest.setResponseDate(dto.getResponseDateTime());
@@ -75,10 +83,10 @@ public class RequestMapper {
         Optional<User> senderUser = userRepo.findById(dto.getSenderId());
         Optional<User> receiverUser = userRepo.findById(dto.getReceiverId());
 
-        if (senderUser.isPresent()) {
+        if (!senderUser.isPresent()) {
             throw new Exception("Sender TA cannot be found in database");
         }
-        if (receiverUser.isPresent()) {
+        if (!receiverUser.isPresent()) {
             throw new Exception("Receiver TA cannot be found in database");
         }
 
@@ -86,7 +94,7 @@ public class RequestMapper {
         finalRequest.setReceiverUser(receiverUser.get());
     }
 
-    public static TASwapRequest taSwapRequestToEntityMapper(RequestDTO dto) throws Exception{
+    public TASwapRequest taSwapRequestToEntityMapper(RequestDTO dto) throws Exception{
         TASwapRequest taSwapRequest = new TASwapRequest();
         try{
             essentialToEntityMapper(taSwapRequest, dto);
@@ -102,45 +110,46 @@ public class RequestMapper {
         }
 
         taSwapRequest.setClassProctoring(classProctoring.get());
+        taSwapRequest.setSentDate(LocalDateTime.now());
 
         return taSwapRequest;
     }
 
-
-
-
-
-
-
-    public static RequestDTO taSwapRequestMapper(TASwapRequest request) {
+    public RequestDTO taSwapRequestMapper(TASwapRequest request) {
 
         RequestDTO requestDTO = essentialMapper(request);
         classProctoringMapperHelper(requestDTO, request.getClassProctoring());
         return requestDTO;
     }
 
-    public static List<RequestDTO> taSwapRequestMapper(List<TASwapRequest> requests) {
-        return requests.stream()
-                .map(RequestMapper::taSwapRequestMapper)
-                .collect(Collectors.toList());
+    public List<RequestDTO> taSwapRequestMapper(List<TASwapRequest> requests) {
+        List<RequestDTO> requestDTOs = new ArrayList<>();
+        for (TASwapRequest request : requests) {
+            requestDTOs.add(taSwapRequestMapper(request));
+        }
+
+        return requestDTOs;
     }
 
 
-    public static RequestDTO authStaffTARequestMapper(AuthStaffProctoringRequest request){
+    public RequestDTO authStaffTARequestMapper(AuthStaffProctoringRequest request){
         RequestDTO requestDTO = essentialMapper(request);
         classProctoringMapperHelper(requestDTO, request.getClassProctoring());
         return requestDTO;
     }
 
 
-    public static List<RequestDTO> authStaffTARequestMapper(List<AuthStaffProctoringRequest> requests) {
-        return requests.stream()
-                .map(RequestMapper::authStaffTARequestMapper)
-                .collect(Collectors.toList());
+    public List<RequestDTO> authStaffTARequestMapper(List<AuthStaffProctoringRequest> requests) {
+
+        List<RequestDTO> requestDTOs = new ArrayList<>();
+        for(AuthStaffProctoringRequest request : requests){
+            requestDTOs.add(authStaffTARequestMapper(request));
+        }
+        return requestDTOs;
     }
 
 
-    public static RequestDTO instructorAdditionalTARequestMapper(InstructorAdditionalTARequest request){
+    public RequestDTO instructorAdditionalTARequestMapper(InstructorAdditionalTARequest request){
         RequestDTO requestDTO = essentialMapper(request);
         classProctoringMapperHelper(requestDTO, request.getClassProctoring());
 
@@ -150,13 +159,15 @@ public class RequestMapper {
         return requestDTO;
     }
 
-    public static List<RequestDTO> instructorAdditionalTARequestMapper(List<InstructorAdditionalTARequest> requests) {
-        return requests.stream()
-                .map(RequestMapper::instructorAdditionalTARequestMapper)
-                .collect(Collectors.toList());
+    public List<RequestDTO> instructorAdditionalTARequestMapper(List<InstructorAdditionalTARequest> requests) {
+        List<RequestDTO> requestDTOs = new ArrayList<>();
+        for(InstructorAdditionalTARequest request : requests){
+            requestDTOs.add(instructorAdditionalTARequestMapper(request));
+        }
+        return requestDTOs;
     }
 
-    public static RequestDTO taLeaveRequestMapper(TALeaveRequest request){
+    public RequestDTO taLeaveRequestMapper(TALeaveRequest request){
         RequestDTO requestDTO = essentialMapper(request);
         requestDTO.setIsUrgent(request.isUrgent());
         requestDTO.setLeaveStartDate(request.getLeaveStartDate());
@@ -164,13 +175,15 @@ public class RequestMapper {
         return requestDTO;
     }
 
-    public static List<RequestDTO> taLeaveRequestMapper(List<TALeaveRequest> requests) {
-        return requests.stream()
-                .map(RequestMapper::taLeaveRequestMapper)
-                .collect(Collectors.toList());
+    public List<RequestDTO> taLeaveRequestMapper(List<TALeaveRequest> requests) {
+        List<RequestDTO> requestDTOs = new ArrayList<>();
+        for(TALeaveRequest request : requests){
+            requestDTOs.add(taLeaveRequestMapper(request));
+        }
+        return requestDTOs;
     }
 
-    public static RequestDTO taWorkloadRequestMapper(TAWorkloadRequest request){
+    public RequestDTO taWorkloadRequestMapper(TAWorkloadRequest request){
         RequestDTO requestDTO = essentialMapper(request);
         requestDTO.setTaskTypeName(request.getTaskType().getTaskTypeName());
         requestDTO.setTimeSpent(request.getTimeSpent());
@@ -179,20 +192,21 @@ public class RequestMapper {
     }
 
 
-    public static List<RequestDTO> taWorkloadRequestMapper(List<TAWorkloadRequest> requests){
-        return requests.stream()
-                .map(RequestMapper:: taWorkloadRequestMapper)
-                .collect(Collectors.toList());
+    public List<RequestDTO> taWorkloadRequestMapper(List<TAWorkloadRequest> requests){
+        List<RequestDTO> requestDTOs = new ArrayList<>();
+        for(TAWorkloadRequest request : requests){
+            requestDTOs.add(taWorkloadRequestMapper(request));
+        }
+        return requestDTOs;
     }
 
 
-    private static void classProctoringMapperHelper(RequestDTO requestDTO, ClassProctoring proctoring){
+    private void classProctoringMapperHelper(RequestDTO requestDTO, ClassProctoring proctoring){
 
         requestDTO.setClassProctoringId(proctoring.getClassProctoringId());
         requestDTO.setClassProctoringEventName(proctoring.getEventName());
         requestDTO.setClassProctoringStartDate(proctoring.getStartDate());
         requestDTO.setClassProctoringEndDate(proctoring.getEndDate());
-
     }
 
 

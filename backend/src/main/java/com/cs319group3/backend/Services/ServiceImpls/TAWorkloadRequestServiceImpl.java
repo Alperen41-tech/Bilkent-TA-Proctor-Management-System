@@ -36,6 +36,9 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
     @Autowired
     private NotificationRepo notificationRepo;
 
+    @Autowired
+    private RequestMapper requestMapper;
+
     @Override
     public boolean createTAWorkloadRequest(RequestDTO dto, int taId) {
         TAWorkloadRequest taWorkloadRequest = new TAWorkloadRequest();
@@ -69,13 +72,13 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
     @Override
     public List<RequestDTO> getTAWorkloadRequestsByTA(int taId) {
         List<TAWorkloadRequest> requests = taWorkloadRequestRepo.findBySenderUser_UserId(taId);
-        return RequestMapper.taWorkloadRequestMapper(requests);
+        return requestMapper.taWorkloadRequestMapper(requests);
     }
 
     @Override
     public List<RequestDTO> getTAWorkloadRequestsByInstructor(int instructorId) {
         List<TAWorkloadRequest> requests = taWorkloadRequestRepo.findByReceiverUser_UserId(instructorId);
-        return RequestMapper.taWorkloadRequestMapper(requests);
+        return requestMapper.taWorkloadRequestMapper(requests);
     }
 
     @Override

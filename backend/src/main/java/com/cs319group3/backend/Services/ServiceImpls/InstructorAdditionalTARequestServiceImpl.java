@@ -17,12 +17,16 @@ import java.util.List;
 public class InstructorAdditionalTARequestServiceImpl implements InstructorAdditionalTARequestService {
     @Autowired
     InstructorAdditionalTARequestRepo instructorAdditionalTARequestRepo;
+
+    @Autowired
+    RequestMapper requestMapper;
+
     @Override
     public List<RequestDTO> getInstructorAdditionalTARequests(@RequestParam int receiverId){
         List<InstructorAdditionalTARequest> list = instructorAdditionalTARequestRepo.findByReceiverUser_UserId(receiverId);
         List<RequestDTO> dtos = new ArrayList<>();
         for (InstructorAdditionalTARequest instructorAdditionalTARequest : list) {
-            dtos.add(RequestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequest));
+            dtos.add(requestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequest));
         }
         return dtos;
     }
