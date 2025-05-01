@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TASwapRequestRepo extends JpaRepository<TASwapRequest, Integer> {
@@ -13,4 +14,8 @@ public interface TASwapRequestRepo extends JpaRepository<TASwapRequest, Integer>
 
     List<TASwapRequest> findByReceiverUser_UserId(Integer receiverId);
     List<TASwapRequest> findBySenderUser_UserId(Integer senderId);
+
+    Optional<TASwapRequest> findByReceiverUser_UserIdAndSenderUser_UserIdAndClassProctoring_ClassProctoringId(int receiverId, int senderId, int classProctoringId);
+
+
 }

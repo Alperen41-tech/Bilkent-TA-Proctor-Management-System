@@ -116,7 +116,8 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
 
         List<TA> departmentAvailableTAs = taRepo.findAvailableTAsByDepartment(currDep.getDepartmentCode(), classProctoringId);
 
-        departmentAvailableTAs.removeIf(ta -> !isTAAvailable(ta, classProctoringReceived));
+        departmentAvailableTAs.removeIf(ta -> !isTAAvailable(ta, classProctoringReceived)
+                                                || isRequestAlreadySent(taId, ta, classProctoringReceived));
 
         return TAProfileMapper.essentialMapper(departmentAvailableTAs);
     }
@@ -139,6 +140,18 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         List<TimeIntervalDTO> taSchedule = timeIntervalService.getTAScheduleById(dateIntervalDTO, ta.getUserId());
 
         return taSchedule.isEmpty();
+    }
+
+    private boolean isRequestAlreadySent(int receiverId, TA senderId, ClassProctoring ctr){
+
+        Optional<TASwapRequest> taSwapRequest = taswapRequestRepo
+                .findByReceiverUser_UserIdAndSenderUser_UserIdAndClassProctoring_ClassProctoringId(receiverId, senderId.getUserId(), ctr.getClassProctoringId());
+
+        if (taSwapRequest.isPresent()) {
+            return true;
+        }
+
+        return false;
     }
 
     private void setClassProctorings(TASwapRequest swapRequest) throws Exception{
