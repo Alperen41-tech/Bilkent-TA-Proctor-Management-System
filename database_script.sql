@@ -517,7 +517,7 @@ INSERT INTO ta_leave_request (request_id, is_urgent, leave_start_date, leave_end
 	(15, false, '2025-05-20 07:00:00', '2025-05-24 14:00:00'),
 	(16, false, '2025-05-21 23:00:00', '2025-05-23 07:00:00');
     
-INSERT INTO instructor_additional_ta_request (request_id, ta_count, is_complete, class_proctoring_id) VALUES
+INSERT INTO instructor_additional_ta_request (request_id, ta_count, is_sent_to_secretary, class_proctoring_id) VALUES
 	(17, 2, true, 3),
 	(18, 2, false, 2),
 	(19, 2, true, 1),
@@ -591,11 +591,11 @@ INSERT INTO notification (notification_id, receiver_id, request_id, notification
     (2, 10, 3, "APPROVAL", false),
     (3, 10, 4, "ASSIGNMENT", true);
     
-INSERT INTO proctoring_application (application_id, class_proctoring_id, visible_department_id, applicant_count_limit, is_visible_for_tas) VALUES
-	(1, 2, 2, 10, false),
-    (2, 4, 1, 5, false),
-    (3, 3, 2, 15, true),
-    (4, 5, 1, 10, true);
+INSERT INTO proctoring_application (application_id, class_proctoring_id, visible_department_id, applicant_count_limit, is_visible_for_tas, is_complete) VALUES
+	(1, 2, 2, 10, false, false),
+    (2, 4, 1, 5, false, false),
+    (3, 3, 2, 15, true, false),
+    (4, 5, 1, 10, true, false);
     
 INSERT INTO proctoring_application_ta_relation (proctoring_application_ta_relation_id, ta_id, proctoring_application_id) VALUES
 	(1, 2, 1),
