@@ -6,10 +6,12 @@ import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.TAWorkloadRequest;
 import com.cs319group3.backend.Entities.TaskType;
 import com.cs319group3.backend.Entities.UserEntities.TA;
+import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.NotificationRepo;
 import com.cs319group3.backend.Repositories.TARepo;
 import com.cs319group3.backend.Repositories.TAWorkloadRequestRepo;
 import com.cs319group3.backend.Repositories.TaskTypeRepo;
+import com.cs319group3.backend.Services.NotificationService;
 import com.cs319group3.backend.Services.TAWorkloadRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,9 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
     @Autowired
     private RequestMapper requestMapper;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Override
     public boolean createTAWorkloadRequest(RequestDTO dto, int taId) {
         TAWorkloadRequest taWorkloadRequest = new TAWorkloadRequest();
@@ -65,6 +70,8 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
         notification.setRead(false);
         notification.setReceiver(taWorkloadRequest.getReceiverUser());
         notificationRepo.save(notification);
+
+        notificationService.createNotification(taWorkloadRequest, REQUEST);
 
         return true;
     }

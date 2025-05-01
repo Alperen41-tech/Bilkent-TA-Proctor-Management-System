@@ -9,6 +9,7 @@ import com.cs319group3.backend.Repositories.DepartmentSecretaryRepo;
 import com.cs319group3.backend.Repositories.NotificationRepo;
 import com.cs319group3.backend.Repositories.TALeaveRequestRepo;
 import com.cs319group3.backend.Repositories.TARepo;
+import com.cs319group3.backend.Services.NotificationService;
 import com.cs319group3.backend.Services.TALeaveRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,16 +23,19 @@ import static com.cs319group3.backend.Enums.NotificationType.REQUEST;
 public class TALeaveRequestServiceImpl implements TALeaveRequestService {
 
     @Autowired
-    TARepo taRepo;
+    private TARepo taRepo;
 
     @Autowired
-    DepartmentSecretaryRepo departmentSecretaryRepo;
+    private DepartmentSecretaryRepo departmentSecretaryRepo;
 
     @Autowired
-    TALeaveRequestRepo tALeaveRequestRepo;
+    private TALeaveRequestRepo tALeaveRequestRepo;
 
     @Autowired
-    NotificationRepo notificationRepo;
+    private NotificationRepo notificationRepo;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public boolean createTALeaveRequest(RequestDTO taLeaveRequestDTO, int taId) {
@@ -52,12 +56,7 @@ public class TALeaveRequestServiceImpl implements TALeaveRequestService {
         taLeaveRequest.setLeaveEndDate(taLeaveRequestDTO.getLeaveEndDate());
         tALeaveRequestRepo.save(taLeaveRequest);
 
-        Notification notification = new Notification();
-        notification.setRequest(taLeaveRequest);
-        notification.setNotificationType(REQUEST);
-        notification.setRead(false);
-        notification.setReceiver(taLeaveRequest.getReceiverUser());
-        notificationRepo.save(notification);
+        notificationService.createNotification(taLeaveRequest, REQUEST);
 
         return true;
     }

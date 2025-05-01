@@ -9,14 +9,14 @@ import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.DTOs.TimeIntervalDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.Department;
+import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
 import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
 import com.cs319group3.backend.Entities.UserEntities.TA;
-import com.cs319group3.backend.Repositories.ClassProctoringRepo;
-import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
-import com.cs319group3.backend.Repositories.TARepo;
-import com.cs319group3.backend.Repositories.TASwapRequestRepo;
+import com.cs319group3.backend.Enums.NotificationType;
+import com.cs319group3.backend.Repositories.*;
+import com.cs319group3.backend.Services.NotificationService;
 import com.cs319group3.backend.Services.TASwapRequestService;
 import com.cs319group3.backend.Services.TimeIntervalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +24,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+
 
 
 @Service
@@ -46,6 +47,12 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
     private TimeIntervalService timeIntervalService;
     @Autowired
     private RequestMapper requestMapper;
+
+    @Autowired
+    private NotificationRepo notificationRepo;
+
+    @Autowired
+    private NotificationService notificationService;
 
 
     @Override
@@ -67,6 +74,8 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         try {
             TASwapRequest swapRequest = requestMapper.taSwapRequestToEntityMapper(swapRequestReceived);
             taswapRequestRepo.save(swapRequest);
+
+            notificationService.createNotification(swapRequest, NotificationType.REQUEST);
 
             return ResponseEntity.ok(true);
         } catch (Exception e) {

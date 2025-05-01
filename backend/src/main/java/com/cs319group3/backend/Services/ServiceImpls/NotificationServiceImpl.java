@@ -3,6 +3,9 @@ package com.cs319group3.backend.Services.ServiceImpls;
 import com.cs319group3.backend.DTOMappers.NotificationMapper;
 import com.cs319group3.backend.DTOs.NotificationDTO;
 import com.cs319group3.backend.Entities.Notification;
+import com.cs319group3.backend.Entities.RequestEntities.Request;
+import com.cs319group3.backend.Entities.UserEntities.User;
+import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.NotificationRepo;
 import com.cs319group3.backend.Services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.cs319group3.backend.Enums.NotificationType.REQUEST;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -51,5 +56,16 @@ public class NotificationServiceImpl implements NotificationService {
             }
         }
         return count;
+    }
+
+    public Notification createNotification(Request request, NotificationType type) {
+        Notification notification = new Notification();
+        notification.setRequest(request);
+        notification.setNotificationType(type);
+        notification.setRead(false);
+        notification.setReceiver(request.getReceiverUser());
+        notificationRepo.save(notification);
+
+        return notification;
     }
 }
