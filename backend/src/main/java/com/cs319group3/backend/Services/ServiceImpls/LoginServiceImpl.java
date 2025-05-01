@@ -27,7 +27,14 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
         String email = parts[0];
         String userTypeFromFrontend = parts[1];
 
-        Login currLogin = loginDAO.findByUser_EmailAndUserType_UserTypeName(email, userTypeFromFrontend);
+        Optional<Login> login = loginDAO.findByUser_EmailAndUserType_UserTypeName(email, userTypeFromFrontend);
+
+
+        if (!login.isPresent()) {
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        Login currLogin = login.get();
 
         System.out.println("hello world 2");
 

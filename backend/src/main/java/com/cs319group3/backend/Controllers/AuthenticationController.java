@@ -26,10 +26,9 @@ public class AuthenticationController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @PutMapping("ChangePassword")
-    public boolean changePassword(@RequestParam int id, @RequestParam String newPassword) {
-        System.out.println("Changing password for " + id + " to " + newPassword);
-        return authenticationService.changePassword(id, newPassword);
+    @PutMapping("changePassword")
+    public boolean changePassword(@RequestBody LoginDTO newLoginDTO) {
+        return authenticationService.changePassword(newLoginDTO);
     }
 
     @PostMapping("login")
