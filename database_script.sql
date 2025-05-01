@@ -199,7 +199,8 @@ create table proctoring_application(
     visible_department_id int,
     applicant_count_limit int,
     is_visible_for_tas bool,
-    is_complete bool,
+    is_complete bool not null,
+    finish_date datetime,
     foreign key (class_proctoring_id) references class_proctoring(class_proctoring_id),
     foreign key (visible_department_id) references department(department_id)
 );
@@ -310,7 +311,7 @@ create index start_date_end_date_idx on ta_leave_request(leave_start_date, leave
 create table instructor_additional_ta_request(
 	request_id int primary key,
     ta_count int,
-    is_complete bool,
+    is_sent_to_secretary bool not null,
     class_proctoring_id int not null,
     foreign key (request_id) references request(request_id),
     foreign key (class_proctoring_id) references class_proctoring(class_proctoring_id)

@@ -22,7 +22,7 @@ public class InstructorAdditionalTARequest extends Request{
     //TODO TACount column should be added to table in db
     private int taCount;
 
-    private boolean isComplete;
+    private boolean isSentToSecretary;
 
     @ManyToOne
     @JoinColumn(name  = "class_proctoring_id")
