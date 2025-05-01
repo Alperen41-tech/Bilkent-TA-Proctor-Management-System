@@ -50,8 +50,8 @@ const DO_TARequestsPage = () => {
 
   const fetchDepartments = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/department/getAllDepartmentsInFaculty', {
-        params: { facultyId: 1 }, // Adjust facultyId dynamically as needed
+      const response = await axios.get('http://localhost:8080/department/getAllDepartmentsExcept', {
+        params: { facultyId: 1, departmentId: 1 }, // Adjust facultyId dynamically as needed
       });
       setDepartments(response.data || []);
 
@@ -106,7 +106,7 @@ const DO_TARequestsPage = () => {
                 <li><strong>Status:</strong> {selected.status}</li>
               </ul>
             ) : (
-              <div className="do-TA-placeholder">⇠ Click a request to see its details</div>
+              <div className="do-TA-placeholder">Click a request to see its details</div>
             )}
           </div>
         </section>
@@ -114,7 +114,7 @@ const DO_TARequestsPage = () => {
         {/* ---------- RIGHT COLUMN ---------- */}
         <section className="do-TA-col do-right">
           <div className="do-TA-card">
-            <h3 className="do-TA-card-title">Sending Required TA Number</h3>
+            <h3 className="do-TA-card-title">Choose Other Departments TA Number</h3>
             <div className="do-TA-ta-inputs">
               {departments.map((dep) => (
                 <div key={dep.departmentCode} className="do-TA-dep-row">
