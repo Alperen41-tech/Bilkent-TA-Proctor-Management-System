@@ -98,7 +98,7 @@ const DashboardPage = () => {
 
   const fetchReceivedRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/request/getByReceiverId?receiverId=3"); // Adjust the URL as needed
+      const response = await axios.get("http://localhost:8080/request/getByReceiverId?receiverId=7"); // Adjust the URL as needed
       setReceivedRequests(response.data);
       console.log(receivedRequests);
     } catch (error) {
@@ -108,7 +108,7 @@ const DashboardPage = () => {
 
   const fetchPendingRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/request/getBySenderId?senderId=2"); // Adjust the URL as needed
+      const response = await axios.get("http://localhost:8080/request/getBySenderId?senderId=3"); // Adjust the URL as needed
       setPendingRequests(response.data);
       console.log(receivedRequests);
     } catch (error) {

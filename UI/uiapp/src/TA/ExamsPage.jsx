@@ -1,4 +1,4 @@
-import React, { useEffect ,useState, useRef } from "react";
+import React, { useEffect ,useState, useRef, use } from "react";
 import "./ExamsPage.css";
 import Navbar from "./Navbar";
 import TaskItem from "../TaskItem";
@@ -6,13 +6,10 @@ import TAItem from "../TAItem";
 import axios, { all } from "axios";
 
 const ExamsPage = () => {
-  const [lastSelectedTask, setLastSelectedTask] = useState(null);
+  const [lastSelectedTask, setLastSelectedTask] = useState({});
   const [selectedTA, setSelectedTA] = useState({}); 
   const [tasProctorings, setTasProctorings] = useState([]);
   const [avaliableTAs, setAvailableTAs] = useState([]);
-  const handleTaskClick1 = (task) => {
-    setLastSelectedTask(task);
-  };
   const swapRequestRef = useRef();
 
   const createTaskItem = (id, course, name, date, timeInterval, classroom, onClickHandler, selectedTaskId) => {
@@ -55,6 +52,8 @@ const ExamsPage = () => {
       if (response.data) {
         alert("Swap request sent successfully!");
         console.log("Swap request sent successfully!");
+        fetchAvailableTAs(); // Refresh the available TAs after sending the request
+        fetchTasProctorings(); // Refresh the tasks after sending the request
       }
       else {
         alert("Failed to send swap request. Please try again.");
@@ -65,6 +64,14 @@ const ExamsPage = () => {
       console.log("Please select a task and a TA to request a swap.");
     }
   };
+
+  const handleTaskClick1 = (task) => {
+    setLastSelectedTask(task);
+  };
+
+  useEffect(() => {
+    fetchAvailableTAs(); 
+  }, [lastSelectedTask]);
 
   
   const fetchTasProctorings = async () => {
@@ -78,7 +85,7 @@ const ExamsPage = () => {
   };
   const fetchAvailableTAs = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/swapRequest/getAvailableTAProfilesForClassProctoring?classProctoringId=1&taId=3");
+      const response = await axios.get(`http://localhost:8080/swapRequest/getAvailableTAProfilesForClassProctoring?classProctoringId=${lastSelectedTask.id}&taId=3`);
       setAvailableTAs(response.data);
       console.log(avaliableTAs);
     } catch (error) {
@@ -87,7 +94,6 @@ const ExamsPage = () => {
   };
 
   useEffect(() => {
-    fetchAvailableTAs();
     fetchTasProctorings(); 
   }, []);
 

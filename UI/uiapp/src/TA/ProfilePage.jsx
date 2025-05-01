@@ -15,10 +15,17 @@ const ProfilePage = () => {
   const inputStartTimeRef = useRef();
   const inputEndDateRef = useRef();
   const inputEndTimeRef = useRef();
+  const inputDetailsRef = useRef();
   //---------------------------------
   const handleSetUnavailability = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/");
+      const response = await axios.post("http://localhost:8080/taLeaveRequest/create?id=2", {
+        description: inputDetailsRef.current.value,
+        leaveStartDate: inputStartDateRef.current.value + "T" + inputStartTimeRef.current.value + ":00",
+        leaveEndDate: inputEndDateRef.current.value + "T" + inputEndTimeRef.current.value + ":00",
+      }
+      );
+
       if (response.data) {
         alert("Leave request sent successfully!");
         console.log("Leave request sent successfully!");
@@ -99,7 +106,7 @@ const ProfilePage = () => {
 
       {showUnavailabilityModal && (
         <div className="modal-overlay">
-          <form className="modal">
+          <form className="modal" onSubmit={(e) => { e.preventDefault();handleSetUnavailability();}}>
             <h3>Set Unavailable Dates</h3>
             <label>Start Date</label>
             <input ref={inputStartDateRef} type="date" min={today} required/>
@@ -110,10 +117,10 @@ const ProfilePage = () => {
             <label>End Time</label>
             <input ref={inputEndTimeRef} type="time" min="08:00" max="22:00" required/>
             <label>Details</label>
-            <textarea placeholder="Details about the unavailability" rows="3"></textarea>
+            <textarea ref={inputDetailsRef} placeholder="Details about the unavailability" rows="3"></textarea>
             <div className="modal-buttons">
               <button className="cancel-button" onClick={() => setShowUnavailabilityModal(false)}>Cancel</button>
-              <button className="apply-button" type="submit" onClick={() => handleSetUnavailability()}>Apply</button>
+              <button className="apply-button" type="submit">Apply</button>
             </div>
           </form>
         </div>
