@@ -7,6 +7,7 @@ import com.cs319group3.backend.Entities.*;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.TAService;
+import com.cs319group3.backend.Services.TAWorkloadRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,9 @@ public class TAServiceImpl implements TAService {
     private LoginRepo loginRepo;
     @Autowired
     private ClassProctoringTARelationRepo classProctoringTARelationRepo;
+
+    @Autowired
+    private TAWorkloadRequestService taWorkloadRequestService;
 
 
     @Override
@@ -112,5 +116,17 @@ public class TAServiceImpl implements TAService {
             availableTAProfiles.add(profile);
         }
         return availableTAProfiles;
+    }
+
+    @Override
+    public List<TAProfileDTO> getAllTAProfiles() {
+        List<TA> tas = taRepo.findAll();
+        List<TAProfileDTO> TAProfiles = new ArrayList<>();
+        for (TA ta : tas) {
+            TAProfileDTO dto = TAProfileMapper.essentialMapper(ta);
+            dto.setWorkload(taWorkloadRequestService.getTotalWorkload(ta.getUserId()));
+            TAProfiles.add(dto);
+        }
+        return TAProfiles;
     }
 }

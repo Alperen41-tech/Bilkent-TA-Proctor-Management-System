@@ -15,8 +15,10 @@ public class TAProfileDTO {
     private String bilkentId;
     private String role;
     private String departmentName;
+    private String departmentCode;
     private String courseName;
     private String phoneNumber;
     private Boolean active;
     private int classYear;
+    private int workload;
 }

@@ -43,6 +43,7 @@ public class TAProfileMapper {
 
         if (ta.getDepartment() != null) {
             dto.setDepartmentName(ta.getDepartment().getDepartmentName());
+            dto.setDepartmentCode(ta.getDepartment().getDepartmentCode());
         } else {
             dto.setDepartmentName(null);
         }

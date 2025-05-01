@@ -32,6 +32,11 @@ public class TAController {
         return taService.createNewTA(dto);
     }
 
+    @GetMapping("getAllTAProfiles")
+    public List<TAProfileDTO> getAllTAProfiles() {
+        return taService.getAllTAProfiles();
+    }
+
     @GetMapping("getAvailableTAsByDepartmentExceptProctoring")
     public List<TAProfileDTO> getAllAvailableTAsByDepartment(@RequestParam String departmentCode,@RequestParam int proctoringId) {
         System.out.println("Getting available TA profiles by department except in proctoring " + proctoringId);

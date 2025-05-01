@@ -11,4 +11,5 @@ public interface TAService {
     public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int proctoringId);
     public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int proctoringId);
     public List<TAProfileDTO> getTAsByProctoringId(int proctoringId);
+    public List<TAProfileDTO> getAllTAProfiles();
 }
