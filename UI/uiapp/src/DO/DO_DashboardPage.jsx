@@ -130,21 +130,50 @@ const DO_Dashboard = () => {
 
   {/* Bottom-left panel: Details */}
   <div className="ta-dashboard-bottom-left">
+  <div className="ta-dashboard-details-panel">
     <h3>Details</h3>
     {selectedRequest ? (
       <div>
-        <p><strong>Name:</strong> {selectedRequest.name}</p>
-        <p><strong>Email:</strong> {selectedRequest.email}</p>
-        <p><strong>Date:</strong> {selectedRequest.date.weekday}, {selectedRequest.date.month} {selectedRequest.date.day}</p>
-        <p><strong>Time:</strong> {selectedRequest.time.start} - {selectedRequest.time.end}</p>
-        <p><strong>Course:</strong> {selectedRequest.course}</p>
-        <p><strong>Department:</strong> {selectedRequest.department}</p>
-        <p><strong>Status:</strong> {selectedRequest.status}</p>
+        <p><strong>Name:</strong> {selectedRequest.senderName || selectedRequest.name || "—"}</p>
+        <p><strong>Email:</strong> {selectedRequest.senderEmail || selectedRequest.email || "—"}</p>
+
+        {/* Sent Date/Time Handling */}
+        {selectedRequest.sentDateTime && (() => {
+          const [date, time] = selectedRequest.sentDateTime.split("T");
+          return (
+            <>
+              <p><strong>Sent Date:</strong> {date}</p>
+              <p><strong>Sent Time:</strong> {time}</p>
+            </>
+          );
+        })()}
+
+        {/* Event-specific Fields */}
+        {(selectedRequest.requestType === 'AuthStaffProctoringRequest' || selectedRequest.requestType === 'TASwapRequest') && (
+          <>
+            <p><strong>Event:</strong> {selectedRequest.classProctoringEventName}</p>
+            <p><strong>Event Start:</strong> {selectedRequest.classProctoringStartDate?.split("T")[0] || "—"}</p>
+            <p><strong>Event End:</strong> {selectedRequest.classProctoringEndDate?.split("T")[0] || "—"}</p>
+          </>
+        )}
+
+        {/* Task-specific Fields */}
+        {selectedRequest.requestType === 'TAWorkloadRequest' && (
+          <p><strong>Task:</strong> {selectedRequest.taskTypeName}</p>
+        )}
+
+        <p><strong>Comment:</strong> {selectedRequest.description || "—"}</p>
+        <p><strong>Status:</strong> {selectedRequest.status || "—"}</p>
       </div>
     ) : (
       <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
     )}
   </div>
+</div>
+
+
+
+      
 </div>
 
         {/* RIGHT side */}
