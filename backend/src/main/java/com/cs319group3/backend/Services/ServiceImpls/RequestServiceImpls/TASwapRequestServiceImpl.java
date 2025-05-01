@@ -143,10 +143,10 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         return taSchedule.isEmpty();
     }
 
-    private boolean isRequestAlreadySent(int receiverId, TA sender, ClassProctoring ctr){
+    private boolean isRequestAlreadySent(int senderId, TA receiver, ClassProctoring ctr){
 
         Optional<TASwapRequest> taSwapRequest = taswapRequestRepo
-                .findByReceiverUser_UserIdAndSenderUser_UserIdAndClassProctoring_ClassProctoringId(receiverId, sender.getUserId(), ctr.getClassProctoringId());
+                .findBySenderUser_UserIdAndReceiverUser_UserIdAndClassProctoring_ClassProctoringId(senderId, receiver.getUserId(), ctr.getClassProctoringId());
 
         if (taSwapRequest.isPresent()) {
             return true;
