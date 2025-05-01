@@ -61,7 +61,7 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
         int scheduleStart = 8;
         int scheduleEnd = 22;
         List<TALeaveRequest> requests = optionalTA.get().getTAAvailabilityRequests();
-        requests.removeIf(tAAvailabilityRequest -> !tAAvailabilityRequest.getIsApproved());
+        requests.removeIf(tAAvailabilityRequest -> tAAvailabilityRequest.getIsApproved() == null || !tAAvailabilityRequest.getIsApproved());
         addLeaveOfAbsence(scheduleStart, scheduleEnd, schedule, requests, fromDate, toDate);
 
         //add schedule of ta's courses
