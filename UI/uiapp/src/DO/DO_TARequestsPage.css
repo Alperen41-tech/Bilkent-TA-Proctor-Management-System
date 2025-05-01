@@ -95,3 +95,23 @@
 .do-TA-details li {
   font-size: 14px;
 }
+
+
+.do-TA-dep-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.do-TA-dep-row label {
+  flex: 1;
+  font-weight: 500;
+}
+
+.do-TA-dep-row input {
+  width: 80px;
+  font-size: 1.05rem;
+  padding: 12px;
+}
