@@ -280,12 +280,14 @@ const DashboardPage = () => {
                   <p><strong>Comment:</strong> {selectedRequest.description || "—"}</p>
                   <p><strong>Status:</strong> {selectedRequest.status || "—"}</p>
                 </div>
-              ) : (
-                <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
-              )}
+                  ) : (
+                    <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
+                  )}
 
 
               </div>
+
+
             ) : activeTab === "tasks" ? (
               <div className="ta-dashboard-task-entry-form">
                 <h3>Enter Task</h3>
@@ -330,7 +332,7 @@ const DashboardPage = () => {
                 )}
               </div>
             ) : null}
-          </div>
+            </div>
         </div>
 
         {/* RIGHT SIDE */}

@@ -14,7 +14,7 @@ const DO_Dashboard = () => {
 
 
 
-
+    const [notifications, setNotifications] = useState([]);
     const [receivedRequests, setReceivedRequests] = useState([]);
     const [pendingRequests, setPendingRequests] = useState([]);
 
@@ -85,7 +85,18 @@ const DO_Dashboard = () => {
     }
   };
 
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/notification/get?id=9"); //hard code for 9 for DO 9
+      setNotifications(response.data);
+      console.log(notifications);
+    } catch (error) {
+      console.error("Error fetching task types:", error);
+    }
+  };
+
     useEffect(() => {
+      fetchNotifications();
       fetchReceivedRequests();
       fetchPendingRequests();
     }, []);
@@ -178,10 +189,18 @@ const DO_Dashboard = () => {
 
         {/* RIGHT side */}
         <div className="ta-dashboard-dashboard-right">
-          <div className="ta-dashboard-notifications">
+        <div className="ta-dashboard-notifications">
             <h3>Notifications</h3>
-            <div className="ta-dashboard-placeholder">[ Pull real-time notifications from DB ]</div>
-
+            {notifications.map((notification, index) => (
+              <div key={index} className="ta-dashboard-notification-item">
+                <NotificationItem
+                  requestType={notification.requestType}
+                  message={notification.message}
+                  date={notification.date}
+                  notificationType={notification.notificationType}
+                />
+              </div>
+            ))}
           </div>
 
           <div className="ta-dashboard-stats-box">
