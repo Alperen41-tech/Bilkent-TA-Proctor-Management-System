@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
+import com.cs319group3.backend.DTOMappers.ClassProctoringMapper;
 import com.cs319group3.backend.DTOMappers.ClassProctoringTARelationMapper;
 import com.cs319group3.backend.DTOMappers.TAProfileMapper;
 import com.cs319group3.backend.DTOs.ClassProctoringAndTAsDTO;
@@ -145,44 +146,29 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
 
     @Override
     public List<ClassProctoringAndTAsDTO> getDepartmentClassProctoringsById(int departmentId) {
-        // Fetch all relations in the department
-        List<ClassProctoringTARelation> relations =
-                classProctoringTARelationRepo.findByClassProctoring_Course_Department_DepartmentId(departmentId);
-
+        // Fetch all proctorings in the department
+        List<ClassProctoring> proctorings = classProctoringRepo.findByCourse_Department_DepartmentIdAndIsCompleteFalse(departmentId);
         List<ClassProctoringAndTAsDTO> results = new ArrayList<>();
-        Set<Integer> processedProctoringIds = new HashSet<>();
+        for (ClassProctoring proctoring : proctorings) {
+            List<TAProfileDTO> taList = new ArrayList<>();
 
-        for (ClassProctoringTARelation relation : relations) {
-            int proctoringId = relation.getClassProctoring().getClassProctoringId();
+            //Find all rows with the class proctoring id of the proctoring and put the TA into the taList
+            List<ClassProctoringTARelation> relations =
+                    classProctoringTARelationRepo.findByClassProctoring_ClassProctoringId(proctoring.getClassProctoringId());
 
-            // Skip already processed proctorings
-            if (processedProctoringIds.contains(proctoringId)) {
-                continue;
+            for (ClassProctoringTARelation relation : relations) {
+                TA ta = relation.getTA();
+                if (ta != null) {
+                    TAProfileDTO taDto = TAProfileMapper.essentialMapper(ta);
+                    taList.add(taDto);
+                }
             }
 
-            // Get all TAs assigned to this proctoring
-            List<ClassProctoringTARelation> otherRelations =
-                    classProctoringTARelationRepo.findByClassProctoring_ClassProctoringId(proctoringId);
-
-            // Mark as processed
-            processedProctoringIds.add(proctoringId);
-
-            // Pick any relation to represent the proctoring info (doesn't matter which)
-            ClassProctoringTARelationDTO relationDTO = ClassProctoringTARelationMapper.essentialMapper(relation);
-
-            // Convert all other TAs to profile DTOs
-            List<TAProfileDTO> taDTOs = new ArrayList<>();
-            for (ClassProctoringTARelation other : otherRelations) {
-                TA ta1 = other.getTA();
-                TAProfileDTO dto = TAProfileMapper.essentialMapper(ta1);
-                taDTOs.add(dto);
-            }
-
-            // Build final DTO
             ClassProctoringAndTAsDTO dto = new ClassProctoringAndTAsDTO();
-            dto.setClassProctoringTARelationDTO(relationDTO);
-            dto.setTaProfileDTOList(taDTOs);
-
+            ClassProctoringTARelationDTO taDTO = new ClassProctoringTARelationDTO();
+            taDTO.setClassProctoringDTO(ClassProctoringMapper.essentialMapper(proctoring));
+            dto.setClassProctoringTARelationDTO(taDTO);
+            dto.setTaProfileDTOList(taList);
             results.add(dto);
         }
 

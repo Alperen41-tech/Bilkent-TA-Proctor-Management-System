@@ -13,6 +13,7 @@ import java.util.List;
 public interface ClassProctoringRepo extends JpaRepository<ClassProctoring, Integer> {
 
     List<ClassProctoring> findByCourse_Department_DepartmentId(int departmentId);
+    List<ClassProctoring> findByCourse_Department_DepartmentIdAndIsCompleteFalse(int departmentId);
     List<ClassProctoring> findByCourse_CourseId(int courseCourseId);
 
     @Query("""
