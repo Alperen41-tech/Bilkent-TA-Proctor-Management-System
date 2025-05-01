@@ -11,7 +11,7 @@ public class ProctoringApplicationDTO {
     int applicationId;
     ClassProctoringDTO classProctoringDTO;
     int visibleDepartmentId;
-    int applicationCountLimit;
+    int applicantCountLimit;
     boolean isVisibleForTAs;
     boolean isComplete;
     String finishDate;

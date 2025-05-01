@@ -64,7 +64,7 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
         LocalDateTime cpTime = proctoringApplication.getClassProctoring().getStartDate();
         proctoringApplication.setFinishDate(cpTime.minusDays(3));
 
-        proctoringApplication.setApplicantCountLimit(dto.getApplicationCountLimit());
+        proctoringApplication.setApplicantCountLimit(dto.getApplicantCountLimit());
         proctoringApplicationRepo.save(proctoringApplication);
         return true;
     }
