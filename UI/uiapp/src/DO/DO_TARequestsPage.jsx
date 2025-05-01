@@ -40,8 +40,7 @@ const DO_TARequestsPage = () => {
     try {
       const res = await axios.get(
         "http://localhost:8080/taFromDeanRequest/getApprovedInstructorAdditionalTARequests",
-        { params: { receiverId: 9 } }
-      );
+        { params: { receiverId: 9 } });
       setTARequests(res.data || []);
     } catch (e) {
       console.error(e);

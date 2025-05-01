@@ -14,11 +14,11 @@ const DO_Dashboard = () => {
 
 
 
-    const [notifications, setNotifications] = useState([]);
-    const [receivedRequests, setReceivedRequests] = useState([]);
-    const [pendingRequests, setPendingRequests] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [receivedRequests, setReceivedRequests] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
 
-  
+
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -28,7 +28,7 @@ const DO_Dashboard = () => {
   const createPendingRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <PendingRequestItem {...request} onCancel={() => console.log("canceled")} isSelected={selectedRequest === request}/>
+        <PendingRequestItem {...request} onCancel={() => console.log("canceled")} isSelected={selectedRequest === request} />
       </div>
     );
   };
@@ -36,7 +36,7 @@ const DO_Dashboard = () => {
   const createReceivedRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <ReceivedRequestItem {...request} onAccept={()=>handleRequestResponse(request.requestId, true)} onReject={()=>handleRequestResponse(request.requestId, false)} isSelected={selectedRequest === request}/>
+        <ReceivedRequestItem {...request} onAccept={() => handleRequestResponse(request.requestId, true)} onReject={() => handleRequestResponse(request.requestId, false)} isSelected={selectedRequest === request} />
       </div>
     );
   };
@@ -45,7 +45,7 @@ const DO_Dashboard = () => {
 
   const handleRequestResponse = async (requestId, answer) => {
     try {
-      const response = await axios.put(`http://localhost:8080/request/respond`,null, {
+      const response = await axios.put(`http://localhost:8080/request/respond`, null, {
         params: {
           id: requestId,
           response: answer,
@@ -67,7 +67,7 @@ const DO_Dashboard = () => {
 
   const fetchReceivedRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/request/getByReceiverId?receiverId=9"); // assuming reciever id is 9
+      const response = await axios.get("http://localhost:8080/taFromDeanRequest/getUnapprovedInstructorAdditionalTARequests?receiverId=9"); // assuming reciever id is 9
       setReceivedRequests(response.data);
       console.log(receivedRequests);
     } catch (error) {
@@ -77,7 +77,7 @@ const DO_Dashboard = () => {
 
   const fetchPendingRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/request/getBySenderId?senderId=9"); // Adjust the URL as needed
+      const response = await axios.get("http://localhost:8080/proctoringApplication/getProctoringApplications?deansOfficeId=9"); // Adjust the URL as needed
       setPendingRequests(response.data);
       console.log(receivedRequests);
     } catch (error) {
@@ -95,11 +95,11 @@ const DO_Dashboard = () => {
     }
   };
 
-    useEffect(() => {
-      fetchNotifications();
-      fetchReceivedRequests();
-      fetchPendingRequests();
-    }, []);
+  useEffect(() => {
+    fetchNotifications();
+    fetchReceivedRequests();
+    fetchPendingRequests();
+  }, []);
 
 
 
@@ -113,19 +113,19 @@ const DO_Dashboard = () => {
       <div className="ta-dashboard-dashboard-grid">
         {/* LEFT side */}
         <div className="ta-dashboard-dashboard-left">
-  {/* Top-left panel: Tabs */}
-  <div className="ta-dashboard-left-up-panel">
-    <div className="ta-dashboard-tab-bar">
-      <button onClick={() => handleTabClick("pending")} className={activeTab === "pending" ? "active" : ""}>
-        Pending Requests
-      </button>
-      <button onClick={() => handleTabClick("received")} className={activeTab === "received" ? "active" : ""}>
-        Received Requests
-      </button>
-    </div>
+          {/* Top-left panel: Tabs */}
+          <div className="ta-dashboard-left-up-panel">
+            <div className="ta-dashboard-tab-bar">
+              <button onClick={() => handleTabClick("pending")} className={activeTab === "pending" ? "active" : ""}>
+                Pending Requests
+              </button>
+              <button onClick={() => handleTabClick("received")} className={activeTab === "received" ? "active" : ""}>
+                Received Requests
+              </button>
+            </div>
 
-    <div className="ta-dashboard-tab-content">
-    {activeTab === "pending" && (
+            <div className="ta-dashboard-tab-content">
+              {activeTab === "pending" && (
                 <div>
                   {pendingRequests.map((req, index) => createPendingRequest(req, index))}
                   {console.log(pendingRequests)}
@@ -133,63 +133,104 @@ const DO_Dashboard = () => {
               )}
               {activeTab === "received" && (
                 <div>
-                  {receivedRequests.filter((request)=> request.status === null).map((req, index) => createReceivedRequest(req, index))}
+                  {receivedRequests
+                    .filter((req) => !req.isApproved)
+                    .map((req, index) => createReceivedRequest(req, index))}
                 </div>
               )}
-    </div>
-  </div>
 
-  {/* Bottom-left panel: Details */}
-  <div className="ta-dashboard-bottom-left">
-  <div className="ta-dashboard-details-panel">
-    <h3>Details</h3>
-    {selectedRequest ? (
-      <div>
-        <p><strong>Name:</strong> {selectedRequest.senderName || selectedRequest.name || "—"}</p>
-        <p><strong>Email:</strong> {selectedRequest.senderEmail || selectedRequest.email || "—"}</p>
+            </div>
+          </div>
 
-        {/* Sent Date/Time Handling */}
-        {selectedRequest.sentDateTime && (() => {
-          const [date, time] = selectedRequest.sentDateTime.split("T");
-          return (
-            <>
-              <p><strong>Sent Date:</strong> {date}</p>
-              <p><strong>Sent Time:</strong> {time}</p>
-            </>
-          );
-        })()}
+          {/* Bottom-left panel: Details */}
+          <div className="ta-dashboard-bottom-left">
+            <div className="ta-dashboard-details-panel">
+              <h3>Details</h3>
+              {selectedRequest ? (
+                <div>
+                  <p>
+                    <strong>Sender:</strong>{" "}
+                    {selectedRequest.senderName || selectedRequest.name || "—"} (
+                    {selectedRequest.senderEmail || selectedRequest.email || "—"})
+                  </p>
+                  <p>
+                    <strong>Course:</strong>{" "}
+                    {selectedRequest.courseName ||
+                      selectedRequest.courseCode ||
+                      selectedRequest.classProctoringEventName ||
+                      "—"}
+                  </p>
+                  <p>
+                    <strong>TA Count:</strong>{" "}
+                    {typeof selectedRequest.taCount === "number"
+                      ? selectedRequest.taCount
+                      : "—"}
+                  </p>
 
-        {/* Event-specific Fields */}
-        {(selectedRequest.requestType === 'AuthStaffProctoringRequest' || selectedRequest.requestType === 'TASwapRequest') && (
-          <>
-            <p><strong>Event:</strong> {selectedRequest.classProctoringEventName}</p>
-            <p><strong>Event Start:</strong> {selectedRequest.classProctoringStartDate?.split("T")[0] || "—"}</p>
-            <p><strong>Event End:</strong> {selectedRequest.classProctoringEndDate?.split("T")[0] || "—"}</p>
-          </>
-        )}
+                  {selectedRequest.sentDateTime && (() => {
+                    const [date, time] = selectedRequest.sentDateTime.split("T");
+                    return (
+                      <>
+                        <p><strong>Sent Date:</strong> {date}</p>
+                        <p><strong>Sent Time:</strong> {time}</p>
+                      </>
+                    );
+                  })()}
 
-        {/* Task-specific Fields */}
-        {selectedRequest.requestType === 'TAWorkloadRequest' && (
-          <p><strong>Task:</strong> {selectedRequest.taskTypeName}</p>
-        )}
+                  {(selectedRequest.requestType === 'AuthStaffProctoringRequest' ||
+                    selectedRequest.requestType === 'TASwapRequest') && (
+                      <>
+                        <p>
+                          <strong>Event:</strong>{" "}
+                          {selectedRequest.classProctoringEventName}
+                        </p>
+                        <p>
+                          <strong>Start:</strong>{" "}
+                          {selectedRequest.classProctoringStartDate?.split("T")[0] ||
+                            "—"}
+                        </p>
+                        <p>
+                          <strong>End:</strong>{" "}
+                          {selectedRequest.classProctoringEndDate?.split("T")[0] ||
+                            "—"}
+                        </p>
+                      </>
+                    )}
 
-        <p><strong>Comment:</strong> {selectedRequest.description || "—"}</p>
-        <p><strong>Status:</strong> {selectedRequest.status || "—"}</p>
-      </div>
-    ) : (
-      <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
-    )}
-  </div>
-</div>
+                  {selectedRequest.requestType === 'TAWorkloadRequest' && (
+                    <p><strong>Task:</strong> {selectedRequest.taskTypeName}</p>
+                  )}
+
+                  <p>
+                    <strong>Comment:</strong>{" "}
+                    {selectedRequest.description || "—"}
+                  </p>
+                  <p>
+                    <strong>Status:</strong>{" "}
+                    {selectedRequest.isApproved
+                      ? 'Approved'
+                      : selectedRequest.isComplete
+                        ? 'Completed'
+                        : 'Pending'}
+                  </p>
+                </div>
+              ) : (
+                <p className="ta-dashboard-placeholder">
+                  [ Click a request to see its details ]
+                </p>
+              )}
+
+            </div>
+          </div>
 
 
 
-      
-</div>
+
+        </div>
 
         {/* RIGHT side */}
         <div className="ta-dashboard-dashboard-right">
-        <div className="ta-dashboard-notifications">
+          <div className="ta-dashboard-notifications">
             <h3>Notifications</h3>
             {notifications.map((notification, index) => (
               <div key={index} className="ta-dashboard-notification-item">
