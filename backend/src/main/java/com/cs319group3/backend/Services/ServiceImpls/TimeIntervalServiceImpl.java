@@ -69,6 +69,8 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
         List<CourseStudentRelation> courseStudentRelations = optionalStudent.get().getCourseStudentRelations();
         addTaCourses(courseStudentRelations, schedule);
 
+        //TODO Optional objects may not exist in the database
+
         //add schedule of proctorings
         List<ClassProctoringTARelation> classProctorings = optionalTA.get().getClassProctoringTARelations();
         addTAProctorings(classProctorings, fromDate, toDate, schedule);

@@ -2,21 +2,31 @@ package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 
 
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
+import com.cs319group3.backend.DTOMappers.TAProfileMapper;
+import com.cs319group3.backend.DTOs.DateIntervalDTO;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
+import com.cs319group3.backend.DTOs.TAProfileDTO;
+import com.cs319group3.backend.DTOs.TimeIntervalDTO;
+import com.cs319group3.backend.Entities.ClassProctoring;
+import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
 import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
 import com.cs319group3.backend.Entities.UserEntities.TA;
+import com.cs319group3.backend.Repositories.ClassProctoringRepo;
 import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
 import com.cs319group3.backend.Repositories.TARepo;
 import com.cs319group3.backend.Repositories.TASwapRequestRepo;
 import com.cs319group3.backend.Services.TASwapRequestService;
+import com.cs319group3.backend.Services.TimeIntervalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,12 +35,15 @@ import java.util.Optional;
 public class TASwapRequestServiceImpl implements TASwapRequestService {
 
     @Autowired
-    TASwapRequestRepo taswapRequestRepo;
+    private TASwapRequestRepo taswapRequestRepo;
     @Autowired
-    ClassProctoringTARelationRepo classProctoringTARelationRepo;
+    private ClassProctoringTARelationRepo classProctoringTARelationRepo;
     @Autowired
-    TARepo taRepo;
-
+    private TARepo taRepo;
+    @Autowired
+    private ClassProctoringRepo classProctoringRepo;
+    @Autowired
+    private TimeIntervalService timeIntervalService;
 
 
     @Override
@@ -85,6 +98,45 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(false,HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Override
+    public List<TAProfileDTO> getAvailableTAProfilesForClassProctoring(int classProctoringId, int taId) throws Exception {
+
+        Optional<ClassProctoring> classProctoring = classProctoringRepo.findById(classProctoringId);
+
+        if (!classProctoring.isPresent()) {
+            throw new Exception("classProctoring with id" + classProctoringId + " could not be found");
+        }
+
+        ClassProctoring classProctoringReceived = classProctoring.get();
+        Department currDep =  classProctoringReceived.getCourse().getDepartment();
+
+        List<TA> departmentAvailableTAs = taRepo.findAvailableTAsByDepartment(currDep.getDepartmentCode(), classProctoringId);
+
+        departmentAvailableTAs.removeIf(ta -> !isTAAvailable(ta, classProctoringReceived));
+
+        return TAProfileMapper.essentialMapper(departmentAvailableTAs);
+    }
+
+    private boolean isTAAvailable(TA ta, ClassProctoring otherCtr){
+
+        /* ta is not available
+        * if he has another proctoring in the time interval
+        * if he has singed as with leave of absence
+        * if he has lecture */
+
+        LocalDateTime startDateTime = otherCtr.getStartDate(); // your LocalDateTime value
+        LocalDateTime endDateTime = otherCtr.getEndDate();   // your LocalDateTime value
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateIntervalDTO dateIntervalDTO = new DateIntervalDTO();
+        dateIntervalDTO.setStartDate(startDateTime.format(dtf));
+        dateIntervalDTO.setEndDate(endDateTime.format(dtf));
+
+        List<TimeIntervalDTO> taSchedule = timeIntervalService.getTAScheduleById(dateIntervalDTO, ta.getUserId());
+
+        return taSchedule.isEmpty();
     }
 
     private void setClassProctorings(TASwapRequest swapRequest) throws Exception{

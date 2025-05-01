@@ -2,6 +2,7 @@ package com.cs319group3.backend.Services;
 
 
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
+import com.cs319group3.backend.DTOs.TAProfileDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -23,11 +24,11 @@ public interface TASwapRequestService {
     public ResponseEntity<List<RequestDTO>> getTASwapRequestsBySender(int TAId);
 
     /**
-     *
-     * @param swapRequestRecieved takes the value to create swap reqeust accoringly
-     * @return ResponseEntity to indicate whether the request is successfull
+     * get the classProctoringId and taId in order to create the swap request
+     * @param requestDTO
+     * @return
      */
-    public ResponseEntity<Boolean> createSwapRequest(RequestDTO swapRequestRecieved);
+    public ResponseEntity<Boolean> createSwapRequest(RequestDTO requestDTO);
 
 
     /**
@@ -38,6 +39,13 @@ public interface TASwapRequestService {
     public ResponseEntity<Boolean> acceptSwapRequest(int requestId) throws Exception;
 
 
+    /**
+     *
+     * @param classProctoringId  get this in order to decide the current class proctoring
+     * @param taId  get this to decide which ta which is going to send the swap reqeust
+     * @return
+     */
+    public List<TAProfileDTO> getAvailableTAProfilesForClassProctoring(int classProctoringId, int taId) throws Exception;
 
 
 }

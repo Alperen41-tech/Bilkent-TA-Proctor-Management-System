@@ -9,6 +9,9 @@ import com.cs319group3.backend.Repositories.DepartmentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class TAProfileMapper {
 
@@ -44,6 +47,14 @@ public class TAProfileMapper {
         }
 
         return dto;
+    }
+
+    public static List<TAProfileDTO> essentialMapper(List<TA> taList) {
+        List<TAProfileDTO> dtoList = new ArrayList<>();
+        for (TA ta : taList) {
+            dtoList.add(essentialMapper(ta));
+        }
+        return dtoList;
     }
 
     public TA essentialEntityToTA(TAProfileDTO dto) {

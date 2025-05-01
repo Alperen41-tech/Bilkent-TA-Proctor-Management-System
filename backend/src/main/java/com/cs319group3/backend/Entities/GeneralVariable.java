@@ -17,6 +17,8 @@ public class GeneralVariable {
 
     //TODO in general variable table, general variable id columns should be defined
 
+    // TODO entity base diye değiştirilecek
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int generalVariableId;
