@@ -199,6 +199,7 @@ create table proctoring_application(
     visible_department_id int,
     applicant_count_limit int,
     is_visible_for_tas bool,
+    is_complete bool,
     foreign key (class_proctoring_id) references class_proctoring(class_proctoring_id),
     foreign key (visible_department_id) references department(department_id)
 );
@@ -245,6 +246,7 @@ create table proctoring_application_ta_relation(
 	proctoring_application_ta_relation_id int primary key auto_increment,
     ta_id int,
     proctoring_application_id int,
+    is_approved_by_secretary bool,
     foreign key (ta_id) references ta (user_id),
     foreign key (proctoring_application_id) references proctoring_application(application_id)
 );
