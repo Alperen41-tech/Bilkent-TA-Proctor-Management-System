@@ -52,12 +52,14 @@ public class RequestMapper {
         if (!senderUser.isPresent()) {
             throw new Exception("Sender TA cannot be found in database");
         }
-        if (!receiverUser.isPresent()) {
-            throw new Exception("Receiver TA cannot be found in database");
-        }
-
         finalRequest.setSenderUser(senderUser.get());
-        finalRequest.setReceiverUser(receiverUser.get());
+
+        if (!receiverUser.isPresent()) {
+            System.out.println("Receiver user cannot be found in database");
+        }
+        else{
+            finalRequest.setReceiverUser(receiverUser.get());
+        }
     }
 
     public TASwapRequest taSwapRequestToEntityMapper(RequestDTO dto) throws Exception{
