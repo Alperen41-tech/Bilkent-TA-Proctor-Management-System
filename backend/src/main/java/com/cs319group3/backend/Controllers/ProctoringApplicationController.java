@@ -20,4 +20,10 @@ public class ProctoringApplicationController {
         System.out.println("getProctoringApplications is called");
         return proctoringApplicationService.getProctoringApplications(deansOfficeId);
     }
+
+    @PostMapping("createProctoringApplications")
+    public boolean createProctoringApplication(@RequestParam int classProctoringId, @RequestBody List<ProctoringApplicationDTO> proctoringApplicationDTO) {
+        System.out.println("createProctoringApplication is called");
+        return proctoringApplicationService.createProctoringApplications(classProctoringId, proctoringApplicationDTO);
+    }
 }

@@ -16,6 +16,7 @@ public class ProctoringApplicationMapper {
         proctoringApplicationDTO.setVisibleForTAs(proctoringApplication.isVisibleForTAs());
         proctoringApplicationDTO.setVisibleDepartmentId(proctoringApplication.getVisibleDepartment().getDepartmentId());
         proctoringApplicationDTO.setComplete(proctoringApplication.isComplete());
+        proctoringApplicationDTO.setClassProctoringDTO(ClassProctoringMapper.essentialMapper(proctoringApplication.getClassProctoring()));
         return proctoringApplicationDTO;
     }
 }
