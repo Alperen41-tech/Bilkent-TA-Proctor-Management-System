@@ -1,10 +1,16 @@
 // DO_TARequestsPage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavbarDO from "./NavbarDO";
 import "./DO_TARequestsPage.css";
+import axios from "axios";
+
 
 const DO_TARequestsPage = () => {
   const [selectedRequestId, setSelectedRequestId] = useState(null);
+
+  const [departments, setDepartments] = useState([]);
+  const [taCounts, setTACounts] = useState({});
+
 
   const taRequests = [
     {
@@ -28,6 +34,37 @@ const DO_TARequestsPage = () => {
   ];
 
   const selected = taRequests.find((r) => r.id === selectedRequestId);
+
+
+
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
+
+
+  const handleSendToDepartments = () => {
+    console.log("Sending TA requirements:", taCounts);
+//////
+  };
+  
+
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/department/getAllDepartmentsInFaculty', {
+        params: { facultyId: 1 }, // Adjust facultyId dynamically as needed
+      });
+      setDepartments(response.data || []);
+
+      // Initialize taCounts with 0 for each department
+      const initialCounts = {};
+      response.data.forEach(dep => {
+        initialCounts[dep.departmentCode] = 0;
+      });
+      setTACounts(initialCounts);
+    } catch (error) {
+      console.error('Error fetching departments:', error);
+    }
+  };
 
   return (
     <div className="do-TA-ta-page">
@@ -78,12 +115,30 @@ const DO_TARequestsPage = () => {
         <section className="do-TA-col do-right">
           <div className="do-TA-card">
             <h3 className="do-TA-card-title">Sending Required TA Number</h3>
-            <div className="do-TA-placeholder">(empty)</div>
+            <div className="do-TA-ta-inputs">
+              {departments.map((dep) => (
+                <div key={dep.departmentCode} className="do-TA-dep-row">
+                  <label>{dep.departmentName}</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={taCounts[dep.departmentCode] || 0}
+                    onChange={(e) =>
+                      setTACounts({ ...taCounts, [dep.departmentCode]: parseInt(e.target.value, 10) })
+                    }
+                  />
+                </div>
+              ))}
+
+<button className="do-TA-send-button" onClick={handleSendToDepartments}>
+    Send to Department Secretary
+  </button>
+
+
+            </div>
+
           </div>
-          <div className="do-TA-card">
-            <h3 className="do-TA-card-title">Selected Departments</h3>
-            <div className="do-TA-placeholder">(empty)</div>
-          </div>
+
         </section>
       </main>
     </div>
