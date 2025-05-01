@@ -151,7 +151,7 @@ public class RequestMapper {
         classProctoringMapperHelper(requestDTO, request.getClassProctoring());
 
         requestDTO.setTaCountNeeded(request.getTaCount());
-        requestDTO.setIsComplete(request.isComplete());
+        requestDTO.setIsComplete(request.isSentToSecretary());
 
         return requestDTO;
     }
