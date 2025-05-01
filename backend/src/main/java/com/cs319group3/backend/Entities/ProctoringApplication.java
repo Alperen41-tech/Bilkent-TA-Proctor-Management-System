@@ -29,6 +29,8 @@ public class ProctoringApplication {
 
     private int applicantCountLimit;
 
+    private boolean isComplete;
+
     @Column(name = "is_visible_for_tas")
     private boolean isVisibleForTAs;
 }

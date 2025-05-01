@@ -127,7 +127,8 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         /* ta is not available
         * if he has another proctoring in the time interval
         * if he has singed as with leave of absence
-        * if he has lecture */
+        * if he has lecture
+        * if he already recevied a swap reeqeust about that */
 
         LocalDateTime startDateTime = otherCtr.getStartDate(); // your LocalDateTime value
         LocalDateTime endDateTime = otherCtr.getEndDate();   // your LocalDateTime value
@@ -142,10 +143,10 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         return taSchedule.isEmpty();
     }
 
-    private boolean isRequestAlreadySent(int receiverId, TA senderId, ClassProctoring ctr){
+    private boolean isRequestAlreadySent(int receiverId, TA sender, ClassProctoring ctr){
 
         Optional<TASwapRequest> taSwapRequest = taswapRequestRepo
-                .findByReceiverUser_UserIdAndSenderUser_UserIdAndClassProctoring_ClassProctoringId(receiverId, senderId.getUserId(), ctr.getClassProctoringId());
+                .findByReceiverUser_UserIdAndSenderUser_UserIdAndClassProctoring_ClassProctoringId(receiverId, sender.getUserId(), ctr.getClassProctoringId());
 
         if (taSwapRequest.isPresent()) {
             return true;

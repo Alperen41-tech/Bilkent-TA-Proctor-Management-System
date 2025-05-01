@@ -76,7 +76,7 @@ public class RequestMapper {
     public void essentialToEntityMapper(Request finalRequest, RequestDTO dto) throws Exception{
 
         finalRequest.setSentDate(LocalDateTime.now());
-        finalRequest.setApproved(dto.getIsApproved());
+        //finalRequest.setApproved(dto.getIsApproved());
         finalRequest.setDescription(dto.getDescription());
 
         Optional<User> senderUser = userRepo.findById(dto.getSenderId());
