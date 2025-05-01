@@ -9,7 +9,7 @@ const ProfilePage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = React.useState(false);
   const [showUnavailabilityModal, setShowUnavailabilityModal] = React.useState(false);
   const [taProfileInfo, setTaProfileInfo] = useState({}); // Initialize as an empty object");
-
+  const today = new Date().toISOString().split("T")[0];
   useEffect(() => {
     const fetchProfileInformation = async () => {
       try {
@@ -75,19 +75,23 @@ const ProfilePage = () => {
 
       {showUnavailabilityModal && (
         <div className="modal-overlay">
-          <div className="modal">
+          <form className="modal">
             <h3>Set Unavailable Dates</h3>
             <label>Start Date</label>
-            <input type="date" />
+            <input type="date" min={today} required/>
+            <label>Start Time</label>
+            <input type="time" min="08:00" max="22:00"required/>
             <label>End Date</label>
-            <input type="date" />
+            <input type="date" min={today} required/>
+            <label>End Time</label>
+            <input type="time" min="08:00" max="22:00" required/>
             <label>Details</label>
             <textarea placeholder="Details about the unavailability" rows="3"></textarea>
             <div className="modal-buttons">
               <button className="cancel-button" onClick={() => setShowUnavailabilityModal(false)}>Cancel</button>
-              <button className="apply-button">Apply</button>
+              <button className="apply-button" type="submit">Apply</button>
             </div>
-          </div>
+          </form>
         </div>
       )}
     </div>

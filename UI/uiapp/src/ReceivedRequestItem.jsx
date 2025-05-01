@@ -41,7 +41,7 @@ function parseSentDate(sentDateString) {
   };
 }
 
-const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDateTime, description, senderName, receiverName, receiverEmail, senderEmail, status, classProctoringEventName, classProctoringStartDate, classProctoringEndDate, taCountNeeded, isComplete, isUrgent, leaveStartDate, leaveEndDate, taskTypeName, timeSpent, courseCode, onAccept, onReject}) => {
+const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDateTime, description, senderName, receiverName, receiverEmail, senderEmail, status, classProctoringEventName, classProctoringStartDate, classProctoringEndDate, taCountNeeded, isComplete, isUrgent, leaveStartDate, leaveEndDate, taskTypeName, timeSpent, courseCode, onAccept, onReject, isSelected}) => {
   const { date, time } = parseSentDate(sentDateTime);
 
   const renderDetails = () => {
@@ -109,7 +109,7 @@ const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDat
   
   
   return (
-    <div className="received-request-item-received-card">
+    <div className="received-request-item-received-card" style={{ backgroundColor: isSelected ? "#e2d9fe" : "#ececec" }}>
       <div className="received-request-item-date-box">
         <div className="received-request-item-month">{date.month}</div>
         <div className="received-request-item-day">{date.day}</div>

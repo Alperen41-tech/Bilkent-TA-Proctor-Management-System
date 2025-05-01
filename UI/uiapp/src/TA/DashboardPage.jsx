@@ -10,9 +10,8 @@ import axios from "axios";
 
 const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState("pending");
-  const [selectedReceivedRequest, setSelectedRequest] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
   const [selectedProctoring, setSelectedProctoring] = useState(null);
-  const [selectedProctoringId, setSelectedProctoringId] = useState(null);
   const [tasProctorings, setTasProctorings] = useState([]);
   const [taskType, setTaskType] = useState([]);
   const [taWorkloadRequests, setTaWorkloadRequests] = useState([]);
@@ -27,8 +26,8 @@ const DashboardPage = () => {
   const newDetailsEntry = useRef();
   //-----------------------------
   
-  const handleSelect = (id) => {
-    setSelectedProctoringId(id);
+  const handleSelect = (proc) => {
+    setSelectedProctoring(proc);
   };
 
   const handleTabClick = (tab) => {
@@ -40,7 +39,7 @@ const DashboardPage = () => {
   const createPendingRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <PendingRequestItem {...request} onCancel={() => console.log("canceled")}/>
+        <PendingRequestItem {...request} onCancel={() => console.log("canceled")} isSelected={selectedRequest === request}/>
       </div>
     );
   };
@@ -48,7 +47,7 @@ const DashboardPage = () => {
   const createReceivedRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <ReceivedRequestItem {...request} onAccept={()=>handleRequestResponse(request.requestId, true)} onReject={()=>handleRequestResponse(request.requestId, false)} />
+        <ReceivedRequestItem {...request} onAccept={()=>handleRequestResponse(request.requestId, true)} onReject={()=>handleRequestResponse(request.requestId, false)} isSelected={selectedRequest === request}/>
       </div>
     );
   };
@@ -233,8 +232,8 @@ const DashboardPage = () => {
                     <ProctoringDutyItem
                       key={duty.classProctoringDTO.id}
                       duty={duty}
-                      isSelected={selectedProctoringId === duty.classProctoringDTO.id}
-                      onSelect={handleSelect}
+                      isSelected={selectedProctoring == duty}
+                      onSelect={() => handleSelect(duty)}
                       onLockedStatusChange={() => {
                         handleLockedStatusChange(duty.classProctoringDTO.id); // Function to handle the locked status change
                         console.log(`Locked status changed for duty ID: ${duty.classProctoringDTO.id}`); //Will push new lock status of the duty to the database
@@ -250,13 +249,13 @@ const DashboardPage = () => {
             {activeTab === "pending" || activeTab === "received" ? (
               <div className="ta-dashboard-details-panel">
                 <h3>Details</h3>
-                {selectedReceivedRequest ? (
+                {selectedRequest ? (
                 <div>
-                  <p><strong>Name:</strong> {selectedReceivedRequest.senderName || "—"}</p>
-                  <p><strong>Email:</strong> {selectedReceivedRequest.senderEmail || "—"}</p>
+                  <p><strong>Name:</strong> {selectedRequest.senderName || "—"}</p>
+                  <p><strong>Email:</strong> {selectedRequest.senderEmail || "—"}</p>
 
-                  {selectedReceivedRequest.sentDateTime && (() => {
-                    const [ date, time ] = selectedReceivedRequest.sentDateTime.split("T");
+                  {selectedRequest.sentDateTime && (() => {
+                    const [ date, time ] = selectedRequest.sentDateTime.split("T");
                     return (
                       <>
                         <p><strong>Sent Date:</strong> {date}</p>
@@ -265,21 +264,21 @@ const DashboardPage = () => {
                     );
                   })()}
 
-                  {selectedReceivedRequest.requestType === 'AuthStaffProctoringRequest' ||
-                  selectedReceivedRequest.requestType === 'TASwapRequest' ? (
+                  {selectedRequest.requestType === 'AuthStaffProctoringRequest' ||
+                  selectedRequest.requestType === 'TASwapRequest' ? (
                     <>
-                      <p><strong>Event:</strong> {selectedReceivedRequest.classProctoringEventName}</p>
-                      <p><strong>Event Start Date:</strong> {selectedReceivedRequest.classProctoringStartDate ? selectedReceivedRequest.classProctoringStartDate.split("T")[0] : "—"}</p>
-                      <p><strong>Event End Date:</strong> {selectedReceivedRequest.classProctoringEndDate ? selectedReceivedRequest.classProctoringEndDate.split("T")[0] : "—"}</p>
+                      <p><strong>Event:</strong> {selectedRequest.classProctoringEventName}</p>
+                      <p><strong>Event Start Date:</strong> {selectedRequest.classProctoringStartDate ? selectedRequest.classProctoringStartDate.split("T")[0] : "—"}</p>
+                      <p><strong>Event End Date:</strong> {selectedRequest.classProctoringEndDate ? selectedRequest.classProctoringEndDate.split("T")[0] : "—"}</p>
                     </>
                   ) : null}
 
-                  {selectedReceivedRequest.requestType === 'TAWorkloadRequest' ? (
-                    <p><strong>Task:</strong> {selectedReceivedRequest.taskTypeName}</p>
+                  {selectedRequest.requestType === 'TAWorkloadRequest' ? (
+                    <p><strong>Task:</strong> {selectedRequest.taskTypeName}</p>
                   ) : null}
 
-                  <p><strong>Comment:</strong> {selectedReceivedRequest.description || "—"}</p>
-                  <p><strong>Status:</strong> {selectedReceivedRequest.status || "—"}</p>
+                  <p><strong>Comment:</strong> {selectedRequest.description || "—"}</p>
+                  <p><strong>Status:</strong> {selectedRequest.status || "—"}</p>
                 </div>
               ) : (
                 <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
@@ -316,20 +315,18 @@ const DashboardPage = () => {
               <div className="ta-dashboard-swap-form">
                 <h3>Proctoring Information</h3>
                 {selectedProctoring ? (
-                  <form>
-                    <label>Select TA</label>
-                    <select>
-                      <option>TA 1</option>
-                      <option>TA 2</option>
-                    </select>
-
-                    <label>Details</label>
-                    <textarea placeholder="Reason for swap" />
-
-                    <button type="submit">Send Swap Request</button>
-                  </form>
+                  <div>
+                    <p><strong>Course:</strong> {selectedProctoring.classProctoringDTO.courseName}</p>
+                    <p><strong>Proctoring:</strong> {selectedProctoring.classProctoringDTO.proctoringName}</p>
+                    <p><strong>Start Date:</strong> {selectedProctoring.classProctoringDTO.startDate.split("T")[0]}</p>
+                    <p><strong>Start Time:</strong> {selectedProctoring.classProctoringDTO.startDate.split("T")[1]}</p>
+                    <p><strong>End Time:</strong> {selectedProctoring.classProctoringDTO.endDate.split("T")[1]}</p>
+                    <p><strong>Classrooms:</strong> {selectedProctoring.classProctoringDTO.classrooms}</p>
+                    <p><strong>Locked:</strong> {selectedProctoring.isOpenToSwap ? "No" : "Yes"}</p>
+                    <p><strong>Proctoring Status:</strong> {selectedProctoring.isPaid ? "Yes" : "No"}</p>,
+                  </div>
                 ) : (
-                  <p className="ta-dashboard-placeholder">[ Select a proctoring duty to send swap request ]</p>
+                  <p className="ta-dashboard-placeholder">{selectedProctoring}</p>
                 )}
               </div>
             ) : null}

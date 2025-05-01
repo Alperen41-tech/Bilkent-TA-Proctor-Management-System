@@ -1,4 +1,4 @@
-import React, { useEffect ,useState } from "react";
+import React, { useEffect ,useState, useRef } from "react";
 import "./ExamsPage.css";
 import Navbar from "./Navbar";
 import TaskItem from "../TaskItem";
@@ -31,24 +31,33 @@ const ExamsPage = () => {
   const [lastSelectedTask1, setLastSelectedTask1] = useState(null);
   const [lastSelectedTask2, setLastSelectedTask2] = useState(null);
   const [selectedTA, setSelectedTA] = useState(null); 
-  const [tasProctorings, setTasProctorings] = useState([]);//First declaration of tasProctorings as an empty array
-  const [allDepartmantExams, setAllDepartmantExams] = useState([]);//Declaration of allDepartmantExams as an empty array
+  const [tasProctorings, setTasProctorings] = useState([]);
+  const [avaliableTAs, setAvailableTAs] = useState([]);
   const handleTaskClick1 = (task) => {
     setLastSelectedTask1(task);
   };
+  const swapRequestRef = useRef();
 
-  const handleTaskClick2 = (task) => {
-    setLastSelectedTask2(task);
-    console.log("Fetched all tasks:", allDepartmantExams);
-  };
 
   const handleTAClick = (ta) => {
     const key = `${ta.firstName}-${ta.lastName}-${ta.email}`;
     setSelectedTA(key);
   };
+
+  const handleRequestSwap = () => {
+    if (lastSelectedTask1 && selectedTA) {
+      
+
+      console.log("Requesting swap for task ID:with TA:");
+      // Add your swap request logic here
+    } else {
+      alert("Please select a task and a TA to request a swap.");
+      console.log("Please select a task and a TA to request a swap.");
+    }
+  };
+
   
-  useEffect(() => {
-    const fetchTasProctorings = async () => {
+  const fetchTasProctorings = async () => {
       try {
         const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=1");
         setTasProctorings(response.data);
@@ -56,18 +65,20 @@ const ExamsPage = () => {
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
-    };
-    const fetchAllDepartmantExams = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getDepartmentTAsClassProctorings?id=1");
-        setAllDepartmantExams(response.data);
-        console.log(allDepartmantExams);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
+  };
+  const fetchAvailableTAs = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/");
+      setAvailableTAs(response.data);
+      console.log(avaliableTAs);
+    } catch (error) {
+      console.error("Error fetching available TAs:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAvailableTAs();
     fetchTasProctorings(); 
-    fetchAllDepartmantExams();
   }, []);
 
 
@@ -86,17 +97,17 @@ const ExamsPage = () => {
             </div>
             <div className="details-section">
               <label htmlFor="details">Details</label>
-              <textarea id="details" placeholder="Enter details..." />
-              <button className="swap-button">Request Swap</button>
+              <textarea ref={swapRequestRef} id="details" placeholder="Enter details..." />
+              <button className="swap-button" onClick={()=>handleRequestSwap()}>Request Swap</button>
             </div>
           </div>
         </div>
 
         <div className="right-section">
           <div className="card">
-            <h3>TAs Assigned for this Task</h3>
+            <h3>TAs Avaliable for this Task</h3>
             <div className="assigned-tas">
-              {allDepartmantExams.filter((proctoring) => proctoring.classProctoringTARelationDTO.classProctoringDTO.id === lastSelectedTask2?.id).map((proctoring, index) => (
+              {avaliableTAs.filter((proctoring) => proctoring.classProctoringTARelationDTO.classProctoringDTO.id === lastSelectedTask2?.id).map((proctoring, index) => (
                 proctoring.taProfileDTOList.map((ta) => (
                   createTAItem(ta.name, ta.surname, ta.email, handleTAClick, selectedTA)
                 ))

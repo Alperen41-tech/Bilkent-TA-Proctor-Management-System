@@ -41,7 +41,7 @@ function parseSentDate(sentDateString) {
   };
 }
 
-const PendingRequestItem = ({requestType, sentDateTime, isApproved, responseDateTime, description, senderName, receiverName, receiverEmail, senderEmail, status, classProctoringEventName, classProctoringStartDate, classProctoringEndDate, taCountNeeded, isComplete, isUrgent, leaveStartDate, leaveEndDate, taskTypeName, timeSpent, courseCode, onCancel}) => {
+const PendingRequestItem = ({requestType, sentDateTime, isApproved, responseDateTime, description, senderName, receiverName, receiverEmail, senderEmail, status, classProctoringEventName, classProctoringStartDate, classProctoringEndDate, taCountNeeded, isComplete, isUrgent, leaveStartDate, leaveEndDate, taskTypeName, timeSpent, courseCode, onCancel, isSelected}) => {
   const { date, time } = parseSentDate(sentDateTime);
 
   const renderDetails = () => {
@@ -106,7 +106,7 @@ const PendingRequestItem = ({requestType, sentDateTime, isApproved, responseDate
   };
 
   return (
-    <div className="pending-request-item-received-card">
+    <div className="pending-request-item-received-card" style={{ backgroundColor: isSelected ? "#e2d9fe" : "#ececec" }}>
       <div className="pending-request-item-date-box">
         <div className="pending-request-item-month">{date.month}</div>
         <div className="pending-request-item-day">{date.day}</div>
