@@ -1,9 +1,11 @@
 // src/TAsPage.jsx
-import React, { useState } from "react";
+import React, { use, useState, useEffect } from "react";
 import NavbarINS from "./NavbarINS";
 import "./INS_TAsPage.css";
 import TAItem from "../TAItem";
 import ViewTAProfile from "../ViewTAProfile";
+import { es } from "date-fns/locale";
+import axios from "axios";
 
 
 const TAsPage = () => {
@@ -12,6 +14,7 @@ const TAsPage = () => {
   const [sortDepartment, setSortDepartment] = useState("");
   const [sortWorkload, setSortWorkload] = useState("");
   const [sortName, setSortName] = useState("");
+  const [allTas, setAllTAs] = useState([]);
 
   const [activeTab, setActiveTab] = useState("list");
   const [activeTAId, setActiveTAId] = useState(null);
@@ -37,28 +40,43 @@ const TAsPage = () => {
     setActiveTAId(null);
   };
 
+  const fetchAllTAs = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/ta/getAllTAProfiles"); // Adjust the URL as needed
+      if (response.data) {
+        setAllTAs(response.data);
+        console.log("Available TAs:",response.data); 
+      }
+      else {
+        console.error("Failed to fetch TAs:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching available TAs:", error);
+    }
+  };
 
-  const createTAItem = (firstName, lastName, email, onClickHandler, selectedTAKey) => {
-    const ta = { firstName, lastName, email };
-    const key = `${firstName}-${lastName}-${email}`;
-    const isSelected = selectedTAKey === key;
+
+  const createTAItem = (ta, onClickHandler) => {
+    const isSelected = selectedTA === ta;
   
     return (
       <TAItem
-        key={key}
+        key={ta.bilkentId}
         ta={ta}
         onClick={onClickHandler}
         isSelected={isSelected}
+        inInstructor={true} // Assuming this is for instructor view
       />
     );
   };
 
-
-
   const handleTAClick = (ta) => {
-    const key = `${ta.firstName}-${ta.lastName}-${ta.email}`;
-    setSelectedTA(key);
+    setSelectedTA(ta);
   };
+
+  useEffect(() => {
+    fetchAllTAs();
+  }, []);
 
   return (
     <div className="tas-page">
@@ -82,15 +100,18 @@ const TAsPage = () => {
               <span>Name</span>
               <span>Email</span>
               <span>Department</span>
+              <span>Bilkent ID</span>
             </div>
   
             <div className="assigned-tas">
-              {createTAItem("Ahmet", "Yılmaz", "ahmet.yilmaz@example.com", handleTAClick, selectedTA)}
-              {createTAItem("Merve", "Kara", "merve.kara@example.com", handleTAClick, selectedTA)}
-              {createTAItem("John", "Doe", "john.doe@example.com", handleTAClick, selectedTA)}
+              {allTas.map((ta) => (
+                <div key={ta.bilkentId} className="ta-item-container">
+                  {createTAItem(ta, () => handleTAClick(ta))}
+                </div>
+              ))}
             </div>
   
-            <button className="insTA-bottom-btn" onClick={() => handleViewProfile(2)}>
+            <button className="insTA-bottom-btn" onClick={() => handleViewProfile(selectedTA.userId)}>
               View Profile
             </button>
           </div>
@@ -127,11 +148,11 @@ const TAsPage = () => {
       )}
   
       {activeTab === "profile" && (
-        <div style={{ marginTop: "30px" }}>
+        <div>
+          <ViewTAProfile taId={activeTAId} />
           <button className="insTA-bottom-btn" onClick={handleBackToList}>
             ← Back to TA List
           </button>
-          <ViewTAProfile taId={activeTAId} />
         </div>
       )}
     </div>

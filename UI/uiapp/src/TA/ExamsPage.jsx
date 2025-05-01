@@ -34,10 +34,6 @@ const ExamsPage = () => {
 
   const handleTAClick = (ta) => {
     setSelectedTA(ta);
-    console.log(selectedTA);
-    console.log(swapRequestRef.current.value);
-    console.log(lastSelectedTask);
-
   };
 
   const handleRequestSwap = async () => {
@@ -73,6 +69,10 @@ const ExamsPage = () => {
     fetchAvailableTAs(); 
   }, [lastSelectedTask]);
 
+  useEffect(() => {
+
+  }, [selectedTA]);
+
   
   const fetchTasProctorings = async () => {
       try {
@@ -85,6 +85,9 @@ const ExamsPage = () => {
   };
   const fetchAvailableTAs = async () => {
     try {
+      if (!lastSelectedTask.id) {
+        return; // Avoid calling backend with invalid ID
+      }
       const response = await axios.get(`http://localhost:8080/swapRequest/getAvailableTAProfilesForClassProctoring?classProctoringId=${lastSelectedTask.id}&taId=3`);
       setAvailableTAs(response.data);
       console.log(avaliableTAs);

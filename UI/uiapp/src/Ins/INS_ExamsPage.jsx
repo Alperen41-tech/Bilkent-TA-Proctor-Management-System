@@ -127,12 +127,7 @@ const INS_ExamsPage = () => {
             >
               {autoAssign ? "✔ Automatic Assigning" : "Automatic Assigning"}
             </button>
-            <button
-              className={unpaid ? "active" : ""}
-              onClick={() => setUnpaid(!unpaid)}
-            >
-              {unpaid ? "✔ Unpaid Proctoring" : "Unpaid Proctoring"}
-            </button>
+
           </div>
         </div>
 

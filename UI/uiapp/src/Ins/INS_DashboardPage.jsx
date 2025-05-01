@@ -2,22 +2,26 @@ import React, { useState, useEffect, useRef } from "react";
 import NavbarINS from "./NavbarINS";
 import "./INS_DashboardPage.css";
 import PendingRequestItem from "../PendingRequestItem";
-import INS_TAWorkloadRequestItem from "./INS_TAWorkloadRequestItem";
+import ReceivedRequestItem from "../ReceivedRequestItem";
 import WorkloadEntryItem from "../WorkloadEntryItem";
+import NotificationItem from "../NotificationItem";
 import axios from "axios";
-
-
 
 const INS_DashboardPage = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [taskTypes, setTaskTypes] = useState([]);
   const [showRespondedWorkloadDetails, setShowRespondedWorkloadDetails] = useState(false);
-  const [taWorkloadRequests, setTaWorkloadRequests] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [receivedRequests, setReceivedRequests] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
 
+
+// Refs for form inputs
   const newTaskTypeNameRef = useRef();
   const newTaskLimitRef = useRef();
   const selectedForDeleteTaskType = useRef();
+//---------------------------------------------
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -28,7 +32,7 @@ const INS_DashboardPage = () => {
   const createPendingRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <PendingRequestItem {...request} />
+        <PendingRequestItem {...request} onCancel={() => console.log("canceled")} isSelected={selectedRequest === request}/>
       </div>
     );
   };
@@ -36,7 +40,7 @@ const INS_DashboardPage = () => {
   const createReceivedRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <INS_TAWorkloadRequestItem {...request} onAccept={() => postRespondRequest(request.requestId, true)} onReject={() => postRespondRequest(request.requestId, false)} />
+        <ReceivedRequestItem {...request} onAccept={()=>handleRequestResponse(request.requestId, true)} onReject={()=>handleRequestResponse(request.requestId, false)} isSelected={selectedRequest === request}/>
       </div>
     );
   };
@@ -45,18 +49,54 @@ const INS_DashboardPage = () => {
     return <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status} />;
   }
 
-  const fetchTAWorkloadRequests = async () => {
+  const fetchNotifications = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/taWorkloadRequest/getByInstructor?instructorId=4");
+      const response = await axios.get("http://localhost:8080/notification/get?id=4");
+      setNotifications(response.data);
+      console.log(notifications);
+    } catch (error) {
+      console.error("Error fetching task types:", error);
+    }
+  };
+
+  const fetchReceivedRequests = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/request/getByReceiverId?receiverId=3"); // Adjust the URL as needed
+      setReceivedRequests(response.data);
+      console.log(receivedRequests);
+    } catch (error) {
+      console.error("Error fetching received requests:", error);
+    }
+  };
+
+  const fetchPendingRequests = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/request/getBySenderId?senderId=3"); // Adjust the URL as needed
+      setPendingRequests(response.data);
+      console.log(receivedRequests);
+    } catch (error) {
+      console.error("Error fetching pending requests:", error);
+    }
+  };
+
+  const handleRequestResponse = async (requestId, answer) => {
+    try {
+      const response = await axios.put(`http://localhost:8080/request/respond`,null, {
+        params: {
+          id: requestId,
+          response: answer,
+        },
+      }
+      );
       if (response.data) {
-        console.log("Fetched TA Workload Requests:", response.data);
-        setTaWorkloadRequests(response.data);
+        alert("Request accepted successfully.");
+        fetchReceivedRequests(); // Refresh the received requests after accepting
       } else {
-        alert("Could not fetch TA Workload Requests. Try again.");
+        alert("Failed to accept the request. Please try again.");
       }
     } catch (error) {
-      console.error("There was an error with fetching TA Workload Requests:", error);
-      alert("An error occurred. Please try again.");
+      console.error("Error accepting request:", error);
+      alert("An error occurred while accepting the request. Please try again.");
     }
   };
 
@@ -122,58 +162,11 @@ const INS_DashboardPage = () => {
     }
   };
 
-  const postRespondRequest = async (requestId, status) => {
-    try {
-      const response = await axios.post("http://localhost:8080/request/respond", null,{
-        params: {
-          id: requestId,
-          response: status,
-        },
-      });
-      if (response.data) {
-        console.log("Responded to request successfully:", response.data);
-        alert("Request responded successfully!");
-        fetchTAWorkloadRequests();
-      } else {
-        alert("Could not respond to the request. Try again.");
-      }
-    } catch (error) {
-      console.error("There was an error with responding to the request:", error);
-      alert("An error occurred. Please try again.");
-    }
-  };
-
-  // örnek datalar pending req
-  const pendingRequests = [
-    {
-      date: { month: "Feb", day: "10", weekday: "Fri" },
-      time: { start: "8:00AM", end: "10:30AM" },
-      role: "Paid Proctoring Request",
-      duration: 1.5,
-      name: "Ali Kılıç",
-      email: "ali.kilic@ug.bilkent.edu.tr",
-      status: "Pending Dean's Office’s answer",
-      onCancelHandler: () => console.log("Ali's request canceled"),
-      onAcceptHandler: () => console.log("Ali's request accepted"),
-      onRejectHandler: () => console.log("Ali's request rejected"),
-    },
-    {
-      date: { month: "May", day: "3", weekday: "Wed" },
-      time: { start: "07:00PM", end: "09:00PM" },
-      role: "Paid Proctoring Request",
-      duration: 2,
-      name: "Ayşe Yılmaz",
-      email: "ayse.yilmaz@ug.bilkent.edu.tr",
-      status: "Pending Dean's Office’s answer",
-      onCancelHandler: () => console.log("Ayşe's request canceled"),
-      onAcceptHandler: () => console.log("Ayşe's request accepted"),
-      onRejectHandler: () => console.log("Ayşe's request rejected"),
-    },
-  ];
-
   useEffect(() => {
     fetchTaskTypes();
-    fetchTAWorkloadRequests();
+    fetchReceivedRequests();
+    fetchPendingRequests();
+    fetchNotifications();
   }, []);
 
   return (
@@ -200,23 +193,24 @@ const INS_DashboardPage = () => {
 
               {activeTab === "received" && (
                 <div>
-                  {taWorkloadRequests.filter((enr, index) => {return enr.status === null}).map((req, index) => createReceivedRequest(req, index))}
+                  {receivedRequests.filter((enr, index) => {return enr.status === null}).map((req, index) => createReceivedRequest(req, index))}
                 </div>
               )}
 
 
 
               {activeTab === "tasks" && (
-                <div onClick={() => setShowRespondedWorkloadDetails(true)}>{taWorkloadRequests.filter((rq,index) =>{
-                  return rq.status === "accepted" || rq.status === "rejected";
+                <div onClick={() => setShowRespondedWorkloadDetails(true)}>{receivedRequests.filter((rq,index) =>{
+                  if (rq.requestType !== "TAWorkloadRequest") return false;                  
+                  return rq.status === "APPROVED" || rq.status === "REJECTED";
                 }).map((ent, idx) =>
                   createWorkloadEntry(
                     ent.courseCode,
                     ent.taskTypeName,
-                    ent.sentDate,
+                    ent.sentDateTime,
                     ent.timeSpent,
                     ent.description,
-                    ent.status // Assuming all entries are accepted for simplicity
+                    ent.status 
                   ) 
                 )}
                 </div>
@@ -231,18 +225,40 @@ const INS_DashboardPage = () => {
               <div className="details-panel">
                 <h3>Details</h3>
                 {selectedRequest ? (
-  <div>
-    <p><strong>Course Code:</strong> {selectedRequest.courseCode}</p>
-    <p><strong>Name:</strong> {selectedRequest.taskTypeName}</p>
-    <p><strong>Email:</strong> {selectedRequest.taMail}</p>
-    <p><strong>Date:</strong> {selectedRequest.sentDate.split("T")[0] + "," + selectedRequest.sentDate.split("T")[1]}</p>
-    <p><strong>Time Spent:</strong> {Math.floor(parseInt(selectedRequest.timeSpent, 10) / 60)} Hours {parseInt(selectedRequest.timeSpent,10)%60} Minutes</p>
-    <p><strong>Comment:</strong> {selectedRequest.description}</p>
-    <p><strong>Status:</strong>Waiting for response</p>
-  </div>
-) : (
-  <p className="placeholder">[ Click a request to see its details ]</p>
-)}
+                <div>
+                  <p><strong>Name:</strong> {selectedRequest.senderName || "—"}</p>
+                  <p><strong>Email:</strong> {selectedRequest.senderEmail || "—"}</p>
+
+                  {selectedRequest.sentDateTime && (() => {
+                    const [ date, time ] = selectedRequest.sentDateTime.split("T");
+                    return (
+                      <>
+                        <p><strong>Sent Date:</strong> {date}</p>
+                        <p><strong>Sent Time:</strong> {time}</p>
+                      </>
+                    );
+                  })()}
+
+                  {selectedRequest.requestType === 'AuthStaffProctoringRequest' ||
+                  selectedRequest.requestType === 'TASwapRequest' ? (
+                    <>
+                      <p><strong>Event:</strong> {selectedRequest.classProctoringEventName}</p>
+                      <p><strong>Event Start Date:</strong> {selectedRequest.classProctoringStartDate ? selectedRequest.classProctoringStartDate.split("T")[0] : "—"}</p>
+                      <p><strong>Event End Date:</strong> {selectedRequest.classProctoringEndDate ? selectedRequest.classProctoringEndDate.split("T")[0] : "—"}</p>
+                    </>
+                  ) : null}
+
+                  {selectedRequest.requestType === 'TAWorkloadRequest' ? (
+                    <p><strong>Task:</strong> {selectedRequest.taskTypeName}</p>
+                  ) : null}
+
+                  <p><strong>Comment:</strong> {selectedRequest.description || "—"}</p>
+                  <p><strong>Status:</strong> {selectedRequest.status || "—"}</p>
+                </div>
+                  ) : (
+                    <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
+                  )}
+
 
               </div>
             ) : activeTab === "tasks" ? (
@@ -281,7 +297,16 @@ const INS_DashboardPage = () => {
         <div className="dashboard-right">
           <div className="notifications">
             <h3>Notifications</h3>
-            <div className="placeholder">[ Pull real-time notifications from DB ]</div>
+            {notifications.map((notification, index) => (
+              <div key={index} className="ta-dashboard-notification-item">
+                <NotificationItem
+                  requestType={notification.requestType}
+                  message={notification.message}
+                  date={notification.date}
+                  notificationType={notification.notificationType}
+                />
+              </div>
+            ))}
           </div>
 
           <div className="stats-box">
@@ -292,22 +317,22 @@ const INS_DashboardPage = () => {
           </div>
         </div>
       </div>
-                    {showRespondedWorkloadDetails && (
-                    <div className="modal-overlay">
-                      <div className="modal">
-                        <h3>Workload Request Details</h3>
-                        <label>Old Password</label>
-                        <input type="password" placeholder="Enter your old password" />
-                        <label>New Password</label>
-                        <input type="password" placeholder="At least 8 characters long" />
-                        <label>Confirm New Password</label>
-                        <input type="password" placeholder="Confirm new password" />
-                        <div className="modal-buttons">
-                          <button className="cancel-button" onClick={() => setShowRespondedWorkloadDetails(false)}>Return</button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+      {showRespondedWorkloadDetails && (
+      <div className="modal-overlay">
+        <div className="modal">
+          <h3>Workload Request Details</h3>
+          <label>Old Password</label>
+          <input type="password" placeholder="Enter your old password" />
+          <label>New Password</label>
+          <input type="password" placeholder="At least 8 characters long" />
+          <label>Confirm New Password</label>
+          <input type="password" placeholder="Confirm new password" />
+          <div className="modal-buttons">
+            <button className="cancel-button" onClick={() => setShowRespondedWorkloadDetails(false)}>Return</button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 };
