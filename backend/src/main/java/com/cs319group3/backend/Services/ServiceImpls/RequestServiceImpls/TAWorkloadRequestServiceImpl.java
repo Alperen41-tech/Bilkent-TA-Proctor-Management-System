@@ -1,8 +1,8 @@
-package com.cs319group3.backend.Services.ServiceImpls;
+package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
-import com.cs319group3.backend.Entities.Notification;
+import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
 import com.cs319group3.backend.Entities.RequestEntities.TAWorkloadRequest;
 import com.cs319group3.backend.Entities.TaskType;
 import com.cs319group3.backend.Entities.UserEntities.TA;
@@ -14,10 +14,11 @@ import com.cs319group3.backend.Repositories.TaskTypeRepo;
 import com.cs319group3.backend.Services.NotificationService;
 import com.cs319group3.backend.Services.TAWorkloadRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,34 +47,16 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
 
     @Override
     public boolean createTAWorkloadRequest(RequestDTO dto, int taId) {
-        TAWorkloadRequest taWorkloadRequest = new TAWorkloadRequest();
-        Optional<TA> ta = taRepo.findById(taId);
-        if (ta.isEmpty()) {
+        try {
+            TAWorkloadRequest swapRequest = requestMapper.taWorkloadRequestToEntityMapper(dto);
+            taWorkloadRequestRepo.save(swapRequest);
+            notificationService.createNotification(swapRequest, NotificationType.REQUEST);
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace(); // for debugging, or better, log it properly
             return false;
         }
-        Optional<TaskType> taskType = taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(dto.getTaskTypeName(), ta.get().getAssignedCourse().getCourseId());
-        if (taskType.isEmpty()) {
-            return false;
-        }
-        taWorkloadRequest.setTaskType(taskType.get());
-        taWorkloadRequest.setCourse(taskType.get().getCourse());
-        taWorkloadRequest.setTimeSpent(dto.getTimeSpent());
-        taWorkloadRequest.setDescription(dto.getDescription());
-        taWorkloadRequest.setSenderUser(ta.get());
-        taWorkloadRequest.setSentDate(LocalDateTime.now());
-        taWorkloadRequest.setReceiverUser(ta.get().getAssignedCourse().getCoordinator());
-        taWorkloadRequestRepo.save(taWorkloadRequest);
-
-        Notification notification = new Notification();
-        notification.setRequest(taWorkloadRequest);
-        notification.setNotificationType(REQUEST);
-        notification.setRead(false);
-        notification.setReceiver(taWorkloadRequest.getReceiverUser());
-        notificationRepo.save(notification);
-
-        notificationService.createNotification(taWorkloadRequest, REQUEST);
-
-        return true;
     }
 
     @Override
