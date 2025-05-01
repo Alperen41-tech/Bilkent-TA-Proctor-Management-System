@@ -37,6 +37,7 @@ public class TAProfileMapper {
         // Fix here:
         if (ta.getAssignedCourse() != null) {
             dto.setCourseName(ta.getAssignedCourse().getCourseName());
+            dto.setCourseCode(ta.getAssignedCourse().getDepartmentCourseCode());
         } else {
             dto.setCourseName(null); // or "Not Assigned"
         }
