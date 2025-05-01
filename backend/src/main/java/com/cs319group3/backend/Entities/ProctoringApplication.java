@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -33,4 +35,6 @@ public class ProctoringApplication {
 
     @Column(name = "is_visible_for_tas")
     private boolean isVisibleForTAs;
+
+    private LocalDateTime finishDate;
 }
