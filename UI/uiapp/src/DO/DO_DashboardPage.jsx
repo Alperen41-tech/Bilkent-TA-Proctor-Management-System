@@ -1,66 +1,99 @@
 // DO_Dashboard.jsx  – Dean’s Office (final with Pending/Received components)
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import NavbarDO from "./NavbarDO";
 import PendingRequestItem from "../PendingRequestItem";
 import ReceivedRequestItem from "../ReceivedRequestItem";
 import "./DO_DashboardPage.css";
+import axios from "axios";
+import NotificationItem from "../NotificationItem";
+
 
 const DO_Dashboard = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
 
-  /* ─── Dummy data ─────────────────────────────── */
-  const pendingRequests = [
-    {
-      id: 1,
-      date: { month: "March", day: "23", weekday: "Fri" },
-      time: { start: "09:00", end: "10:30" },
-      role: "TA Allocation",
-      duration: 1.5,
-      name: "Dean 2",
-      email: "dean2@bilkent.edu.tr",
-      status: "Pending TA’s answer",
-      department: "Computer Engineering",
-      course: "CS 202",
-    },
-  ];
-  const receivedRequests = [
-    {
-      id: 2,
-      date: { month: "Apr", day: "5", weekday: "Wed" },
-      time: { start: "14:00", end: "16:00" },
-      role: "TA Allocation",
-      duration: 2,
-      name: "Dean 3",
-      email: "dean3@bilkent.edu.tr",
-      status: "Pending your answer",
-      department: "EEE",
-      course: "EE 200",
-    },
-  ];
 
-  const notifications = [
-    { id: 1, msg: "Dean 2 requested 2 TAs for paid proctoring.", time: "30 min" },
-    { id: 2, msg: "Dean 5 accepted your request of 5 TAs.", time: "10 h" },
-  ];
-  /* ─────────────────────────────────────────────── */
+
+
+    const [receivedRequests, setReceivedRequests] = useState([]);
+    const [pendingRequests, setPendingRequests] = useState([]);
+
+  
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setSelectedRequest(null);
   };
 
-  const renderPendingReq = (req, i) => (
-    <div key={i} onClick={() => setSelectedRequest(req)}>
-      <PendingRequestItem {...req} />
-    </div>
-  );
+  const createPendingRequest = (request, index) => {
+    return (
+      <div key={index} onClick={() => setSelectedRequest(request)}>
+        <PendingRequestItem {...request} onCancel={() => console.log("canceled")} isSelected={selectedRequest === request}/>
+      </div>
+    );
+  };
 
-  const renderReceivedReq = (req, i) => (
-    <div key={i} onClick={() => setSelectedRequest(req)}>
-      <ReceivedRequestItem {...req} />
-    </div>
-  );
+  const createReceivedRequest = (request, index) => {
+    return (
+      <div key={index} onClick={() => setSelectedRequest(request)}>
+        <ReceivedRequestItem {...request} onAccept={()=>handleRequestResponse(request.requestId, true)} onReject={()=>handleRequestResponse(request.requestId, false)} isSelected={selectedRequest === request}/>
+      </div>
+    );
+  };
+
+
+
+  const handleRequestResponse = async (requestId, answer) => {
+    try {
+      const response = await axios.put(`http://localhost:8080/request/respond`,null, {
+        params: {
+          id: requestId,
+          response: answer,
+        },
+      }
+      );
+      if (response.data) {
+        alert("Request accepted successfully.");
+        fetchReceivedRequests(); // Refresh the received requests after accepting
+      } else {
+        alert("Failed to accept the request. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error accepting request:", error);
+      alert("An error occurred while accepting the request. Please try again.");
+    }
+  };
+
+
+  const fetchReceivedRequests = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/request/getByReceiverId?receiverId=9"); // assuming reciever id is 9
+      setReceivedRequests(response.data);
+      console.log(receivedRequests);
+    } catch (error) {
+      console.error("Error fetching received requests:", error);
+    }
+  };
+
+  const fetchPendingRequests = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/request/getBySenderId?senderId=9"); // Adjust the URL as needed
+      setPendingRequests(response.data);
+      console.log(receivedRequests);
+    } catch (error) {
+      console.error("Error fetching pending requests:", error);
+    }
+  };
+
+    useEffect(() => {
+      fetchReceivedRequests();
+      fetchPendingRequests();
+    }, []);
+
+
+
+
+
 
   return (
     <div className="ta-dashboard-dashboard-page">
@@ -81,8 +114,17 @@ const DO_Dashboard = () => {
     </div>
 
     <div className="ta-dashboard-tab-content">
-      {activeTab === "pending" && pendingRequests.map(renderPendingReq)}
-      {activeTab === "received" && receivedRequests.map(renderReceivedReq)}
+    {activeTab === "pending" && (
+                <div>
+                  {pendingRequests.map((req, index) => createPendingRequest(req, index))}
+                  {console.log(pendingRequests)}
+                </div>
+              )}
+              {activeTab === "received" && (
+                <div>
+                  {receivedRequests.filter((request)=> request.status === null).map((req, index) => createReceivedRequest(req, index))}
+                </div>
+              )}
     </div>
   </div>
 
