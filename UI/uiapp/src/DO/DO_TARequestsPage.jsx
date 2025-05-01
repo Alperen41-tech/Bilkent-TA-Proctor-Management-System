@@ -10,28 +10,8 @@ const DO_TARequestsPage = () => {
 
   const [departments, setDepartments] = useState([]);
   const [taCounts, setTACounts] = useState({});
+  const [taRequests, setTARequests] = useState([]);
 
-
-  const taRequests = [
-    {
-      id: 1,
-      date: { month: "Mar", day: 23, weekday: "Fri" },
-      time: "09:00",
-      course: "CS 202",
-      faculty: "Engineering",
-      department: "Computer Engineering",
-      status: "TA Allocation to Departments",
-    },
-    {
-      id: 2,
-      date: { month: "Apr", day: 5, weekday: "Wed" },
-      time: "14:00",
-      course: "EE 200",
-      faculty: "Engineering",
-      department: "Electrical & Electronics Eng.",
-      status: "TA Allocation to Departments",
-    },
-  ];
 
   const selected = taRequests.find((r) => r.id === selectedRequestId);
 
@@ -39,14 +19,15 @@ const DO_TARequestsPage = () => {
 
   useEffect(() => {
     fetchDepartments();
+    fetchTARequests();
   }, []);
 
 
   const handleSendToDepartments = () => {
     console.log("Sending TA requirements:", taCounts);
-//////
+    //////
   };
-  
+
 
   const fetchDepartments = async () => {
     try {
@@ -66,6 +47,19 @@ const DO_TARequestsPage = () => {
     }
   };
 
+  const fetchTARequests = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/taFromDeanRequest/getApprovedInstructorAdditionalTARequests", {
+        params: { receiverId: 9 } // <-- Use real dean's user ID here
+      });
+      console.log("Fetched TA Requests: ", response.data);
+      setTARequests(response.data || []);
+    } catch (error) {
+      console.error("Error fetching TA requests:", error);
+    }
+  };
+
+
   return (
     <div className="do-TA-ta-page">
       <NavbarDO />
@@ -74,37 +68,49 @@ const DO_TARequestsPage = () => {
         {/* ---------- LEFT COLUMN ---------- */}
         <section className="do-TA-col do-left">
           {/* -- Request List -- */}
+          {/* -- Request List -- */}
           <div className="do-TA-card">
             <h3 className="do-TA-card-title">In-Progress TA Requests</h3>
             <div className="do-TA-list">
-              {taRequests.map((req) => (
-                <button
-                  key={req.id}
-                  type="button"
-                  className={`do-TA-list-item ${{ true: "do-selected" }[selectedRequestId === req.id] || ""}`}
-                  onClick={() => setSelectedRequestId(req.id)}
-                >
-                  <span className="do-TA-li-date">{`${req.date.month} ${req.date.day} (${req.date.weekday})`}</span>
-                  <span className="do-TA-li-time">{req.time}</span>
-                  <span className="do-TA-li-course">{req.course}</span>
-                  <span className="do-TA-li-status">{req.status}</span>
-                </button>
-              ))}
+              {taRequests.map((req) => {
+                const dateObj = new Date(req.date);
+                const month = dateObj.toLocaleString("default", { month: "short" });
+                const day = dateObj.getDate();
+                const weekday = dateObj.toLocaleString("default", { weekday: "short" });
+                const time = dateObj.toTimeString().slice(0, 5);
+
+                return (
+                  <button
+                    key={req.id}
+                    type="button"
+                    className={`do-TA-list-item ${selectedRequestId === req.id ? "do-selected" : ""}`}
+                    onClick={() => setSelectedRequestId(req.id)}
+                  >
+                    <span className="do-TA-li-date">{`${month} ${day} (${weekday})`}</span>
+                    <span className="do-TA-li-time">{time}</span>
+                    <span className="do-TA-li-course">{req.course}</span>
+                    <span className="do-TA-li-status">{req.status}</span>
+                  </button>
+                );
+              })}
+
             </div>
           </div>
+
 
           {/* -- Details -- */}
           <div className="do-TA-card">
             <h3 className="do-TA-card-title">Details</h3>
             {selected ? (
               <ul className="do-TA-details">
-                <li><strong>Date:</strong> {`${selected.date.weekday}, ${selected.date.month} ${selected.date.day}`}</li>
-                <li><strong>Time:</strong> {selected.time}</li>
+                <li><strong>Date:</strong> {new Date(selected.date).toLocaleDateString()}</li>
+                <li><strong>Time:</strong> {new Date(selected.date).toTimeString().slice(0, 5)}</li>
                 <li><strong>Course:</strong> {selected.course}</li>
                 <li><strong>Faculty:</strong> {selected.faculty}</li>
                 <li><strong>Department:</strong> {selected.department}</li>
                 <li><strong>Status:</strong> {selected.status}</li>
               </ul>
+
             ) : (
               <div className="do-TA-placeholder">Click a request to see its details</div>
             )}
@@ -130,9 +136,9 @@ const DO_TARequestsPage = () => {
                 </div>
               ))}
 
-<button className="do-TA-send-button" onClick={handleSendToDepartments}>
-    Send to Department Secretary
-  </button>
+              <button className="do-TA-send-button" onClick={handleSendToDepartments}>
+                Send to Department Secretary
+              </button>
 
 
             </div>
