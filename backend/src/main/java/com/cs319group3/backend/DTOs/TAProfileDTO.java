@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TAProfileDTO {
+    private int userId;
     private String name;
     private String surname;
     private String email;

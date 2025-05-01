@@ -24,6 +24,7 @@ public class TAProfileMapper {
     public static TAProfileDTO essentialMapper(TA ta) {
         TAProfileDTO dto = new TAProfileDTO();
 
+        dto.setUserId(ta.getUserId());
         dto.setRole("Teaching Assistant"); //Should be changed
         dto.setEmail(ta.getEmail());
         dto.setName(ta.getName());
