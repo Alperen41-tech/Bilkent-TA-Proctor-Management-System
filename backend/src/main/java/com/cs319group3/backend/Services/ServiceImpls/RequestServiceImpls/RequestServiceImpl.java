@@ -5,6 +5,7 @@ import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.*;
 import com.cs319group3.backend.Repositories.*;
+import com.cs319group3.backend.Services.NotificationService;
 import com.cs319group3.backend.Services.RequestService;
 import com.cs319group3.backend.Services.TASwapRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,9 @@ public class RequestServiceImpl implements RequestService {
     @Autowired
     private RequestMapper requestMapper;
 
+    @Autowired
+    private NotificationService notificationService;
+
 
     @Override
     public boolean respondToRequest(int requestId, boolean response) {
@@ -61,7 +65,6 @@ public class RequestServiceImpl implements RequestService {
             if (request instanceof TAWorkloadRequest) {
                 TAWorkloadRequest req = (TAWorkloadRequest) request;
 
-
             } else if (request instanceof TASwapRequest) {
                 if (response){
                     TASwapRequest req = (TASwapRequest) request;
@@ -69,7 +72,6 @@ public class RequestServiceImpl implements RequestService {
                 }
             } else if (request instanceof TALeaveRequest) {
                 TALeaveRequest req = (TALeaveRequest) request;
-
 
             } else if (request instanceof InstructorAdditionalTARequest) {
                 InstructorAdditionalTARequest req = (InstructorAdditionalTARequest) request;
@@ -86,20 +88,26 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-
-
         request.setApproved(response);
         request.setResponseDate(LocalDateTime.now());
         requestRepo.save(request);
 
-        Notification notification = new Notification();
-        notification.setRequest(request);
-        notification.setNotificationType(APPROVAL);
-        notification.setRead(false);
-        notification.setReceiver(request.getSenderUser());
-        notificationRepo.save(notification);
+        notificationService.createNotification(request, APPROVAL);
 
         return true;
+    }
+
+    @Override
+    public boolean deleteRequest(int requestId) {
+
+        Optional<Request> optionalRequest = requestRepo.findByRequestId(requestId);
+        if (optionalRequest.isPresent()) {
+            Request request = optionalRequest.get();
+            requestRepo.delete(request);
+            return true;
+        }
+
+        return false;
     }
 
     @Override

@@ -22,6 +22,12 @@ public class RequestController {
         return requestService.respondToRequest(requestId, response);
     }
 
+
+    @DeleteMapping("deleteRequest")
+    public boolean deleteRequest(@RequestParam("id") int requestId) {
+        return requestService.deleteRequest(requestId);
+    }
+
     @GetMapping("getByReceiverId")
     public List<RequestDTO> getRequestsByReceiverId(@RequestParam("receiverId") int receiverId) {
         return requestService.getRequestsByReceiverUser(receiverId);
