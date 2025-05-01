@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Entities.RequestEntities;
 
 
+import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.UserEntities.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -37,5 +39,8 @@ public class Request{
     @JoinColumn(name = "receiver_user_id")
     protected User receiverUser;
 
+
+    @OneToMany(mappedBy = "request", orphanRemoval = true)
+    private List<Notification> notifications;
 }
 

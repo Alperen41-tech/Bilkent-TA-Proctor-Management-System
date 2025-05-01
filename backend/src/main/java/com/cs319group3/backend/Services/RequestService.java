@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface RequestService {
     public boolean respondToRequest(int requestId, boolean response);
+    public boolean deleteRequest(int requestId);
     public List<RequestDTO> getRequestsByReceiverUser(int userId);
     public List<RequestDTO> getRequestsBySenderUser(int userId);
+
 }
