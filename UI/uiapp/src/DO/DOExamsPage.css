@@ -52,10 +52,13 @@
   
   /* Exams Table */
   .exams-table {
-    background-color: white;
-    border-radius: 10px;
-    padding: 20px;
+    max-height: 400px; /* Adjust height as needed */
+    overflow-y: auto;
+    padding-right: 8px; /* Optional: space for scrollbar */
+    border: 1px solid #ccc; /* Optional: for better visual separation */
   }
+  
+  
   
   .table-row {
     display: flex;

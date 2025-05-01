@@ -44,39 +44,36 @@ const DOExamsPage = () => {
 
   const createLogsDatabaseItems = () => {
     return examItems
-      .filter((item) => item.classProctoringTARelationDTO && item.classProctoringTARelationDTO.classProctoringDTO)
-      .map((item) => {
-        const key = `${item.classProctoringTARelationDTO.classProctoringDTO.courseName}-${item.classProctoringTARelationDTO.classProctoringDTO.startDate}`;
-        const isSelected = selectedExamKey === key;
-
-        return (
-          <AdminDatabaseItem
-            key={key}
-            type="exam"
-            data={{
-              //bura şimdilik böyle kalsın
-              id: item.classProctoringTARelationDTO.classProctoringDTO.id,
-              course: item.classProctoringTARelationDTO.classProctoringDTO.courseName,
-              date: item.classProctoringTARelationDTO.classProctoringDTO.startDate,
-              time: item.classProctoringTARelationDTO.classProctoringDTO.timeInterval,
-              location: item.classProctoringTARelationDTO.classProctoringDTO.classrooms,
-            }}
-            onDelete={(id) => console.log(`Deleted exam with ID: ${id}`)}
-            onSelect={() => {
-              setSelectedExamKey(key);
-              setSelectedExamItem(item);
-
-              setTaDepartmentFilter("");
-
-              const proctoringId = item?.classProctoringTARelationDTO?.classProctoringDTO?.id;
-              fetchTAs("", proctoringId);
-            }}
-
-            isSelected={isSelected}
-            inLog={true}
-          />
-        );
-      });
+    .filter((item) => item.classProctoringTARelationDTO?.classProctoringDTO || item.classProctoringDTO)
+    .map((item) => {
+      const proctoring = item.classProctoringTARelationDTO?.classProctoringDTO || item.classProctoringDTO;
+      const key = `${proctoring.courseName}-${proctoring.startDate}`;
+      const isSelected = selectedExamKey === key;
+  
+      return (
+        <AdminDatabaseItem
+          key={key}
+          type="exam"
+          data={{
+            id: proctoring.id,
+            course: proctoring.courseName,
+            date: proctoring.startDate,
+            time: proctoring.timeInterval,
+            location: proctoring.classrooms,
+          }}
+          onDelete={(id) => console.log(`Deleted exam with ID: ${id}`)}
+          onSelect={() => {
+            setSelectedExamKey(key);
+            setSelectedExamItem(item);
+            setTaDepartmentFilter("");
+            fetchTAs("", proctoring.id);
+          }}
+          isSelected={isSelected}
+          inLog={true}
+        />
+      );
+    });
+  
   };
 
 
