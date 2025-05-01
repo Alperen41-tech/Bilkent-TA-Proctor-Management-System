@@ -39,7 +39,7 @@ public class RequestMapper {
         requestDTO.setRequestType(request.getClass().getSimpleName());
         requestDTO.setSenderId(request.getSenderUser().getUserId());
         requestDTO.setReceiverId(request.getReceiverUser().getUserId());
-        requestDTO.setIsApproved(request.getIsApproved());
+        requestDTO.setIsApproved(request.isApproved());
         requestDTO.setSentDateTime(request.getSentDate());
 
 
@@ -51,7 +51,7 @@ public class RequestMapper {
         else{
             requestDTO.setResponseDateTime(ldt);
             String currStatus;
-            if (request.getIsApproved()) {
+            if (request.isApproved()) {
                 currStatus = "APPROVED";
             }
             else {
@@ -60,7 +60,7 @@ public class RequestMapper {
             requestDTO.setStatus(currStatus);
         }
 
-        requestDTO.setIsApproved(request.getIsApproved());
+        requestDTO.setIsApproved(request.isApproved());
         requestDTO.setDescription(request.getDescription());
 
         requestDTO.setSenderName(request.getSenderUser().getFullName() );
@@ -75,9 +75,8 @@ public class RequestMapper {
 
     public void essentialToEntityMapper(Request finalRequest, RequestDTO dto) throws Exception{
 
-        finalRequest.setSentDate(dto.getSentDateTime());
-        finalRequest.setResponseDate(dto.getResponseDateTime());
-        finalRequest.setIsApproved(dto.getIsApproved());
+        finalRequest.setSentDate(LocalDateTime.now());
+        finalRequest.setApproved(dto.getIsApproved());
         finalRequest.setDescription(dto.getDescription());
 
         Optional<User> senderUser = userRepo.findById(dto.getSenderId());
@@ -110,8 +109,6 @@ public class RequestMapper {
         }
 
         taSwapRequest.setClassProctoring(classProctoring.get());
-        taSwapRequest.setSentDate(LocalDateTime.now());
-
         return taSwapRequest;
     }
 

@@ -87,7 +87,7 @@ public class RequestServiceImpl implements RequestService {
 
 
 
-        request.setIsApproved(response);
+        request.setApproved(response);
         request.setResponseDate(LocalDateTime.now());
         requestRepo.save(request);
 

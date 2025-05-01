@@ -86,7 +86,7 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
         List<TAWorkloadRequest> requests = taWorkloadRequestRepo.findBySenderUser_UserId(taId);
         int sum = 0;
         for(TAWorkloadRequest request : requests) {
-            if (request != null && request.getIsApproved()) {
+            if (request != null && request.isApproved()) {
                 sum += request.getTimeSpent();
             }
         }

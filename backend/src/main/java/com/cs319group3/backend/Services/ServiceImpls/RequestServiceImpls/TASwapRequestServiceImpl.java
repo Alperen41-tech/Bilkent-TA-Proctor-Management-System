@@ -83,7 +83,7 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
             throw new Exception("request with id" + requestId + " could not be found");
         }
 
-        if (swapRequest.get().getIsApproved()){
+        if (swapRequest.get().isApproved()){
             throw new Exception("request with id" + requestId + " is already approved");
         }
 
@@ -91,7 +91,7 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
 
         try {
             setClassProctorings(swapRequestReceived);
-            swapRequestReceived.setIsApproved(true);
+            swapRequestReceived.setApproved(true);
             swapRequestReceived.setResponseDate(LocalDateTime.now());
             taswapRequestRepo.save(swapRequestReceived);
             return new ResponseEntity<>(true, HttpStatus.OK);

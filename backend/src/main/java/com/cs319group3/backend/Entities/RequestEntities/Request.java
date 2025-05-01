@@ -24,7 +24,7 @@ public class Request{
     private int requestId;
 
     private LocalDateTime sentDate;
-    private Boolean isApproved; //null if not responded yet
+    private boolean isApproved;
     private LocalDateTime responseDate;
     private String description;
 
