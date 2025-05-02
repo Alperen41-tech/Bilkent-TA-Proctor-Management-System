@@ -16,5 +16,10 @@ public class InstructorProfileDTO {
     String bilkentId;
     String role;
     String departmentName;
+    boolean active;
     List<String> courses;
+    String phoneNumber;
+
+    //For creating instructor
+    int departmentId;
 }

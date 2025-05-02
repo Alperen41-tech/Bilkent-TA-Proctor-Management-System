@@ -20,17 +20,36 @@ public class InstructorProfileMapper {
         instructorProfileDTO.setBilkentId(instructor.getBilkentId());
         instructorProfileDTO.setDepartmentName(instructor.getDepartment().getDepartmentName());
 
+        List<String> courseNames = getStrings(instructor);
+
+        instructorProfileDTO.setCourses(courseNames);
+        return instructorProfileDTO;
+    }
+
+    private static List<String> getStrings(Instructor instructor) {
         List<String> courseNames = new ArrayList<>();
         Set<String> seen = new HashSet<>();
 
         for (CourseInstructorRelation relation : instructor.getCourseInstructorRelations()) {
             String courseName = relation.getCourse().getCourse().getCourseName();
+            courseName = courseName + " - " + relation.getCourse().getCourse().getDepartmentCourseCode();
             if (seen.add(courseName)) { // add returns false if courseName is already in the set
                 courseNames.add(courseName);
             }
         }
+        return courseNames;
+    }
 
-        instructorProfileDTO.setCourses(courseNames);
-        return instructorProfileDTO;
+    public static Instructor toEntity(InstructorProfileDTO instructorDTO) {
+        Instructor instructor = new Instructor();
+        instructor.setName(instructorDTO.getName());
+        instructor.setSurname(instructorDTO.getSurname());
+        instructor.setEmail(instructorDTO.getEmail());
+        instructor.setBilkentId(instructorDTO.getBilkentId());
+        instructor.setPhoneNumber(instructorDTO.getPhoneNumber());
+        System.out.println("La bu ne olum: " + instructorDTO.isActive());
+        instructor.setActive(instructorDTO.isActive());
+        instructor.setPhoneNumber(instructorDTO.getPhoneNumber());
+        return instructor;
     }
 }
