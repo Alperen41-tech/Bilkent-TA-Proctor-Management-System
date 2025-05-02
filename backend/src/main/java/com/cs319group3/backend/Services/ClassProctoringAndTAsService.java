@@ -11,5 +11,8 @@ public interface ClassProctoringAndTAsService {
     public List<ClassProctoringAndTAsDTO> getFacultyClassProctorings(int userId);
     public List<ClassProctoringAndTAsDTO> getDepartmentClassProctoringsById(int departmentId);
     public List<ClassProctoringAndTAsDTO> getClassProctoringsOfCreator(int creatorId);
+
+    List<ClassProctoringAndTAsDTO> getClassProctoringsOfInstructor(int instructorId);
+
     public List<ClassProctoringAndTAsDTO> classProctoringToClassProctoringAndTAs(List<ClassProctoring> proctorings);
 }
