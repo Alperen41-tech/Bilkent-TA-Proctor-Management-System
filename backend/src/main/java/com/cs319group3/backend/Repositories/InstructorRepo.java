@@ -17,6 +17,6 @@ SELECT instructor.department.departmentId
 FROM Instructor instructor
 WHERE instructor.userId=:instructorId
 """)
-    int getDepartmentId(int instructorId);
+    Integer getDepartmentId(int instructorId);
 
 }

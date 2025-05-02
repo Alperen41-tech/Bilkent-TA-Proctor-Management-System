@@ -221,7 +221,10 @@ public class RequestMapper {
         requestDTO.setIsComplete(request.isSentToSecretary());
 
         int senderUserId = request.getSenderUser().getUserId();
-        requestDTO.setDepartmentId(instructorRepo.getDepartmentId(senderUserId));
+        Integer departmentId = instructorRepo.getDepartmentId(senderUserId);
+        if (departmentId != null) {
+            requestDTO.setDepartmentId(departmentId);
+        }
 
         return requestDTO;
     }
