@@ -69,7 +69,7 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
                     // Two intervals overlap if:
                     // 1. Start of one is before the end of the other AND
                     // 2. End of one is after the start of the other
-                    return filterStartTime.isBefore(intervalEndTime) ||
+                    return filterStartTime.isBefore(intervalEndTime) &&
                             filterEndTime.isAfter(intervalStartTime);
                 })
                 .collect(Collectors.toList());
