@@ -29,5 +29,6 @@ public class ProctoringApplicationTARelation {
     @JoinColumn(name = "proctoring_application_id")
     private ProctoringApplication proctoringApplication;
 
+    private boolean isApprovedBySecretary;
 
 }
