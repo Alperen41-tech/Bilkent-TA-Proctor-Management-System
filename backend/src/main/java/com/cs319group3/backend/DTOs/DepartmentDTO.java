@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DepartmentDTO {
+    private int departmentId;
     private String departmentCode;
     private String departmentName;
 }
