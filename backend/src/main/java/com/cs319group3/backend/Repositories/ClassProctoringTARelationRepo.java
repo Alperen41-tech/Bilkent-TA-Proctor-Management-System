@@ -22,6 +22,7 @@ public interface ClassProctoringTARelationRepo extends JpaRepository<ClassProcto
     List<ClassProctoringTARelation> findByClassProctoring_Course_Department_DepartmentCode(String departmentCode);
     List<ClassProctoringTARelation> findByClassProctoring_ClassProctoringId(Integer id);
     List<ClassProctoringTARelation> findByClassProctoring_Course(Course classProctoringCourse);
+    List<ClassProctoringTARelation> findByClassProctoring_Course_Department_DepartmentIdAndTA_UserId(int departmentId, Integer taUserId);
 
     @Query("""
     SELECT COUNT(ctr)

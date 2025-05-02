@@ -12,8 +12,10 @@ public interface ClassProctoringTARelationService {
 
 
 
-    public List<ClassProctoringTARelationDTO> getTAsClassProctoringDTOs(int id);
+    public List<ClassProctoringTARelationDTO> getTAsClassProctoringDTOs(int id) throws Exception;
     public boolean updateClassProctoringDTO(ClassProctoringTARelationDTO dto, int userId);
     public boolean removeTAFromClassProctoring(int taId, int classProctoringId);
     public boolean createClassProctoringTARelation(int taId, int classProctoringId);
+    public List<ClassProctoringTARelationDTO> getTAsClassProctoringsByDepartment(int taId) throws Exception;
+
 }

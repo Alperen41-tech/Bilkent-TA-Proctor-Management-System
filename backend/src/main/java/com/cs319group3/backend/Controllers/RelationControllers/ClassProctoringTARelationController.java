@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -27,8 +28,25 @@ public class ClassProctoringTARelationController {
 
     @GetMapping("getTAsClassProctorings")
     public List<ClassProctoringTARelationDTO> getTAsClassProctorings(@RequestParam("id") int id){
-        System.out.println("request received");
-        return classProctoringTARelationService.getTAsClassProctoringDTOs(id);
+        try {
+            return classProctoringTARelationService.getTAsClassProctoringDTOs(id);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    @GetMapping("getTAsClassProctoringsByDepartment")
+    public List<ClassProctoringTARelationDTO> getTAsClassProctoringsByDepartment(@RequestParam("id") int id){
+        try{
+            return classProctoringTARelationService.getTAsClassProctoringsByDepartment(id);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @PutMapping("updateTAsClassProctorings")

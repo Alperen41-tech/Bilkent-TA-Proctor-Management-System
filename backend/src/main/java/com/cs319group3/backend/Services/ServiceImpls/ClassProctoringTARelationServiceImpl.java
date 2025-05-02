@@ -30,18 +30,39 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
     @Autowired
     private ClassProctoringTARelationRepo classProctoringTARelationRepo;
 
+    @Autowired
+    private TARepo taRepo;
+
+    @Autowired
+    private ClassProctoringRepo classProctoringRepo;
+
+
     @Override
-    public List<ClassProctoringTARelationDTO> getTAsClassProctoringDTOs(int id) {
-        List<ClassProctoringTARelation> relations = classProctoringTARelationRepo.findById_TAId(id);
+    public List<ClassProctoringTARelationDTO> getTAsClassProctoringDTOs(int taId) throws Exception{
 
-        List<ClassProctoringTARelationDTO> proctorings = new ArrayList<>();
-
-        for (ClassProctoringTARelation relation : relations) {
-
-            ClassProctoringTARelationDTO cdto = ClassProctoringTARelationMapper.essentialMapper(relation);
-            proctorings.add(cdto);
+        Optional<TA> ta = taRepo.findByUserId(taId);
+        if (!ta.isPresent()) {
+            throw new Exception("No such ta");
         }
-        return proctorings;
+
+        List<ClassProctoringTARelation> relations = classProctoringTARelationRepo.findById_TAId(taId);
+        return ClassProctoringTARelationMapper.essentialMapper(relations);
+    }
+
+    @Override
+    public List<ClassProctoringTARelationDTO> getTAsClassProctoringsByDepartment(int taId) throws Exception{
+
+        Optional<TA> ta = taRepo.findByUserId(taId);
+        if (!ta.isPresent()) {
+            throw new Exception("No such ta");
+        }
+
+        List<ClassProctoringTARelation> relations = classProctoringTARelationRepo
+                .findByClassProctoring_Course_Department_DepartmentIdAndTA_UserId(ta.get().getUserId(), taId);
+
+        return ClassProctoringTARelationMapper.essentialMapper(relations);
+
+
     }
 
     @Override
@@ -76,12 +97,6 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
         }
         return false;
     }
-
-    @Autowired
-    private ClassProctoringRepo classProctoringRepo;
-
-    @Autowired
-    private TARepo taRepo;
 
     @Override
     public boolean createClassProctoringTARelation(int taId, int classProctoringId) {
@@ -122,4 +137,6 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
 
         return true;
     }
+
+
 }

@@ -3,6 +3,10 @@ package com.cs319group3.backend.DTOMappers;
 import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ClassProctoringTARelationMapper {
 
 
@@ -20,6 +24,16 @@ public class ClassProctoringTARelationMapper {
         classProctoringTARelationDTO.setIsOpenToSwap(classProctoringTARelation.isOpenToSwap());
 
         return classProctoringTARelationDTO;
+    }
+
+    public static List<ClassProctoringTARelationDTO> essentialMapper(List<ClassProctoringTARelation> classProctoringTARelations) {
+
+        List<ClassProctoringTARelationDTO> dtos = new ArrayList<>();
+
+        for (ClassProctoringTARelation classProctoringTARelation : classProctoringTARelations) {
+            dtos.add(essentialMapper(classProctoringTARelation));
+        }
+        return dtos;
     }
 
 
