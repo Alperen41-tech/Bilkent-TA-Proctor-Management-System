@@ -79,4 +79,9 @@ public class ClassProctoringTARelationController {
         }
     }
 
+    @GetMapping
+    public List<ClassProctoringAndTAsDTO> getClassProctoringOfInstructor(@RequestParam int instructorId){
+        return classProctoringAndTAs.getClassProctoringsOfInstructor(instructorId);
+    }
+
 }

@@ -8,15 +8,12 @@ import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.Course;
-import com.cs319group3.backend.Entities.OfferedCourse;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RelationEntities.CourseInstructorRelation;
-import com.cs319group3.backend.Entities.UserEntities.DeansOffice;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.ClassProctoringAndTAsService;
-import com.cs319group3.backend.Services.ClassProctoringService;
 import com.cs319group3.backend.Services.TAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -179,6 +176,59 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
         List<ClassProctoring> proctorings = classProctoringRepo.findByCreatorUserId(creatorId);
 
         return classProctoringToClassProctoringAndTAs(proctorings);
+    }
+
+    @Override
+    public List<ClassProctoringAndTAsDTO> getClassProctoringsOfInstructor(int instructorId){
+        Optional<Instructor> optionalInstructor = instructorRepo.findByUserId(instructorId);
+        if (optionalInstructor.isEmpty()) {
+            throw new RuntimeException("Instructor not found");
+        }
+        List<CourseInstructorRelation> offeredCourses = optionalInstructor.get().getCourseInstructorRelations();
+        List<Course> courses = new ArrayList<>();
+        Set<Course> processedCourses = new HashSet<>();
+        for (CourseInstructorRelation relation : offeredCourses) {
+            if (!processedCourses.contains(relation.getCourse().getCourse())) {
+                courses.add(relation.getCourse().getCourse());
+                processedCourses.add(relation.getCourse().getCourse());
+            }
+        }
+
+        List<ClassProctoringTARelation> cprList = new ArrayList<>();
+
+        for (Course course : courses) {
+            cprList.addAll(classProctoringTARelationRepo.findByClassProctoring_Course(course));
+        }
+
+        Map<Integer, List<ClassProctoringTARelation>> groupedByProctoring = new HashMap<>();
+        for (ClassProctoringTARelation cprInstance : cprList) {
+            int classProctoringId = cprInstance.getClassProctoring().getClassProctoringId();
+            groupedByProctoring.computeIfAbsent(classProctoringId, k -> new ArrayList<>()).add(cprInstance);
+        }
+
+        List<ClassProctoringAndTAsDTO> results = new ArrayList<>();
+
+        for (Map.Entry<Integer, List<ClassProctoringTARelation>> entry : groupedByProctoring.entrySet()) {
+            Integer classProctoringId = entry.getKey();
+            List<ClassProctoringTARelation> relations = entry.getValue();
+
+            // One DTO per proctoring
+            ClassProctoringAndTAsDTO dto = new ClassProctoringAndTAsDTO();
+
+            // Set the common classProctoringTARelation (use the first one)
+            dto.setClassProctoringTARelationDTO(ClassProctoringTARelationMapper.essentialMapper(relations.get(0)));
+
+            // Set TA list
+            List<TAProfileDTO> tas = relations.stream()
+                    .map(cpr -> TAProfileMapper.essentialMapper(cpr.getTA()))
+                    .collect(Collectors.toList());
+
+            dto.setTaProfileDTOList(tas);
+
+            results.add(dto);
+        }
+
+        return results;
     }
 
     @Override
