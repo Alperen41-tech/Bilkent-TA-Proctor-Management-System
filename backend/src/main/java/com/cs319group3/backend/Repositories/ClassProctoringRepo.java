@@ -54,7 +54,7 @@ public interface ClassProctoringRepo extends JpaRepository<ClassProctoring, Inte
     @Query("""
     SELECT rel.classProctoring
     FROM ClassProctoringTARelation rel
-    WHERE rel.ta.userId = :taId
+    WHERE rel.TA.userId = :taId
 """)
     List<ClassProctoring> findProctoringsByTAId(@Param("taId") int taId);
 }
