@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Controllers;
 
 import com.cs319group3.backend.Components.JwtUtil;
+import com.cs319group3.backend.DTOs.ChangePasswordDTO;
 import com.cs319group3.backend.DTOs.LoginDTO;
 import com.cs319group3.backend.Entities.Login;
 import com.cs319group3.backend.Entities.UserEntities.User;
@@ -40,8 +41,8 @@ public class AuthenticationController {
     private UserTypeRepo userTypeRepo;
 
     @PutMapping("changePassword")
-    public boolean changePassword(@RequestBody LoginDTO newLoginDTO) {
-        return authenticationService.changePassword(newLoginDTO);
+    public boolean changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
+        return authenticationService.changePassword(changePasswordDTO);
     }
 
     @PostMapping("/login")

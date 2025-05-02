@@ -15,7 +15,7 @@ public class BackendApplication {
 //		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 //
 //		// Your plain password
-//		String plainPassword = "passwordKey";
+//		String plainPassword = "password";
 //
 //		// Hash the password
 //		String hashedPassword = passwordEncoder.encode(plainPassword);

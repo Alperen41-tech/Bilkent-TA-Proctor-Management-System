@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
+import com.cs319group3.backend.DTOs.ChangePasswordDTO;
 import com.cs319group3.backend.DTOs.LoginDTO;
 import com.cs319group3.backend.Entities.Login;
 import com.cs319group3.backend.Repositories.LoginRepo;
@@ -22,15 +23,24 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     private LoginRepo loginRepo;
 
     @Override
-    public boolean changePassword(LoginDTO loginNewDTO) {
-        Optional<Login> login = loginRepo.findByUser_EmailAndUserType_UserTypeName(loginNewDTO.getEmail(), loginNewDTO.getUserTypeName());
+    public boolean changePassword(ChangePasswordDTO changePasswordDTO) {
+        Optional<Login> login = loginRepo.findByUser_EmailAndUserType_UserTypeName(changePasswordDTO.getEmail(), changePasswordDTO.getUserTypeName());
         if (!login.isPresent()) {
             return false;
         }
+
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        login.get().setPassword(encoder.encode(loginNewDTO.getPassword()));
-        loginRepo.save(login.get());
-        return true;
+        String oldPassword = encoder.encode(changePasswordDTO.getOldPassword());
+
+        if (encoder.matches(changePasswordDTO.getOldPassword(), login.get().getPassword())) {
+            // Password matches, update to new password
+            login.get().setPassword(encoder.encode(changePasswordDTO.getNewPassword()));
+            loginRepo.save(login.get());
+            return true;
+        } else {
+            System.out.println("Old password does not match");
+            return false;
+        }
     }
 
 
