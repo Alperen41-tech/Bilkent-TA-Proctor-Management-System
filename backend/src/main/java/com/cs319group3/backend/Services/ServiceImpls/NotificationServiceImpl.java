@@ -2,6 +2,7 @@ package com.cs319group3.backend.Services.ServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.NotificationMapper;
 import com.cs319group3.backend.DTOs.NotificationDTO;
+import com.cs319group3.backend.DTOs.ProctoringApplicationDTO;
 import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
 import com.cs319group3.backend.Entities.UserEntities.User;

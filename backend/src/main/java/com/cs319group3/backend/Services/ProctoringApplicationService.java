@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface ProctoringApplicationService {
     public List<ProctoringApplicationDTO> getProctoringApplications(int deansOfficeId);
-    public boolean createProctoringApplication(int classProctoringId, ProctoringApplicationDTO dto);
-    public boolean createProctoringApplications(int classProctoringId, List<ProctoringApplicationDTO> dto);
+    public boolean createProctoringApplication(int classProctoringId, ProctoringApplicationDTO dto, int deansOfficeId);
+    public boolean createProctoringApplications(int classProctoringId, List<ProctoringApplicationDTO> dto, int deansOfficeId);
 }

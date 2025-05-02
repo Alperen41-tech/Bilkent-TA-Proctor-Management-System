@@ -1,9 +1,11 @@
 package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
+import com.cs319group3.backend.DTOs.ProctoringApplicationDTO;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.*;
+import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.NotificationService;
 import com.cs319group3.backend.Services.RequestService;
@@ -147,5 +149,26 @@ public class RequestServiceImpl implements RequestService {
         requests.addAll(requestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequests));
         requests.addAll(requestMapper.authStaffTARequestMapper(authStaffProctoringRequests));
         return requests;
+    }
+
+    @Autowired
+    DepartmentSecretaryRepo departmentSecretaryRepo;
+
+    @Autowired
+    UserRepo userRepo;
+
+    @Override
+    public Request createProctoringApplicationRequest(ProctoringApplicationDTO paDTO, int deansOfficeId){
+        RequestDTO requestDTO = new RequestDTO();
+        requestDTO.setIsApproved(true);
+
+        int departmentId = paDTO.getVisibleDepartmentId();
+        requestDTO.setSentDateTime(LocalDateTime.now());
+        requestDTO.setResponseDateTime(LocalDateTime.now());
+        Request request = RequestMapper.toEntity(requestDTO);
+        request.setReceiverUser(departmentSecretaryRepo.findByDepartmentDepartmentId(paDTO.getVisibleDepartmentId()).get());
+        request.setSenderUser(userRepo.findByUserId(deansOfficeId).get());
+        requestRepo.save(request);
+        return request;
     }
 }

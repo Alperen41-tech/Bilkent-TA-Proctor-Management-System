@@ -132,22 +132,6 @@ public class RequestMapper {
         return taWorkloadRequest;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public RequestDTO essentialMapper(Request request) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         RequestDTO requestDTO = new RequestDTO();
@@ -288,6 +272,15 @@ public class RequestMapper {
         requestDTO.setClassProctoringEventName(proctoring.getEventName());
         requestDTO.setClassProctoringStartDate(proctoring.getStartDate());
         requestDTO.setClassProctoringEndDate(proctoring.getEndDate());
+    }
+
+    public static Request toEntity(RequestDTO requestDTO) {
+        Request request = new Request();
+        request.setResponseDate(requestDTO.getResponseDateTime());
+        request.setApproved(requestDTO.getIsApproved());
+        request.setSentDate(requestDTO.getSentDateTime());
+        request.setDescription(requestDTO.getDescription());
+        return request;
     }
 
 
