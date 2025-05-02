@@ -1,60 +1,31 @@
-// DO_Dashboard.jsx  – Dean’s Office (final with Pending/Received components)
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import NavbarDO from "./NavbarDO";
 import PendingRequestItem from "../PendingRequestItem";
 import ReceivedRequestItem from "../ReceivedRequestItem";
+import NotificationItem from "../NotificationItem";
 import "./DO_DashboardPage.css";
 import axios from "axios";
-import NotificationItem from "../NotificationItem";
-
 
 const DO_Dashboard = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
-
-
-
   const [notifications, setNotifications] = useState([]);
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
-
-
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setSelectedRequest(null);
   };
 
-  const createPendingRequest = (request, index) => {
-    return (
-      <div key={index} onClick={() => setSelectedRequest(request)}>
-        <PendingRequestItem {...request} onCancel={() => console.log("canceled")} isSelected={selectedRequest === request} />
-      </div>
-    );
-  };
-
-  const createReceivedRequest = (request, index) => {
-    return (
-      <div key={index} onClick={() => setSelectedRequest(request)}>
-        <ReceivedRequestItem {...request} onAccept={() => handleRequestResponse(request.requestId, true)} onReject={() => handleRequestResponse(request.requestId, false)} isSelected={selectedRequest === request} />
-      </div>
-    );
-  };
-
-
-
   const handleRequestResponse = async (requestId, answer) => {
     try {
-      const response = await axios.put(`http://localhost:8080/request/respond`, null, {
-        params: {
-          id: requestId,
-          response: answer,
-        },
-      }
-      );
+      const response = await axios.put("http://localhost:8080/request/respond", null, {
+        params: { id: requestId, response: answer },
+      });
       if (response.data) {
         alert("Request accepted successfully.");
-        fetchReceivedRequests(); // Refresh the received requests after accepting
+        fetchReceivedRequests();
       } else {
         alert("Failed to accept the request. Please try again.");
       }
@@ -64,12 +35,12 @@ const DO_Dashboard = () => {
     }
   };
 
-
   const fetchReceivedRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/taFromDeanRequest/getUnapprovedInstructorAdditionalTARequests?receiverId=9"); // assuming reciever id is 9
+      const response = await axios.get("http://localhost:8080/taFromDeanRequest/getUnapprovedInstructorAdditionalTARequests", {
+        params: { receiverId: 9 },
+      });
       setReceivedRequests(response.data);
-      console.log(receivedRequests);
     } catch (error) {
       console.error("Error fetching received requests:", error);
     }
@@ -77,9 +48,10 @@ const DO_Dashboard = () => {
 
   const fetchPendingRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/proctoringApplication/getProctoringApplications?deansOfficeId=9"); // Adjust the URL as needed
+      const response = await axios.get("http://localhost:8080/proctoringApplication/getProctoringApplications", {
+        params: { deansOfficeId: 9 },
+      });
       setPendingRequests(response.data);
-      console.log(receivedRequests);
     } catch (error) {
       console.error("Error fetching pending requests:", error);
     }
@@ -87,11 +59,12 @@ const DO_Dashboard = () => {
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/notification/get?id=9"); //hard code for 9 for DO 9
+      const response = await axios.get("http://localhost:8080/notification/get", {
+        params: { id: 9 },
+      });
       setNotifications(response.data);
-      console.log(notifications);
     } catch (error) {
-      console.error("Error fetching task types:", error);
+      console.error("Error fetching notifications:", error);
     }
   };
 
@@ -101,72 +74,83 @@ const DO_Dashboard = () => {
     fetchPendingRequests();
   }, []);
 
+  const createPendingRequest = (request) => {
+    const { applicationId, classProctoringDTO, applicantCountLimit, isVisibleForTAs, isComplete, finishDate } = request;
+    const requestType = "InstructorAdditionalTARequest";
 
+    const prepared = {
+      requestType,
+      sentDateTime: classProctoringDTO.startDate,
+      classProctoringEventName: classProctoringDTO.proctoringName,
+      classProctoringStartDate: classProctoringDTO.startDate,
+      classProctoringEndDate: classProctoringDTO.endDate,
+      taCountNeeded: classProctoringDTO.TACount,
+      isComplete,
+      senderName: "N/A",
+      senderEmail: "N/A",
+      status: null,
+      responseDateTime: null,
+      isSelected: selectedRequest === request,
+      onCancel: () => console.log("cancel pending app", applicationId)
+    };
 
+    return (
+      <div key={applicationId} onClick={() => setSelectedRequest(request)}>
+        <PendingRequestItem {...prepared} />
+      </div>
+    );
+  };
 
-
+  const createReceivedRequest = (request, index) => (
+    <div key={index} onClick={() => setSelectedRequest(request)}>
+      <ReceivedRequestItem
+        {...request}
+        onAccept={() => handleRequestResponse(request.requestId, true)}
+        onReject={() => handleRequestResponse(request.requestId, false)}
+        isSelected={selectedRequest === request}
+      />
+    </div>
+  );
 
   return (
     <div className="ta-dashboard-dashboard-page">
       <NavbarDO />
-
       <div className="ta-dashboard-dashboard-grid">
-        {/* LEFT side */}
         <div className="ta-dashboard-dashboard-left">
-          {/* Top-left panel: Tabs */}
           <div className="ta-dashboard-left-up-panel">
             <div className="ta-dashboard-tab-bar">
-              <button onClick={() => handleTabClick("pending")} className={activeTab === "pending" ? "active" : ""}>
-                Pending Requests
-              </button>
-              <button onClick={() => handleTabClick("received")} className={activeTab === "received" ? "active" : ""}>
-                Received Requests
-              </button>
+              <button onClick={() => handleTabClick("pending")} className={activeTab === "pending" ? "active" : ""}>Pending Requests</button>
+              <button onClick={() => handleTabClick("received")} className={activeTab === "received" ? "active" : ""}>Received Requests</button>
             </div>
-
             <div className="ta-dashboard-tab-content">
-              {activeTab === "pending" && (
-                <div>
-                  {pendingRequests.map((req, index) => createPendingRequest(req, index))}
-                  {console.log(pendingRequests)}
-                </div>
-              )}
+              {activeTab === "pending" && pendingRequests.map(createPendingRequest)}
               {activeTab === "received" && (
                 <div>
-                  {receivedRequests
-                    .filter((req) => !req.isApproved)
-                    .map((req, index) => createReceivedRequest(req, index))}
+                  {receivedRequests.filter(req => !req.isApproved).map(createReceivedRequest)}
                 </div>
               )}
-
             </div>
           </div>
 
-          {/* Bottom-left panel: Details */}
           <div className="ta-dashboard-bottom-left">
             <div className="ta-dashboard-details-panel">
               <h3>Details</h3>
-              {selectedRequest ? (
+              {selectedRequest && activeTab === "pending" ? (
                 <div>
-                  <p>
-                    <strong>Sender:</strong>{" "}
-                    {selectedRequest.senderName || selectedRequest.name || "—"} (
-                    {selectedRequest.senderEmail || selectedRequest.email || "—"})
-                  </p>
-                  <p>
-                    <strong>Course:</strong>{" "}
-                    {selectedRequest.courseName ||
-                      selectedRequest.courseCode ||
-                      selectedRequest.classProctoringEventName ||
-                      "—"}
-                  </p>
-                  <p>
-                    <strong>TA Count:</strong>{" "}
-                    {typeof selectedRequest.taCount === "number"
-                      ? selectedRequest.taCount
-                      : "—"}
-                  </p>
-
+                  <p><strong>Course:</strong> {selectedRequest.classProctoringDTO.courseName}</p>
+                  <p><strong>TA Count:</strong> {selectedRequest.applicantCountLimit}</p>
+                  <p><strong>Start:</strong> {selectedRequest.finishDate || "—"}</p>
+                  <p><strong>End:</strong> {selectedRequest.finishDate || "—"}</p>
+                  <p><strong>Visible to TAs:</strong> {selectedRequest.isVisibleForTAs ? "Yes" : "No"}</p>
+                  <p><strong>Completed:</strong> {selectedRequest.isComplete ? "Yes" : "No"}</p>
+                </div>
+              ) : activeTab === "pending" ? (
+                <p className="ta-dashboard-placeholder">[ Click a pending request to see its details ]</p>
+              ) : selectedRequest ? (
+                <div>
+                  <p><strong>Sender:</strong> {selectedRequest.senderName || selectedRequest.name || "—"} ({selectedRequest.senderEmail || selectedRequest.email || "—"})</p>
+                  <p><strong>Course:</strong> {selectedRequest.courseName || selectedRequest.courseCode || selectedRequest.classProctoringEventName || "—"}</p>
+                  <p><strong>TA Count:</strong> {typeof selectedRequest.taCount === "number" ? selectedRequest.taCount : "—"}</p>
                   {selectedRequest.sentDateTime && (() => {
                     const [date, time] = selectedRequest.sentDateTime.split("T");
                     return (
@@ -176,59 +160,16 @@ const DO_Dashboard = () => {
                       </>
                     );
                   })()}
-
-                  {(selectedRequest.requestType === 'AuthStaffProctoringRequest' ||
-                    selectedRequest.requestType === 'TASwapRequest') && (
-                      <>
-                        <p>
-                          <strong>Event:</strong>{" "}
-                          {selectedRequest.classProctoringEventName}
-                        </p>
-                        <p>
-                          <strong>Start:</strong>{" "}
-                          {selectedRequest.classProctoringStartDate?.split("T")[0] ||
-                            "—"}
-                        </p>
-                        <p>
-                          <strong>End:</strong>{" "}
-                          {selectedRequest.classProctoringEndDate?.split("T")[0] ||
-                            "—"}
-                        </p>
-                      </>
-                    )}
-
-                  {selectedRequest.requestType === 'TAWorkloadRequest' && (
-                    <p><strong>Task:</strong> {selectedRequest.taskTypeName}</p>
-                  )}
-
-                  <p>
-                    <strong>Comment:</strong>{" "}
-                    {selectedRequest.description || "—"}
-                  </p>
-                  <p>
-                    <strong>Status:</strong>{" "}
-                    {selectedRequest.isApproved
-                      ? 'Approved'
-                      : selectedRequest.isComplete
-                        ? 'Completed'
-                        : 'Pending'}
-                  </p>
+                  <p><strong>Comment:</strong> {selectedRequest.description || "—"}</p>
+                  <p><strong>Status:</strong> {selectedRequest.isApproved ? 'Approved' : selectedRequest.isComplete ? 'Completed' : 'Pending'}</p>
                 </div>
               ) : (
-                <p className="ta-dashboard-placeholder">
-                  [ Click a request to see its details ]
-                </p>
+                <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
               )}
-
             </div>
           </div>
-
-
-
-
         </div>
 
-        {/* RIGHT side */}
         <div className="ta-dashboard-dashboard-right">
           <div className="ta-dashboard-notifications">
             <h3>Notifications</h3>
