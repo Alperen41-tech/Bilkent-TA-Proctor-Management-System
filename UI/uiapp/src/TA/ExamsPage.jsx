@@ -76,7 +76,7 @@ const ExamsPage = () => {
   
   const fetchTasProctorings = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=3");
+        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctoringsByDepartment?id=1");
         setTasProctorings(response.data);
         console.log(tasProctorings);
       } catch (error) {

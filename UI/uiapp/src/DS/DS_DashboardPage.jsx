@@ -1,10 +1,12 @@
-import React, { act, useState } from "react";
+import React, { act, useState, useEffect } from "react";
 import NavbarDS from "./NavbarDS";
 import "./DS_DashboardPage.css";
 import DS_PaidProctoringRequestItem from "./DS_PaidProctoringRequestItem";
 import { id } from "date-fns/locale";
 import DS_DashboardTAItem from "./DS_DashboardTAItem";
 import DS_SelectPaidProctoringTAItem from "./DS_SelectPaidProctoringTAItem";
+import NotificationItem from "../NotificationItem";
+import axios from "axios";
 
 const DS_DashboardPage = () => {
   const [selectedAppliedStudentsId, setSelectedAppliedStudentsId] = useState([]);
@@ -15,6 +17,7 @@ const DS_DashboardPage = () => {
   const [searchText, setSearchText] = useState("");
   const [sortName, setSortName] = useState("");  
   const [sortWorkload, setSortWorkload] = useState("");
+  const [notifications, setNotifications] = useState([]);
   const [tas, setTas] = useState([
     { name: 'Ali 1', id: 1 , email: "basdaas@gmail.com"},
     { name: 'Ali 12', id: 2 , email: "basdaas@gmail.com"},
@@ -134,6 +137,18 @@ const DS_DashboardPage = () => {
     ));
   }
 
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/notification/get?id=4");
+      setNotifications(response.data);
+      console.log(notifications);
+    } catch (error) {
+      console.error("Error fetching task types:", error);
+    }
+  };
+  useEffect(() => {
+      fetchNotifications();
+    }, []);
   
 
   return (
@@ -201,8 +216,17 @@ const DS_DashboardPage = () => {
         {/* RIGHT SIDE */}
         <div className="dashboard-right">
           <div className="notifications">
-            <h3>Notifications</h3>
-            <div className="placeholder">[ Pull real-time notifications from DB ]</div>
+          <h3>Notifications</h3>
+            {notifications.map((notification, index) => (
+              <div key={index} className="ta-dashboard-notification-item">
+                <NotificationItem
+                  requestType={notification.requestType}
+                  message={notification.message}
+                  date={notification.date}
+                  notificationType={notification.notificationType}
+                />
+              </div>
+            ))}
           </div>
 
           <div className="right-bottom">

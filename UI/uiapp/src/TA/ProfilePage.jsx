@@ -16,7 +16,35 @@ const ProfilePage = () => {
   const inputEndDateRef = useRef();
   const inputEndTimeRef = useRef();
   const inputDetailsRef = useRef();
-  //---------------------------------
+  const oldPasswordRef = useRef();
+  const newPasswordRef = useRef();
+  const confirmNewPasswordRef = useRef();
+  //-----------------------------------------------------------
+  const handleChangePassword = async () => {
+    try {
+      console.log("Email:", taProfileInfo.email);
+      console.log("Old Password:", oldPasswordRef.current.value);
+      console.log("New Password:", newPasswordRef.current.value);
+      console.log("Confirm New Password:", confirmNewPasswordRef.current.value);
+      const response = await axios.put("http://localhost:8080/auth/changePassword", {
+        email: taProfileInfo.email,
+        oldPassword: oldPasswordRef.current.value,
+        newPassword: newPasswordRef.current.value,
+        userTypeName: "ta"
+      });
+      if (response.data) {
+        alert("Password changed successfully.");
+        setShowChangePasswordModal(false);
+      } else {
+        alert("Failed to change password. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error changing password:", error);
+    }
+  
+  };
+
+
   const handleSetUnavailability = async () => {
     try {
       const response = await axios.post("http://localhost:8080/taLeaveRequest/create?id=2", {
@@ -91,14 +119,28 @@ const ProfilePage = () => {
           <div className="modal">
             <h3>Change Password</h3>
             <label>Old Password</label>
-            <input type="password" placeholder="Enter your old password" />
+            <input ref={oldPasswordRef} type="password" placeholder="Enter your old password"/>
             <label>New Password</label>
-            <input type="password" placeholder="At least 8 characters long" />
+            <input ref={newPasswordRef} type="password" placeholder="At least 8 characters long" />
             <label>Confirm New Password</label>
-            <input type="password" placeholder="Confirm new password" />
+            <input ref={confirmNewPasswordRef} type="password" placeholder="Confirm new password" />
             <div className="modal-buttons">
               <button className="cancel-button" onClick={() => setShowChangePasswordModal(false)}>Cancel</button>
-              <button className="apply-button">Apply</button>
+              <button className="apply-button" onClick={() => {
+                if(!oldPasswordRef.current.value || !newPasswordRef.current.value || !confirmNewPasswordRef.current.value) {
+                  alert("Please fill in all fields.");
+                  return;
+                }
+                if(newPasswordRef.current.value !== confirmNewPasswordRef.current.value) {
+                  alert("New password and confirmation do not match.");
+                  return;
+                }
+                if(newPasswordRef.current.value.length < 8) {
+                  alert("New password must be at least 8 characters long.");
+                  return;
+                }
+                handleChangePassword();
+              }}>Apply</button>
             </div>
           </div>
         </div>

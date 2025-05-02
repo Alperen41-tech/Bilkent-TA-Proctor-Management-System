@@ -33,7 +33,7 @@ const INS_ExamsPage = () => {
 
   const fetchProctoringTasks = async () => {
     try{
-      const response = await axios.get("http://localhost:8080/classProctoringTARelation/getClassProctoringOfCreator?creatorId=4");
+      const response = await axios.get("http://localhost:8080/classProctoringTARelation/getClassProctoringOfInstructor?instructorId=4");
       if (response.data) {
         setProctoringTasks(response.data);
         console.log("Proctoring tasks fetched successfully:", response.data);
