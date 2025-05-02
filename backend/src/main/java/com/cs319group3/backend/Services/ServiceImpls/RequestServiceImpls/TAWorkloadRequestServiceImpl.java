@@ -50,6 +50,7 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
 
 
         try {
+            dto.setSenderId(taId);
             TAWorkloadRequest workloadRequest = requestMapper.taWorkloadRequestToEntityMapper(dto);
             taWorkloadRequestRepo.save(workloadRequest);
             notificationService.createNotification(workloadRequest, NotificationType.REQUEST);
