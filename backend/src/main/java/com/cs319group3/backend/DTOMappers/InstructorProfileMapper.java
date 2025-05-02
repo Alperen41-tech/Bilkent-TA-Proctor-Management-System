@@ -33,4 +33,17 @@ public class InstructorProfileMapper {
         instructorProfileDTO.setCourses(courseNames);
         return instructorProfileDTO;
     }
+
+    public static Instructor toEntity(InstructorProfileDTO instructorDTO) {
+        Instructor instructor = new Instructor();
+        instructor.setName(instructorDTO.getName());
+        instructor.setSurname(instructorDTO.getSurname());
+        instructor.setEmail(instructorDTO.getEmail());
+        instructor.setBilkentId(instructorDTO.getBilkentId());
+        instructor.setPhoneNumber(instructorDTO.getPhoneNumber());
+        System.out.println("La bu ne olum: " + instructorDTO.isActive());
+        instructor.setActive(instructorDTO.isActive());
+        instructor.setPhoneNumber(instructorDTO.getPhoneNumber());
+        return instructor;
+    }
 }

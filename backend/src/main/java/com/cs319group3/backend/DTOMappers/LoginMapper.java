@@ -2,6 +2,7 @@ package com.cs319group3.backend.DTOMappers;
 
 import com.cs319group3.backend.DTOs.LoginDTO;
 import com.cs319group3.backend.Entities.Login;
+import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.UserTypeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,14 @@ public class LoginMapper {
         login.setUser(ta); // because TA extends User
         login.setPassword(dto.getPassword());
         login.setUserType(userTypeRepo.findByUserTypeName("ta"));
+        return login;
+    }
+
+    public Login essentialEntityToLogin(LoginDTO dto, Instructor instructor) {
+        Login login = new Login();
+        login.setUser(instructor);
+        login.setPassword(dto.getPassword());
+        login.setUserType(userTypeRepo.findByUserTypeName("instructor"));
         return login;
     }
 }

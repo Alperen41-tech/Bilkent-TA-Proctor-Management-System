@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Controllers.UserControllers;
 
+import com.cs319group3.backend.DTOs.CreateInstructorDTO;
 import com.cs319group3.backend.DTOs.InstructorProfileDTO;
 import com.cs319group3.backend.DTOs.TaskTypeDTO;
 import com.cs319group3.backend.Services.InstructorService;
@@ -22,5 +23,11 @@ public class InstructorContoller {
     public InstructorProfileDTO getInstructorProfile(@RequestParam("id") int id){
         System.out.println("request received");
         return instructorServiceImpl.getInstructorProfileById(id);
+    }
+
+    @PostMapping("createInstructor")
+    public boolean createInstructor(@RequestBody CreateInstructorDTO createInstuctorDTO){
+        System.out.println("create instructor");
+        return instructorServiceImpl.createInstructor(createInstuctorDTO);
     }
 }

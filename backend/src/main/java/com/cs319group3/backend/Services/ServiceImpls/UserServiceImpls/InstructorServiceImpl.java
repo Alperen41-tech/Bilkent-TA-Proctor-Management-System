@@ -1,14 +1,19 @@
 package com.cs319group3.backend.Services.ServiceImpls.UserServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.InstructorProfileMapper;
+import com.cs319group3.backend.DTOMappers.LoginMapper;
+import com.cs319group3.backend.DTOMappers.TAProfileMapper;
 import com.cs319group3.backend.DTOMappers.TaskTypeMapper;
+import com.cs319group3.backend.DTOs.CreateInstructorDTO;
 import com.cs319group3.backend.DTOs.InstructorProfileDTO;
+import com.cs319group3.backend.DTOs.LoginDTO;
 import com.cs319group3.backend.DTOs.TaskTypeDTO;
+import com.cs319group3.backend.Entities.Login;
 import com.cs319group3.backend.Entities.TaskType;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
-import com.cs319group3.backend.Repositories.CourseRepo;
-import com.cs319group3.backend.Repositories.InstructorRepo;
-import com.cs319group3.backend.Repositories.TaskTypeRepo;
+import com.cs319group3.backend.Entities.UserEntities.TA;
+import com.cs319group3.backend.Entities.UserType;
+import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,5 +37,43 @@ public class InstructorServiceImpl implements InstructorService {
         }
 
         return InstructorProfileMapper.essentialMapper(optionalInstructor.get());
+    }
+    @Autowired
+    DepartmentRepo departmentRepo;
+
+    @Autowired
+    UserRepo userRepo;
+
+    @Autowired
+    LoginMapper loginMapper;
+
+    @Autowired
+    LoginRepo loginRepo;
+
+    @Override
+    public boolean createInstructor(CreateInstructorDTO ciDTO) {
+        InstructorProfileDTO profile = ciDTO.getInstructorDTO();
+        LoginDTO login = ciDTO.getLoginDTO();
+
+        // Check duplicate by bilkentId or email
+        if (userRepo.findByBilkentId(profile.getBilkentId()).isPresent() ||
+                userRepo.findByEmail(profile.getEmail()).isPresent()) {
+            return false; // Duplicate
+        }
+
+
+        Instructor instructor = InstructorProfileMapper.toEntity(profile);
+        Login loginEntity = loginMapper.essentialEntityToLogin(login, instructor);
+
+        if(loginEntity == null) {
+            return false;
+        }
+
+        instructor.setDepartment(departmentRepo.findById(profile.getDepartmentId()).orElse(null));
+
+        instructorRepo.save(instructor);
+        loginRepo.save(loginEntity);
+
+        return true;
     }
 }
