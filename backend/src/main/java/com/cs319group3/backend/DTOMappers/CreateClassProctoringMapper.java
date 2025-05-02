@@ -28,7 +28,7 @@ public class CreateClassProctoringMapper {
     public ClassProctoring essentialEntityTo(CreateClassProctoringDTO createClassProctoringDTO) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        Optional<Course> courseOpt = courseRepo.findByCourseName(createClassProctoringDTO.getCourseName());
+        Optional<Course> courseOpt = courseRepo.findByCourseId(createClassProctoringDTO.getCourseId());
         /*
         if (courseOpt.isEmpty()) {
             return null;
@@ -67,6 +67,8 @@ public class CreateClassProctoringMapper {
 
         // Link classrooms to the proctoring entity
         classProctoring.setClassrooms(classroomList);
+
+        classProctoring.setSectionNo(createClassProctoringDTO.getSectionNo());
 
         return classProctoring;
     }
