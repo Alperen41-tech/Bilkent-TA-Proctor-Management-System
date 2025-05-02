@@ -1,4 +1,3 @@
-// DO_TARequestsPage.jsx
 import React, { useState, useEffect } from "react";
 import NavbarDO from "./NavbarDO";
 import "./DO_TARequestsPage.css";
@@ -13,21 +12,47 @@ const DO_TARequestsPage = () => {
   const selected = taRequests.find((r) => r.requestId === selectedRequestId);
 
   useEffect(() => {
-    fetchDepartments();
     fetchTARequests();
+    fetchDepartmentsExcluding(999); // use a non-existing ID
+
   }, []);
+
+  useEffect(() => {
+    const selected = taRequests.find((r) => r.requestId === selectedRequestId);
+    console.log("Selected request:", selected);
+  
+    // Try these options in order — fallback if one is missing
+    const departmentId =
+      selected?.senderDepartmentId ||
+      selected?.sender?.departmentId ||
+      selected?.departmentId;
+  
+    if (departmentId) {
+      fetchDepartmentsExcluding(departmentId);
+    } else {
+      console.warn("No valid departmentId found for selected request.");
+    }
+  }, [selectedRequestId, taRequests]);
+  
 
   const handleSendToDepartments = () => {
     console.log("Sending TA requirements:", taCounts);
   };
 
-  const fetchDepartments = async () => {
+  const fetchDepartmentsExcluding = async (excludeDepartmentId) => {
     try {
       const res = await axios.get(
         "http://localhost:8080/department/getAllDepartmentsExcept",
-        { params: { facultyId: 1, departmentId: 1 } }
+        {
+          params: {
+            facultyId: 1,
+            departmentId: excludeDepartmentId,
+          },
+        }
       );
       setDepartments(res.data || []);
+      console.log("Filtered departments:", res.data); // DEBUG
+
       const initial = {};
       res.data.forEach((d) => (initial[d.departmentCode] = 0));
       setTACounts(initial);
@@ -40,7 +65,8 @@ const DO_TARequestsPage = () => {
     try {
       const res = await axios.get(
         "http://localhost:8080/taFromDeanRequest/getApprovedInstructorAdditionalTARequests",
-        { params: { receiverId: 9 } });
+        { params: { receiverId: 9 } }
+      );
       setTARequests(res.data || []);
     } catch (e) {
       console.error(e);
