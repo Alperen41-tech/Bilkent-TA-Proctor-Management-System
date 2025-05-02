@@ -6,8 +6,10 @@ import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.ClassProctoringClassroom;
 import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
+import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Repositories.CourseRepo;
 import com.cs319group3.backend.Repositories.InstructorRepo;
+import com.cs319group3.backend.Repositories.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,9 @@ public class CreateClassProctoringMapper {
     @Autowired
     CourseRepo courseRepo;
 
+    @Autowired
+    UserRepo userRepo;
+
     public ClassProctoring essentialEntityTo(CreateClassProctoringDTO createClassProctoringDTO) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -35,7 +40,7 @@ public class CreateClassProctoringMapper {
         }
         */
         Course course = courseOpt.get();
-        Optional<Instructor> instructor = instructorRepo.findByUserId(course.getCoordinator().getUserId());
+        Optional<User> user = userRepo.findByUserId(createClassProctoringDTO.getCreatorId());
 
 
         ClassProctoring classProctoring = new ClassProctoring();
@@ -43,7 +48,7 @@ public class CreateClassProctoringMapper {
         classProctoring.setEventName(createClassProctoringDTO.getEventName());
         classProctoring.setTACount(createClassProctoringDTO.getTaCount());
         classProctoring.setSectionNo(createClassProctoringDTO.getSectionNo());
-        classProctoring.setCreator(instructor.get());
+        classProctoring.setCreator(user.get());
         classProctoring.setCourse(course);
         classProctoring.setStartDate(LocalDateTime.parse(createClassProctoringDTO.getStartDate(), formatter));
         classProctoring.setEndDate(LocalDateTime.parse(createClassProctoringDTO.getEndDate(),formatter));
