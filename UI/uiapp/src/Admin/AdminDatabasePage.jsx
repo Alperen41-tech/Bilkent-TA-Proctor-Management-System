@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import NavbarAdmin from "./NavbarAdmin";
 import "./AdminDatabasePage.css";
 import AdminDatabaseItem from "./AdminDatabaseItem";
@@ -33,6 +33,16 @@ const AdminDatabasePage = () => {
   const newProctoringClassroomsRef = useRef();
   const newProctoringTaCountRef = useRef();
   //-----------------------------
+
+  const [departments, setDepartments] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const [examDate, setExamDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [classrooms, setClassrooms] = useState("");
+
 
   // Sample data for the database items
   const adminDatabaseItems = [
@@ -104,21 +114,39 @@ const AdminDatabasePage = () => {
     }
   };
 
+
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
+
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/department/getAllDepartmentsInFaculty",
+        { params: { facultyId: 1 } } // Assuming Admin has access to the same faculty
+      );
+      setDepartments(response.data || []);
+    } catch (error) {
+      console.error("Error fetching departments:", error);
+    }
+  };
+
+
   const createDatabaseItems = () => {
-    return(
-    adminDatabaseItems.map((item) => (
-      <AdminDatabaseItem
-        key={`${item.type}-${item.data.id}`}
-        type={item.type}
-        data={item.data}
-        onDelete={(id) => console.log(`Deleted ${item.type} with ID: ${id}`)}
-        onSelect={(data) => setSelectedData(data)}
-        isSelected={selectedData.id === item.data.id}
-        inLog={false} // Assuming this is not a log item
-      />
-    )))
+    return (
+      adminDatabaseItems.map((item) => (
+        <AdminDatabaseItem
+          key={`${item.type}-${item.data.id}`}
+          type={item.type}
+          data={item.data}
+          onDelete={(id) => console.log(`Deleted ${item.type} with ID: ${id}`)}
+          onSelect={(data) => setSelectedData(data)}
+          isSelected={selectedData.id === item.data.id}
+          inLog={false} // Assuming this is not a log item
+        />
+      )))
   }
-  const createNewTa = async (newTaName,newTaSurname, newTaEmail, newTaId, departmentSelection, newTaCourseName, newTaPhoneNum, newTaClassYear, newTaPassword) => {
+  const createNewTa = async (newTaName, newTaSurname, newTaEmail, newTaId, departmentSelection, newTaCourseName, newTaPhoneNum, newTaClassYear, newTaPassword) => {
     try {
       console.log("Creating new TA with the following details:");
       console.log(typeof newTaId);
@@ -142,7 +170,7 @@ const AdminDatabasePage = () => {
 
       if (!response.data) {
         alert("Could not created TA. Try again.");
-      } 
+      }
       else {
         alert("TA created successfully!");
         console.log("TA created successfully:", response.data);
@@ -154,32 +182,40 @@ const AdminDatabasePage = () => {
 
   }
 
-  const createNewProctoring = async (newProctoringName, newProctoringCourseName, newProctoringSectionNumber, newProctoringDate, newProctoringStartTime, newProctoringEndTime, newProctoringClassrooms, newProctoringTaCount) => {
+  const createNewProctoring = async (
+    eventName,
+    courseId,
+    sectionNo,
+    date,
+    startTime,
+    endTime,
+    classrooms,
+    taCount
+  ) => {
     try {
-      console.log("Creating new Proctoring with the following details:");
-      console.log(typeof newProctoringSectionNumber);
       const response = await axios.post("http://localhost:8080/classProctoring/createClassProctoring", {
-        eventName: newProctoringName,
-        courseName: newProctoringCourseName,
-        sectionNo: parseInt(newProctoringSectionNumber, 10),
-        startDate: newProctoringDate + " " + newProctoringStartTime + ":00",
-        endDate: newProctoringDate + " " + newProctoringEndTime + ":00",
-        classrooms: newProctoringClassrooms.split(","),
-        taCount: parseInt(newProctoringTaCount, 10)
+        eventName,
+        courseId,
+        sectionNo: parseInt(sectionNo),
+        startDate: `${date} ${startTime}:00`,
+        endDate: `${date} ${endTime}:00`,
+        classrooms: classrooms.split(",").map((c) => c.trim()),
+        taCount: parseInt(taCount),
+        creatorId: 1, // Replace 1 with actual Admin userId if needed
       });
 
-      if (!response.data) {
-        alert("Could not created the Proctoring. Try again.");
-      } 
-      else {
-        alert("Proctoring created successfully!");
-        console.log("Proctoring created successfully:", response.data);
+      if (response.data === true) {
+        alert("Exam created successfully!");
+        // Optionally reset fields here
+      } else {
+        alert("Failed to create the exam. Try again.");
       }
     } catch (error) {
-      console.error("There was an error with the proctoring creation:", error);
+      console.error("Error creating exam:", error);
       alert("An error occurred. Please try again.");
     }
-  }
+  };
+
 
   return (
     <div className="admin-database-database-container">
@@ -200,7 +236,7 @@ const AdminDatabasePage = () => {
           <div className="admin-database-data-table">
             <div className="admin-database-table-body">
               <div className="admin-database-table-row">
-                  {createDatabaseItems()}
+                {createDatabaseItems()}
               </div>
             </div>
           </div>
@@ -225,46 +261,146 @@ const AdminDatabasePage = () => {
             </select>
           </div>
           {selectedType === "Proctoring" && (
-            <form className="admin-database-type-form" onSubmit={(e) => {
-              e.preventDefault();
-              createNewProctoring(
-                newProctoringNameRef.current.value,
-                newProctoringCourseNameRef.current.value,
-                newProctoringSectionNumberRef.current.value,
-                newProctoringDateRef.current.value,
-                newProctoringStartTimeRef.current.value,
-                newProctoringEndTimeRef.current.value,
-                newProctoringClassroomsRef.current.value,
-                newProctoringTaCountRef.current.value
-              );
-            }}>
+            <form
+              className="admin-database-type-form"
+              onSubmit={async (e) => {
+                e.preventDefault();
+
+                if (
+                  !newProctoringNameRef.current.value ||
+                  !examDate ||
+                  !startTime ||
+                  !endTime ||
+                  !classrooms ||
+                  !selectedDepartmentId ||
+                  !selectedCourseId ||
+                  !newProctoringSectionNumberRef.current.value ||
+                  !newProctoringTaCountRef.current.value
+                ) {
+                  alert("Please fill all required fields.");
+                  return;
+                }
+
+                await createNewProctoring(
+                  newProctoringNameRef.current.value,
+                  selectedCourseId,
+                  newProctoringSectionNumberRef.current.value,
+                  examDate,
+                  startTime,
+                  endTime,
+                  classrooms,
+                  newProctoringTaCountRef.current.value
+                );
+              }}
+            >
               <label>Event Name</label>
-              <input ref={newProctoringNameRef} type="text" placeholder="e.g., Midterm Exam" required/>
-
-              <label>Course Name</label>
-              <input ref={newProctoringCourseNameRef} type="text" placeholder="e.g., CS 202" required/>
-
-              <label>Section Number</label>
-              <input ref={newProctoringSectionNumberRef} type="number" min={0} placeholder="e.g., 1" required/>
+              <input
+                ref={newProctoringNameRef}
+                type="text"
+                placeholder="e.g., Midterm Exam"
+                required
+              />
 
               <label>Date</label>
-              <input ref={newProctoringDateRef} type="date" required/>
+              <input
+                type="date"
+                value={examDate}
+                onChange={(e) => setExamDate(e.target.value)}
+                required
+              />
 
               <label>Start Time</label>
-              <input ref={newProctoringStartTimeRef} type="time" required/>
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                required
+              />
 
               <label>End Time</label>
-              <input ref={newProctoringEndTimeRef} type="time" required/>
+              <input
+                type="time"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                required
+              />
 
               <label>Classrooms</label>
-              <input ref={newProctoringClassroomsRef} type="text" placeholder="e.g., EE-03,EA-534" pattern="^([A-Z]+-\d+)(,([A-Z]+-\d+))*$" title="Enter classrooms like EE-033,EA-56,B-012 — building code (capital letters), dash, room number" required/>
+              <input
+                type="text"
+                value={classrooms}
+                onChange={(e) => setClassrooms(e.target.value)}
+                placeholder="e.g., EE-01,EA-312"
+                required
+              />
+
+              <label>Department</label>
+              <select
+                value={selectedDepartmentId || ""}
+                onChange={async (e) => {
+                  const deptId = parseInt(e.target.value);
+                  setSelectedDepartmentId(deptId);
+
+                  try {
+                    const { data } = await axios.get(
+                      "http://localhost:8080/course/getCoursesInDepartment",
+                      { params: { departmentId: deptId } }
+                    );
+                    setCourses(data || []);
+                  } catch (error) {
+                    console.error("Error fetching courses:", error);
+                  }
+                }}
+                required
+              >
+                <option value="">Select Department</option>
+                {departments.map((dept) => (
+                  <option key={dept.departmentId} value={dept.departmentId}>
+                    {dept.departmentName}
+                  </option>
+                ))}
+              </select>
+
+              <label>Course</label>
+              <select
+                value={selectedCourseId || ""}
+                onChange={(e) => setSelectedCourseId(parseInt(e.target.value))}
+                required
+              >
+                <option value="">Select Course</option>
+                {courses.map((course) => (
+                  <option key={course.id} value={course.id}>
+                    {course.name}
+                  </option>
+                ))}
+              </select>
+
+              <label>Section No</label>
+              <input
+                ref={newProctoringSectionNumberRef}
+                type="number"
+                placeholder="e.g., 1"
+                required
+                min={1}
+              />
 
               <label>TA Count</label>
-              <input ref={newProctoringTaCountRef} type="number" min={1} placeholder="e.g., 2" required/>
+              <input
+                ref={newProctoringTaCountRef}
+                type="number"
+                placeholder="e.g., 2"
+                min={1}
+                required
+              />
 
-              <input type={"submit"} value="Create" className="admin-database-create-type-button"/>
+              <input
+                type="submit"
+                value="Create"
+                className="admin-database-create-type-button"
+              />
             </form>
           )}
+
 
           {selectedType === "TA" && (
             <form className="admin-database-type-form" onSubmit={(e) => {
@@ -282,19 +418,20 @@ const AdminDatabasePage = () => {
               );
             }}>
               <label>TA Name</label>
-              <input ref={newTaNameRef} type="text" placeholder="enter name" required/>
+              <input ref={newTaNameRef} type="text" placeholder="enter name" required />
 
               <label>Surname</label>
-              <input ref={newTaSurnameRef} type="text" placeholder="enter surname" required/>
+              <input ref={newTaSurnameRef} type="text" placeholder="enter surname" required />
 
               <label>Email</label>
               <input ref={newTaEmailRef} type="email" placeholder="enter email" required />
 
               <label>ID</label>
-              <input ref={newTaIdRef} type="number" min={0} placeholder="enter ID" required/>
+              <input ref={newTaIdRef} type="number" min={0} placeholder="enter ID" required />
 
               <label>Department</label>
-              <select value={departmentSelection} onChange={(e) => {setDepartmentSelection(e.target.value)
+              <select value={departmentSelection} onChange={(e) => {
+                setDepartmentSelection(e.target.value)
                 console.log("Selected Department:", e.target.value)
 
               }}>
@@ -305,7 +442,8 @@ const AdminDatabasePage = () => {
               </select>
 
               <label>Select Type</label>
-              <select value={selectTaWorktime} onChange={(e) => {setSelectTaWorktime(e.target.value)
+              <select value={selectTaWorktime} onChange={(e) => {
+                setSelectTaWorktime(e.target.value)
                 console.log("Selected Worktime For TA:", e.target.value)
               }}>
                 <option value="">Select Type</option>
@@ -313,23 +451,62 @@ const AdminDatabasePage = () => {
                 <option value="PT">Part Time</option>
               </select>
 
-              <label>Course Name</label>
-              <input ref={newTaCourseNameRef} type="text" placeholder="enter course name" required />
+              <label>Department</label>
+              <select
+                value={selectedDepartmentId || ""}
+                onChange={async (e) => {
+                  const deptId = parseInt(e.target.value);
+                  setSelectedDepartmentId(deptId);
+
+                  try {
+                    const { data } = await axios.get(
+                      "http://localhost:8080/course/getCoursesInDepartment",
+                      { params: { departmentId: deptId } }
+                    );
+                    setCourses(data || []);
+                  } catch (error) {
+                    console.error("Error fetching courses:", error);
+                  }
+                }}
+                required
+              >
+                <option value="">Select Department</option>
+                {departments.map((dept) => (
+                  <option key={dept.departmentId} value={dept.departmentId}>
+                    {dept.departmentName}
+                  </option>
+                ))}
+              </select>
+
+              <label>Course</label>
+              <select
+                value={selectedCourseId || ""}
+                onChange={(e) => setSelectedCourseId(parseInt(e.target.value))}
+                required
+              >
+                <option value="">Select Course</option>
+                {courses.map((course) => (
+                  <option key={course.id} value={course.id}>
+                    {course.name}
+                  </option>
+                ))}
+              </select>
+
 
               <label>Phone Number</label>
-              <input ref={newTaPhoneNumRef} type="text" placeholder="enter phone number" pattern="^\+\d{1,3}-\d{3}-\d{3}-\d{2}-\d{2}$"  title="Phone number must be in the format +CountryCode-xxx-xxx-xx-xx" required/>
+              <input ref={newTaPhoneNumRef} type="text" placeholder="enter phone number" pattern="^\+\d{1,3}-\d{3}-\d{3}-\d{2}-\d{2}$" title="Phone number must be in the format +CountryCode-xxx-xxx-xx-xx" required />
 
               <label>Class Year</label>
-              <input ref={newTaClassYearRef} type="number" min={1} max={6} placeholder="enter class year" required/>
+              <input ref={newTaClassYearRef} type="number" min={1} max={6} placeholder="enter class year" required />
 
               <label>Login Informations</label>
               <input ref={newTaPasswordRef} type="password" placeholder="enter password" required />
 
-              <input type="submit" value="Create"className="admin-database-create-type-button"/>
+              <input type="submit" value="Create" className="admin-database-create-type-button" />
             </form>
           )}
         </div>
-        
+
         {/* Right Panel: Dump New Data */}
         <div className="admin-database-dump-new-data">
           <h3>Dump New Data</h3>
