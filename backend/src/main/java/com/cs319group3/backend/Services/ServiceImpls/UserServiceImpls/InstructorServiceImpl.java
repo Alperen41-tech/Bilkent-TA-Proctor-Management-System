@@ -28,16 +28,6 @@ public class InstructorServiceImpl implements InstructorService {
     @Autowired
     InstructorRepo instructorRepo;
 
-    @Override
-    public InstructorProfileDTO getInstructorProfileById(int id){
-        Optional<Instructor> optionalInstructor = instructorRepo.findByUserId(id);
-
-        if(!optionalInstructor.isPresent()) {
-            throw new RuntimeException("Instructor with ID " + id + " not found.");
-        }
-
-        return InstructorProfileMapper.essentialMapper(optionalInstructor.get());
-    }
     @Autowired
     DepartmentRepo departmentRepo;
 
@@ -49,6 +39,18 @@ public class InstructorServiceImpl implements InstructorService {
 
     @Autowired
     LoginRepo loginRepo;
+
+    @Override
+    public InstructorProfileDTO getInstructorProfileById(int id){
+        Optional<Instructor> optionalInstructor = instructorRepo.findByUserId(id);
+
+        if(!optionalInstructor.isPresent()) {
+            throw new RuntimeException("Instructor with ID " + id + " not found.");
+        }
+
+        return InstructorProfileMapper.essentialMapper(optionalInstructor.get());
+    }
+
 
     @Override
     public boolean createInstructor(CreateInstructorDTO ciDTO) {
