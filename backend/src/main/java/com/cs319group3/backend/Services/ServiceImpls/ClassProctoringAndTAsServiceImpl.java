@@ -154,6 +154,35 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
     public List<ClassProctoringAndTAsDTO> getDepartmentClassProctoringsById(int departmentId) {
         // Fetch all proctorings in the department
         List<ClassProctoring> proctorings = classProctoringRepo.findByCourse_Department_DepartmentIdAndIsCompleteFalse(departmentId);
+
+        return classProctoringToClassProctoringAndTAs(proctorings);
+    }
+
+    @Override
+    public List<ClassProctoringAndTAsDTO> getFacultyClassProctorings(int facultyId) {
+        List<Integer> departmentIds = departmentRepo.findDepartmentIdsByFacultyId(facultyId);
+
+        List<ClassProctoringAndTAsDTO> results = new ArrayList<>();
+        for (int departmentId : departmentIds) {
+            // Fetch all relations in the department
+            results.addAll(getDepartmentClassProctoringsById(departmentId));
+        }
+
+        return results;
+    }
+
+    @Autowired
+    TAService taService;
+
+    @Override
+    public List<ClassProctoringAndTAsDTO> getClassProctoringsOfCreator(int creatorId) {
+        List<ClassProctoring> proctorings = classProctoringRepo.findByCreatorUserId(creatorId);
+
+        return classProctoringToClassProctoringAndTAs(proctorings);
+    }
+
+    @Override
+    public List<ClassProctoringAndTAsDTO> classProctoringToClassProctoringAndTAs(List<ClassProctoring> proctorings){
         List<ClassProctoringAndTAsDTO> results = new ArrayList<>();
         for (ClassProctoring proctoring : proctorings) {
             List<TAProfileDTO> taList = new ArrayList<>();
@@ -175,77 +204,6 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
             taDTO.setClassProctoringDTO(ClassProctoringMapper.essentialMapper(proctoring));
             dto.setClassProctoringTARelationDTO(taDTO);
             dto.setTaProfileDTOList(taList);
-            results.add(dto);
-        }
-
-        return results;
-    }
-
-    @Override
-    public List<ClassProctoringAndTAsDTO> getFacultyClassProctorings(int facultyId) {
-        List<Integer> departmentIds = departmentRepo.findDepartmentIdsByFacultyId(facultyId);
-
-        List<ClassProctoringAndTAsDTO> results = new ArrayList<>();
-        for (int departmentId : departmentIds) {
-            // Fetch all relations in the department
-            results.addAll(getDepartmentClassProctoringsById(departmentId));
-        }
-
-        return results;
-    }
-
-    @Autowired
-    TAService taService;
-
-    @Override
-    public List<ClassProctoringAndTAsDTO> getClassProctoringsOfCreator(int creatorId) {
-
-        Optional<Instructor> optionalInstructor = instructorRepo.findByUserId(creatorId);
-        if (optionalInstructor.isEmpty()) {
-            throw new RuntimeException("Instructor not found");
-        }
-        List<CourseInstructorRelation> offeredCourses = optionalInstructor.get().getCourseInstructorRelations();
-        List<Course> courses = new ArrayList<>();
-        Set<Course> processedCourses = new HashSet<>();
-        for (CourseInstructorRelation relation : offeredCourses) {
-            if (!processedCourses.contains(relation.getCourse().getCourse())) {
-                courses.add(relation.getCourse().getCourse());
-                processedCourses.add(relation.getCourse().getCourse());
-            }
-        }
-
-        List<ClassProctoringTARelation> cprList = new ArrayList<>();
-
-        for (Course course : courses) {
-            cprList.addAll(classProctoringTARelationRepo.findByClassProctoring_Course(course));
-        }
-
-        // Group by classProctoringId
-        Map<Integer, List<ClassProctoringTARelation>> groupedByProctoring = new HashMap<>();
-        for (ClassProctoringTARelation cprInstance : cprList) {
-            int classProctoringId = cprInstance.getClassProctoring().getClassProctoringId();
-            groupedByProctoring.computeIfAbsent(classProctoringId, k -> new ArrayList<>()).add(cprInstance);
-        }
-
-        List<ClassProctoringAndTAsDTO> results = new ArrayList<>();
-
-        for (Map.Entry<Integer, List<ClassProctoringTARelation>> entry : groupedByProctoring.entrySet()) {
-            Integer classProctoringId = entry.getKey();
-            List<ClassProctoringTARelation> relations = entry.getValue();
-
-            // One DTO per proctoring
-            ClassProctoringAndTAsDTO dto = new ClassProctoringAndTAsDTO();
-
-            // Set the common classProctoringTARelation (use the first one)
-            dto.setClassProctoringTARelationDTO(ClassProctoringTARelationMapper.essentialMapper(relations.get(0)));
-
-            // Set TA list
-            List<TAProfileDTO> tas = relations.stream()
-                    .map(cpr -> TAProfileMapper.essentialMapper(cpr.getTA()))
-                    .collect(Collectors.toList());
-
-            dto.setTaProfileDTOList(tas);
-
             results.add(dto);
         }
 

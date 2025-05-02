@@ -14,4 +14,7 @@ public class DeansOfficeProfileDTO {
     String bilkentId;
     String role;
     String faculty;
+    String phoneNumber;
+    boolean active;
+    int facultyId;
 }

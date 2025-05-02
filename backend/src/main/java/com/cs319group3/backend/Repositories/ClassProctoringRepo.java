@@ -29,4 +29,6 @@ public interface ClassProctoringRepo extends JpaRepository<ClassProctoring, Inte
     WHERE cp.classProctoringId = :classProctoringId
 """)
     Integer findCountByClassProctoringId(int classProctoringId);
+
+    List<ClassProctoring> findByCreatorUserId(int creatorId);
 }
