@@ -2,6 +2,11 @@ package com.cs319group3.backend.Controllers;
 
 import com.cs319group3.backend.Components.JwtUtil;
 import com.cs319group3.backend.DTOs.LoginDTO;
+import com.cs319group3.backend.Entities.Login;
+import com.cs319group3.backend.Entities.UserEntities.User;
+import com.cs319group3.backend.Entities.UserType;
+import com.cs319group3.backend.Repositories.UserRepo;
+import com.cs319group3.backend.Repositories.UserTypeRepo;
 import com.cs319group3.backend.Services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,7 +15,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("auth")
@@ -25,33 +33,66 @@ public class AuthenticationController {
 
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private UserRepo userRepo;
+
+    @Autowired
+    private UserTypeRepo userTypeRepo;
 
     @PutMapping("changePassword")
     public boolean changePassword(@RequestBody LoginDTO newLoginDTO) {
         return authenticationService.changePassword(newLoginDTO);
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDTO loginRequest) {
-
-        String combinedUsername = loginRequest.getEmail() + "::" + loginRequest.getUserTypeName();
-
         try {
-            // Authenticate the user with the combined username (email + userType)
-            Authentication auth = authenticationManager.authenticate(
+            // Create a combined username format for authentication
+            String combinedUsername = loginRequest.getEmail() + "::" + loginRequest.getUserTypeName();
+
+            // Authenticate with Spring Security
+            Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(combinedUsername, loginRequest.getPassword())
             );
 
-            // Extract additional information from loginRequest (assuming they exist in the LoginDTO)
-            String email = loginRequest.getEmail();
-            String userType = loginRequest.getUserTypeName();
+            // Get authenticated user details
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-            // Generate the token using all required parameters
-            String token = jwtUtil.generateToken(combinedUsername, email, userType);
+            // Fetch additional user data from service
+            Optional<User> userReceived = userRepo.findByEmail(loginRequest.getEmail());
+
+            if (userReceived.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("User not found with the provided email and user type");
+            }
+
+            User user = userReceived.get();
+            int userTypeId = 0;
+            for (Login userType : user.getLogins()) {
+                if (userType.getUserType().getUserTypeName().equals(loginRequest.getUserTypeName())){
+                    userTypeId = userType.getUserType().getUserTypeId();
+                    break;
+                }
+            }
+
+
+
+            // Generate JWT token with user information
+            String token = jwtUtil.generateToken(
+                    combinedUsername,
+                    loginRequest.getEmail(),
+                    user.getUserId(),
+                    userTypeId
+            );
 
             return ResponseEntity.ok(token);
+
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid email or password");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Authentication error: " + e.getMessage());
         }
     }
 }

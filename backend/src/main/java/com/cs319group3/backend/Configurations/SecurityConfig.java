@@ -2,7 +2,8 @@ package com.cs319group3.backend.Configurations;
 
 
 import com.cs319group3.backend.Components.JwtRequestFilter;
-import com.cs319group3.backend.Services.ServiceImpls.LoginServiceImpl;
+import com.cs319group3.backend.Services.AuthenticationService;
+import com.cs319group3.backend.Services.ServiceImpls.AuthenticationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,7 +45,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(LoginServiceImpl loginServiceImpl) {
+    public AuthenticationProvider authenticationProvider(AuthenticationServiceImpl loginServiceImpl) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(loginServiceImpl);
         authProvider.setPasswordEncoder(passwordEncoder());

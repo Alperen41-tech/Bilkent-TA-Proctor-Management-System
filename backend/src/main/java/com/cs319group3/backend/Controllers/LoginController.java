@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Controllers;
 
-import com.cs319group3.backend.Services.LoginService;
+
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
@@ -17,10 +18,10 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     @Autowired
-    private LoginService loginService;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private CurrentUserUtil currentUserUtil;
 
     @GetMapping("deneme")
     public ResponseEntity<String> deneme() {
@@ -31,11 +32,12 @@ public class LoginController {
 
     @GetMapping("/me")
     public ResponseEntity<String> getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated()) {
-            return ResponseEntity.ok("Authenticated as: " + auth.getName());
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authenticated");
-        }
+        String currentUserEmail = currentUserUtil.getCurrentEmail();
+        int id = currentUserUtil.getCurrentUserId();
+        int userTypeId = currentUserUtil.getCurrentUserTypeId();
+        String currentUsername = currentUserUtil.getCurrentUserTypeName();
+
+        String res = "email: " + currentUserEmail + " id " + id + " type: " + userTypeId + " usermail: " + currentUserEmail + " name: " + currentUsername;
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 }
