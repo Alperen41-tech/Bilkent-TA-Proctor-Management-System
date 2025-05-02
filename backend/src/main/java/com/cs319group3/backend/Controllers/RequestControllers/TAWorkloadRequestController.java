@@ -22,11 +22,13 @@ public class TAWorkloadRequestController {
         return taWorkloadRequestService.createTAWorkloadRequest(taWorkloadRequestDTO, taId);
     }
 
+    //not being used anymore
     @GetMapping("getByTA")
     public List<RequestDTO> getTAWorkloadRequestsByTA(@RequestParam("id") int taId) {
         return taWorkloadRequestService.getTAWorkloadRequestsByTA(taId);
     }
 
+    //not being used anymore
     @GetMapping("getByInstructor")
     public List<RequestDTO> getTAWorkloadRequestsByInstructor(@RequestParam("instructorId") int instructorId) {
         return taWorkloadRequestService.getTAWorkloadRequestsByInstructor(instructorId);

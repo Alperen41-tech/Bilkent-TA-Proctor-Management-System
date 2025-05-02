@@ -47,10 +47,12 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
 
     @Override
     public boolean createTAWorkloadRequest(RequestDTO dto, int taId) {
+
+
         try {
-            TAWorkloadRequest swapRequest = requestMapper.taWorkloadRequestToEntityMapper(dto);
-            taWorkloadRequestRepo.save(swapRequest);
-            notificationService.createNotification(swapRequest, NotificationType.REQUEST);
+            TAWorkloadRequest workloadRequest = requestMapper.taWorkloadRequestToEntityMapper(dto);
+            taWorkloadRequestRepo.save(workloadRequest);
+            notificationService.createNotification(workloadRequest, NotificationType.REQUEST);
 
             return true;
         } catch (Exception e) {

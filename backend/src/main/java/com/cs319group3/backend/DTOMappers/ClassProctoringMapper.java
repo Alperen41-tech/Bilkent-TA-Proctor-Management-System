@@ -32,6 +32,7 @@ public class ClassProctoringMapper {
         classProctoringDTO.setProctoringName(classProctoring.getEventName());
         classProctoringDTO.setCourseName(classProctoring.getCourse().getCourseName());
         classProctoringDTO.setStartDate(classProctoring.getStartDate());
+        classProctoringDTO.setSection(classProctoring.getSectionNo());
         classProctoringDTO.setEndDate(classProctoring.getEndDate());
         List<String> tempClassrooms = classProctoring.getClassrooms().stream().map(cpc -> cpc.getId().getClassroom()).collect(Collectors.toList());
 
