@@ -5,9 +5,23 @@ import "./INS_ExamsPage.css";
 import TAItem from "../TAItem";
 import TaskItem from "../TaskItem";
 import axios from "axios";
+import { set } from "date-fns";
 
 const INS_ExamsPage = () => {
-  const [selectedTask, setSelectedTask] = useState(null);
+  const [selectedTask, setSelectedTask] = useState({
+    classProctoringTARelationDTO: {
+      classProctoringDTO: {
+        id: null,
+        courseName: "",
+        proctoringName: "",
+        startDate: "",
+        endDate: "",
+        classrooms: "",
+      },
+    },
+    taProfileDTOList: [],
+  });
+
   const [selectedTA, setSelectedTA] = useState(null);
   const [proctoringTasks, setProctoringTasks] = useState([]);
 
@@ -19,7 +33,7 @@ const INS_ExamsPage = () => {
 
   const fetchProctoringTasks = async () => {
     try{
-      const response = await axios.get("http://localhost:8080/classProctoringTARelation/getClassProctoringOfCreator?creatorId=1&creatorId=9");
+      const response = await axios.get("http://localhost:8080/classProctoringTARelation/getClassProctoringOfCreator?creatorId=4");
       if (response.data) {
         setProctoringTasks(response.data);
         console.log("Proctoring tasks fetched successfully:", response.data);
@@ -37,14 +51,9 @@ const INS_ExamsPage = () => {
     console.log(proctoringTasks);
   };
 
-  const handleSort = () => {
-    console.log("Sort Name:", sortName, "Workload:", sortWorkload);
-  };
-
-
-  const createTaskItem = (id, course, name, date, timeInterval, classroom, onClickHandler, selectedTaskId) => {
+  const createTaskItem = (id, course, name, date, timeInterval, classroom, onClickHandler) => {
     const task = { id, course, name, date, timeInterval, classroom };
-    const isSelected = selectedTaskId === id;
+    const isSelected = selectedTask.classProctoringTARelationDTO.classProctoringDTO.id === id;
     return <TaskItem key={id} task={task} onClick={onClickHandler} isSelected={isSelected} />;
   };
 
@@ -60,6 +69,7 @@ const INS_ExamsPage = () => {
         ta={ta}
         onClick={onClickHandler}
         isSelected={isSelected}
+        inInstructor={true} 
       />
     );
   };
@@ -81,7 +91,17 @@ const INS_ExamsPage = () => {
         <div className="ins-exam-card ins-exam-assignments">
           <h3>Your Assignments with Proctors</h3>
           <div className="task-row">
-
+            {proctoringTasks.map((task) => (
+              createTaskItem(
+                task.classProctoringTARelationDTO.classProctoringDTO.id,
+                task.classProctoringTARelationDTO.classProctoringDTO.courseName,
+                task.classProctoringTARelationDTO.classProctoringDTO.proctoringName,
+                task.classProctoringTARelationDTO.classProctoringDTO.startDate,
+                task.classProctoringTARelationDTO.classProctoringDTO.endDate,
+                task.classProctoringTARelationDTO.classProctoringDTO.classrooms,
+                () => {handleTaskClick(task); setSelectedTA(null);},
+              )
+            ))}
             </div>
         </div>
 
@@ -89,7 +109,16 @@ const INS_ExamsPage = () => {
         <div className="ins-exam-card ins-exam-assigned-tas">
           <h3>TAs Assigned for this Task</h3>
           <div className="ins-exam-assigned-tas">
-
+            <div className="ins-exams-ta-list-header">
+              <span>Name</span>
+              <span>Email</span>
+              <span>Department</span>
+              <span>Bilkent ID</span>
+              <span>Workload</span>
+            </div>
+            {selectedTask.taProfileDTOList.map((ta) => (
+              createTAItem(ta, () => handleTAClick(ta))
+            ))}
           </div>
 
         </div>

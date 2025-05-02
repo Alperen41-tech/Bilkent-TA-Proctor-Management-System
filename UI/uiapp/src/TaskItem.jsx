@@ -16,7 +16,7 @@ const TaskItem = ({ task, onClick, isSelected }) => {
       <div className="property"><strong>Task:</strong> {task.name}</div>
       <div className="property"><strong>Date:</strong> {task.date}</div>
       <div className="property"><strong>Time:</strong> {task.timeInterval}</div>
-      <div className="property"><strong>Classroom:</strong> {task.classroom}</div>
+      <div className="property"><strong>Classrooms:</strong> {task.classroom}</div>
     </div>
   );
 };

@@ -15,7 +15,7 @@ const INS_DashboardPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
-
+  const [selectedRespondedWorkloadRequest, setSelectedRespondedWorkloadRequest] = useState(null);
 
 // Refs for form inputs
   const newTaskTypeNameRef = useRef();
@@ -32,7 +32,7 @@ const INS_DashboardPage = () => {
   const createPendingRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <PendingRequestItem {...request} onCancel={() => cancelPendingRequest(request.requestId)}/>
+        <PendingRequestItem {...request} onCancel={() => cancelPendingRequest(request.requestId)} isSelected={selectedRequest === request}/>
       </div>
     );
   };
@@ -45,8 +45,8 @@ const INS_DashboardPage = () => {
     );
   };
 
-  const createWorkloadEntry = (courseCode, taskTitle, date, duration, comment, status) => {
-    return <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status} />;
+  const createWorkloadEntry = (courseCode, taskTitle, date, duration, comment, status, onSelect) => {
+    return <div onClick={() => {setShowRespondedWorkloadDetails(true);onSelect();}}> <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status} /> </div>;
   }
 
   const fetchNotifications = async () => {
@@ -216,7 +216,7 @@ const INS_DashboardPage = () => {
 
 
               {activeTab === "tasks" && (
-                <div onClick={() => setShowRespondedWorkloadDetails(true)}>{receivedRequests.filter((rq,index) =>{
+                <div >{receivedRequests.filter((rq,index) =>{
                   if (rq.requestType !== "TAWorkloadRequest") return false;                  
                   return rq.status === "APPROVED" || rq.status === "REJECTED";
                 }).map((ent, idx) =>
@@ -226,7 +226,8 @@ const INS_DashboardPage = () => {
                     ent.sentDateTime,
                     ent.timeSpent,
                     ent.description,
-                    ent.status 
+                    ent.status,
+                    () => setSelectedRespondedWorkloadRequest(ent)  // Set the selected request for details
                   ) 
                 )}
                 </div>
@@ -337,12 +338,15 @@ const INS_DashboardPage = () => {
       <div className="modal-overlay">
         <div className="modal">
           <h3>Workload Request Details</h3>
-          <label>Old Password</label>
-          <input type="password" placeholder="Enter your old password" />
-          <label>New Password</label>
-          <input type="password" placeholder="At least 8 characters long" />
-          <label>Confirm New Password</label>
-          <input type="password" placeholder="Confirm new password" />
+          <div className="modal-content">
+            <p><strong>Course Code:</strong> {selectedRespondedWorkloadRequest.courseCode}</p>
+            <p><strong>Task Title:</strong> {selectedRespondedWorkloadRequest.taskTypeName}</p>
+            <p><strong>Date:</strong> {selectedRespondedWorkloadRequest.sentDateTime.split("T")[0]}</p>
+            <p><strong>Duration:</strong> {selectedRespondedWorkloadRequest.timeSpent} hours</p>
+            <p><strong>Comment:</strong> {selectedRespondedWorkloadRequest.description}</p>
+            <p><strong>Status:</strong> {selectedRespondedWorkloadRequest.status}</p>
+            <p><strong>Sender Name:</strong> {selectedRespondedWorkloadRequest.senderName}</p>
+          </div>
           <div className="modal-buttons">
             <button className="cancel-button" onClick={() => setShowRespondedWorkloadDetails(false)}>Return</button>
           </div>

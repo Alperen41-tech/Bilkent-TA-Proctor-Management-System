@@ -20,12 +20,6 @@ const TAsPage = () => {
   const [activeTab, setActiveTab] = useState("list");
   const [activeTAId, setActiveTAId] = useState(null);
 
-  const handleSort = () => {
-    // Later: apply sort on TA list from backend or state
-    console.log("Sorting by:", sortDepartment, sortWorkload, sortName);
-  };
-
-
   const handleViewProfile = (taId) => {
     setActiveTab("profile");
     setActiveTAId(taId);
@@ -142,7 +136,14 @@ const TAsPage = () => {
               ))}
             </div>
   
-            <button className="insTA-bottom-btn" onClick={() => handleViewProfile(selectedTA.userId)}>
+            <button className="insTA-bottom-btn" onClick={() => {
+              if(selectedTA) {
+                handleViewProfile(selectedTA.userId);
+              } 
+              else {
+                alert("Please select a TA to view their profile.");
+              }
+              }}>
               View Profile
             </button>
           </div>
