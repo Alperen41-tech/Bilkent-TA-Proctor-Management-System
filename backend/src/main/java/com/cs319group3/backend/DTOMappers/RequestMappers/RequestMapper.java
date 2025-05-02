@@ -10,10 +10,7 @@ import com.cs319group3.backend.Entities.UserEntities.DepartmentSecretary;
 import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 
-import com.cs319group3.backend.Repositories.ClassProctoringRepo;
-import com.cs319group3.backend.Repositories.DepartmentSecretaryRepo;
-import com.cs319group3.backend.Repositories.TaskTypeRepo;
-import com.cs319group3.backend.Repositories.UserRepo;
+import com.cs319group3.backend.Repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -213,6 +210,8 @@ public class RequestMapper {
         return requestDTOs;
     }
 
+    @Autowired
+    InstructorRepo instructorRepo;
 
     public RequestDTO instructorAdditionalTARequestMapper(InstructorAdditionalTARequest request){
         RequestDTO requestDTO = essentialMapper(request);
@@ -220,6 +219,9 @@ public class RequestMapper {
 
         requestDTO.setTaCountNeeded(request.getTaCount());
         requestDTO.setIsComplete(request.isSentToSecretary());
+
+        int senderUserId = request.getSenderUser().getUserId();
+        requestDTO.setDepartmentId(instructorRepo.getDepartmentId(senderUserId));
 
         return requestDTO;
     }

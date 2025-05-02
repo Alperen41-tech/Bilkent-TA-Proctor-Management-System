@@ -38,8 +38,8 @@ public class RequestDTO {
 
     // instructorAdditionalTARequest
     private int taCountNeeded;
-
     private Boolean isComplete;
+    private int departmentId;
 
     // taLeaveRequest
 
