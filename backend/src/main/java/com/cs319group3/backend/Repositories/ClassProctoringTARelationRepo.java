@@ -2,6 +2,7 @@ package com.cs319group3.backend.Repositories;
 
 
 import com.cs319group3.backend.CompositeIDs.ClassProctoringTAKey;
+import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +21,7 @@ public interface ClassProctoringTARelationRepo extends JpaRepository<ClassProcto
     List<ClassProctoringTARelation> findByClassProctoring_Course_Department_DepartmentId(Integer departmentId);
     List<ClassProctoringTARelation> findByClassProctoring_Course_Department_DepartmentCode(String departmentCode);
     List<ClassProctoringTARelation> findByClassProctoring_ClassProctoringId(Integer id);
+    List<ClassProctoringTARelation> findByClassProctoring_Course(Course classProctoringCourse);
 
     @Query("""
     SELECT COUNT(ctr)

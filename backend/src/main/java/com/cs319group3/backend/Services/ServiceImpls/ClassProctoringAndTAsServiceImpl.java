@@ -7,8 +7,12 @@ import com.cs319group3.backend.DTOs.ClassProctoringAndTAsDTO;
 import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
+import com.cs319group3.backend.Entities.Course;
+import com.cs319group3.backend.Entities.OfferedCourse;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
+import com.cs319group3.backend.Entities.RelationEntities.CourseInstructorRelation;
 import com.cs319group3.backend.Entities.UserEntities.DeansOffice;
+import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.ClassProctoringAndTAsService;
@@ -33,6 +37,8 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
     private CourseRepo courseRepo;
     @Autowired
     private ClassProctoringRepo classProctoringRepo;
+    @Autowired
+    private InstructorRepo instructorRepo;
 
     @Override
     public List<ClassProctoringAndTAsDTO> getDepartmentTAsClassProctorings(int userId) {
@@ -193,7 +199,26 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
 
     @Override
     public List<ClassProctoringAndTAsDTO> getClassProctoringsOfCreator(int creatorId) {
-        List<ClassProctoringTARelation> cprList = classProctoringTARelationRepo.findByCreator_UserId(creatorId);
+
+        Optional<Instructor> optionalInstructor = instructorRepo.findByUserId(creatorId);
+        if (optionalInstructor.isEmpty()) {
+            throw new RuntimeException("Instructor not found");
+        }
+        List<CourseInstructorRelation> offeredCourses = optionalInstructor.get().getCourseInstructorRelations();
+        List<Course> courses = new ArrayList<>();
+        Set<Course> processedCourses = new HashSet<>();
+        for (CourseInstructorRelation relation : offeredCourses) {
+            if (!processedCourses.contains(relation.getCourse().getCourse())) {
+                courses.add(relation.getCourse().getCourse());
+                processedCourses.add(relation.getCourse().getCourse());
+            }
+        }
+
+        List<ClassProctoringTARelation> cprList = new ArrayList<>();
+
+        for (Course course : courses) {
+            cprList.addAll(classProctoringTARelationRepo.findByClassProctoring_Course(course));
+        }
 
         // Group by classProctoringId
         Map<Integer, List<ClassProctoringTARelation>> groupedByProctoring = new HashMap<>();
