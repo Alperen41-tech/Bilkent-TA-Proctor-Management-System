@@ -45,6 +45,38 @@ const INS_ExamsPage = () => {
       console.error("Error fetching proctoring tasks:", error);
     }
   };
+  const handleDiscardTA = async () => {
+    if (selectedTA) {
+      const response = await axios.delete(`http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring?classProctoringId=${selectedTask.classProctoringTARelationDTO.classProctoringDTO.id}&taId=${selectedTA.userId}`);
+      if (response.data) {
+        console.log("TA discarded successfully:", selectedTA);
+        alert("TA discarded successfully.");
+        setSelectedTA(null); // Clear the selected TA after discarding
+        setSelectedTask({
+          classProctoringTARelationDTO: {
+            classProctoringDTO: {
+              id: null,
+              courseName: "",
+              proctoringName: "",
+              startDate: "",
+              endDate: "",
+              classrooms: "",
+            },
+          },
+          taProfileDTOList: [],
+        });
+        fetchProctoringTasks(); // Refresh the task list after discarding
+      } else {
+        console.error("Failed to discard TA:", response.statusText);
+      }
+
+
+
+    } else {
+      alert("No TA selected to discard.");
+      console.log("No TA selected to discard.");
+    }
+  };
 
   const handleSearch = () => {
     console.log("Searching for:", searchText);
@@ -116,9 +148,14 @@ const INS_ExamsPage = () => {
               <span>Bilkent ID</span>
               <span>Workload</span>
             </div>
-            {selectedTask.taProfileDTOList.map((ta) => (
-              createTAItem(ta, () => handleTAClick(ta))
-            ))}
+            <div className="ins-exam-ta-list-items">
+              {selectedTask.taProfileDTOList.map((ta) => (
+                createTAItem(ta, () => handleTAClick(ta))
+              ))}
+            </div>
+          </div>
+          <div>
+            <button className="ins-exam-assign-ta-button" onClick={() => handleDiscardTA()}>Discard TA</button>
           </div>
 
         </div>
@@ -151,16 +188,6 @@ const INS_ExamsPage = () => {
 
           <label>TA count</label>
           <input type="number" className="ta-count-input" value={taCount} onChange={(e) => setTaCount(e.target.value)} />
-
-          <div className="ins-exam-assignment-buttons">
-            <button
-              className={autoAssign ? "active" : ""}
-              onClick={() => setAutoAssign(!autoAssign)}
-            >
-              {autoAssign ? "✔ Automatic Assigning" : "Automatic Assigning"}
-            </button>
-
-          </div>
         </div>
 
         {/* TA List + Sort/Search */}

@@ -124,3 +124,7 @@
   padding-right: 10px;
   border-radius: 10px;
 }
+.ins-exam-ta-list-items {
+  height: 400px;
+  overflow-y: auto;
+}
