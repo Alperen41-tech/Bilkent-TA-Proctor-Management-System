@@ -27,6 +27,15 @@ const DOCreateExamPage = () => {
   const [selectedTA, setSelectedTA] = useState(null);
   const [selectedTAObj, setSelectedTAObj] = useState(null);
 
+  const [selectedDepartmentCode, setSelectedDepartmentCode] = useState("");
+  const [selectedCourseCode, setSelectedCourseCode] = useState("");
+
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
+
+
+
   const handleTAClick = (ta) => {
     const key = `${ta.name}-${ta.surname}-${ta.email}`;
     setSelectedTA(key);
@@ -87,7 +96,7 @@ const DOCreateExamPage = () => {
       alert("An error occurred. Please try again.");
     }
   };
-  
+
 
 
   const fetchTAs = async (departmentCode, proctoringId) => {
@@ -233,15 +242,47 @@ const DOCreateExamPage = () => {
               <input type="text" placeholder="Enter Classroom" />
 
               <label>Department</label>
-              <select>
-                <option value="">Select Department</option>
-                <option value="CS">CS</option>
-                <option value="IE">IE</option>
-                <option value="Other">Other</option>
-              </select>
+<select
+  value={selectedDepartmentId || ""}
+  onChange={async (e) => {
+    const departmentId = parseInt(e.target.value);
+    setSelectedDepartmentId(departmentId);
 
-              <label>Course Name</label>
-              <input type="text" placeholder="e.g., CS 202" />
+    try {
+      const { data } = await axios.get(
+        "http://localhost:8080/course/getCoursesInDepartment",
+        { params: { departmentId } }
+      );
+      setCourses(data || []);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+    }
+  }}
+>
+  <option value="">Select Department</option>
+  {departments.map((dept) => (
+    <option key={dept.departmentId} value={dept.departmentId}>
+      {dept.departmentName}
+    </option>
+  ))}
+</select>
+
+
+
+<label>Course</label>
+<select
+  value={selectedCourseId || ""}
+  onChange={(e) => setSelectedCourseId(parseInt(e.target.value))}
+>
+  <option value="">Select Course</option>
+  {courses.map((course) => (
+    <option key={course.id} value={course.id}>
+      {course.name}
+    </option>
+  ))}
+</select>
+
+
 
               <label>Start Time</label>
               <input type="time" />
