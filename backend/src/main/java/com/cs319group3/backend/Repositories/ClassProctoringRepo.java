@@ -31,4 +31,30 @@ public interface ClassProctoringRepo extends JpaRepository<ClassProctoring, Inte
     Integer findCountByClassProctoringId(int classProctoringId);
 
     List<ClassProctoring> findByCreatorUserId(int creatorId);
+
+    @Query("""
+    SELECT cp
+    FROM ClassProctoring cp
+    JOIN cp.course c
+    JOIN OfferedCourse oc ON oc.course = c
+    JOIN CourseInstructorRelation cir ON cir.course = oc
+    WHERE cir.instructor.userId = :instructorId
+""")
+    List<ClassProctoring> findClassProctoringsByInstructorId(int instructorId);
+
+    @Query("""
+    SELECT cp
+    FROM ClassProctoring cp
+    JOIN cp.course c
+    JOIN c.department d
+    WHERE d.departmentCode = :deptCode
+""")
+    List<ClassProctoring> findAllByDepartmentCode(@Param("deptCode") String deptCode);
+
+    @Query("""
+    SELECT rel.classProctoring
+    FROM ClassProctoringTARelation rel
+    WHERE rel.ta.userId = :taId
+""")
+    List<ClassProctoring> findProctoringsByTAId(@Param("taId") int taId);
 }

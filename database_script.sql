@@ -323,6 +323,7 @@ create table notification(
     request_id int,
     notification_type varchar(50),
     is_read boolean,
+    description varchar(200),
     foreign key (receiver_id) references user(user_id),
     foreign key (request_id) references request(request_id)
 );
@@ -492,8 +493,8 @@ INSERT INTO request (request_id, sender_user_id, receiver_user_id, sent_date, is
 	(18, 1, 3, '2025-05-23 10:00:00', false, null, 'Request 18 for from_dean'),
 	(19, 7, 4, '2025-05-24 10:00:00', true, '2025-05-27 10:00:00', 'Request 19 for from_dean'),
 	(20, 7, 8, '2025-05-25 10:00:00', false, null, 'Request 20 for from_dean'),
-	(28, 7, 9, '2025-05-06 8:00:00', true, '2025-05-10 10:00:00' , 'Request 1 for swap'),
-	(29, 7, 9, '2025-05-06 10:00:00', false, '2025-05-10 10:00:00' , 'Request 1 for swap');
+	(21, 5, 9, '2025-05-06 8:00:00', true, '2025-05-10 10:00:00' , 'Request 1 for swap'),
+	(22, 6, 9, '2025-05-06 10:00:00', false, '2025-05-10 10:00:00' , 'Request 1 for swap');
 
 INSERT INTO ta_swap_request (request_id, class_proctoring_id) VALUES
 	(1, 2),
@@ -524,8 +525,8 @@ INSERT INTO instructor_additional_ta_request (request_id, ta_count, is_sent_to_s
 	(18, 2, false, 2),
 	(19, 2, true, 1),
 	(20, 1, false, 5),
-	(28, 2, false, 3),
-	(29, 2, false, 3);
+	(21, 2, false, 3),
+	(22, 2, false, 3);
     
 INSERT INTO class_proctoring_ta_relation (class_proctoring_id, ta_id, is_paid, is_complete, is_open_to_swap) VALUES
 	(1, 3, false, false, true),
