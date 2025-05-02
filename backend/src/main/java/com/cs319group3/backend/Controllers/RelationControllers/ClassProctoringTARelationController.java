@@ -7,6 +7,8 @@ import com.cs319group3.backend.Services.ClassProctoringAndTAsService;
 import com.cs319group3.backend.Services.ClassProctoringTARelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -66,8 +68,15 @@ public class ClassProctoringTARelationController {
     }
 
     @GetMapping("getClassProctoringOfCreator")
-    public List<ClassProctoringAndTAsDTO> getClassProctoringOfCreator(@RequestParam int creatorId){
-        System.out.println("getClassProctoringOfCreator");
-        return classProctoringAndTAs.getClassProctoringsOfCreator(creatorId);
+    public ResponseEntity<?> getClassProctoringOfCreator(@RequestParam int creatorId){
+        System.out.println("getClassProctoringOfCreator called with creatorId = " + creatorId);
+        try {
+            List<ClassProctoringAndTAsDTO> result = classProctoringAndTAs.getClassProctoringsOfCreator(creatorId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace(); // 👈 THIS WILL SHOW THE ERROR IN BACKEND CONSOLE
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server Error: " + e.getMessage());
+        }
     }
+
 }

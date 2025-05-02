@@ -5,13 +5,7 @@ import AdminDatabaseItem from "../Admin/AdminDatabaseItem";
 import TAItem from "../TAItem";
 import axios from "axios";
 
-
 const DOCreateExamPage = () => {
-
-
-
-
-  // Form fields for creating a new task
   const [taskType, setTaskType] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -19,106 +13,107 @@ const DOCreateExamPage = () => {
   const [taCount, setTaCount] = useState(2);
   const [isAutoAssigning, setIsAutoAssigning] = useState(false);
   const [isUnpaidProctoring, setIsUnpaidProctoring] = useState(false);
-  const facultyId = 1; // Hardcoded for now, you can pass dynamically later
+  const facultyId = 1;
   const creatorId = 9;
+
   const [allTAs, setAllTAs] = useState([]);
   const [tas, setTAs] = useState([]);
   const [createdExams, setCreatedExams] = useState([]);
-  const [examItems, setExamItems] = useState([]); // Real fetched exams
-  const [departments, setDepartments] = useState([]); // Departments from backend
+  const [departments, setDepartments] = useState([]);
   const [selectedExamItem, setSelectedExamItem] = useState(null);
-  const [taDepartmentFilter, setTaDepartmentFilter] = useState(""); // For department dropdown
-
-
-
-
-
-
-
-  const [selectedTA, setSelectedTA] = useState(null);
   const [selectedExamKey, setSelectedExamKey] = useState(null);
 
+  const [taDepartmentFilter, setTaDepartmentFilter] = useState("");
+  const [selectedTA, setSelectedTA] = useState(null);
+  const [selectedTAObj, setSelectedTAObj] = useState(null);
 
-
-  // Handle creation of a new task
-  const handleCreateTask = () => {
-    // Placeholder for logic to create a new task
-    alert(`Task Created!\nType: ${taskType}\nTitle: ${taskTitle}\nTime: ${startTime} - ${endTime}\nTA Count: ${taCount}\nAuto? ${isAutoAssigning}\nUnpaid? ${isUnpaidProctoring}`);
+  const handleTAClick = (ta) => {
+    const key = `${ta.name}-${ta.surname}-${ta.email}`;
+    setSelectedTA(key);
+    setSelectedTAObj(ta);
   };
 
-  // Handle automatic assignment
-  const handleAutomaticAssign = () => {
-    // Placeholder for logic
-    alert("Automatically assigning TAs...");
+  const createTAItem = (ta, onClickHandler, selectedTAKey) => {
+    const key = `${ta.name}-${ta.surname}-${ta.email}`;
+    const isSelected = selectedTAKey === key;
+
+    return (
+      <TAItem
+        key={key}
+        ta={ta}
+        onClick={() => onClickHandler(ta)}
+        isSelected={isSelected}
+      />
+    );
   };
 
-  // Handle manual assignment
-  const handleManualAssign = () => {
-    // Placeholder for logic
-    alert("Manually assigning TAs...");
+  const dismissTA = async () => {
+    console.log("▶️ dismissTA called with:", { selectedTAObj, selectedExamItem });
+
+    const taId = selectedTAObj?.userId ?? selectedTAObj?.id;
+
+    const classProctoring = selectedExamItem
+      .classProctoringTARelationDTO
+      ?.classProctoringDTO;
+    const classProctoringId = classProctoring?.id;
+
+    console.log("   → taId =", taId, ", classProctoringId =", classProctoringId);
+
+    if (!taId || !classProctoringId) {
+      alert("Invalid TA or exam selection.");
+      return;
+    }
+
+    try {
+      const { data: success } = await axios.delete(
+        "http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring",
+        { params: { taId, classProctoringId } }
+      );
+
+      if (success) {
+        alert("TA dismissed successfully.");
+        // remove that TA from the assigned-list in state
+        setSelectedExamItem(item => ({
+          ...item,
+          taProfileDTOList: item.taProfileDTOList.filter(t => t.id !== taId)
+        }));
+        setSelectedTA(null);
+        setSelectedTAObj(null);
+      } else {
+        alert("Failed to dismiss the TA. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error dismissing TA:", error);
+      alert("An error occurred. Please try again.");
+    }
   };
-
-
-
-  const createLogsDatabaseItems = () => {
-    return createdExams
-      .filter((item) => item.classProctoringTARelationDTO && item.classProctoringTARelationDTO.classProctoringDTO)
-      .map((item) => {
-        const key = `${item.classProctoringTARelationDTO.classProctoringDTO.courseName}-${item.classProctoringTARelationDTO.classProctoringDTO.startDate}`;
-        const isSelected = selectedExamKey === key;
-
-        return (
-          <AdminDatabaseItem
-            key={key}
-            type="exam"
-            data={{
-              //bura şimdilik böyle kalsın
-
-              id: item.classProctoringTARelationDTO.classProctoringDTO.id,
-              course: item.classProctoringTARelationDTO.classProctoringDTO.courseName,
-              date: item.classProctoringTARelationDTO.classProctoringDTO.startDate,
-              time: item.classProctoringTARelationDTO.classProctoringDTO.timeInterval,
-              location: item.classProctoringTARelationDTO.classProctoringDTO.classrooms,
-            }}
-            onDelete={(id) => console.log(`Deleted exam with ID: ${id}`)}
-            onSelect={() => {
-              setSelectedExamKey(key);
-              setSelectedExamItem(item);
-
-              setTaDepartmentFilter(""); // Reset dropdown
-              const proctoringId = item?.classProctoringTARelationDTO?.classProctoringDTO?.id;
-              fetchTAs("", proctoringId); // Fetch TAs for this exam
-            }}
-            isSelected={isSelected}
-            inLog={true}
-          />
-        );
-      });
-  };
-
+  
 
 
   const fetchTAs = async (departmentCode, proctoringId) => {
     try {
       let response;
 
-      if (!departmentCode || departmentCode === "") {
-        // Fetch all available TAs in faculty
-        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoring', {
-          params: { facultyId: facultyId, proctoringId: proctoringId },
-        });
+      if (!departmentCode) {
+        response = await axios.get(
+          "http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoring",
+          {
+            params: { facultyId, proctoringId },
+          }
+        );
       } else {
-        // Fetch available TAs in selected department
-        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring', {
-          params: { departmentCode: departmentCode, proctoringId: proctoringId },
-        });
+        response = await axios.get(
+          "http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring",
+          {
+            params: { departmentCode, proctoringId },
+          }
+        );
       }
 
-      console.log("Fetched Available TAs: ", response.data);
       setAllTAs(response.data || []);
       setTAs(response.data || []);
     } catch (error) {
-      console.error('Error fetching available TAs:', error);
+      console.error("Error fetching available TAs:", error);
     }
   };
 
@@ -136,13 +131,15 @@ const DOCreateExamPage = () => {
 
   const fetchDepartments = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/department/getAllDepartmentsInFaculty', {
-        params: { facultyId: facultyId },
-      });
-      console.log("Fetched Departments: ", response.data);
+      const response = await axios.get(
+        "http://localhost:8080/department/getAllDepartmentsInFaculty",
+        {
+          params: { facultyId },
+        }
+      );
       setDepartments(response.data || []);
     } catch (error) {
-      console.error('Error fetching departments:', error);
+      console.error("Error fetching departments:", error);
     }
   };
 
@@ -151,68 +148,80 @@ const DOCreateExamPage = () => {
     fetchDepartments();
   }, []);
 
-
-
-  const handleTAClick = (ta) => {
-    const key = `${ta.firstName}-${ta.lastName}-${ta.email}`;
-    setSelectedTA(key);
+  const handleAutomaticAssign = () => {
+    alert("Automatically assigning TAs...");
   };
 
-  const createTAItem = (firstName, lastName, email, onClickHandler, selectedTAKey) => {
-    const ta = { firstName, lastName, email };
-    const key = `${firstName}-${lastName}-${email}`;
-    const isSelected = selectedTAKey === key;
-
-    return (
-      <TAItem
-        key={key}
-        ta={ta}
-        onClick={onClickHandler}
-        isSelected={isSelected}
-      />
-    );
+  const handleManualAssign = () => {
+    alert("Manually assigning TAs...");
   };
 
+  const createLogsDatabaseItems = () => {
+    return createdExams
+      .filter(
+        (item) =>
+          item.classProctoringTARelationDTO &&
+          item.classProctoringTARelationDTO.classProctoringDTO
+      )
+      .map((item) => {
+        const cp = item.classProctoringTARelationDTO.classProctoringDTO;
+        const key = `${cp.courseName}-${cp.startDate}`;
+        const isSelected = selectedExamKey === key;
+
+        return (
+          <AdminDatabaseItem
+            key={key}
+            type="exam"
+            data={{
+              id: cp.id,
+              course: cp.courseName,
+              date: cp.startDate,
+              time: cp.timeInterval,
+              location: cp.classrooms,
+            }}
+            onDelete={(id) => console.log(`Deleted exam with ID: ${id}`)}
+            onSelect={() => {
+              setSelectedExamKey(key);
+              setSelectedExamItem(item);
+              setTaDepartmentFilter("");
+              fetchTAs("", cp.id);
+            }}
+            isSelected={isSelected}
+            inLog={true}
+          />
+        );
+      });
+  };
 
   return (
     <div className="do-create-exam-container">
       <NavbarDO />
-
       <div className="do-create-exam-content">
-        {/* Top row: Your Exams (left) and TAs Assigned (right) */}
         <div className="top-row">
-          {/* Your Exams */}
           <div className="your-exams box">
             <h3>Your Exams</h3>
-            <div className="exam-list">
-              {createLogsDatabaseItems()}
-
-            </div>
+            <div className="exam-list">{createLogsDatabaseItems()}</div>
           </div>
 
-          {/* TAs Assigned for This Task */}
           <div className="assigned-tas box">
             <h3>TAs Assigned for This Task</h3>
             <div className="ta-assigned-list">
               {selectedExamItem?.taProfileDTOList?.length > 0 ? (
-                selectedExamItem.taProfileDTOList.map((ta) => (
-                  createTAItem(ta.name, ta.surname, ta.email, handleTAClick, selectedTA)
-                ))
+                selectedExamItem.taProfileDTOList.map((ta) =>
+                  createTAItem(ta, handleTAClick, selectedTA)
+                )
               ) : (
                 <div>No TAs assigned</div>
               )}
             </div>
 
-
-            <button className="dismissTA-button" >
+            <button className="dismissTA-button" onClick={dismissTA}>
               Dismiss
             </button>
           </div>
         </div>
 
-        {/* Bottom row: Create New Task Type (left) and Choose TAs (right) */}
         <div className="bottom-row">
-          {/* Create New Task Type */}
           <div className="create-task box">
             <div className="type-form">
               <label>Create Exam</label>
@@ -249,18 +258,10 @@ const DOCreateExamPage = () => {
 
               <button className="create-type-button">Create</button>
             </div>
-
-
-
-
-
-
           </div>
 
-          {/* Choose TAs */}
           <div className="choose-tas box">
             <h3>Choose TAs</h3>
-
             <div className="choose-header">
               <select
                 value={taDepartmentFilter}
@@ -268,14 +269,18 @@ const DOCreateExamPage = () => {
                   const selectedDepartment = e.target.value;
                   setTaDepartmentFilter(selectedDepartment);
 
-                  const proctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+                  const proctoringId =
+                    selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
                   fetchTAs(selectedDepartment, proctoringId);
                 }}
               >
                 <option value="">Select Department</option>
                 {departments.length > 0 ? (
                   departments.map((department) => (
-                    <option key={department.departmentCode} value={department.departmentCode}>
+                    <option
+                      key={department.departmentCode}
+                      value={department.departmentCode}
+                    >
                       {department.departmentName}
                     </option>
                   ))
@@ -287,9 +292,9 @@ const DOCreateExamPage = () => {
 
             <div className="choose-list">
               {tas.length > 0 ? (
-                tas.map((ta) => (
-                  createTAItem(ta.name, ta.surname, ta.email, handleTAClick, selectedTA)
-                ))
+                tas.map((ta) =>
+                  createTAItem(ta, handleTAClick, selectedTA)
+                )
               ) : (
                 <div>No TAs available</div>
               )}
@@ -303,7 +308,6 @@ const DOCreateExamPage = () => {
                 Manually Assign
               </button>
             </div>
-
           </div>
         </div>
       </div>
