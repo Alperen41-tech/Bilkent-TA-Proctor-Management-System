@@ -14,4 +14,15 @@ public class DeansOfficeProfileMapper {
         dto.setFaculty(deansOffice.getFaculty().getFacultyName());
         return dto;
     }
+
+    public static DeansOffice toEntity(DeansOfficeProfileDTO dto) {
+        DeansOffice deansOffice = new DeansOffice();
+        deansOffice.setName(dto.getName());
+        deansOffice.setEmail(dto.getEmail());
+        deansOffice.setSurname(dto.getSurname());
+        deansOffice.setBilkentId(dto.getBilkentId());
+        deansOffice.setPhoneNumber(dto.getPhoneNumber());
+        deansOffice.setActive(dto.isActive());
+        return deansOffice;
+    }
 }

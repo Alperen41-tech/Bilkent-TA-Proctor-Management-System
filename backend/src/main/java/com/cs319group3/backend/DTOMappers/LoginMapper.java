@@ -2,6 +2,7 @@ package com.cs319group3.backend.DTOMappers;
 
 import com.cs319group3.backend.DTOs.LoginDTO;
 import com.cs319group3.backend.Entities.Login;
+import com.cs319group3.backend.Entities.UserEntities.DeansOffice;
 import com.cs319group3.backend.Entities.UserEntities.DepartmentSecretary;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import com.cs319group3.backend.Entities.UserEntities.TA;
@@ -36,6 +37,14 @@ public class LoginMapper {
         login.setUser(departmentSecretary);
         login.setPassword(dto.getPassword());
         login.setUserType(userTypeRepo.findByUserTypeName("department secretary"));
+        return login;
+    }
+
+    public Login essentialEntityToLogin(LoginDTO dto, DeansOffice deansOffice) {
+        Login login = new Login();
+        login.setUser(deansOffice);
+        login.setPassword(dto.getPassword());
+        login.setUserType(userTypeRepo.findByUserTypeName("deans office"));
         return login;
     }
 }
