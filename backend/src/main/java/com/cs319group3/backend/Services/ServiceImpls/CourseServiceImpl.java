@@ -1,9 +1,13 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.CourseMapper;
+import com.cs319group3.backend.DTOMappers.OfferedCourseMapper;
 import com.cs319group3.backend.DTOs.CourseDTO;
+import com.cs319group3.backend.DTOs.OfferedCourseDTO;
 import com.cs319group3.backend.Entities.Course;
+import com.cs319group3.backend.Entities.OfferedCourse;
 import com.cs319group3.backend.Repositories.CourseRepo;
+import com.cs319group3.backend.Repositories.OfferedCourseRepo;
 import com.cs319group3.backend.Services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,5 +29,20 @@ public class CourseServiceImpl implements CourseService {
             courseDTOs.add(courseDTO);
         }
         return courseDTOs;
+    }
+
+    @Autowired
+    OfferedCourseRepo offeredCourseRepo;
+
+    @Override
+    public List<OfferedCourseDTO> getCoursesOfInstructor(int instructorId){
+        List<Integer> offeredCourseIds = offeredCourseRepo.findOfferedCourseIdByInstructorId(instructorId);
+        List<OfferedCourseDTO> ocDTOs = new ArrayList<>();
+        for(Integer offeredCourseId : offeredCourseIds){
+            OfferedCourse offeredCourse = offeredCourseRepo.findByOfferedCourseId(offeredCourseId).get();
+            OfferedCourseDTO dto = OfferedCourseMapper.toDTO(offeredCourse);
+            ocDTOs.add(dto);
+        }
+        return ocDTOs;
     }
 }

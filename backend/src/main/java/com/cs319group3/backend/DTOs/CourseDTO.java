@@ -15,4 +15,6 @@ public class CourseDTO {
     private String description;
     private int courseCode;
     private String departmentCode;
+    private int departmentId;
+    private int coordinatorId;
 }

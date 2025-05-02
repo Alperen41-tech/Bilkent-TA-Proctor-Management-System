@@ -1,6 +1,6 @@
 package com.cs319group3.backend.Controllers;
-
 import com.cs319group3.backend.DTOs.CourseDTO;
+import com.cs319group3.backend.DTOs.OfferedCourseDTO;
 import com.cs319group3.backend.Services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,5 +20,11 @@ public class CourseController {
     public List<CourseDTO> getCourses(@RequestParam int departmentId) {
         System.out.println("getCourses");
         return courseService.getCoursesByDepartmentId(departmentId);
+    }
+
+    @GetMapping("getCoursesOfInstructor")
+    public List<OfferedCourseDTO> getCoursesOfInstructor(@RequestParam int instructorId) {
+        System.out.println("getCoursesOfInstructor");
+        return courseService.getCoursesOfInstructor(instructorId);
     }
 }
