@@ -142,12 +142,8 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         LocalDateTime startDateTime = otherCtr.getStartDate(); // your LocalDateTime value
         LocalDateTime endDateTime = otherCtr.getEndDate();   // your LocalDateTime value
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateIntervalDTO dateIntervalDTO = new DateIntervalDTO();
-        dateIntervalDTO.setStartDate(startDateTime.format(dtf));
-        dateIntervalDTO.setEndDate(endDateTime.format(dtf));
 
-        List<TimeIntervalDTO> taSchedule = timeIntervalService.getTAScheduleById(dateIntervalDTO, ta.getUserId());
+        List<TimeIntervalDTO> taSchedule = timeIntervalService.getTATimeIntervalsByHour(startDateTime, endDateTime, ta.getUserId());
 
         return taSchedule.isEmpty();
     }

@@ -18,6 +18,7 @@ import com.cs319group3.backend.Services.TimeIntervalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TimeIntervalServiceImpl implements TimeIntervalService {
@@ -40,6 +42,40 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
 
     @Autowired
     private ClassProctoringRepo classProctoringRepo;
+
+
+    public List<TimeIntervalDTO> getTATimeIntervalsByHour(LocalDateTime startDateTime, LocalDateTime endDateTime, int taId) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateIntervalDTO dateIntervalDTO = new DateIntervalDTO();
+        dateIntervalDTO.setStartDate(startDateTime.format(dtf));
+        dateIntervalDTO.setEndDate(endDateTime.format(dtf));
+
+        List<TimeIntervalDTO> timeIntervals = getTAScheduleById(dateIntervalDTO, taId); // not considering the time interval
+
+        // Assuming time format in TimeIntervalDTO is "HH:mm"
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        // Extract just the time portion from the start and end DateTimes
+        LocalTime filterStartTime = startDateTime.toLocalTime();
+        LocalTime filterEndTime = endDateTime.toLocalTime();
+
+        return timeIntervals.stream()
+                .filter(interval -> {
+                    // Parse the interval start and end times
+                    LocalTime intervalStartTime = LocalTime.parse(interval.getStartTime(), timeFormatter);
+                    LocalTime intervalEndTime = LocalTime.parse(interval.getEndTime(), timeFormatter);
+
+                    // Check if the intervals overlap
+                    // Two intervals overlap if:
+                    // 1. Start of one is before the end of the other AND
+                    // 2. End of one is after the start of the other
+                    return filterStartTime.isBefore(intervalEndTime) &&
+                            filterEndTime.isAfter(intervalStartTime);
+                })
+                .collect(Collectors.toList());
+    }
+
+
 
     @Override
     public List<TimeIntervalDTO> getTAScheduleById(DateIntervalDTO dateIntervalDTO, int id) {
