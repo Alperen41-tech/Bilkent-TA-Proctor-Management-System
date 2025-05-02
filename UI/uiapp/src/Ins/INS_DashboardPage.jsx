@@ -32,7 +32,7 @@ const INS_DashboardPage = () => {
   const createPendingRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <PendingRequestItem {...request} onCancel={() => console.log("canceled")} isSelected={selectedRequest === request}/>
+        <PendingRequestItem {...request} onCancel={() => cancelPendingRequest(request.requestId)}/>
       </div>
     );
   };
@@ -159,6 +159,22 @@ const INS_DashboardPage = () => {
     }catch (error) {
       console.error("There was an error with fetching Task Types:", error);
       alert("An error occurred. Please try again.");
+    }
+  };
+
+  const cancelPendingRequest = async (requestId) => {
+    try {
+      const response = await axios.delete(`http://localhost:8080/request/deleteRequest?id=${requestId}`);
+      if (response.data) {
+        alert("Request canceled successfully.");
+        fetchPendingRequests();
+        setSelectedRequest(null);
+      } else {
+        alert("Failed to cancel the request. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error canceling request:", error);
+      alert("An error occurred while canceling the request. Please try again.");
     }
   };
 

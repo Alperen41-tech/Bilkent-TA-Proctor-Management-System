@@ -1,24 +1,40 @@
-import React, { useState } from "react";
+import React, { use, useState, useEffect } from "react";
 import NavbarINS from "./NavbarINS";
 import "./NavbarINS.css";
 import "./INS_ExamsPage.css";
 import TAItem from "../TAItem";
 import TaskItem from "../TaskItem";
+import axios from "axios";
 
 const INS_ExamsPage = () => {
   const [selectedTask, setSelectedTask] = useState(null);
-  const [lastTask1, setLastTask1] = useState(null);
   const [selectedTA, setSelectedTA] = useState(null);
+  const [proctoringTasks, setProctoringTasks] = useState([]);
 
   const [searchText, setSearchText] = useState("");
   const [sortName, setSortName] = useState("");
   const [sortWorkload, setSortWorkload] = useState("");
   const [taCount, setTaCount] = useState(2);
   const [autoAssign, setAutoAssign] = useState(false);
-  const [unpaid, setUnpaid] = useState(false);
+
+  const fetchProctoringTasks = async () => {
+    try{
+      const response = await axios.get("http://localhost:8080/classProctoringTARelation/getClassProctoringOfCreator?creatorId=1&creatorId=9");
+      if (response.data) {
+        setProctoringTasks(response.data);
+        console.log("Proctoring tasks fetched successfully:", response.data);
+      }
+      else {
+        console.error("No data found for proctoring tasks.");
+      }
+    }catch (error) {
+      console.error("Error fetching proctoring tasks:", error);
+    }
+  };
 
   const handleSearch = () => {
     console.log("Searching for:", searchText);
+    console.log(proctoringTasks);
   };
 
   const handleSort = () => {
@@ -32,20 +48,15 @@ const INS_ExamsPage = () => {
     return <TaskItem key={id} task={task} onClick={onClickHandler} isSelected={isSelected} />;
   };
 
-  const handleTaskClick1 = (task) => {
+  const handleTaskClick = (task) => {
     setSelectedTask(task);
-    setLastTask1(task);
   };
 
-  
-  const createTAItem = (firstName, lastName, email, onClickHandler, selectedTAKey) => {
-    const ta = { firstName, lastName, email };
-    const key = `${firstName}-${lastName}-${email}`;
-    const isSelected = selectedTAKey === key;
-  
+  const createTAItem = (ta, onClickHandler) => {
+    const isSelected = selectedTA === ta;
     return (
       <TAItem
-        key={key}
+        key={ta.bilkentId}
         ta={ta}
         onClick={onClickHandler}
         isSelected={isSelected}
@@ -53,16 +64,13 @@ const INS_ExamsPage = () => {
     );
   };
 
-
-
   const handleTAClick = (ta) => {
-    const key = `${ta.firstName}-${ta.lastName}-${ta.email}`;
-    setSelectedTA(key);
+    setSelectedTA(ta);
   };
 
-
-
-
+  useEffect(() => {
+    fetchProctoringTasks();
+  }, []);
 
   return (
     <div className="ins-exam-exams-page">
@@ -73,10 +81,7 @@ const INS_ExamsPage = () => {
         <div className="ins-exam-card ins-exam-assignments">
           <h3>Your Assignments with Proctors</h3>
           <div className="task-row">
-              {createTaskItem(1, "CS315", "Quiz Proctor", "15/03/2025", "10:30 - 11:30", "EE - 214", handleTaskClick1, lastTask1?.id)}
-              {createTaskItem(2, "CS102", "Quiz Proctor", "16/03/2025", "09:30 - 10:30", "EE - 312", handleTaskClick1, lastTask1?.id)}
-              {createTaskItem(3, "CS555", "Midterm Proctor", "21/03/2025", "19:00 - 21:00", "B - 103", handleTaskClick1, lastTask1?.id)}
-              {createTaskItem(4, "CS2004", "Midterm Proctor", "21/03/2025", "19:00 - 21:00", "B - 104", handleTaskClick1, lastTask1?.id)}
+
             </div>
         </div>
 
@@ -84,9 +89,7 @@ const INS_ExamsPage = () => {
         <div className="ins-exam-card ins-exam-assigned-tas">
           <h3>TAs Assigned for this Task</h3>
           <div className="ins-exam-assigned-tas">
-            {createTAItem("Ahmet", "Yılmaz", "ahmet.yilmaz@example.com", handleTAClick, selectedTA)}
-            {createTAItem("Merve", "Kara", "merve.kara@example.com", handleTAClick, selectedTA)}
-            {createTAItem("John", "Doe", "john.doe@example.com", handleTAClick, selectedTA)}
+
           </div>
 
         </div>
@@ -156,9 +159,7 @@ const INS_ExamsPage = () => {
           </div>
 
           <div className="ins-exam-assigned-tas">
-            {createTAItem("Ahmet", "Yılmaz", "ahmeasdt.yilmaz@example.com", handleTAClick, selectedTA)}
-            {createTAItem("Merve", "Kara", "mervadse.kara@example.com", handleTAClick, selectedTA)}
-            {createTAItem("John", "Doe", "johasd  n.doe@example.com", handleTAClick, selectedTA)}
+
           </div>
         </div>
       </div>
