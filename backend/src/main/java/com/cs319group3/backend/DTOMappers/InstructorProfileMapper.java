@@ -47,7 +47,6 @@ public class InstructorProfileMapper {
         instructor.setEmail(instructorDTO.getEmail());
         instructor.setBilkentId(instructorDTO.getBilkentId());
         instructor.setPhoneNumber(instructorDTO.getPhoneNumber());
-        System.out.println("La bu ne olum: " + instructorDTO.isActive());
         instructor.setActive(instructorDTO.isActive());
         instructor.setPhoneNumber(instructorDTO.getPhoneNumber());
         return instructor;

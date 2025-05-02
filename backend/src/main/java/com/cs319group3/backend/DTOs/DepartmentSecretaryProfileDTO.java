@@ -14,4 +14,7 @@ public class DepartmentSecretaryProfileDTO {
     String bilkentId;
     String role;
     String departmentName;
+    int departmentId;
+    String phoneNumber;
+    boolean active;
 }

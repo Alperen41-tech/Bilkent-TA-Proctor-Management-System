@@ -14,4 +14,14 @@ public class DepartmentSecretaryProfileMapper {
         departmentSecretaryProfileDTO.setDepartmentName(departmentSecretary.getDepartment().getDepartmentName());
         return departmentSecretaryProfileDTO;
     }
+    public static DepartmentSecretary toEntity(DepartmentSecretaryProfileDTO dspDTO){
+        DepartmentSecretary departmentSecretary = new DepartmentSecretary();
+        departmentSecretary.setName(dspDTO.getName());
+        departmentSecretary.setSurname(dspDTO.getSurname());
+        departmentSecretary.setEmail(dspDTO.getEmail());
+        departmentSecretary.setBilkentId(dspDTO.getBilkentId());
+        departmentSecretary.setPhoneNumber(dspDTO.getPhoneNumber());
+        departmentSecretary.setActive(dspDTO.isActive());
+        return departmentSecretary;
+    }
 }
