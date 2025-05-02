@@ -15,6 +15,7 @@ const TAItem = ({ ta, onClick, isSelected, inInstructor}) => {
             <div className="ta-item-data-area" style={{ fontSize: "0.9em", color: "#555" }}>{ta.email}</div>
             <div className="ta-item-data-area" style={{ fontSize: "0.9em", color: "#555" }}>{inInstructor ? ta.departmentCode: ""}</div>
             <div className="ta-item-data-area" style={{ fontSize: "0.9em", color: "#555" }}>{inInstructor ? ta.bilkentId: ""}</div>
+            <div className="ta-item-data-area" style={{ fontSize: "0.9em", color: "#555" }}>{inInstructor ? ta.workload: ""}</div>
         </div>
 
   );

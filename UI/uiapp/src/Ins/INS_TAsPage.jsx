@@ -11,18 +11,14 @@ import axios from "axios";
 const TAsPage = () => {
   const [selectedTA, setSelectedTA] = useState(null);
   const [searchText, setSearchText] = useState("");
-  const [sortDepartment, setSortDepartment] = useState("");
+  const [sortDepartment, setSortDepartment] = useState("default");
   const [sortWorkload, setSortWorkload] = useState("");
   const [sortName, setSortName] = useState("");
   const [allTas, setAllTAs] = useState([]);
+  const [sortedSearchedTAs, setSortedSearchedTAs] = useState([]);
 
   const [activeTab, setActiveTab] = useState("list");
   const [activeTAId, setActiveTAId] = useState(null);
-
-  const handleSearch = () => {
-    // Later: call backend API or filter the loaded TA list
-    console.log("Search for:", searchText);
-  };
 
   const handleSort = () => {
     // Later: apply sort on TA list from backend or state
@@ -78,6 +74,41 @@ const TAsPage = () => {
     fetchAllTAs();
   }, []);
 
+  useEffect(() => {
+    const filtered = allTas.filter((ta) =>
+      ta.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+      ta.email?.toLowerCase().includes(searchText.toLowerCase())
+    );
+  
+    const sorted = filtered.sort((a, b) => {
+      // 1. Prioritize selected department (if not "default")
+      if (sortDepartment !== "default") {
+        const inDeptA = a.departmentName === sortDepartment ? 0 : 1;
+        const inDeptB = b.departmentName === sortDepartment ? 0 : 1;
+        if (inDeptA !== inDeptB) return inDeptA - inDeptB;
+      }
+  
+      // 2. Sort by workload
+      if (sortWorkload) {
+        const workloadA = a.workload ?? 0;
+        const workloadB = b.workload ?? 0;
+        const workloadCompare = sortWorkload === "asc" ? workloadA - workloadB : workloadB - workloadA;
+        if (workloadCompare !== 0) return workloadCompare;
+      }
+  
+      // 3. Sort by name
+      if (sortName) {
+        const nameA = a.name || "";
+        const nameB = b.name || "";
+        return sortName === "asc" ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+      }
+  
+      return 0;
+    });
+  
+    setSortedSearchedTAs(sorted);
+  }, [searchText, allTas, sortDepartment, sortWorkload, sortName]);
+  
   return (
     <div className="tas-page">
       <NavbarINS />
@@ -93,7 +124,6 @@ const TAsPage = () => {
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
               />
-              <button onClick={handleSearch}>Search</button>
             </div>
   
             <div className="ta-list-header">
@@ -101,10 +131,11 @@ const TAsPage = () => {
               <span>Email</span>
               <span>Department</span>
               <span>Bilkent ID</span>
+              <span>Workload</span>
             </div>
   
             <div className="assigned-tas">
-              {allTas.map((ta) => (
+              {sortedSearchedTAs.map((ta) => (
                 <div key={ta.bilkentId} className="ta-item-container">
                   {createTAItem(ta, () => handleTAClick(ta))}
                 </div>
@@ -122,10 +153,9 @@ const TAsPage = () => {
   
             <label>Department</label>
             <select value={sortDepartment} onChange={(e) => setSortDepartment(e.target.value)}>
-              <option value="">Alphabetical by default</option>
-              <option value="CS">CS</option>
-              <option value="IE">IE</option>
-              <option value="EE">EE</option>
+              <option value="default">Alphabetical by default</option>
+              <option value="Computer Engineering">CS</option>
+              <option value="Industrial Engineering">IE</option>
             </select>
   
             <label>Workload</label>
@@ -141,8 +171,6 @@ const TAsPage = () => {
               <option value="asc">A → Z</option>
               <option value="desc">Z → A</option>
             </select>
-  
-            <button className="sort-btn" onClick={handleSort}>Sort TA List</button>
           </div>
         </div>
       )}
