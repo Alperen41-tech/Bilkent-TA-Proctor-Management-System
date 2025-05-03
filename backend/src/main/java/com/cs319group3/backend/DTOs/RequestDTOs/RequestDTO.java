@@ -53,7 +53,7 @@ public class RequestDTO {
     private String taskTypeName;
     private int timeSpent;
     private String courseCode;
-
+    private int workloadId;
 
 
 }

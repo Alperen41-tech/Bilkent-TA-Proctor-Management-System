@@ -5,23 +5,29 @@ import com.cs319group3.backend.DTOs.ProctoringApplicationDTO;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.*;
+import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.NotificationService;
 import com.cs319group3.backend.Services.RequestService;
 import com.cs319group3.backend.Services.TASwapRequestService;
+import com.cs319group3.backend.Services.TAWorkloadRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.cs319group3.backend.Enums.NotificationType.APPROVAL;
 
 @Service
 public class RequestServiceImpl implements RequestService {
+
+    @Autowired
+    private TARepo taRepo;
+
+    @Autowired
+    private TAWorkloadRequestService taWorkloadRequestService;
 
     @Autowired
     private RequestRepo requestRepo;
@@ -66,7 +72,12 @@ public class RequestServiceImpl implements RequestService {
         try{
             if (request instanceof TAWorkloadRequest) {
                 TAWorkloadRequest req = (TAWorkloadRequest) request;
-
+                List<TAWorkloadRequest> reqs = taWorkloadRequestRepo.findByWorkloadId(req.getWorkloadId());
+                for (TAWorkloadRequest req1 : reqs) {
+                    if (!(req1.getRequestId() == requestId)) {
+                        deleteRequest(req1.getRequestId());
+                    }
+                }
             } else if (request instanceof TASwapRequest) {
                 if (response){
                     TASwapRequest req = (TASwapRequest) request;
@@ -93,7 +104,14 @@ public class RequestServiceImpl implements RequestService {
         request.setApproved(response);
         request.setResponseDate(LocalDateTime.now());
         requestRepo.save(request);
-
+        if (request instanceof TAWorkloadRequest) {
+            Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());
+            if (ta.isEmpty()) {
+                throw new RuntimeException("No such TA");
+            }
+            ta.get().setWorkload(taWorkloadRequestService.getTotalWorkload(request.getSenderUser().getUserId()));
+            taRepo.save(ta.get());
+        }
         notificationService.createNotification(request, APPROVAL);
 
         return true;
@@ -138,7 +156,15 @@ public class RequestServiceImpl implements RequestService {
 
 
         List<TASwapRequest> taSwapRequests = taswapRequestRepo.findBySenderUser_UserId(userId);
-        List<TAWorkloadRequest> workloadRequests = taWorkloadRequestRepo.findBySenderUser_UserId(userId);
+        List<TAWorkloadRequest> preWorkloadRequests = taWorkloadRequestRepo.findBySenderUser_UserId(userId);
+        List<TAWorkloadRequest> workloadRequests = new ArrayList<>();
+        Set<Integer> workloadIdSet = new HashSet<>();
+        for (TAWorkloadRequest taWorkloadRequest : preWorkloadRequests) {
+            if (!workloadIdSet.contains(taWorkloadRequest.getWorkloadId())) {
+                workloadIdSet.add(taWorkloadRequest.getWorkloadId());
+                workloadRequests.add(taWorkloadRequest);
+            }
+        }
         List<TALeaveRequest> taleaveRequests = taleaveRequestRepo.findBySenderUser_UserId(userId);
         List<InstructorAdditionalTARequest> instructorAdditionalTARequests = instructorAdditionalTARequestRepo.findBySenderUser_UserId(userId);
         List<AuthStaffProctoringRequest>  authStaffProctoringRequests = authStaffProctoringRequestRepo.findBySenderUser_UserId(userId);

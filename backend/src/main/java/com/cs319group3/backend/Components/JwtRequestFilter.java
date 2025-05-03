@@ -1,5 +1,4 @@
 package com.cs319group3.backend.Components;
-;
 
 import com.cs319group3.backend.Services.ServiceImpls.AuthenticationServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;

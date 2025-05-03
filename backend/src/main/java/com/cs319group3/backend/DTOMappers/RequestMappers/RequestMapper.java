@@ -105,7 +105,7 @@ public class RequestMapper {
         return taLeaveRequest;
     }
 
-    public TAWorkloadRequest taWorkloadRequestToEntityMapper(RequestDTO requestDTO) throws Exception{
+    public TAWorkloadRequest taWorkloadRequestToEntityMapper(RequestDTO requestDTO, User receiverUser) throws Exception{
         TAWorkloadRequest taWorkloadRequest = new TAWorkloadRequest();
         try{
             essentialToEntityMapper(taWorkloadRequest, requestDTO);
@@ -115,16 +115,20 @@ public class RequestMapper {
         }
 
         TA senderTA = (TA) taWorkloadRequest.getSenderUser();
-        Optional<TaskType> taskType = taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(requestDTO.getTaskTypeName(), senderTA.getAssignedCourse().getCourseId());
-
-        if (!taskType.isPresent()) {
-            throw new Exception("Task type does not exist");
+        Optional<TaskType> taskType;
+        if (!requestDTO.getTaskTypeName().equals("Other")) {
+            taskType = taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(requestDTO.getTaskTypeName(), senderTA.getAssignedCourse().getCourseId());
+            if (!taskType.isPresent()) {
+                throw new Exception("Task type does not exist");
+            }
+            taWorkloadRequest.setTaskType(taskType.get());
         }
 
-        taWorkloadRequest.setTaskType(taskType.get());
-        taWorkloadRequest.setCourse(taskType.get().getCourse());
+
+        taWorkloadRequest.setWorkloadId(requestDTO.getWorkloadId());
+        taWorkloadRequest.setCourse(senderTA.getAssignedCourse());
         taWorkloadRequest.setTimeSpent(requestDTO.getTimeSpent());
-        taWorkloadRequest.setReceiverUser(senderTA.getAssignedCourse().getCoordinator());
+        taWorkloadRequest.setReceiverUser(receiverUser);
 
         return taWorkloadRequest;
     }
@@ -255,7 +259,10 @@ public class RequestMapper {
 
     public RequestDTO taWorkloadRequestMapper(TAWorkloadRequest request){
         RequestDTO requestDTO = essentialMapper(request);
-        requestDTO.setTaskTypeName(request.getTaskType().getTaskTypeName());
+        if (request.getTaskType() == null)
+            requestDTO.setTaskTypeName("Other");
+        else
+            requestDTO.setTaskTypeName(request.getTaskType().getTaskTypeName());
         requestDTO.setTimeSpent(request.getTimeSpent());
         requestDTO.setCourseCode(request.getCourse().getDepartmentCourseCode());
         return requestDTO;

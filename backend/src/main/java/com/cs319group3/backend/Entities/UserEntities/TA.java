@@ -67,6 +67,9 @@ public class TA extends User{
     @OneToMany(mappedBy = "TA")
     private List<ProctoringApplicationTARelation> proctoringApplicationTARelations;
 
+    @Column(name = "workload")
+    private int workload;
+
 
 
 

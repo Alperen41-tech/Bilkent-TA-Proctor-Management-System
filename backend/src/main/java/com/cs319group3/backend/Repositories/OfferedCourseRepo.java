@@ -18,6 +18,6 @@ public interface OfferedCourseRepo extends JpaRepository<OfferedCourse, Integer>
 """)
     List<Integer> findOfferedCourseIdByInstructorId(int instructorId);
 
-    Optional<OfferedCourse> findByCourseCourseId(int courseId);
+    List<OfferedCourse> findByCourse_CourseId(int courseCourseId);
     Optional<OfferedCourse> findByOfferedCourseIdAndSemester_SemesterId(int offeredCourseId, int semesterId);
 }

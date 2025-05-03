@@ -124,6 +124,7 @@ create table ta(
 	course_id int,
     class int,
     ta_type_id int,
+    workload int default 0,
     foreign key (user_id) references user(user_id),
     foreign key (department_id) references department(department_id),
     foreign key (course_id) references course(course_id),
@@ -283,6 +284,7 @@ create table ta_workload_request(
     task_type_id int,
     time_spent int not null,
     course_id int,
+    workload_id int not null,
     foreign key (request_id) references request(request_id),
     foreign key (task_type_id) references task_type(task_type_id),
     foreign key (course_id) references course(course_id)
@@ -447,7 +449,7 @@ insert into ta (user_id, department_id, course_id, class, ta_type_id) values
 	(1, 1, 1, 9, 1),
     (2, 1, 2, 5, 2),
     (3, 2, 4, 5, 3),
-    (10,1,1,5,1);
+    (10, 1, 1, 5, 1);
     
 insert into student (student_id, bilkent_id, name, surname, email, phone_number, is_active, department_id, class) values
 	(1, '23103131', 'Emir', 'Atlas', 'emirinmaili@bilkent.edu.tr', '+905353533535', true, 1, 9),
@@ -503,11 +505,11 @@ INSERT INTO ta_swap_request (request_id, class_proctoring_id) VALUES
 	(3, 1),
 	(4, 5);
     
-INSERT INTO ta_workload_request (request_id, task_type_id, time_spent, course_id) VALUES
-	(5, 4, 5, 4),
-	(6, 1, 5, 4),
-	(7, 1, 1, 3),
-	(8, 3, 4, 2);
+INSERT INTO ta_workload_request (request_id, task_type_id, time_spent, course_id, workload_id) VALUES
+	(5, 4, 5, 4, 1),
+	(6, 1, 5, 4, 2),
+	(7, 1, 1, 3, 3),
+	(8, 3, 4, 2, 4);
     
 INSERT INTO auth_staff_proctoring_request (request_id, class_proctoring_id) VALUES
 	(9, 3),

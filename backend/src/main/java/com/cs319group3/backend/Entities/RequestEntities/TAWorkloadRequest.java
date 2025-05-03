@@ -25,6 +25,7 @@ public class TAWorkloadRequest extends Request{
     private TaskType taskType;
 
     private int timeSpent;
+    private int workloadId;
 
     @ManyToOne
     @JoinColumn(name = "course_id")

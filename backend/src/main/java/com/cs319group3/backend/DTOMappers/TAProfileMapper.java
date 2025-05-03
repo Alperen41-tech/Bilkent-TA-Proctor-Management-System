@@ -33,6 +33,7 @@ public class TAProfileMapper {
         dto.setPhoneNumber(ta.getPhoneNumber());
         dto.setActive(ta.isActive());
         dto.setClassYear(ta.getClassYear());
+        dto.setWorkload(ta.getWorkload());
 
         // Fix here:
         if (ta.getAssignedCourse() != null) {
