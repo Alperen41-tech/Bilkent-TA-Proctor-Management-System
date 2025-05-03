@@ -64,7 +64,10 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setRequest(request);
         notification.setNotificationType(type);
         notification.setRead(false);
-        notification.setReceiver(request.getReceiverUser());
+        if (type == NotificationType.APPROVAL)
+            notification.setReceiver(request.getSenderUser());
+        else
+            notification.setReceiver(request.getReceiverUser());
         notificationRepo.save(notification);
 
         return notification;
