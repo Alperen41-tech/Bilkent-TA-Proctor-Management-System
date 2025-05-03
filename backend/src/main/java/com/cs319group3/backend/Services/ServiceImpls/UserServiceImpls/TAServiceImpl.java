@@ -124,7 +124,7 @@ public class TAServiceImpl implements TAService {
         List<TAProfileDTO> TAProfiles = new ArrayList<>();
         for (TA ta : tas) {
             TAProfileDTO dto = TAProfileMapper.essentialMapper(ta);
-            dto.setWorkload(taWorkloadRequestService.getTotalWorkload(ta.getUserId()));
+            dto.setWorkload(ta.getWorkload());
             TAProfiles.add(dto);
         }
         return TAProfiles;
