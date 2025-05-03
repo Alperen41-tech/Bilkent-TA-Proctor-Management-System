@@ -7,7 +7,7 @@ import axios from "axios";
 
 const AdminProfilePage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = React.useState(false);
-  const [doProfileInfo, setDoProfileInfo] = useState({ courses: [] }); // tbchanged for admin
+  const [adminProfileInfo, setAdminProfileInfo] = useState({ courses: [] }); // tbchanged for admin
 
   //Refs for password inputs
   const oldPasswordRef = useRef();
@@ -20,10 +20,10 @@ const AdminProfilePage = () => {
     try {
 
       const response = await axios.put("http://localhost:8080/auth/changePassword", {
-        email: doProfileInfo.email,
+        email: adminProfileInfo.email,
         oldPassword: oldPasswordRef.current.value,
         newPassword: newPasswordRef.current.value,
-        userTypeName: "admin"
+        userTypeName: "admin",
       });
       if (response.data) {
         alert("Password changed successfully.");
@@ -41,9 +41,9 @@ const AdminProfilePage = () => {
   useEffect(() => {
     const fetchProfileInformation = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/deansOffice/profile?id=9");
-        setDoProfileInfo(response.data);
-        console.log(doProfileInfo);
+        const response = await axios.get("http://localhost:8080/admin/getAdminProfile?adminId=1");
+        setAdminProfileInfo(response.data);
+        console.log(adminProfileInfo);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
@@ -59,12 +59,12 @@ const AdminProfilePage = () => {
         {/* Info Section */}
         <div className="info-card">
           <h3>Personal Information</h3>
-          <p><strong>Name</strong><br />{doProfileInfo.name}</p>
-          <p><strong>Surname</strong><br />{doProfileInfo.surname}</p>
-          <p><strong>Email</strong><br />{doProfileInfo.email}</p>
-          <p><strong>ID</strong><br />{doProfileInfo.bilkentId}</p>
-          <p><strong>Role</strong><br />{doProfileInfo.role}</p>
-          <p><strong>Faculty</strong><br />{doProfileInfo.faculty}</p>
+          <p><strong>Name</strong><br />{adminProfileInfo.name}</p>
+          <p><strong>Surname</strong><br />{adminProfileInfo.surname}</p>
+          <p><strong>Email</strong><br />{adminProfileInfo.email}</p>
+          <p><strong>ID</strong><br />{adminProfileInfo.bilkentId}</p>
+          <p><strong>Role</strong><br />{adminProfileInfo.role}</p>
+          <p><strong>Faculty</strong><br />{adminProfileInfo.faculty}</p>
         </div>
 
         {/* Manage Account Section */}

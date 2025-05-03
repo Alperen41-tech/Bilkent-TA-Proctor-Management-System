@@ -32,9 +32,20 @@ const DOExamsPage = () => {
       alert("Please select both an exam and a TA before assigning.");
       return;
     }
-
+  
+    const assignedTAs = selectedExamItem?.taProfileDTOList || [];
+    const isAssigned = assignedTAs.some(
+      (ta) => ta.email === selectedTAObj.email
+    );
+  
+    if (isAssigned) {
+      alert("This TA is already assigned. Please choose from the available TAs below.");
+      return;
+    }
+  
     setShowManualModal(true);
   };
+  
 
   const handleForceAssign = () => {
     console.log("Force assigning TA:", selectedTAObj, "to exam:", selectedExamItem);
@@ -54,6 +65,14 @@ const DOExamsPage = () => {
     setSelectedTA(key);
     setSelectedTAObj(ta); // Store full TA object
   };
+
+
+  const handleAvailableTAClick = (ta) => {
+    const key = `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`;
+    setSelectedTA(key);
+    setSelectedTAObj(ta);
+  };
+
 
   const [examItems, setExamItems] = useState([]);
   const facultyId = 1; // Hardcoded for now, you can pass dynamically later
@@ -365,10 +384,11 @@ const DOExamsPage = () => {
 
             <div className="choose-list">
               {tas.length > 0 ? (
-                tas.map((ta) => createTAItem(ta, handleTAClick, selectedTA))
+                tas.map((ta) => createTAItem(ta, handleAvailableTAClick, selectedTA))
               ) : (
                 <div>No TAs available</div>
               )}
+
             </div>
 
             <div className="choose-actions">

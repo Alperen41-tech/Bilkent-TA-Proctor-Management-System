@@ -6,14 +6,14 @@ const ManualAssignmentModal = ({ isOpen, onForceAssign, onSendRequest, onCancel 
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
+    <div className="manual-modal-overlay">
+      <div className="manual-modal">
         <h3>Manual Assignment</h3>
         <p>Please choose how to proceed with this TA assignment:</p>
-        <div className="modal-buttons">
-          <button className="force-button" onClick={onForceAssign}>Force Assign</button>
-          <button className="request-button" onClick={onSendRequest}>Send Request</button>
-          <button className="cancel-button" onClick={onCancel}>Cancel</button>
+        <div className="manual-modal-buttons">
+          <button className="manual-force-button" onClick={onForceAssign}>Force Assign</button>
+          <button className="manual-request-button" onClick={onSendRequest}>Send Request</button>
+          <button className="manual-cancel-button" onClick={onCancel}>Cancel</button>
         </div>
       </div>
     </div>
