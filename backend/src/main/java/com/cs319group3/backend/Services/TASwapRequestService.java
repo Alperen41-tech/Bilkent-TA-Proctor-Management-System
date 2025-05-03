@@ -3,6 +3,8 @@ package com.cs319group3.backend.Services;
 
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
+import com.cs319group3.backend.Entities.ClassProctoring;
+import com.cs319group3.backend.Entities.UserEntities.TA;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -46,6 +48,9 @@ public interface TASwapRequestService {
      * @return
      */
     public List<TAProfileDTO> getAvailableTAProfilesForClassProctoring(int classProctoringId, int taId) throws Exception;
+
+    public boolean isTAAvailable(TA ta, ClassProctoring otherCtr);
+    public boolean isRequestAlreadySent(int senderId, TA receiver, ClassProctoring ctr);
 
 
 }

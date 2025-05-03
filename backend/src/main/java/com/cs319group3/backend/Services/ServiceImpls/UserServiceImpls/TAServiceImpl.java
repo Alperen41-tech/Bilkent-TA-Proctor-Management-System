@@ -7,6 +7,7 @@ import com.cs319group3.backend.Entities.*;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.TAService;
+import com.cs319group3.backend.Services.TASwapRequestService;
 import com.cs319group3.backend.Services.TAWorkloadRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -84,9 +85,17 @@ public class TAServiceImpl implements TAService {
     @Autowired
     DepartmentRepo departmentRepo;
 
+    @Autowired
+    TASwapRequestService swapRequestService;
+
+    @Autowired
+    ClassProctoringRepo classProctoringRepo;
+
     @Override
     public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int classProctoringId) {
+        ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(departmentCode, classProctoringId);
+        availableTAs.removeIf(ta -> !swapRequestService.isTAAvailable(ta, cp));
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
@@ -97,7 +106,9 @@ public class TAServiceImpl implements TAService {
 
     @Override
     public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int classProctoringId) {
+        ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByFaculty(facultyId, classProctoringId);
+        availableTAs.removeIf(ta -> !swapRequestService.isTAAvailable(ta, cp));
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);

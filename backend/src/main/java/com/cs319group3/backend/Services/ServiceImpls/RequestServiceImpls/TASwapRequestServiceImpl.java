@@ -131,7 +131,8 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         return TAProfileMapper.essentialMapper(departmentAvailableTAs);
     }
 
-    private boolean isTAAvailable(TA ta, ClassProctoring otherCtr){
+    @Override
+    public boolean isTAAvailable(TA ta, ClassProctoring otherCtr){
 
         /* ta is not available
         * if he has another proctoring in the time interval
@@ -148,7 +149,8 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         return taSchedule.isEmpty();
     }
 
-    private boolean isRequestAlreadySent(int senderId, TA receiver, ClassProctoring ctr){
+    @Override
+    public boolean isRequestAlreadySent(int senderId, TA receiver, ClassProctoring ctr){
 
         Optional<TASwapRequest> taSwapRequest = taswapRequestRepo
                 .findBySenderUser_UserIdAndReceiverUser_UserIdAndClassProctoring_ClassProctoringId(senderId, receiver.getUserId(), ctr.getClassProctoringId());
