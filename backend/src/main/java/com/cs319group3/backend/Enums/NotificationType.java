@@ -7,5 +7,6 @@ import jakarta.persistence.Enumerated;
 public enum NotificationType {
     REQUEST,
     APPROVAL,
-    ASSIGNMENT
+    ASSIGNMENT,
+    DISMISS
 }

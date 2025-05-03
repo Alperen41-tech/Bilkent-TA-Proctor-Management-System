@@ -69,4 +69,14 @@ public class NotificationServiceImpl implements NotificationService {
 
         return notification;
     }
+
+    public Notification createNotificationWithoutRequest(NotificationType type, User receiver, String description) {
+        Notification notification = new Notification();
+        notification.setNotificationType(type);
+        notification.setReceiver(receiver);
+        notification.setRead(false);
+        notification.setDescription(description);
+        notificationRepo.save(notification);
+        return notification;
+    }
 }

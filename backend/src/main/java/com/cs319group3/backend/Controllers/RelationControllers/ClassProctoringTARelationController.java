@@ -74,9 +74,9 @@ public class ClassProctoringTARelationController {
     }
 
     @DeleteMapping("removeTAFromClassProctoring")
-    public boolean removeTAFromClassProctoring(@RequestParam int taId, @RequestParam int classProctoringId){
+    public boolean removeTAFromClassProctoring(@RequestParam int taId, @RequestParam int classProctoringId, @RequestParam int removerId){
         System.out.println("Remove ta from class proctoring");
-        return classProctoringTARelationService.removeTAFromClassProctoring(taId, classProctoringId);
+        return classProctoringTARelationService.removeTAFromClassProctoring(taId, classProctoringId, removerId);
     }
 
     @PostMapping("createClassProctoringTARelation")

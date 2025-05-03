@@ -11,11 +11,11 @@ import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 
 import com.cs319group3.backend.Entities.UserEntities.TA;
-import com.cs319group3.backend.Repositories.ClassProctoringRepo;
-import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
-import com.cs319group3.backend.Repositories.TARepo;
-import com.cs319group3.backend.Repositories.UserRepo;
+import com.cs319group3.backend.Entities.UserEntities.User;
+import com.cs319group3.backend.Enums.NotificationType;
+import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.ClassProctoringTARelationService;
+import com.cs319group3.backend.Services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.cs319group3.backend.Enums.NotificationType.DISMISS;
 
 @Service
 public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARelationService {
@@ -35,6 +37,8 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
 
     @Autowired
     private ClassProctoringRepo classProctoringRepo;
+    @Autowired
+    private NotificationRepo notificationRepo;
 
 
     @Override
@@ -88,11 +92,23 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
         return true;
     }
 
+    @Autowired
+    NotificationService notificationService;
+
+    @Autowired
+    UserRepo userRepo;
+
     @Override
-    public boolean removeTAFromClassProctoring(int taId, int classProctoringId) {
+    public boolean removeTAFromClassProctoring(int taId, int classProctoringId, int removerId) {
         Optional<ClassProctoringTARelation> classProctoringTARelation = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classProctoringId, taId);
         if (classProctoringTARelation.isPresent()) {
+            Optional<User> remover = userRepo.findByUserId(removerId);
+            if(remover.isEmpty()) {
+                throw new RuntimeException("Could not find the remover of this ta-proctoring: " + removerId);
+            }
             classProctoringTARelationRepo.delete(classProctoringTARelation.get());
+            String description = "You are dismissed by "+remover.get().getName()+ " from the class proctoring.";
+            notificationService.createNotificationWithoutRequest(DISMISS, remover.get(), description);
             return true;
         }
         return false;
