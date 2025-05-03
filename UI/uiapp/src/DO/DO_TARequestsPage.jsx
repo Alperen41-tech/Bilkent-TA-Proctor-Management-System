@@ -69,7 +69,7 @@ const DO_TARequestsPage = () => {
         applications,
         {
           params: {
-            classProctoringId: selectedRequestId,
+            classProctoringId: selected?.classProctoringId,
             deansOfficeId: 1, // Replace with real dean's office ID if needed
           },
         }

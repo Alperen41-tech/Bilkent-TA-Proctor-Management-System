@@ -56,16 +56,19 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
     //IMPORTANT!!! Given dto must contain only the fields visibleDepartmentId and taCountLimit.
     @Override
     public boolean createProctoringApplication(int classProctoringId, ProctoringApplicationDTO dto, int deansOfficeId) {
+        System.out.println("Tekil: "+classProctoringId);
         ProctoringApplication proctoringApplication = new ProctoringApplication();
 
         Optional<ClassProctoring> classProctoring = classProctoringRepo.findById(classProctoringId);
         if(classProctoring.isEmpty()){
+            System.out.println("girme1: "+classProctoringId);
             return false;
         }
         proctoringApplication.setClassProctoring(classProctoring.get());
 
         Optional<Department> department = departmentRepo.findById(dto.getVisibleDepartmentId());
         if(department.isEmpty()){
+            System.out.println("girme2 "+dto.getVisibleDepartmentId());
             return false;
         }
         proctoringApplication.setVisibleDepartment(department.get());
@@ -86,6 +89,7 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
 
     @Override
     public boolean createProctoringApplications(int classProctoringId, List<ProctoringApplicationDTO> dto, int deansOfficeId) {
+        System.out.println("Çoğul");
         for(ProctoringApplicationDTO proctoringApplicationDTO : dto){
             if(!createProctoringApplication(classProctoringId, proctoringApplicationDTO, deansOfficeId)){
                 return false;
