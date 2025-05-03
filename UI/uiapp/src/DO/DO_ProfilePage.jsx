@@ -1,13 +1,44 @@
-// src/InstructorProfilePage.jsx
+// src/DO_ProfilePage.jsx
 import React from "react";
 import "./DO_ProfilePage.css"; // Reusing the same CSS
 import NavbarDO from "./NavbarDO";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef} from "react";
 
 const DO_ProfilePage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = React.useState(false);
   const [doProfileInfo, setDoProfileInfo] = useState({courses: []});
+
+    //Refs for password inputs
+    const oldPasswordRef = useRef();
+    const newPasswordRef = useRef();
+    const confirmNewPasswordRef = useRef();
+    //-----------------------------------------------------------
+
+
+    const handleChangePassword = async () => {
+      try {
+        console.log("Email:", doProfileInfo.email);
+        console.log("Old Password:", oldPasswordRef.current.value);
+        console.log("New Password:", newPasswordRef.current.value);
+        console.log("Confirm New Password:", confirmNewPasswordRef.current.value);
+        const response = await axios.put("http://localhost:8080/auth/changePassword", {
+          email: doProfileInfo.email,
+          oldPassword: oldPasswordRef.current.value,
+          newPassword: newPasswordRef.current.value,
+          userTypeName: "deans office"
+        });
+        if (response.data) {
+          alert("Password changed successfully.");
+          setShowChangePasswordModal(false);
+        } else {
+          alert("Failed to change password. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error changing password:", error);
+      }
+    
+    };
 
   useEffect(() => {
     const fetchProfileInformation = async () => {
@@ -54,14 +85,28 @@ const DO_ProfilePage = () => {
           <div className="modal">
             <h3>Change Password</h3>
             <label>Old Password</label>
-            <input type="password" placeholder="Enter your old password" />
+            <input ref={oldPasswordRef} type="password" placeholder="Enter your old password"/>
             <label>New Password</label>
-            <input type="password" placeholder="At least 8 characters long" />
+            <input ref={newPasswordRef} type="password" placeholder="At least 8 characters long" />
             <label>Confirm New Password</label>
-            <input type="password" placeholder="Confirm new password" />
+            <input ref={confirmNewPasswordRef} type="password" placeholder="Confirm new password" />
             <div className="modal-buttons">
               <button className="cancel-button" onClick={() => setShowChangePasswordModal(false)}>Cancel</button>
-              <button className="apply-button">Apply</button>
+              <button className="apply-button" onClick={() => {
+                if(!oldPasswordRef.current.value || !newPasswordRef.current.value || !confirmNewPasswordRef.current.value) {
+                  alert("Please fill in all fields.");
+                  return;
+                }
+                if(newPasswordRef.current.value !== confirmNewPasswordRef.current.value) {
+                  alert("New password and confirmation do not match.");
+                  return;
+                }
+                if(newPasswordRef.current.value.length < 8) {
+                  alert("New password must be at least 8 characters long.");
+                  return;
+                }
+                handleChangePassword();
+              }}>Apply</button>
             </div>
           </div>
         </div>
