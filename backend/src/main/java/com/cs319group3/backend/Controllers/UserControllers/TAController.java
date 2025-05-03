@@ -38,14 +38,14 @@ public class TAController {
     }
 
     @GetMapping("getAvailableTAsByDepartmentExceptProctoring")
-    public List<TAProfileDTO> getAllAvailableTAsByDepartment(@RequestParam String departmentCode,@RequestParam int proctoringId) {
+    public List<TAProfileDTO> getAllAvailableTAsByDepartment(@RequestParam String departmentCode,@RequestParam int proctoringId, @RequestParam int userId) {
         System.out.println("Getting available TA profiles by department except in proctoring " + proctoringId);
-        return taService.getAllAvailableTAsByDepartmentCode(departmentCode, proctoringId);
+        return taService.getAllAvailableTAsByDepartmentCode(departmentCode, proctoringId, userId);
     }
 
     @GetMapping("getAvailableTAsByFacultyExceptProctoring")
-    public List<TAProfileDTO> getAllAvailableTAsByFaculty(@RequestParam int facultyId, @RequestParam int proctoringId) {
+    public List<TAProfileDTO> getAllAvailableTAsByFaculty(@RequestParam int facultyId, @RequestParam int proctoringId, @RequestParam int userId) {
         System.out.println("Getting available TA profiles by Faculty");
-        return taService.getAllAvailableTAsByFacultyId(facultyId, proctoringId);
+        return taService.getAllAvailableTAsByFacultyId(facultyId, proctoringId, userId);
     }
 }

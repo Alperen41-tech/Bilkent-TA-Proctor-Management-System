@@ -92,10 +92,10 @@ public class TAServiceImpl implements TAService {
     ClassProctoringRepo classProctoringRepo;
 
     @Override
-    public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int classProctoringId) {
+    public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int classProctoringId, int userId) {
         ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(departmentCode, classProctoringId);
-        availableTAs.removeIf(ta -> !swapRequestService.isTAAvailable(ta, cp));
+        availableTAs.removeIf(ta -> !swapRequestService.isTAAvailable(ta, cp) || swapRequestService.isRequestAlreadySent(userId, ta, cp));
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
@@ -105,10 +105,10 @@ public class TAServiceImpl implements TAService {
     }
 
     @Override
-    public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int classProctoringId) {
+    public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int classProctoringId, int userId) {
         ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByFaculty(facultyId, classProctoringId);
-        availableTAs.removeIf(ta -> !swapRequestService.isTAAvailable(ta, cp));
+        availableTAs.removeIf(ta -> !swapRequestService.isTAAvailable(ta, cp) || swapRequestService.isRequestAlreadySent(userId, ta, cp));
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
