@@ -248,7 +248,7 @@ create table proctoring_application_ta_relation(
 	proctoring_application_ta_relation_id int primary key auto_increment,
     ta_id int,
     proctoring_application_id int,
-    is_approved_by_secretary bool,
+    is_approved_by_secretary bool default 0,
     foreign key (ta_id) references ta (user_id),
     foreign key (proctoring_application_id) references proctoring_application(application_id)
 );
