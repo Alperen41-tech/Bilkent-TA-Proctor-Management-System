@@ -94,21 +94,27 @@
   }
   
   /* TA List Section */
-  .filters {
+  .ds-dashboard-filters {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 10px;
   }
   
-  .filters input,
-  .filters select {
+  .ds-dashboard-filters input{
     padding: 6px;
     border-radius: 6px;
     border: 1px solid #ccc;
+    flex: 2;
+  }
+  .ds-dashboard-filters select{
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    flex: 1;
   }
   
-  .filters button {
+  .ds-dashboard-filters button {
     padding: 6px 12px;
     background-color: #6366f1;
     color: white;
@@ -117,32 +123,6 @@
     cursor: pointer;
     font-weight: bold;
   }
-
-
-  .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .filters input,
-  .filters select {
-    padding: 6px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
-  
-  .filters button {
-    padding: 6px 12px;
-    background-color: #6366f1;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-
 
   /* TAList.css */
 .ta-list-container {
@@ -236,11 +216,4 @@
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-  }
-
-  .ds-dashboard-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 10px;
   }

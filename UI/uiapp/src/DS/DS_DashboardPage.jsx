@@ -31,17 +31,14 @@ const DS_DashboardPage = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [paidProctorings, setPaidProctorings] = useState([]);
   const [isAppliedAssignment, setIsAppliedAssignment] = useState(false);
-  const [isForcedAssignment, setIsForcedAssignment] = useState(false);
-
-  
-  const handleSearch = () => {
-    console.log("Searching for:", searchText);
-  };
+  const [isManualAssignment, setIsManualAssignment] = useState(false);
+  const [selectedPaidProctoring, setSelectedPaidProctoring] = useState(null);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setSelectedRequest(null);
     setSelectedPPRId(null);
+    setSelectedPaidProctoring(null);
   };
   const handlePPRClick = (id) => {
     setSelectedPPRId(id);
@@ -49,7 +46,7 @@ const DS_DashboardPage = () => {
     const request = paidProctoringRequests.find((req) => req.id === id);
     setSelectedRequest(request);
   }
-  const handleASC = (id) => { // Handle applied students click
+  const handleASC = (id) => {
     if (!selectedAppliedStudentsId.includes(id)) {
       setSelectedAppliedStudentsId((prev) => [...prev, id]);
     }
@@ -88,9 +85,23 @@ const DS_DashboardPage = () => {
       name: "Ali",
       numOfTaNeeded: 7,
     },
-    // Add more requests as needed
   ];
+  const handleForceAssignment = () => {
+    console.log("Force Assignment clicked");
+  };
+  const handleOfferAssignment = () => {
+    console.log("Offer Assignment clicked");
+  };
 
+  const handleAppliedAssignment = () => {
+    setIsAppliedAssignment(true);
+    setIsManualAssignment(false);
+  };
+
+  const handleManualAssignment = () => {
+    setIsAppliedAssignment(false);
+    setIsManualAssignment(true);
+  };
 
   const fetchReceivedRequests = async () => {
     try {
@@ -190,7 +201,7 @@ const DS_DashboardPage = () => {
       },
     ];
     return paidProctoringApplied.map((request) => (
-      <DS_SelectPaidProctoringTAItem id={request.id} {...request} onInform={() => console.log("TAs informed for this request")} isSelected={selectedPPRId === request.id} onSelect={handlePPRClick} />
+      <DS_SelectPaidProctoringTAItem id={request.id} {...request} onInform={() => console.log("TAs informed for this request")} isSelected={selectedPPRId === request.id} onSelect={handlePPRClick} onAppliedAssignment={()=> handleAppliedAssignment()} onForcedAssignment={()=> handleManualAssignment()}/>
     ));
   }
 
@@ -251,22 +262,22 @@ const DS_DashboardPage = () => {
           {/* Bottom Left Panel */}
           <div>
             {activeTab === "pprTas" && isAppliedAssignment ? (
-                <div className="ta-list-container">
-                    <h3 className="ta-list-title">Applied Studens</h3>
-                    <div className="ta-list">
-                    {tas.length > 0 ? (
-                        <div>{createAppliedTAItems()}</div>
-                    )
-                   : (
-                    <div className="no-ta">No TAs available</div>
-                  )}
-                </div>
+                
+              <div className="ta-list-container">
+                <h3 className="ta-list-title">Applied Students</h3>
                 <div className="buttons">
-                    <button >Accept</button>
-                    <button >Automatic</button>
+                  <button >Automatic Select</button>
+                </div>
+                <div className="ta-list">
+                {tas.length > 0 ? (
+                    <div>{createAppliedTAItems()}</div>
+                )
+                : (
+                <div className="no-ta">No TAs available</div>
+                )}
                 </div>
               </div>
-            ) : activeTab === "pprTas" && isForcedAssignment ? (
+            ) : activeTab === "pprTas" && isManualAssignment ? (
             <div className="ds-dashboard-card">
               <h3>Available TAs</h3>
               <div className="ds-dashboard-filters">
@@ -286,8 +297,7 @@ const DS_DashboardPage = () => {
                   <option value="low">Low to High</option>
                   <option value="high">High to Low</option>
                 </select>
-                <button onClick={handleSearch}>Apply</button>
-                <button onClick={handleSearch}>Automatic Assign</button>
+                <button>Automatic Select</button>
               </div>
     
               <div className="ds-dashboard-avaliable-ta-list">{createAvaliableTAItems()}</div>
@@ -374,7 +384,10 @@ const DS_DashboardPage = () => {
                   <div className="no-ta">No TAs available</div>
                 )}
               </div>
-              <button>Notify Deans Office</button>
+              <div className="buttons">
+                <button onClick={()=> handleForceAssignment()}>Force Assignment</button>
+                <button onClick={()=> handleOfferAssignment()}>Offer Assignment</button>
+              </div>
             </div>
           )}
          </div>
@@ -384,34 +397,3 @@ const DS_DashboardPage = () => {
   );
 };
 export default DS_DashboardPage;
-
-/*
-              <div className="card">
-                <h3>Available TAs</h3>
-      
-                <div className="filters">
-                  <input
-                    type="text"
-                    placeholder="🔍 Search by name"
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                  />
-                  <select value={sortName} onChange={(e) => setSortName(e.target.value)}>
-                    <option value="">Sort by Name</option>
-                    <option value="asc">A → Z</option>
-                    <option value="desc">Z → A</option>
-                  </select>
-                  <select value={sortWorkload} onChange={(e) => setSortWorkload(e.target.value)}>
-                    <option value="">Sort by Workload</option>
-                    <option value="low">Low to High</option>
-                    <option value="high">High to Low</option>
-                  </select>
-                  <button onClick={handleSearch}>Apply</button>
-                  <button onClick={handleSearch}>Automatic Assign</button>
-                </div>
-      
-                <div className="ds-dashboard-avaliable-ta-list">{createAvaliableTAItems()}</div>
-              </div>
-            )
-
-*/
