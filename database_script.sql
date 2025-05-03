@@ -497,7 +497,8 @@ INSERT INTO request (request_id, sender_user_id, receiver_user_id, sent_date, is
 	(19, 7, 4, '2025-05-24 10:00:00', true, '2025-05-27 10:00:00', 'Request 19 for from_dean'),
 	(20, 7, 8, '2025-05-25 10:00:00', false, null, 'Request 20 for from_dean'),
 	(21, 5, 9, '2025-05-06 8:00:00', true, '2025-05-10 10:00:00' , 'Request 1 for swap'),
-	(22, 6, 9, '2025-05-06 10:00:00', false, '2025-05-10 10:00:00' , 'Request 1 for swap');
+	(22, 6, 9, '2025-05-06 10:00:00', false, '2025-05-10 10:00:00' , 'Request 1 for swap'),
+	(23, 7, 9, '2025-05-06 5:00:00', false, '2025-05-10 7:00:00' , 'test');
 
 INSERT INTO ta_swap_request (request_id, class_proctoring_id) VALUES
 	(1, 2),
@@ -529,7 +530,8 @@ INSERT INTO instructor_additional_ta_request (request_id, ta_count, is_sent_to_s
 	(19, 2, true, 1),
 	(20, 1, false, 5),
 	(21, 2, false, 3),
-	(22, 2, false, 3);
+	(22, 2, false, 3),
+	(23, 3, false, 2);
     
 INSERT INTO class_proctoring_ta_relation (class_proctoring_id, ta_id, is_paid, is_complete, is_open_to_swap) VALUES
 	(1, 3, false, false, true),
