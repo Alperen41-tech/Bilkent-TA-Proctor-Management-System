@@ -17,6 +17,7 @@ import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.NotificationService;
+import com.cs319group3.backend.Services.TAService;
 import com.cs319group3.backend.Services.TASwapRequestService;
 import com.cs319group3.backend.Services.TimeIntervalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,6 +112,9 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         }
     }
 
+    @Autowired
+    TAService taService;
+
     @Override
     public List<TAProfileDTO> getAvailableTAProfilesForClassProctoring(int classProctoringId, int taId) throws Exception {
 
@@ -125,28 +129,10 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
 
         List<TA> departmentAvailableTAs = taRepo.findAvailableTAsByDepartment(currDep.getDepartmentCode(), classProctoringId);
 
-        departmentAvailableTAs.removeIf(ta -> !isTAAvailable(ta, classProctoringReceived)
+        departmentAvailableTAs.removeIf(ta -> !taService.isTAAvailable(ta, classProctoringReceived)
                                                 || isRequestAlreadySent(taId, ta, classProctoringReceived));
 
         return TAProfileMapper.essentialMapper(departmentAvailableTAs);
-    }
-
-    @Override
-    public boolean isTAAvailable(TA ta, ClassProctoring otherCtr){
-
-        /* ta is not available
-        * if he has another proctoring in the time interval
-        * if he has singed as with leave of absence
-        * if he has lecture
-        * if he already recevied a swap reeqeust about that */
-
-        LocalDateTime startDateTime = otherCtr.getStartDate(); // your LocalDateTime value
-        LocalDateTime endDateTime = otherCtr.getEndDate();   // your LocalDateTime value
-
-
-        List<TimeIntervalDTO> taSchedule = timeIntervalService.getTATimeIntervalsByHour(startDateTime, endDateTime, ta.getUserId());
-
-        return taSchedule.isEmpty();
     }
 
     @Override
