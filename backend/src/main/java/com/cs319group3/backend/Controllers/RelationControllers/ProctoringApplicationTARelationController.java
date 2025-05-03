@@ -2,6 +2,7 @@ package com.cs319group3.backend.Controllers.RelationControllers;
 
 
 import com.cs319group3.backend.Components.CurrentUserUtil;
+import com.cs319group3.backend.DTOs.ProctoringApplicationDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Services.ProctoringApplicationTARelationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,12 @@ public class ProctoringApplicationTARelationController {
     @GetMapping("getApplicantsForApplication")
     public List<TAProfileDTO> getApplicants(@RequestParam("applicationId") int applicationId) {
         return proctoringApplicationTARelationService.getAllApplicants(applicationId);
+    }
+
+
+    @GetMapping("getApplicantCountForProctoring")
+    public int getApplicantCount(@RequestParam("applicationId") int applicationId) {
+        return proctoringApplicationTARelationService.getApplicantCount(applicationId);
     }
 
 

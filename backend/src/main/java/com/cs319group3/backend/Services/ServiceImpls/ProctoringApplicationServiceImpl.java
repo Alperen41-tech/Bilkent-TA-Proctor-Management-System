@@ -26,16 +26,18 @@ import java.util.Optional;
 @Service
 public class ProctoringApplicationServiceImpl implements ProctoringApplicationService {
     @Autowired
-    ProctoringApplicationRepo proctoringApplicationRepo;
+    private ProctoringApplicationRepo proctoringApplicationRepo;
     @Autowired
     private DepartmentRepo departmentRepo;
+    @Autowired
+    private ProctoringApplicationMapper proctoringApplicationMapper;
 
     @Override
     public List<ProctoringApplicationDTO> getProctoringApplications(int deansOfficeId){
         List<ProctoringApplication> listPA = proctoringApplicationRepo.findByDeansOfficeId(deansOfficeId);
         List<ProctoringApplicationDTO> dtoPA = new ArrayList<>();
         for(ProctoringApplication proctoringApplication:listPA){
-            ProctoringApplicationDTO dto = ProctoringApplicationMapper.toDTO(proctoringApplication);
+            ProctoringApplicationDTO dto = proctoringApplicationMapper.toDTO(proctoringApplication);
             //dto.setClassProctoringDTO(ClassProctoringMapper.essentialMapper(proctoringApplication.getClassProctoring()));
             dtoPA.add(dto);
         }
@@ -90,5 +92,13 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
             }
         }
         return true;
+    }
+
+    @Override
+    public List<ProctoringApplicationDTO> getAllApplicationsForDepartment(int departmentId) {
+
+        List<ProctoringApplication> listPA = proctoringApplicationRepo.findByVisibleDepartment_DepartmentId(departmentId);
+        return proctoringApplicationMapper.toDTO(listPA);
+
     }
 }

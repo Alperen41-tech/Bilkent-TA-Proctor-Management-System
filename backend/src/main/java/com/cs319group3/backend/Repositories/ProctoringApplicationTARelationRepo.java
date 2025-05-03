@@ -15,4 +15,6 @@ public interface ProctoringApplicationTARelationRepo extends JpaRepository<Proct
 
     List<ProctoringApplicationTARelation> findByProctoringApplication_ApplicationIdAndIsApprovedBySecretaryFalse(int proctoringApplicationId);
 
+    List<ProctoringApplicationTARelation> findByProctoringApplication_ApplicationId(int proctoringApplicationId);
+
 }
