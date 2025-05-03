@@ -90,7 +90,8 @@ const INS_DashboardPage = () => {
       );
       if (response.data) {
         alert("Request accepted successfully.");
-        fetchReceivedRequests(); // Refresh the received requests after accepting
+        fetchReceivedRequests(); 
+        fetchPendingRequests(); 
       } else {
         alert("Failed to accept the request. Please try again.");
       }

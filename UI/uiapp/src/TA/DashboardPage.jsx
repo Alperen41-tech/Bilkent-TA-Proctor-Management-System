@@ -88,7 +88,7 @@ const DashboardPage = () => {
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/notification/get?id=4");
+      const response = await axios.get("http://localhost:8080/notification/get?id=1");
       setNotifications(response.data);
       console.log(notifications);
     } catch (error) {
@@ -108,7 +108,7 @@ const DashboardPage = () => {
 
   const fetchPendingRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/request/getBySenderId?senderId=3"); // Adjust the URL as needed
+      const response = await axios.get("http://localhost:8080/request/getBySenderId?senderId=1"); // Adjust the URL as needed
       setPendingRequests(response.data);
       console.log(receivedRequests);
     } catch (error) {
@@ -128,6 +128,7 @@ const DashboardPage = () => {
       } else {
         alert("New workload entry created successfully.");
         fetchTaWorkloadRequests(); 
+        fetchPendingRequests();
       }
       
     } catch (error) {

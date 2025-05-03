@@ -47,7 +47,7 @@ const INS_ExamsPage = () => {
   };
   const handleDiscardTA = async () => {
     if (selectedTA) {
-      const response = await axios.delete(`http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring?classProctoringId=${selectedTask.classProctoringTARelationDTO.classProctoringDTO.id}&taId=${selectedTA.userId}`);
+      const response = await axios.delete(`http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring?classProctoringId=${selectedTask.classProctoringTARelationDTO.classProctoringDTO.id}&taId=${selectedTA.userId}&removerId=4`);
       if (response.data) {
         console.log("TA discarded successfully:", selectedTA);
         alert("TA discarded successfully.");
