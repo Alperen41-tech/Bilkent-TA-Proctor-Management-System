@@ -4,6 +4,8 @@ import "./DOExamsPage.css";
 import AdminDatabaseItem from "../Admin/AdminDatabaseItem";
 import TAItem from "../TAItem";
 import axios from "axios";
+import ManualAssignmentModal from "../ManualAssignmentModal";
+
 
 
 
@@ -26,8 +28,27 @@ const DOExamsPage = () => {
   };
   // Dummy logic for "Manually Assign"
   const handleManualAssign = () => {
-    alert("Manual assignment logic goes here.");
+    if (!selectedTAObj || !selectedExamItem) {
+      alert("Please select both an exam and a TA before assigning.");
+      return;
+    }
+
+    setShowManualModal(true);
   };
+
+  const handleForceAssign = () => {
+    console.log("Force assigning TA:", selectedTAObj, "to exam:", selectedExamItem);
+    setShowManualModal(false);
+    // Add your API logic here
+  };
+
+  const handleSendRequest = () => {
+    console.log("Sending request for TA:", selectedTAObj, "for exam:", selectedExamItem);
+    setShowManualModal(false);
+    // Add your API logic here
+  };
+
+
   const handleTAClick = (ta) => {
     const key = `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`;
     setSelectedTA(key);
@@ -41,6 +62,9 @@ const DOExamsPage = () => {
 
   const [tas, setTAs] = useState([]);
   const [allTAs, setAllTAs] = useState([]); //all fetched TAs
+
+  const [showManualModal, setShowManualModal] = useState(false);
+
 
 
 
@@ -87,12 +111,12 @@ const DOExamsPage = () => {
       if (!departmentCode || departmentCode === "") {
         // Fetch all available TAs in faculty
         response = await axios.get('http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoring', {
-          params: { facultyId: facultyId, proctoringId: proctoringId },
+          params: { facultyId: facultyId, proctoringId: proctoringId, userId: 9 },
         });
       } else {
         // Fetch available TAs in selected department
         response = await axios.get('http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring', {
-          params: { departmentCode: departmentCode, proctoringId: proctoringId },
+          params: { departmentCode: departmentCode, proctoringId: proctoringId, userId: 9 },
         });
       }
 
@@ -102,7 +126,7 @@ const DOExamsPage = () => {
     } catch (error) {
       console.error('Error fetching available TAs:', error);
     }
-  }; 
+  };
 
 
 
@@ -229,6 +253,14 @@ const DOExamsPage = () => {
   return (
     <div className="do-exams-container">
       <NavbarDO />
+
+
+      <ManualAssignmentModal
+        isOpen={showManualModal}
+        onForceAssign={handleForceAssign}
+        onSendRequest={handleSendRequest}
+        onCancel={() => setShowManualModal(false)}
+      />
 
       <div className="do-exams-content">
         {/* LEFT SECTION */}
