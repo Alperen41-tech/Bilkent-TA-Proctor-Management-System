@@ -102,7 +102,7 @@ const DOExamsPage = () => {
     } catch (error) {
       console.error('Error fetching available TAs:', error);
     }
-  };
+  }; 
 
 
 
@@ -141,6 +141,8 @@ const DOExamsPage = () => {
 
 
 
+
+
   const fetchDepartments = async () => {
     try {
       const response = await axios.get('http://localhost:8080/department/getAllDepartmentsInFaculty', {
@@ -176,17 +178,20 @@ const DOExamsPage = () => {
     try {
       const { data: success } = await axios.delete(
         "http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring",
-        { params: { taId, classProctoringId } }
+        { params: { taId, classProctoringId, removerId: 9 } }
       );
 
       if (success) {
         alert("TA dismissed successfully.");
+
+        fetchTAs();
+        fetchExams();
         // remove that TA from the assigned-list in state
-        setSelectedExamItem(item => ({
-          ...item,
-          taProfileDTOList: item.taProfileDTOList.filter(t => t.id !== taId)
-        }));
-        setSelectedTA(null);
+        setSelectedExamKey(null);
+        setSelectedExamItem(null);
+        setTAs([]);
+        setAllTAs([]);
+        setTaDepartmentFilter("");
         setSelectedTAObj(null);
       } else {
         alert("Failed to dismiss the TA. Please try again.");
