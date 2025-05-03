@@ -72,12 +72,6 @@ public class RequestServiceImpl implements RequestService {
         try{
             if (request instanceof TAWorkloadRequest) {
                 TAWorkloadRequest req = (TAWorkloadRequest) request;
-                Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());
-                if (ta.isEmpty()) {
-                    throw new RuntimeException("No such TA");
-                }
-                ta.get().setWorkload(taWorkloadRequestService.getTotalWorkload(request.getSenderUser().getUserId()));
-                taRepo.save(ta.get());
                 List<TAWorkloadRequest> reqs = taWorkloadRequestRepo.findByWorkloadId(req.getWorkloadId());
                 for (TAWorkloadRequest req1 : reqs) {
                     if (!(req1.getRequestId() == requestId)) {
@@ -110,6 +104,14 @@ public class RequestServiceImpl implements RequestService {
         request.setApproved(response);
         request.setResponseDate(LocalDateTime.now());
         requestRepo.save(request);
+        if (request instanceof TAWorkloadRequest) {
+            Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());
+            if (ta.isEmpty()) {
+                throw new RuntimeException("No such TA");
+            }
+            ta.get().setWorkload(taWorkloadRequestService.getTotalWorkload(request.getSenderUser().getUserId()));
+            taRepo.save(ta.get());
+        }
         notificationService.createNotification(request, APPROVAL);
 
         return true;
