@@ -13,12 +13,19 @@ import java.util.List;
 public class ProctoringApplicationController {
 
     @Autowired
-    ProctoringApplicationService proctoringApplicationService;
+    private ProctoringApplicationService proctoringApplicationService;
+
 
     @GetMapping("getProctoringApplications")
     public List<ProctoringApplicationDTO> getProctoringApplications(@RequestParam int deansOfficeId) {
         System.out.println("getProctoringApplications is called");
         return proctoringApplicationService.getProctoringApplications(deansOfficeId);
+    }
+
+
+    @GetMapping("getAllApplicationsForDepartment")
+    public List<ProctoringApplicationDTO> getAllApplicationsForDepartment(@RequestParam("departmentId") int departmentId) {
+        return proctoringApplicationService.getAllApplicationsForDepartment(departmentId);
     }
 
     @PostMapping("createProctoringApplications")

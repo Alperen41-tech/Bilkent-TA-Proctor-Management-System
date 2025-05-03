@@ -15,4 +15,5 @@ public class ProctoringApplicationDTO {
     boolean isVisibleForTAs;
     boolean isComplete;
     String finishDate;
+    int applicantCount;
 }

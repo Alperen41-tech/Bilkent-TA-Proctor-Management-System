@@ -2,6 +2,7 @@ package com.cs319group3.backend.Services.ServiceImpls.RelationServiceImpls;
 
 
 import com.cs319group3.backend.DTOMappers.TAProfileMapper;
+import com.cs319group3.backend.DTOs.ProctoringApplicationDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ProctoringApplication;
 import com.cs319group3.backend.Entities.RelationEntities.ProctoringApplicationTARelation;
@@ -74,4 +75,12 @@ public class ProctoringApplicationTARelationServiceImpl implements ProctoringApp
 
         return profiles;
     }
+
+    @Override
+    public int getApplicantCount(int applicationId) {
+        List<ProctoringApplicationTARelation> relations = proctoringApplicationTARelationRepo.findByProctoringApplication_ApplicationId(applicationId);
+        return relations.size();
+    }
+
+
 }
