@@ -446,7 +446,8 @@ insert into ta_type (ta_type_id, type_name, ta_load) values
 insert into ta (user_id, department_id, course_id, class, ta_type_id) values
 	(1, 1, 1, 9, 1),
     (2, 1, 2, 5, 2),
-    (3, 2, 4, 5, 3);
+    (3, 2, 4, 5, 3),
+    (10,1,1,5,1);
     
 insert into student (student_id, bilkent_id, name, surname, email, phone_number, is_active, department_id, class) values
 	(1, '23103131', 'Emir', 'Atlas', 'emirinmaili@bilkent.edu.tr', '+905353533535', true, 1, 9),
