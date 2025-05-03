@@ -16,10 +16,7 @@ import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
-import com.cs319group3.backend.Services.NotificationService;
-import com.cs319group3.backend.Services.TAService;
-import com.cs319group3.backend.Services.TASwapRequestService;
-import com.cs319group3.backend.Services.TimeIntervalService;
+import com.cs319group3.backend.Services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -115,6 +112,9 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
     @Autowired
     TAService taService;
 
+    @Autowired
+    TAAvailabilityService taAvailabilityService;
+
     @Override
     public List<TAProfileDTO> getAvailableTAProfilesForClassProctoring(int classProctoringId, int taId) throws Exception {
 
@@ -129,7 +129,7 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
 
         List<TA> departmentAvailableTAs = taRepo.findAvailableTAsByDepartment(currDep.getDepartmentCode(), classProctoringId);
 
-        departmentAvailableTAs.removeIf(ta -> !taService.isTAAvailable(ta, classProctoringReceived)
+        departmentAvailableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, classProctoringReceived)
                                                 || isRequestAlreadySent(taId, ta, classProctoringReceived));
 
         return TAProfileMapper.essentialMapper(departmentAvailableTAs);

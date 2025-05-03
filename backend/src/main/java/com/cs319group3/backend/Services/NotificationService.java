@@ -14,5 +14,6 @@ public interface NotificationService {
     public boolean setNotificationsRead(int userId);
     public int getUnreadNotificationCount(int userId);
     public Notification createNotification(Request request, NotificationType type);
+    public Notification createNotification(Request request, NotificationType type, String description);
     public Notification createNotificationWithoutRequest(NotificationType type, User user, String description);
 }

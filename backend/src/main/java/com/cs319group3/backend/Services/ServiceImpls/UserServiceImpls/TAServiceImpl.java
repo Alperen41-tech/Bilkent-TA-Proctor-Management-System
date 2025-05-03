@@ -6,10 +6,7 @@ import com.cs319group3.backend.DTOMappers.TAProfileMapper;
 import com.cs319group3.backend.Entities.*;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.*;
-import com.cs319group3.backend.Services.TAService;
-import com.cs319group3.backend.Services.TASwapRequestService;
-import com.cs319group3.backend.Services.TAWorkloadRequestService;
-import com.cs319group3.backend.Services.TimeIntervalService;
+import com.cs319group3.backend.Services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -90,11 +87,14 @@ public class TAServiceImpl implements TAService {
     @Autowired
     ClassProctoringRepo classProctoringRepo;
 
+    @Autowired
+    TAAvailabilityService taAvailabilityService;
+
     @Override
     public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int classProctoringId, int userId) {
         ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(departmentCode, classProctoringId);
-        availableTAs.removeIf(ta -> !isTAAvailable(ta, cp) );
+        availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) || authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId));
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
@@ -103,11 +103,14 @@ public class TAServiceImpl implements TAService {
         return availableTAProfiles;
     }
 
+    @Autowired
+    AuthStaffProctoringRequestService authStaffProctoringRequestService;
+
     @Override
     public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int classProctoringId, int userId) {
         ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByFaculty(facultyId, classProctoringId);
-        availableTAs.removeIf(ta -> !isTAAvailable(ta, cp));
+        availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) || authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId));
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
@@ -143,21 +146,4 @@ public class TAServiceImpl implements TAService {
     @Autowired
     TimeIntervalService timeIntervalService;
 
-    @Override
-    public boolean isTAAvailable(TA ta, ClassProctoring otherCtr){
-
-        /* ta is not available
-         * if he has another proctoring in the time interval
-         * if he has singed as with leave of absence
-         * if he has lecture
-         * if he already recevied a swap reeqeust about that */
-
-        LocalDateTime startDateTime = otherCtr.getStartDate(); // your LocalDateTime value
-        LocalDateTime endDateTime = otherCtr.getEndDate();   // your LocalDateTime value
-
-
-        List<TimeIntervalDTO> taSchedule = timeIntervalService.getTATimeIntervalsByHour(startDateTime, endDateTime, ta.getUserId());
-
-        return taSchedule.isEmpty();
-    }
 }
