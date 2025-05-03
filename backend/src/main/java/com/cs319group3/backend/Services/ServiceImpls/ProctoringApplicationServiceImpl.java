@@ -95,10 +95,25 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
     }
 
     @Override
-    public List<ProctoringApplicationDTO> getAllApplicationsForDepartment(int departmentId) {
+    public List<ProctoringApplicationDTO> getAllApplicationsByDepartment(int departmentId, boolean isTaInformed) {
 
-        List<ProctoringApplication> listPA = proctoringApplicationRepo.findByVisibleDepartment_DepartmentId(departmentId);
+        List<ProctoringApplication> listPA = proctoringApplicationRepo.findByVisibleDepartment_DepartmentIdAndIsVisibleForTAs(departmentId, isTaInformed);
         return proctoringApplicationMapper.toDTO(listPA);
+
+    }
+
+    @Override
+    public boolean openForTAs(int applicationId) {
+        Optional<ProctoringApplication> proctoringApplication = proctoringApplicationRepo.findById(applicationId);
+        if(!proctoringApplication.isPresent()){
+            throw new RuntimeException("no such proctoring application found");
+        }
+
+        ProctoringApplication proctoringApplicationReceieved = proctoringApplication.get();
+        proctoringApplicationReceieved.setVisibleForTAs(true);
+
+        proctoringApplicationRepo.save(proctoringApplicationReceieved);
+        return true;
 
     }
 }

@@ -23,14 +23,23 @@ public class ProctoringApplicationController {
     }
 
 
-    @GetMapping("getAllApplicationsForDepartment")
-    public List<ProctoringApplicationDTO> getAllApplicationsForDepartment(@RequestParam("departmentId") int departmentId) {
-        return proctoringApplicationService.getAllApplicationsForDepartment(departmentId);
+    @GetMapping("getAllApplicationsByDepartment")
+    public List<ProctoringApplicationDTO> getAllApplicationsByDepartment(@RequestParam("departmentId") int departmentId, @RequestParam("isTaInformed") boolean isTaInformed) {
+        return proctoringApplicationService.getAllApplicationsByDepartment(departmentId, isTaInformed);
     }
+
 
     @PostMapping("createProctoringApplications")
     public boolean createProctoringApplication(@RequestParam int classProctoringId, @RequestBody List<ProctoringApplicationDTO> proctoringApplicationDTO, @RequestParam int deansOfficeId) {
         System.out.println("createProctoringApplication is called");
         return proctoringApplicationService.createProctoringApplications(classProctoringId, proctoringApplicationDTO, deansOfficeId);
     }
+
+
+    @PutMapping("openForTAs")
+    public boolean openForTAs (@RequestParam("applicationId") int applicationId) {
+        return proctoringApplicationService.openForTAs(applicationId);
+    }
+
+
 }
