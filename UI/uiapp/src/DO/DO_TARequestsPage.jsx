@@ -35,18 +35,61 @@ const DO_TARequestsPage = () => {
   }, [selectedRequestId, taRequests]);
   
 
-  const handleSendToDepartments = () => {
-    console.log("Sending TA requirements:", taCounts);
+  const handleSendToDepartments = async () => {
+    if (!selectedRequestId) {
+      alert("Please select a request first.");
+      return;
+    }
+  
+    const applications = Object.entries(taCounts)
+      .filter(([_, count]) => count > 0)
+      .map(([deptCode, count]) => {
+        const dept = departments.find((d) => d.departmentCode === deptCode);
+        return {
+          visibleDepartmentId: dept?.departmentId,
+          applicantCountLimit: count,
+        };
+      });
+  
+    // Safety checks
+    if (applications.length === 0) {
+      return alert("No departments selected or all TA counts are zero.");
+    }
+  
+    if (applications.some((a) => !a.visibleDepartmentId)) {
+      console.error("Missing departmentId in some applications:", applications);
+      return alert("One or more departments could not be matched.");
+    }
+  
+    try {
+      console.log("Sending applications:", applications);
+  
+      const response = await axios.post(
+        "http://localhost:8080/proctoringApplication/createProctoringApplications",
+        applications,
+        {
+          params: {
+            classProctoringId: selectedRequestId,
+            deansOfficeId: 1, // Replace with real dean's office ID if needed
+          },
+        }
+      );
+  
+      alert("Requests sent successfully!");
+    } catch (error) {
+      console.error("Failed to send applications:", error.response?.data || error.message);
+      alert("Error while sending. Check console for details.");
+    }
   };
+  
 
   const fetchDepartmentsExcluding = async (excludeDepartmentId) => {
     try {
       const res = await axios.get(
-        "http://localhost:8080/department/getAllDepartmentsExcept",
+        "http://localhost:8080/department/getAllDepartmentsInFaculty",
         {
           params: {
             facultyId: 1,
-            departmentId: excludeDepartmentId,
           },
         }
       );
