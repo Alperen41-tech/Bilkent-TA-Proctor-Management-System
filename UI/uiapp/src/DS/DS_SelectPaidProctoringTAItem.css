@@ -62,3 +62,30 @@
     color: #888;
     margin-bottom: 8px;
   }
+
+
+  .ds-select-paid-proctoring-ta-item-buttons {
+    flex: 2;
+  }
+
+
+  .ds-select-paid-proctoring-ta-item-button {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+  }
+  .ds-select-paid-proctoring-ta-item-applied-button {
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+
+  .ds-select-paid-proctoring-ta-item-manual-select-button{
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+  }

@@ -213,3 +213,34 @@
   .ds-dashboard-ta-list-item-id{
     flex: 1;
   }
+
+  .ds-dashboard-details-panel{
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    margin-top: 20px;
+  }
+
+  .ds-dashboard-pending-request-panel{
+    height: 500px;
+    overflow-y: auto;
+  }
+  .ds-dashboard-received-request-panel{
+    height: 500px;
+    overflow-y: auto;
+  }
+
+  .ds-dashboard-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .ds-dashboard-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
