@@ -198,7 +198,7 @@ create table proctoring_application(
     class_proctoring_id int,
     visible_department_id int,
     applicant_count_limit int,
-    is_visible_for_tas bool,
+    application_type varchar(20),
     is_complete bool not null,
     finish_date datetime not null,
     foreign key (class_proctoring_id) references class_proctoring(class_proctoring_id),
@@ -606,11 +606,11 @@ INSERT INTO notification (notification_id, receiver_id, request_id, notification
     (2, 10, 3, "APPROVAL", false),
     (3, 10, 4, "ASSIGNMENT", true);
     
-INSERT INTO proctoring_application (application_id, class_proctoring_id, visible_department_id, applicant_count_limit, is_visible_for_tas, is_complete, finish_date) VALUES
-	(1, 2, 2, 10, false, false, '2025-05-19 10:00:00'),
-    (2, 4, 1, 5, false, false, '2025-05-20 10:00:00'),
-    (3, 3, 2, 15, true, false, '2025-05-21 10:00:00'),
-    (4, 5, 1, 10, true, false, '2025-05-22 10:00:00');
+INSERT INTO proctoring_application (application_id, class_proctoring_id, visible_department_id, applicant_count_limit, application_type, is_complete, finish_date) VALUES
+	(1, 2, 2, 10, "NOT_DEFINED", false, '2025-05-19 10:00:00'),
+    (2, 4, 1, 5, "NOT_DEFINED", false, '2025-05-20 10:00:00'),
+    (3, 3, 2, 15, "NOT_DEFINED", false, '2025-05-21 10:00:00'),
+    (4, 5, 1, 10, "NOT_DEFINED", false, '2025-05-22 10:00:00');
     
 INSERT INTO proctoring_application_ta_relation (proctoring_application_ta_relation_id, ta_id, proctoring_application_id) VALUES
 	(1, 2, 1),

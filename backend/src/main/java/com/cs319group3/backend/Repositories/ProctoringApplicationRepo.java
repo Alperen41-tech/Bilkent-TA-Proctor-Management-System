@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Repositories;
 
 import com.cs319group3.backend.Entities.ProctoringApplication;
+import com.cs319group3.backend.Enums.ProctoringApplicationType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -19,5 +20,5 @@ public interface ProctoringApplicationRepo extends JpaRepository<ProctoringAppli
     """)
     List<ProctoringApplication> findByDeansOfficeId(int deansOfficeId);
 
-    List<ProctoringApplication> findByVisibleDepartment_DepartmentIdAndIsVisibleForTAs(int departmentId, boolean isVisibleForTAs);
+    List<ProctoringApplication> findByVisibleDepartment_DepartmentId(int departmentId);
 }
