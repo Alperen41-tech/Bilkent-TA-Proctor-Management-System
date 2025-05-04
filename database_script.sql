@@ -1,3 +1,4 @@
+drop database ta_management_system_db;
 create database ta_management_system_db;
 use ta_management_system_db;
 
