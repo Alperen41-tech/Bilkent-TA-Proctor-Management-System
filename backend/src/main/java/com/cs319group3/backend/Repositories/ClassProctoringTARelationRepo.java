@@ -39,4 +39,11 @@ public interface ClassProctoringTARelationRepo extends JpaRepository<ClassProcto
     @Query("SELECT cptr.TA FROM ClassProctoringTARelation cptr " +
             "WHERE cptr.classProctoring.classProctoringId = :classProctoringId")
     List<TA> findTAsByClassProctoringId(int classProctoringId);
+
+    @Query("""
+    SELECT COUNT(c)
+    FROM ClassProctoringTARelation c
+    WHERE c.classProctoring.classProctoringId = :classProctoringId
+""")
+    int countAssignedTAs(int classProctoringId);
 }

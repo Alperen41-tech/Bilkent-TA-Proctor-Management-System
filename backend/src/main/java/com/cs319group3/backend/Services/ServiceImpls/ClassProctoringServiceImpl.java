@@ -7,9 +7,13 @@ import com.cs319group3.backend.DTOs.CreateClassProctoringDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.Log;
 import com.cs319group3.backend.Enums.LogType;
+import com.cs319group3.backend.Repositories.AuthStaffProctoringRequestRepo;
 import com.cs319group3.backend.Repositories.ClassProctoringRepo;
 import com.cs319group3.backend.Repositories.LogRepo;
+import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
+import com.cs319group3.backend.Services.AuthStaffProctoringRequestService;
 import com.cs319group3.backend.Services.ClassProctoringService;
+import com.cs319group3.backend.Services.ClassProctoringTARelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +52,23 @@ public class ClassProctoringServiceImpl implements ClassProctoringService {
         log.setLogDate(LocalDateTime.now());
         logRepo.save(log);
         return true;
+    }
+
+    @Autowired
+    AuthStaffProctoringRequestRepo authStaffProctoringRequestRepo;
+
+    //Unapproved requests of a class proctoring
+    @Override
+    public int numberOfRequestsSent(int classProctoringId) {
+        return authStaffProctoringRequestRepo.numberOfRequestsSent(classProctoringId);
+    }
+
+    @Autowired
+    ClassProctoringTARelationRepo classProctoringTARelationRepo;
+
+    @Override
+    public int numberOfTAsAssigned(int classProctoringId) {
+        return classProctoringTARelationRepo.countAssignedTAs(classProctoringId);
     }
 
 }

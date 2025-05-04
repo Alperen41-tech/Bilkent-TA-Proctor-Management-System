@@ -1,5 +1,5 @@
 package com.cs319group3.backend.Repositories;
-
+import org.springframework.data.jpa.repository.Query;
 import com.cs319group3.backend.Entities.RequestEntities.AuthStaffProctoringRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,4 +14,11 @@ public interface AuthStaffProctoringRequestRepo extends JpaRepository<AuthStaffP
     List<AuthStaffProctoringRequest> findBySenderUser_UserId(int userId);
     Optional<AuthStaffProctoringRequest> findBySenderUserUserIdAndReceiverUserUserIdAndClassProctoringClassProctoringId(int senderId, int taId, int classProctoringId);
 
+    @Query("""
+    SELECT COUNT(asp)
+    FROM AuthStaffProctoringRequest asp
+    JOIN Request r ON asp.requestId = r.requestId
+    WHERE asp.classProctoring.classProctoringId = :classProctoringId AND r.isApproved = false
+""")
+    int numberOfRequestsSent(int classProctoringId);
 }

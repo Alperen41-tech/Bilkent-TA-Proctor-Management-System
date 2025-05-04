@@ -7,4 +7,7 @@ public interface AuthStaffProctoringRequestService {
 
     public boolean isRequestAlreadySent(int senderId, int receiverId, int classProctoringId);
     public boolean sendAuthStaffProctoringRequest(int classProctoringId, int taId, int senderId, boolean isApproved);
+    public boolean canUnforcedRequestBeSent(int classProctoringId);
+    public boolean canForcedRequestBeSent(int classProctoringId);
+    public boolean canRequestBeAccepted( int classProctoringId);
 }

@@ -6,11 +6,8 @@ import com.cs319group3.backend.Entities.RequestEntities.AuthStaffProctoringReque
 import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
-import com.cs319group3.backend.Services.AuthStaffProctoringRequestService;
-import com.cs319group3.backend.Services.NotificationService;
+import com.cs319group3.backend.Services.*;
 import com.cs319group3.backend.Services.ServiceImpls.UserServiceImpls.TAServiceImpl;
-import com.cs319group3.backend.Services.TAAvailabilityService;
-import com.cs319group3.backend.Services.TAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +50,15 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
 
     @Override
     public boolean sendAuthStaffProctoringRequest(int classProctoringId, int taId, int senderId, boolean isApproved) {
-        TAService taService = new TAServiceImpl(); // to avoid cyclic autowiring
+
+        if(isApproved && !canForcedRequestBeSent(classProctoringId)) {
+            return false;
+        }
+
+        if(!isApproved && !canUnforcedRequestBeSent(classProctoringId)) {
+            return false;
+        }
+
         Optional<ClassProctoringTARelation> cptr = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(taId, classProctoringId);
         if(cptr.isPresent() || !taAvailabilityService.isTAAvailable(taRepo.findByUserId(taId).get(), classProcRepo.findById(classProctoringId).get())) {
             return false;
@@ -108,5 +113,33 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
             return false;
         }
         return true;
+    }
+
+    @Autowired
+    ClassProctoringService classProctoringService;
+
+    @Override
+    public boolean canUnforcedRequestBeSent(int classProctoringId) {
+        int tasAssigned = classProctoringService.numberOfTAsAssigned(classProctoringId);
+        int totalUnapprovedRequests = classProctoringService.numberOfRequestsSent(classProctoringId);
+        int taCount = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
+        if(tasAssigned >= taCount){
+            return false;
+        }
+        return tasAssigned + totalUnapprovedRequests < taCount + 3;
+    }
+
+    @Override
+    public boolean canForcedRequestBeSent(int classProctoringId){
+        int tasAssigned = classProctoringService.numberOfTAsAssigned(classProctoringId);
+        int taCount = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
+        return tasAssigned < taCount;
+    }
+
+    @Override
+    public boolean canRequestBeAccepted(int classProctoringId) {
+        int tasAssigned = classProctoringService.numberOfTAsAssigned(classProctoringId);
+        int taCount = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
+        return tasAssigned < taCount;
     }
 }
