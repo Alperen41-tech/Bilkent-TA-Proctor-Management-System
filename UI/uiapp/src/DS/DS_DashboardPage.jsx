@@ -1,4 +1,4 @@
-import React, { act, useState, useEffect } from "react";
+import React, { act, useState, useEffect, use } from "react";
 import NavbarDS from "./NavbarDS";
 import "./DS_DashboardPage.css";
 import { id } from "date-fns/locale";
@@ -12,95 +12,54 @@ import ReceivedRequestItem from "../ReceivedRequestItem";
 const DS_DashboardPage = () => {
   const [selectedAppliedStudentsId, setSelectedAppliedStudentsId] = useState([]);
   const [selectedATAIds, setSelectedATAIds] = useState([]);
-  const [selectedPPRId, setSelectedPPRId] = useState(null);
+  
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [sortName, setSortName] = useState("");  
   const [sortWorkload, setSortWorkload] = useState("");
   
-  const [tas, setTas] = useState([
-    { name: 'Ali 1', id: 1 , email: "basdaas@gmail.com"},
-    { name: 'Ali 1', id: 2 , email: "basdaas@gmail.com"},
-    { name: 'Ali 1', id: 3 , email: "basdaas@gmail.com"},
-    { name: 'Ali 1', id: 4 , email: "basdaas@gmail.com"}
-  ]);
-
+  
+  const [appliedTAs, setAppliedTAs] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [paidProctorings, setPaidProctorings] = useState([]);
   const [isAppliedAssignment, setIsAppliedAssignment] = useState(false);
   const [isManualAssignment, setIsManualAssignment] = useState(false);
-  const [selectedPaidProctoring, setSelectedPaidProctoring] = useState(null);
+  const [selectedPPR, setSelectedPPR] = useState(null);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setSelectedRequest(null);
-    setSelectedPPRId(null);
-    setSelectedPaidProctoring(null);
+    setSelectedPPR(null);
   };
-  const handlePPRClick = (id) => {
-    setSelectedPPRId(id);
 
-    const request = paidProctoringRequests.find((req) => req.id === id);
-    setSelectedRequest(request);
-  }
   const handleASC = (id) => {
-    if (!selectedAppliedStudentsId.includes(id)) {
+    if (selectedAppliedStudentsId && !selectedAppliedStudentsId.includes(id)) {
       setSelectedAppliedStudentsId((prev) => [...prev, id]);
     }
     else {
-      setSelectedAppliedStudentsId((prev) => prev.filter((studentId) => studentId !== id));
+      setSelectedAppliedStudentsId((prev) => prev.filter((userId) => userId !== id));
     }
     console.log("Selected TA:", id);
-  }
+  };
+
   const handleAvaTAClick = (id) => { 
-    if (!selectedATAIds.includes(id)) {
+    if (selectedATAIds && !selectedATAIds.includes(id)) {
       setSelectedATAIds((prev) => [...prev, id]);
     }
     else {
       setSelectedATAIds((prev) => prev.filter((studentId) => studentId !== id));
     }
     console.log("Selected TA:", id);
-  }
+  };
 
-
-  const paidProctoringRequests = [
-    {
-      id: 1,
-      date: { month: "Jan", day: 1, weekday: "Mon" },
-      time: { start: "10:00 AM", end: "12:00 PM" },
-      role: "Proctor",
-      duration: 2,
-      name: "Ali",
-      numOfTaNeeded: 2,
-    },
-    {
-      id: 2,
-      date: { month: "Feb", day: 2, weekday: "Tues" },
-      time: { start: "9:00 AM", end: "11:00 PM" },
-      role: "Proctor",
-      duration: 2,
-      name: "Ali",
-      numOfTaNeeded: 7,
-    },
-  ];
   const handleForceAssignment = () => {
     console.log("Force Assignment clicked");
   };
   const handleOfferAssignment = () => {
     console.log("Offer Assignment clicked");
-  };
-
-  const handleAppliedAssignment = () => {
-    setIsAppliedAssignment(true);
-    setIsManualAssignment(false);
-  };
-
-  const handleManualAssignment = () => {
-    setIsAppliedAssignment(false);
-    setIsManualAssignment(true);
   };
 
   const fetchReceivedRequests = async () => {
@@ -122,6 +81,51 @@ const DS_DashboardPage = () => {
       console.error("Error fetching pending requests:", error);
     }
   };
+
+  const fetchPaidProctoringRequests = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/proctoringApplication/getAllApplicationsByDepartment?departmentId=1");
+      if (response.data) {
+        setPaidProctorings(response.data);
+        console.log(receivedRequests);
+      }
+      else{
+        console.log("No paid proctoring requests found.");
+      }
+    } catch (error) {
+      console.error("Error fetching paid proctoring requests:", error);
+    }
+  };
+
+  const fetchAppliedStudents = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/proctoringApplicationTARelation/getApplicantsForApplication?applicationId=${selectedPPR.applicationId}`); // Adjust the URL as needed
+      if (response.data) {
+        setAppliedTAs(response.data);
+      }
+      else{
+        console.log("No paid proctoring requests found.");
+      }
+    } catch (error) {
+      console.error("Error fetching paid proctoring requests applicants:", error);
+    }
+  };
+
+  const handleAssignmentTypeSelect = (type, applicationId) => {
+    try {
+      const response = axios.put(`http://localhost:8080/proctoringApplication/setApplicationType?applicationId=${applicationId}&applicationType=${type}`);
+      if (response) {
+        alert("Assignment type selected successfully.");
+        fetchPaidProctoringRequests(); 
+      } else {
+        alert("Failed to select assignment type. Please try again.");
+        fetchPaidProctoringRequests(); 
+      }
+    } catch (error) {
+      console.error("Error selecting assignment type:", error);
+      alert("An error occurred while selecting assignment type. Please try again.");
+    }
+  }
 
   const handleRequestResponse = async (requestId, answer) => {
     try {
@@ -178,42 +182,20 @@ const DS_DashboardPage = () => {
   };
 
   const createSelectPaidProctoringTAs = () => {
-    const paidProctoringApplied = [
-      {
-        id: 3,
-        date: { month: "Jan", day: 1, weekday: "Mon" },
-        time: { start: "10:00 AM", end: "12:00 PM" },
-        role: "Proctor",
-        duration: 2,
-        name: "Ali",
-        numOfTaNeeded: 2,
-        taSApplied: 3,
-      },
-      {
-        id: 4,
-        date: { month: "Jan", day: 1, weekday: "Mon" },
-        time: { start: "10:00 AM", end: "12:00 PM" },
-        role: "Proctor",
-        duration: 2,
-        name: "Ali",
-        numOfTaNeeded: 2,
-        taSApplied: 2,
-      },
-    ];
-    return paidProctoringApplied.map((request) => (
-      <DS_SelectPaidProctoringTAItem id={request.id} {...request} onInform={() => console.log("TAs informed for this request")} isSelected={selectedPPRId === request.id} onSelect={handlePPRClick} onAppliedAssignment={()=> handleAppliedAssignment()} onForcedAssignment={()=> handleManualAssignment()}/>
+    return paidProctorings.map((request) => (
+      <DS_SelectPaidProctoringTAItem  paidProctoring={request} isSelected={selectedPPR === request} onSelect={()=>{setSelectedPPR(request); setSelectedAppliedStudentsId([]);}} isAppliedAssignment={request.applicationType === "APPLICATION"} isForcedAssignment={request.applicationType === "ASSIGNMENT"} onAppliedAssignment={()=> handleAssignmentTypeSelect("APPLICATION", request.applicationId)} onForcedAssignment={()=> handleAssignmentTypeSelect("ASSIGNMENT", request.applicationId)}/>
     ));
   }
 
   const createAppliedTAItems = () => {
-    return tas.map((ta) => (
-      <DS_DashboardTAItem name={ta.name} onSelect={handleASC} isSelected={selectedAppliedStudentsId.includes(ta.id)} id={ta.id} bgColor={""} email={ta.email}/>
+    return appliedTAs.map((ta) => (
+      <DS_DashboardTAItem name={ta.name} surname={ta.surname} onSelect={()=> handleASC(ta.userId)} isSelected={selectedAppliedStudentsId.includes(ta.userId)} id={ta.bilkentId} bgColor={""} email={ta.email}/>
     ));
   }
   const createAvaliableTAItems = () => {
-    return tas.map((ta) => (
+    /*return tas.map((ta) => (
       <DS_DashboardTAItem name={ta.name} onSelect={handleAvaTAClick} isSelected={selectedATAIds.includes(ta.id)} id={ta.id} bgColor={""} email={ta.email}/>
-    ));
+    ));*/
   }
 
   const fetchNotifications = async () => {
@@ -229,8 +211,21 @@ const DS_DashboardPage = () => {
       fetchReceivedRequests();
       fetchPendingRequests();
       fetchNotifications();
+      fetchPaidProctoringRequests();
     }, []);
   
+  useEffect(() => {
+    setIsAppliedAssignment(selectedPPR && selectedPPR.applicationType === "APPLICATION");
+    setIsManualAssignment(selectedPPR && selectedPPR.applicationType === "ASSIGNMENT");
+    fetchAppliedStudents();
+  }, [paidProctorings, selectedPPR]);
+  useEffect(() => {
+    console.log(paidProctorings);
+    console.log(selectedPPR);
+    console.log(appliedTAs);
+    console.log(selectedAppliedStudentsId);
+    console.log(selectedATAIds);
+  }, [appliedTAs, selectedAppliedStudentsId, selectedATAIds]);
 
   return (
     <div className="dashboard-page">
@@ -269,7 +264,7 @@ const DS_DashboardPage = () => {
                   <button >Automatic Select</button>
                 </div>
                 <div className="ta-list">
-                {tas.length > 0 ? (
+                {appliedTAs.length > 0 ? (
                     <div>{createAppliedTAItems()}</div>
                 )
                 : (
@@ -366,14 +361,14 @@ const DS_DashboardPage = () => {
               <div className="ta-list-container">
               <h3 className="ta-list-title">TA List</h3>
               <div className="ta-list">
-                {tas.length > 0 ? (
+                {appliedTAs.length > 0 ? (
                   <div>
                     {selectedAppliedStudentsId.map((id) => {
                       return (
-                        tas.filter((ta) => ta.id === id).map(({ name, id }) => (
+                        appliedTAs.filter((ta) => ta.userId === id).map(({ name,surname, bilkentId }) => (
                         <div className="ds-dashboard-ta-list-item-content">
-                          <div className="ds-dashboard-ta-list-item-name">Name: {name}</div>
-                          <div className="ds-dashboard-ta-list-item-id">Student ID: {id}</div>
+                          <div className="ds-dashboard-ta-list-item-name">Name: {name} {surname}</div>
+                          <div className="ds-dashboard-ta-list-item-id">Student ID: {bilkentId}</div>
                         </div>
                       )))
                     }               

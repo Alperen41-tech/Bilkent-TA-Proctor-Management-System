@@ -1,10 +1,53 @@
 import React from "react";
 import "./DS_SelectPaidProctoringTAItem.css";
 
-const DS_SelectPaidProctoringTAItem = ({id, date, time, role, duration, name, numOfTaNeeded, taSApplied, isSelected, onSelect, isForcedAssignment, isAppliedAssignment, onForcedAssignment, onAppliedAssignment}) => {
+function parseSentDate(startDateString, endDateString) {
+  if (!startDateString || typeof startDateString !== 'string' || !startDateString.includes('T')) {
+    return { date: "—", time: "—" };
+  }
+
+
+  const [datePart, timePart] = startDateString.split('T');
+  const [year, monthNum, day] = datePart.split('-'); 
+  const [hour, minute, second] = timePart.split(':');
+
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  
+  // Create a date object ONLY to find the weekday (you can't guess weekday without date)
+  const tempDate = new Date(`${year}-${monthNum}-${day}`);
+  const weekday = weekdays[tempDate.getDay()];
+
+  const month = months[parseInt(monthNum, 10) - 1];
+
+  // Format time as AM/PM
+  const hourInt = parseInt(hour, 10);
+  const ampm = hourInt >= 12 ? 'PM' : 'AM';
+  const adjustedHour = hourInt % 12 || 12;
+
+  const start = `${adjustedHour}:${minute}${ampm}`;
+  const end = endDateString.split("T")[1].substring(0,5) + "PM"; // Assuming end time is the same as start time for now
+
+  return {
+    date: {
+      month,
+      day,
+      weekday,
+    },
+    time: {
+      start,
+      end,
+    }
+  };
+}
+
+const DS_SelectPaidProctoringTAItem = ({paidProctoring ,isSelected, onSelect, isForcedAssignment, isAppliedAssignment, onForcedAssignment, onAppliedAssignment}) => {
+  const { date, time } = parseSentDate(paidProctoring.classProctoringDTO.startDate, paidProctoring.classProctoringDTO.endDate);
 
   return (
-    <div className={`ds-select-paid-proctoring-ta-item-request-card ${isSelected ? 'ds-select-paid-proctoring-ta-item-selected':''}`} onClick={() => onSelect(id)}>
+    <div className={`ds-select-paid-proctoring-ta-item-request-card ${isSelected ? 'ds-select-paid-proctoring-ta-item-selected':''}`} onClick={() => onSelect(paidProctoring.applicationId)}>
       <div className="ds-select-paid-proctoring-ta-item-date-box">
         <div className="ds-select-paid-proctoring-ta-item-month">{date.month}</div>
         <div className="ds-select-paid-proctoring-ta-item-day">{date.day}</div>
@@ -12,12 +55,11 @@ const DS_SelectPaidProctoringTAItem = ({id, date, time, role, duration, name, nu
       </div>
       <div className="ds-select-paid-proctoring-ta-item-details">
         <div className="ds-select-paid-proctoring-ta-item-time-row">{time.start} - {time.end}</div>
-        <div className="ds-select-paid-proctoring-ta-item-info-row">{role} • {duration} hours</div>
-        <div className="ds-select-paid-proctoring-ta-item-info-row">{name}</div>
-        <div className="ds-select-paid-proctoring-ta-item-info-row">{taSApplied}/{numOfTaNeeded} TAs Applied</div>
+        <div className="ds-select-paid-proctoring-ta-item-info-row">{paidProctoring.classProctoringDTO.courseName}</div>
+        <div className="ds-select-paid-proctoring-ta-item-info-row">{paidProctoring.applicantCount}/{paidProctoring.applicantCountLimit} TAs Applied</div>
       </div>
       <div className="ds-select-paid-proctoring-ta-item-buttons">
-        {(!isForcedAssignment && !isAppliedAssignment) ? <div className="ds-select-paid-proctoring-ta-item-button"><button className="ds-select-paid-proctoring-ta-item-applied-button" onClick={()=>onAppliedAssignment()}>Applied Assignment</button><button className="ds-select-paid-proctoring-ta-item-manual-select-button" onClick={()=>onForcedAssignment()}>Manual Assignment</button></div> : null}
+        {(!isForcedAssignment && !isAppliedAssignment) ? <div className="ds-select-paid-proctoring-ta-item-button"><button className="ds-select-paid-proctoring-ta-item-applied-button" onClick={()=>onAppliedAssignment()}>Applied Assignment</button><button className="ds-select-paid-proctoring-ta-item-manual-select-button" onClick={()=>onForcedAssignment()}>Manual Assignment</button></div> : isForcedAssignment ? <div className="ds-select-paid-proctoring-ta-item-info-row">Manual Assignment Selected</div> : <div className="ds-select-paid-proctoring-ta-item-info-row">Applied Assignment Selected</div>}
       </div>
     </div>
   );
