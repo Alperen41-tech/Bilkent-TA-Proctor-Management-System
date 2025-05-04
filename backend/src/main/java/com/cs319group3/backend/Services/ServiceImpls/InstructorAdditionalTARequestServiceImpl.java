@@ -33,7 +33,7 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
 
     @Override
     public List<RequestDTO> getUnapprovedInstructorAdditionalTARequests(@RequestParam int receiverId){
-        List<InstructorAdditionalTARequest> list = instructorAdditionalTARequestRepo.findByReceiverIdAndIsApprovedFalse(receiverId);
+        List<InstructorAdditionalTARequest> list = instructorAdditionalTARequestRepo.findByReceiverIdAndIsApprovedFalseAndResponseDateNull(receiverId);
         List<RequestDTO> dtos = new ArrayList<>();
         for (InstructorAdditionalTARequest instructorAdditionalTARequest : list) {
             dtos.add(requestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequest));
