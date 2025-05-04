@@ -18,4 +18,6 @@ public class ProctoringApplicationDTO {
     private String finishDate;
     private int applicantCount;
     private Boolean isAppliedByTA;
+    private String courseFullName;
+    private String departmentName;
 }

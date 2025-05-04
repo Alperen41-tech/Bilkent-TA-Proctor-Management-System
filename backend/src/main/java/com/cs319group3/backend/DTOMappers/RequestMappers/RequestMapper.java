@@ -20,7 +20,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Component
@@ -264,7 +263,7 @@ public class RequestMapper {
         else
             requestDTO.setTaskTypeName(request.getTaskType().getTaskTypeName());
         requestDTO.setTimeSpent(request.getTimeSpent());
-        requestDTO.setCourseCode(request.getCourse().getDepartmentCourseCode());
+        requestDTO.setCourseCode(request.getCourse().getCourseFullName());
         return requestDTO;
     }
 

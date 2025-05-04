@@ -32,7 +32,7 @@ public class InstructorProfileMapper {
 
         for (CourseInstructorRelation relation : instructor.getCourseInstructorRelations()) {
             String courseName = relation.getCourse().getCourse().getCourseName();
-            courseName = courseName + " - " + relation.getCourse().getCourse().getDepartmentCourseCode();
+            courseName = courseName + " - " + relation.getCourse().getCourse().getCourseFullName();
             if (seen.add(courseName)) { // add returns false if courseName is already in the set
                 courseNames.add(courseName);
             }
