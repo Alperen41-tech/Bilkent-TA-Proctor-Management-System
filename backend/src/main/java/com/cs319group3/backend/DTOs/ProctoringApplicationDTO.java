@@ -9,12 +9,13 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProctoringApplicationDTO {
-    int applicationId;
-    ClassProctoringDTO classProctoringDTO;
-    int visibleDepartmentId;
-    int applicantCountLimit;
-    ProctoringApplicationType applicationType;
-    boolean isComplete;
-    String finishDate;
-    int applicantCount;
+    private int applicationId;
+    private ClassProctoringDTO classProctoringDTO;
+    private int visibleDepartmentId;
+    private int applicantCountLimit;
+    private ProctoringApplicationType applicationType;
+    private boolean isComplete;
+    private String finishDate;
+    private int applicantCount;
+    private Boolean isAppliedByTA;
 }

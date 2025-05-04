@@ -2,7 +2,6 @@ package com.cs319group3.backend.Services.ServiceImpls.RelationServiceImpls;
 
 
 import com.cs319group3.backend.DTOMappers.TAProfileMapper;
-import com.cs319group3.backend.DTOs.ProctoringApplicationDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ProctoringApplication;
 import com.cs319group3.backend.Entities.RelationEntities.ProctoringApplicationTARelation;
@@ -35,7 +34,7 @@ public class ProctoringApplicationTARelationServiceImpl implements ProctoringApp
     @Override
     public ResponseEntity<Boolean> createProctoringApplicationTARelation(int proctoringApplicationId, int taId) {
 
-        Optional<ProctoringApplicationTARelation> taRelation = proctoringApplicationTARelationRepo.findByTA_UserIdAndAndProctoringApplication_ApplicationId(taId, proctoringApplicationId);
+        Optional<ProctoringApplicationTARelation> taRelation = proctoringApplicationTARelationRepo.findByTA_UserIdAndProctoringApplication_ApplicationId(taId, proctoringApplicationId);
 
         if (taRelation.isPresent()){
             throw new RuntimeException("already applied");

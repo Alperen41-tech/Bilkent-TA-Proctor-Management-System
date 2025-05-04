@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface ProctoringApplicationTARelationRepo extends JpaRepository<ProctoringApplicationTARelation, Integer> {
 
 
-    Optional<ProctoringApplicationTARelation> findByTA_UserIdAndAndProctoringApplication_ApplicationId(int taUserId, int proctoringApplicationId);
+    Optional<ProctoringApplicationTARelation> findByTA_UserIdAndProctoringApplication_ApplicationId(int taUserId, int proctoringApplicationId);
 
     List<ProctoringApplicationTARelation> findByProctoringApplication_ApplicationIdAndIsApprovedBySecretaryFalse(int proctoringApplicationId);
 

@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Controllers;
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.ProctoringApplicationDTO;
 import com.cs319group3.backend.Enums.ProctoringApplicationType;
 import com.cs319group3.backend.Services.ProctoringApplicationService;
@@ -15,6 +16,8 @@ public class ProctoringApplicationController {
 
     @Autowired
     private ProctoringApplicationService proctoringApplicationService;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
 
     @GetMapping("getProctoringApplications")
@@ -27,6 +30,13 @@ public class ProctoringApplicationController {
     @GetMapping("getAllApplicationsByDepartment")
     public List<ProctoringApplicationDTO> getAllApplicationsByDepartment(@RequestParam("departmentId") int departmentId) {
         return proctoringApplicationService.getAllApplicationsByDepartment(departmentId);
+    }
+
+
+    @GetMapping("getAllApplicationsForTA")
+    public List<ProctoringApplicationDTO> getAllApplicationsForTA(@RequestParam("userId") int userId, @RequestParam("applicationType") ProctoringApplicationType applicationType) {
+        //int userId = currentUserUtil.getCurrentUserId();
+        return proctoringApplicationService.getAllApplicationsForTA(userId, applicationType);
     }
 
 

@@ -1,18 +1,16 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
-import com.cs319group3.backend.Controllers.ProctoringApplicationController;
-import com.cs319group3.backend.DTOMappers.ClassProctoringMapper;
 import com.cs319group3.backend.DTOMappers.ProctoringApplicationMapper;
 import com.cs319group3.backend.DTOs.ProctoringApplicationDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.ProctoringApplication;
+import com.cs319group3.backend.Entities.RelationEntities.ProctoringApplicationTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
+import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Enums.ProctoringApplicationType;
-import com.cs319group3.backend.Repositories.ClassProctoringRepo;
-import com.cs319group3.backend.Repositories.DepartmentRepo;
-import com.cs319group3.backend.Repositories.ProctoringApplicationRepo;
+import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.NotificationService;
 import com.cs319group3.backend.Services.ProctoringApplicationService;
 import com.cs319group3.backend.Services.RequestService;
@@ -32,6 +30,10 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
     private DepartmentRepo departmentRepo;
     @Autowired
     private ProctoringApplicationMapper proctoringApplicationMapper;
+    @Autowired
+    private TARepo taRepo;
+    @Autowired
+    private ProctoringApplicationTARelationRepo proctoringApplicationTARelationRepo;
 
     @Override
     public List<ProctoringApplicationDTO> getProctoringApplications(int deansOfficeId){
@@ -122,5 +124,31 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
 
         proctoringApplicationRepo.save(proctoringApplicationReceieved);
         return true;
+    }
+
+    @Override
+    public List<ProctoringApplicationDTO> getAllApplicationsForTA(int userId, ProctoringApplicationType applicationType) {
+        Optional<TA> ta = taRepo.findByUserId(userId);
+        if (!ta.isPresent())
+            throw new RuntimeException("no such ta");
+
+
+        TA taReceived = ta.get();
+        List<ProctoringApplication> allProctorings = proctoringApplicationRepo.findByVisibleDepartment_DepartmentIdNotAndApplicationType(taReceived.getDepartment().getDepartmentId(), applicationType);
+
+        List<ProctoringApplicationDTO> proctoringApplicationDTOs = proctoringApplicationMapper.toDTO(allProctorings);
+
+        for (ProctoringApplicationDTO proctoringApplicationDTO : proctoringApplicationDTOs) {
+
+            Optional<ProctoringApplicationTARelation> patr = proctoringApplicationTARelationRepo.findByTA_UserIdAndProctoringApplication_ApplicationId(taReceived.getUserId(), proctoringApplicationDTO.getApplicationId());
+            if (patr.isPresent()){
+                proctoringApplicationDTO.setIsAppliedByTA(true);
+            }
+            else {
+                proctoringApplicationDTO.setIsAppliedByTA(false);
+            }
+        }
+
+        return proctoringApplicationDTOs;
     }
 }

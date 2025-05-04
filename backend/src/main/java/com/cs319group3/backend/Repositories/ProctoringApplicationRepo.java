@@ -21,4 +21,5 @@ public interface ProctoringApplicationRepo extends JpaRepository<ProctoringAppli
     List<ProctoringApplication> findByDeansOfficeId(int deansOfficeId);
 
     List<ProctoringApplication> findByVisibleDepartment_DepartmentId(int departmentId);
+    List<ProctoringApplication> findByVisibleDepartment_DepartmentIdNotAndApplicationType(int departmentId, ProctoringApplicationType applicationType);
 }

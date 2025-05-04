@@ -13,4 +13,6 @@ public interface ProctoringApplicationService {
     public List<ProctoringApplicationDTO> getAllApplicationsByDepartment(int departmentId);
 
     public boolean setApplicationType(int applicationId, ProctoringApplicationType type);
+
+    public List<ProctoringApplicationDTO> getAllApplicationsForTA(int userId, ProctoringApplicationType applicationType);
 }
