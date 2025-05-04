@@ -219,6 +219,7 @@ const DS_DashboardPage = () => {
     setIsManualAssignment(selectedPPR && selectedPPR.applicationType === "ASSIGNMENT");
     fetchAppliedStudents();
   }, [paidProctorings, selectedPPR]);
+  
   useEffect(() => {
     console.log(paidProctorings);
     console.log(selectedPPR);

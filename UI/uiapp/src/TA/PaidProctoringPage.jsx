@@ -1,94 +1,81 @@
 // src/PaidProctoringPage.jsx
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import PaidProctoringItem from "./PaidProctoringItem";
 import "./PaidProctoringPage.css";
 import TAItem from "../TAItem";
-
-const sampleTasks = [
-  {
-    id: 1,
-    date: "March 23",
-    weekday: "Fri",
-    timeStart: "9:00AM",
-    timeEnd: "10:30AM",
-    title: "Paid Proctoring",
-    duration: 1.5,
-    currentTAs: 0,
-    totalTAs: 7,
-    department: "CS",
-    course: "CS 202",
-  },
-  {
-    id: 2,
-    date: "March 15",
-    weekday: "Thu",
-    timeStart: "9:00AM",
-    timeEnd: "10:30AM",
-    title: "Paid Proctoring",
-    duration: 1,
-    currentTAs: 0,
-    totalTAs: 4,
-    department: "CS",
-    course: "CS 315",
-  },
-  {
-    id: 3,
-    date: "March 23",
-    weekday: "Fri",
-    timeStart: "9:00AM",
-    timeEnd: "10:30AM",
-    title: "Paid Proctoring",
-    duration: 1.5,
-    currentTAs: 0,
-    totalTAs: 2,
-    department: "CS",
-    course: "CS 224",
-  },
-];
-
-
-const createTAItem = (firstName, lastName, email, onClickHandler, selectedTAKey) => {
-  const ta = { firstName, lastName, email };
-  const key = `${firstName}-${lastName}-${email}`;
-  const isSelected = selectedTAKey === key;
-
-  return (
-    <TAItem
-      key={key}
-      ta={ta}
-      onClick={onClickHandler}
-      isSelected={isSelected}
-    />
-  );
-};
-
-
-
+import axios from "axios";
+import { set } from "date-fns";
 
 const PaidProctoringPage = () => {
-  const [selectedTA, setSelectedTA] = useState(null); 
+  const [paidProctorings, setPaidProctorings] = useState([]);
+  const [appliedTAs, setAppliedTAs] = useState([]);
+  const [selectedPaidProctoring, setSelectedPaidProctoring] = useState(null);
 
-
-  const [selectedTaskId, setSelectedTaskId] = useState(null);
-  const selectedTask = sampleTasks.find((task) => task.id === selectedTaskId);
-
-  const [enrolledTaskIds, setEnrolledTaskIds] = useState([]);
-
-  const handleTaskClick = (taskId) => {
-    setSelectedTaskId(taskId);
-    if (!enrolledTaskIds.includes(taskId)) {
-      setEnrolledTaskIds((prev) => [...prev, taskId]);
-    }
-    else{
-      setEnrolledTaskIds((prev) => prev.filter(id => id !== taskId));
+  const fetchPaidProctorings = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/proctoringApplication/getAllApplicationsForTA?userId=3&applicationType=APPLICATION`);
+      if(response.data){
+        console.log("Paid Proctorings fetched successfully:", response.data);
+        setPaidProctorings(response.data);
+      }
+      else{
+        console.log("No paid proctorings found.");
+      }
+    } catch (error) {
+      console.error("Error fetching paid proctorings:", error);
     }
   };
 
-  const handleTAClick = (ta) => {
-    setSelectedTA(null);
+  const fetchAppliedStudents = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/proctoringApplicationTARelation/getApplicantsForApplication?applicationId=${selectedPaidProctoring.applicationId}`); // Adjust the URL as needed
+      if (response.data) {
+        setAppliedTAs(response.data);
+      }
+      else{
+        console.log("No paid proctoring requests found.");
+      }
+    } catch (error) {
+      console.error("Error fetching paid proctoring requests applicants:", error);
+    }
   };
 
+  const handleEnroll = async (task) => {
+    try {
+      const response = await axios.post(`http://localhost:8080/proctoringApplicationTARelation/create?applicationId=${task.applicationId}&taId=${3}`);
+      if (response.data) {
+        console.log("Enrolled in paid proctoring successfully");
+        fetchPaidProctorings();
+        fetchAppliedStudents();
+      } else {
+        console.log("Failed to enroll in paid proctoring.");
+      }
+    } catch (error) {
+      console.error("Error enrolling in paid proctoring:", error);
+    }
+  };
+
+  const createTAItem = (ta) => {
+    return (
+      <TAItem
+        key={ta.bilkentId}
+        ta={ta}
+        onClick={console.log(ta)}
+        isSelected={console.log(ta)}        
+      />
+    );
+  };
+
+  useEffect(() => {
+    fetchPaidProctorings(); // Fetch paid proctorings when the component mounts
+  }, []);
+
+  useEffect(() => {
+    if (selectedPaidProctoring) {
+      fetchAppliedStudents();
+    }
+  }, [selectedPaidProctoring]); // Fetch applied TAs when a paid proctoring is selected
 
 
   return (
@@ -103,13 +90,14 @@ const PaidProctoringPage = () => {
             
             {/* Task List Placeholder */}
             <div className="task-list">
-              {sampleTasks.map((task) => (
+              {paidProctorings.map((task) => (
                 <PaidProctoringItem
-                  key={task.id}
+                  key={task.applicationId}
                   task={task}
-                  isSelected={selectedTaskId === task.id}
-                  isEnrolled={enrolledTaskIds.includes(task.id)}
-                  onClick={handleTaskClick}
+                  isSelected={selectedPaidProctoring === task}
+                  isEnrolled={task.isAppliedByTA}
+                  onSelect={()=> setSelectedPaidProctoring(task)}
+                  onEnroll={() => handleEnroll(task)}
                 />
               ))}
             </div>
@@ -120,12 +108,16 @@ const PaidProctoringPage = () => {
         <div className="proctoring-right">
           <div className="card">
             <h3>TAs Applied for this Task</h3>
-
+              {appliedTAs.length > 0 ? (
+                <div className="applied-ta-list">
+                  {appliedTAs.map((ta) => createTAItem(ta))}
+                </div>
+              ) : (
+                <p>No TAs have applied for this task yet.</p>
+              )}
             {/* Applied TA Placeholder */}
             <div className="assigned-tas">
-              {createTAItem("Ahmet", "Yılmaz","dasdad@email", handleTAClick, selectedTA)}
-              {createTAItem("Merve", "Kara","dasdad@email", handleTAClick, selectedTA)}
-              {createTAItem("John", "Doe", "dasdad@email", handleTAClick, selectedTA)}
+              
             </div>
           </div>
         </div>
