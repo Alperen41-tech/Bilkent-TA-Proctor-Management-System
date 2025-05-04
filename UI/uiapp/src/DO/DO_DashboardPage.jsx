@@ -81,13 +81,13 @@ const DO_Dashboard = () => {
     const prepared = {
       requestType,
       sentDateTime: classProctoringDTO.startDate,
-      classProctoringEventName: classProctoringDTO.proctoringName,
+      classProctoringEventName: classProctoringDTO.courseName + " | " + classProctoringDTO.proctoringName,
       classProctoringStartDate: classProctoringDTO.startDate,
       classProctoringEndDate: classProctoringDTO.endDate,
-      taCountNeeded: classProctoringDTO.TACount,
+      taCountNeeded: applicantCountLimit,
       isComplete,
       senderName: "N/A",
-      senderEmail: "N/A",
+
       status: null,
       responseDateTime: null,
       isSelected: selectedRequest === request,
@@ -139,8 +139,11 @@ const DO_Dashboard = () => {
                 <div>
                   <p><strong>Course:</strong> {selectedRequest.classProctoringDTO.courseName}</p>
                   <p><strong>TA Count:</strong> {selectedRequest.applicantCountLimit}</p>
-                  <p><strong>Start:</strong> {selectedRequest.finishDate || "—"}</p>
-                  <p><strong>End:</strong> {selectedRequest.finishDate || "—"}</p>
+                  <p><strong>Start:</strong> {selectedRequest.classProctoringDTO.startDate ? new Date(selectedRequest.classProctoringDTO.startDate).toLocaleDateString() + " " + new Date(selectedRequest.classProctoringDTO.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "—"}</p>
+
+                  <p><strong>End:</strong> {selectedRequest.classProctoringDTO.endDate ? new Date(selectedRequest.classProctoringDTO.endDate).toLocaleDateString() + " " + new Date(selectedRequest.classProctoringDTO.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "—"}</p>
+
+
                   <p><strong>Visible to TAs:</strong> {selectedRequest.isVisibleForTAs ? "Yes" : "No"}</p>
                   <p><strong>Completed:</strong> {selectedRequest.isComplete ? "Yes" : "No"}</p>
                 </div>
