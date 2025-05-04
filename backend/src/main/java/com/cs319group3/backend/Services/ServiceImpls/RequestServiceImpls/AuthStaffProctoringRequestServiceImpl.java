@@ -52,19 +52,23 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
     public boolean sendAuthStaffProctoringRequest(int classProctoringId, int taId, int senderId, boolean isApproved) {
 
         if(isApproved && !canForcedRequestBeSent(classProctoringId)) {
+            System.out.println("Bura 1");
             return false;
         }
 
         if(!isApproved && !canUnforcedRequestBeSent(classProctoringId)) {
+            System.out.println("Bura 2");
             return false;
         }
 
-        Optional<ClassProctoringTARelation> cptr = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(taId, classProctoringId);
+        Optional<ClassProctoringTARelation> cptr = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classProctoringId, taId);
         if(cptr.isPresent() || !taAvailabilityService.isTAAvailable(taRepo.findByUserId(taId).get(), classProcRepo.findById(classProctoringId).get())) {
+            System.out.println("Bura 3 " + cptr.isPresent());
             return false;
         }
 
         if(isRequestAlreadySent(senderId, taId, classProctoringId) ) {
+            System.out.println("Bura 4");
             return false;
         }
         AuthStaffProctoringRequest request = new AuthStaffProctoringRequest();
@@ -73,6 +77,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
         if (sender.isPresent()) {
             request.setSenderUser(sender.get());
         } else {
+            System.out.println("Bura 5");
             return false;
         }
 
@@ -80,6 +85,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
         if (receiver.isPresent()) {
             request.setReceiverUser(receiver.get());
         } else {
+            System.out.println("Bura 6");
             return false;
         }
 
@@ -110,6 +116,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
             }
         }
         else {
+            System.out.println("Bura 7");
             return false;
         }
         return true;

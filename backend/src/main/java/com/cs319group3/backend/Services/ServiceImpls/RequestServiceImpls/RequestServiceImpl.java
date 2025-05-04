@@ -8,10 +8,7 @@ import com.cs319group3.backend.Entities.RequestEntities.*;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Repositories.*;
-import com.cs319group3.backend.Services.NotificationService;
-import com.cs319group3.backend.Services.RequestService;
-import com.cs319group3.backend.Services.TASwapRequestService;
-import com.cs319group3.backend.Services.TAWorkloadRequestService;
+import com.cs319group3.backend.Services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +56,9 @@ public class RequestServiceImpl implements RequestService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private AuthStaffProctoringRequestService authStaffProctoringRequestService;
+
 
     @Override
     public boolean respondToRequest(int requestId, boolean response) {
@@ -88,10 +88,15 @@ public class RequestServiceImpl implements RequestService {
 
             } else if (request instanceof InstructorAdditionalTARequest) {
                 InstructorAdditionalTARequest req = (InstructorAdditionalTARequest) request;
-
             } else if (request instanceof AuthStaffProctoringRequest) {
                 AuthStaffProctoringRequest req = (AuthStaffProctoringRequest) request;
-
+                if(!authStaffProctoringRequestService.canRequestBeAccepted(req.getClassProctoring().getClassProctoringId())) {
+                    request.setApproved(false);
+                    request.setResponseDate(LocalDateTime.now());
+                    requestRepo.save(request);
+                    System.out.println("Request automatically rejected due to full proctoring");
+                    return false;
+                }
             } else {
                 return false; // unknown type
             }
