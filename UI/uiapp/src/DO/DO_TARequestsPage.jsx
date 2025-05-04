@@ -20,27 +20,27 @@ const DO_TARequestsPage = () => {
   useEffect(() => {
     const selected = taRequests.find((r) => r.requestId === selectedRequestId);
     console.log("Selected request:", selected);
-  
+
     // Try these options in order — fallback if one is missing
     const departmentId =
       selected?.senderDepartmentId ||
       selected?.sender?.departmentId ||
       selected?.departmentId;
-  
+
     if (departmentId) {
       fetchDepartmentsExcluding(departmentId);
     } else {
       console.warn("No valid departmentId found for selected request.");
     }
   }, [selectedRequestId, taRequests]);
-  
+
 
   const handleSendToDepartments = async () => {
     if (!selectedRequestId) {
       alert("Please select a request first.");
       return;
     }
-  
+
     const applications = Object.entries(taCounts)
       .filter(([_, count]) => count > 0)
       .map(([deptCode, count]) => {
@@ -50,20 +50,20 @@ const DO_TARequestsPage = () => {
           applicantCountLimit: count,
         };
       });
-  
+
     // Safety checks
     if (applications.length === 0) {
       return alert("No departments selected or all TA counts are zero.");
     }
-  
+
     if (applications.some((a) => !a.visibleDepartmentId)) {
       console.error("Missing departmentId in some applications:", applications);
       return alert("One or more departments could not be matched.");
     }
-  
+
     try {
       console.log("Sending applications:", applications);
-  
+
       const response = await axios.post(
         "http://localhost:8080/proctoringApplication/createProctoringApplications",
         applications,
@@ -74,14 +74,14 @@ const DO_TARequestsPage = () => {
           },
         }
       );
-  
+
       alert("Requests sent successfully!");
     } catch (error) {
       console.error("Failed to send applications:", error.response?.data || error.message);
       alert("Error while sending. Check console for details.");
     }
   };
-  
+
 
   const fetchDepartmentsExcluding = async (excludeDepartmentId) => {
     try {
@@ -135,20 +135,25 @@ const DO_TARequestsPage = () => {
                   <button
                     key={req.requestId}
                     type="button"
-                    className={`do-TA-list-item ${
-                      selectedRequestId === req.requestId ? "do-selected" : ""
-                    }`}
+                    className={`do-TA-list-item ${selectedRequestId === req.requestId ? "do-selected" : ""}`}
                     onClick={() => setSelectedRequestId(req.requestId)}
                   >
-                    <span className="do-TA-li-date">{`${month} ${day} (${wd})`}</span>
-                    <span className="do-TA-li-time">{time}</span>
-                    <span className="do-TA-li-course">
-                      {req.courseName ?? req.courseCode ?? req.classProctoringEventName}
+                    <span className="do-TA-li-date">
+                      {`${month} ${day} (${wd})`}
                     </span>
+
+                    <span className="do-TA-li-course">
+                      {req.classProctoringEventName}
+                    </span>
+
+                    <span className="do-TA-li-time">{time} </span>
+
+
                     <span className="do-TA-li-status">
                       {req.isApproved ? "Approved" : "Pending"}
                     </span>
                   </button>
+
                 );
               })}
             </div>
@@ -158,38 +163,33 @@ const DO_TARequestsPage = () => {
             <h3 className="do-TA-card-title">Details</h3>
             {selected ? (
               <ul className="do-TA-details">
+
+
+
                 <li>
-                  <strong>Course:</strong>{" "}
-                  {selected.courseName ??
-                    selected.courseCode ??
-                    selected.classProctoringEventName}
+                  <strong>Proctoring Title:</strong>{" "}
+                  {selected.classProctoringEventName}
                 </li>
                 <li>
                   <strong>Date:</strong>{" "}
                   {new Date(selected.classProctoringStartDate).toLocaleDateString()}
                 </li>
                 <li>
-                  <strong>Time:</strong>{" "}
+                  <strong>Start Time:</strong>{" "}
                   {new Date(selected.classProctoringStartDate)
                     .toTimeString()
                     .slice(0, 5)}
                 </li>
                 <li>
+                  <strong>End Time:</strong>{" "}
+                  {new Date(selected.classProctoringEndDate).toTimeString().slice(0, 5)}
+                </li>
+                <li>
                   <strong>Description:</strong> {selected.description}
                 </li>
-                <li>
-                  <strong>TA Count:</strong> {selected.taCount}
-                </li>
+
                 <li>
                   <strong>Sender:</strong> {selected.senderName} ({selected.senderEmail})
-                </li>
-                <li>
-                  <strong>Status:</strong>{" "}
-                  {selected.isApproved
-                    ? "Approved"
-                    : selected.isComplete
-                    ? "Completed"
-                    : "Pending"}
                 </li>
               </ul>
             ) : (
