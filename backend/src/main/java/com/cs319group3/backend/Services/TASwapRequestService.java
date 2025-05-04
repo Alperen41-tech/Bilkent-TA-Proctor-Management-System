@@ -49,7 +49,6 @@ public interface TASwapRequestService {
      */
     public List<TAProfileDTO> getAvailableTAProfilesForClassProctoring(int classProctoringId, int taId) throws Exception;
 
-    public boolean isTAAvailable(TA ta, ClassProctoring otherCtr);
     public boolean isRequestAlreadySent(int senderId, TA receiver, ClassProctoring ctr);
 
 

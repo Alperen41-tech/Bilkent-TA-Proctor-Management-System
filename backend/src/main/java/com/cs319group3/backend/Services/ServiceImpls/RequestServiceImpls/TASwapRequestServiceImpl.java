@@ -9,16 +9,16 @@ import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.DTOs.TimeIntervalDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.Department;
+import com.cs319group3.backend.Entities.Log;
 import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
 import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
 import com.cs319group3.backend.Entities.UserEntities.TA;
+import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
-import com.cs319group3.backend.Services.NotificationService;
-import com.cs319group3.backend.Services.TASwapRequestService;
-import com.cs319group3.backend.Services.TimeIntervalService;
+import com.cs319group3.backend.Services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +54,9 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private LogRepo logRepo;
+
 
     @Override
     public ResponseEntity<List<RequestDTO>> getTASwapRequestsByReceiver(int TAId) {
@@ -74,6 +77,14 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         try {
             TASwapRequest swapRequest = requestMapper.taSwapRequestToEntityMapper(swapRequestReceived);
             taswapRequestRepo.save(swapRequest);
+            String logMessage = "User " + swapRequest.getSenderUser().getUserId() + " sent a swap request (" +
+                    swapRequest.getRequestId() + ") to user " + swapRequest.getReceiverUser().getUserId() + ".";
+            Log log = new Log();
+            log.setMessage(logMessage);
+            log.setLogType(LogType.CREATE);
+            log.setLogDate(LocalDateTime.now());
+            logRepo.save(log);
+
 
             notificationService.createNotification(swapRequest, NotificationType.REQUEST);
 
@@ -111,6 +122,12 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         }
     }
 
+    @Autowired
+    TAService taService;
+
+    @Autowired
+    TAAvailabilityService taAvailabilityService;
+
     @Override
     public List<TAProfileDTO> getAvailableTAProfilesForClassProctoring(int classProctoringId, int taId) throws Exception {
 
@@ -125,28 +142,10 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
 
         List<TA> departmentAvailableTAs = taRepo.findAvailableTAsByDepartment(currDep.getDepartmentCode(), classProctoringId);
 
-        departmentAvailableTAs.removeIf(ta -> !isTAAvailable(ta, classProctoringReceived)
+        departmentAvailableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, classProctoringReceived)
                                                 || isRequestAlreadySent(taId, ta, classProctoringReceived));
 
         return TAProfileMapper.essentialMapper(departmentAvailableTAs);
-    }
-
-    @Override
-    public boolean isTAAvailable(TA ta, ClassProctoring otherCtr){
-
-        /* ta is not available
-        * if he has another proctoring in the time interval
-        * if he has singed as with leave of absence
-        * if he has lecture
-        * if he already recevied a swap reeqeust about that */
-
-        LocalDateTime startDateTime = otherCtr.getStartDate(); // your LocalDateTime value
-        LocalDateTime endDateTime = otherCtr.getEndDate();   // your LocalDateTime value
-
-
-        List<TimeIntervalDTO> taSchedule = timeIntervalService.getTATimeIntervalsByHour(startDateTime, endDateTime, ta.getUserId());
-
-        return taSchedule.isEmpty();
     }
 
     @Override

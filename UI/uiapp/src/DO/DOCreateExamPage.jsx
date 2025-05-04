@@ -68,12 +68,12 @@ const DOCreateExamPage = () => {
       if (!departmentCode) {
         response = await axios.get(
           "http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoring",
-          { params: { facultyId, proctoringId } }
+          { params: { facultyId, proctoringId, userId: 9 } }
         );
       } else {
         response = await axios.get(
           "http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring",
-          { params: { departmentCode, proctoringId } }
+          { params: { departmentCode, proctoringId, userId: 9 } }
         );
       }
       setAllTAs(response.data || []);

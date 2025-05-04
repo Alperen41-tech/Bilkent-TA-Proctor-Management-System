@@ -17,8 +17,9 @@ SELECT r FROM InstructorAdditionalTARequest r
 WHERE r.receiverUser.userId = :receiverId 
 AND r.isApproved = false
 AND r.isSentToSecretary = false
+AND r.responseDate IS NULL
 """)
-    List<InstructorAdditionalTARequest> findByReceiverIdAndIsApprovedFalse(int receiverId);
+    List<InstructorAdditionalTARequest> findByReceiverIdAndIsApprovedFalseAndResponseDateNull(int receiverId);
     @Query("""
 SELECT r FROM InstructorAdditionalTARequest r 
 WHERE r.receiverUser.userId = :receiverId 

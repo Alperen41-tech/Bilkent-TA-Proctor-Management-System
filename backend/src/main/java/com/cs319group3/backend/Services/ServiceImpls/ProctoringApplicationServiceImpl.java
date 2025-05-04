@@ -9,6 +9,7 @@ import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.ProctoringApplication;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
 import com.cs319group3.backend.Enums.NotificationType;
+import com.cs319group3.backend.Enums.ProctoringApplicationType;
 import com.cs319group3.backend.Repositories.ClassProctoringRepo;
 import com.cs319group3.backend.Repositories.DepartmentRepo;
 import com.cs319group3.backend.Repositories.ProctoringApplicationRepo;
@@ -74,7 +75,7 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
         proctoringApplication.setVisibleDepartment(department.get());
 
         proctoringApplication.setComplete(false);
-        proctoringApplication.setVisibleForTAs(false);
+        proctoringApplication.setApplicationType(ProctoringApplicationType.NOT_DEFINED);
 
         LocalDateTime cpTime = proctoringApplication.getClassProctoring().getStartDate();
         proctoringApplication.setFinishDate(cpTime.minusDays(3));
@@ -99,25 +100,27 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
     }
 
     @Override
-    public List<ProctoringApplicationDTO> getAllApplicationsByDepartment(int departmentId, boolean isTaInformed) {
-
-        List<ProctoringApplication> listPA = proctoringApplicationRepo.findByVisibleDepartment_DepartmentIdAndIsVisibleForTAs(departmentId, isTaInformed);
+    public List<ProctoringApplicationDTO> getAllApplicationsByDepartment(int departmentId) {
+        List<ProctoringApplication> listPA = proctoringApplicationRepo.findByVisibleDepartment_DepartmentId(departmentId);
         return proctoringApplicationMapper.toDTO(listPA);
-
     }
 
     @Override
-    public boolean openForTAs(int applicationId) {
+    public boolean setApplicationType(int applicationId, ProctoringApplicationType type) {
         Optional<ProctoringApplication> proctoringApplication = proctoringApplicationRepo.findById(applicationId);
         if(!proctoringApplication.isPresent()){
             throw new RuntimeException("no such proctoring application found");
         }
 
         ProctoringApplication proctoringApplicationReceieved = proctoringApplication.get();
-        proctoringApplicationReceieved.setVisibleForTAs(true);
+
+        if (proctoringApplicationReceieved.getApplicationType() != ProctoringApplicationType.NOT_DEFINED){
+            throw new RuntimeException("already defined proctoring application type");
+        }
+
+        proctoringApplicationReceieved.setApplicationType(type);
 
         proctoringApplicationRepo.save(proctoringApplicationReceieved);
         return true;
-
     }
 }

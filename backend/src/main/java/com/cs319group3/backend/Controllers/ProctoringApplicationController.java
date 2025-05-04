@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Controllers;
 
 import com.cs319group3.backend.DTOs.ProctoringApplicationDTO;
+import com.cs319group3.backend.Enums.ProctoringApplicationType;
 import com.cs319group3.backend.Services.ProctoringApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,8 @@ public class ProctoringApplicationController {
 
 
     @GetMapping("getAllApplicationsByDepartment")
-    public List<ProctoringApplicationDTO> getAllApplicationsByDepartment(@RequestParam("departmentId") int departmentId, @RequestParam("isTaInformed") boolean isTaInformed) {
-        return proctoringApplicationService.getAllApplicationsByDepartment(departmentId, isTaInformed);
+    public List<ProctoringApplicationDTO> getAllApplicationsByDepartment(@RequestParam("departmentId") int departmentId) {
+        return proctoringApplicationService.getAllApplicationsByDepartment(departmentId);
     }
 
 
@@ -36,9 +37,9 @@ public class ProctoringApplicationController {
     }
 
 
-    @PutMapping("openForTAs")
-    public boolean openForTAs (@RequestParam("applicationId") int applicationId) {
-        return proctoringApplicationService.openForTAs(applicationId);
+    @PutMapping("setApplicationType")
+    public boolean setApplicationType (@RequestParam("applicationId") int applicationId, @RequestParam("applicationType") ProctoringApplicationType type) {
+        return proctoringApplicationService.setApplicationType(applicationId, type);
     }
 
 

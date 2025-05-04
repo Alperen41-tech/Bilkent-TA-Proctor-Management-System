@@ -59,6 +59,7 @@ public class NotificationServiceImpl implements NotificationService {
         return count;
     }
 
+    @Override
     public Notification createNotification(Request request, NotificationType type) {
         Notification notification = new Notification();
         notification.setRequest(request);
@@ -73,6 +74,22 @@ public class NotificationServiceImpl implements NotificationService {
         return notification;
     }
 
+    @Override
+    public Notification createNotification(Request request, NotificationType type, String description) {
+        Notification notification = new Notification();
+        notification.setRequest(request);
+        notification.setNotificationType(type);
+        notification.setRead(false);
+        if (type == NotificationType.APPROVAL)
+            notification.setReceiver(request.getSenderUser());
+        else
+            notification.setReceiver(request.getReceiverUser());
+        notificationRepo.save(notification);
+
+        return notification;
+    }
+
+    @Override
     public Notification createNotificationWithoutRequest(NotificationType type, User receiver, String description) {
         Notification notification = new Notification();
         notification.setNotificationType(type);

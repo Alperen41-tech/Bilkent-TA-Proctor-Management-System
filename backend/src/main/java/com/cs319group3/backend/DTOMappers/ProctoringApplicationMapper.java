@@ -24,7 +24,7 @@ public class ProctoringApplicationMapper {
         proctoringApplicationDTO.setApplicationId(proctoringApplication.getApplicationId());
         proctoringApplicationDTO.setApplicantCountLimit(proctoringApplication.getApplicantCountLimit());
         proctoringApplicationDTO.setFinishDate(proctoringApplication.getFinishDate().format(formatter));
-        proctoringApplicationDTO.setVisibleForTAs(proctoringApplication.isVisibleForTAs());
+        proctoringApplicationDTO.setApplicationType(proctoringApplication.getApplicationType());
         proctoringApplicationDTO.setVisibleDepartmentId(proctoringApplication.getVisibleDepartment().getDepartmentId());
         proctoringApplicationDTO.setComplete(proctoringApplication.isComplete());
         proctoringApplicationDTO.setClassProctoringDTO(ClassProctoringMapper.essentialMapper(proctoringApplication.getClassProctoring()));

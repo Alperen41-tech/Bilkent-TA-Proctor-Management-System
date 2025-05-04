@@ -2,6 +2,8 @@ package com.cs319group3.backend.Services;
 
 import com.cs319group3.backend.DTOs.CreateTADTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
+import com.cs319group3.backend.Entities.ClassProctoring;
+import com.cs319group3.backend.Entities.UserEntities.TA;
 
 import java.util.List;
 

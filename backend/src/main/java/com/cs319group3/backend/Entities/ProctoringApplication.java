@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Entities;
 
 
+import com.cs319group3.backend.Enums.ProctoringApplicationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,8 +34,8 @@ public class ProctoringApplication {
 
     private boolean isComplete;
 
-    @Column(name = "is_visible_for_tas")
-    private boolean isVisibleForTAs;
+    @Enumerated(EnumType.STRING)
+    private ProctoringApplicationType applicationType;
 
     private LocalDateTime finishDate;
 }

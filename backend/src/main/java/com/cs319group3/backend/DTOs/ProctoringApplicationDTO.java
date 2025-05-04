@@ -1,5 +1,6 @@
 package com.cs319group3.backend.DTOs;
 
+import com.cs319group3.backend.Enums.ProctoringApplicationType;
 import lombok.*;
 
 @Data
@@ -12,7 +13,7 @@ public class ProctoringApplicationDTO {
     ClassProctoringDTO classProctoringDTO;
     int visibleDepartmentId;
     int applicantCountLimit;
-    boolean isVisibleForTAs;
+    ProctoringApplicationType applicationType;
     boolean isComplete;
     String finishDate;
     int applicantCount;

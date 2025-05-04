@@ -47,17 +47,53 @@ const DOExamsPage = () => {
   };
   
 
-  const handleForceAssign = () => {
-    console.log("Force assigning TA:", selectedTAObj, "to exam:", selectedExamItem);
-    setShowManualModal(false);
-    // Add your API logic here
+  const handleForceAssign = async () => {
+    try {
+      const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+      const taId = selectedTAObj?.id || selectedTAObj?.userId;
+      const senderId = 9; // Temporary hardcoded admin ID
+  
+      const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest", null, {
+        params: { classProctoringId, taId, senderId }
+      });
+  
+      if (response.data === true) {
+        alert("TA forcefully assigned.");
+        fetchTAs();
+        fetchExams();
+        setShowManualModal(false);
+      } else {
+        alert("Force assignment failed.");
+      }
+    } catch (error) {
+      console.error("Error in force assignment:", error);
+      alert("An error occurred during force assignment.");
+    }
   };
+  
 
-  const handleSendRequest = () => {
-    console.log("Sending request for TA:", selectedTAObj, "for exam:", selectedExamItem);
-    setShowManualModal(false);
-    // Add your API logic here
+  const handleSendRequest = async () => {
+    try {
+      const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+      const taId = selectedTAObj?.id || selectedTAObj?.userId;
+      const senderId = 9;
+  
+      const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/sendAuthStaffProctoringRequest", null, {
+        params: { classProctoringId, taId, senderId }
+      });
+  
+      if (response.data === true) {
+        alert("Request sent to TA.");
+        setShowManualModal(false);
+      } else {
+        alert("Failed to send request.");
+      }
+    } catch (error) {
+      console.error("Error in sending request:", error);
+      alert("An error occurred while sending request.");
+    }
   };
+  
 
 
   const handleTAClick = (ta) => {

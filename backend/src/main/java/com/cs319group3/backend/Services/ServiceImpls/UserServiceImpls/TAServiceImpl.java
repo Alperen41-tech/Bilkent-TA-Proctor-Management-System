@@ -6,12 +6,11 @@ import com.cs319group3.backend.DTOMappers.TAProfileMapper;
 import com.cs319group3.backend.Entities.*;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.*;
-import com.cs319group3.backend.Services.TAService;
-import com.cs319group3.backend.Services.TASwapRequestService;
-import com.cs319group3.backend.Services.TAWorkloadRequestService;
+import com.cs319group3.backend.Services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -86,16 +85,16 @@ public class TAServiceImpl implements TAService {
     DepartmentRepo departmentRepo;
 
     @Autowired
-    TASwapRequestService swapRequestService;
+    ClassProctoringRepo classProctoringRepo;
 
     @Autowired
-    ClassProctoringRepo classProctoringRepo;
+    TAAvailabilityService taAvailabilityService;
 
     @Override
     public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int classProctoringId, int userId) {
         ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(departmentCode, classProctoringId);
-        availableTAs.removeIf(ta -> !swapRequestService.isTAAvailable(ta, cp) || swapRequestService.isRequestAlreadySent(userId, ta, cp));
+        availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) || authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId));
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
@@ -104,11 +103,14 @@ public class TAServiceImpl implements TAService {
         return availableTAProfiles;
     }
 
+    @Autowired
+    AuthStaffProctoringRequestService authStaffProctoringRequestService;
+
     @Override
     public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int classProctoringId, int userId) {
         ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByFaculty(facultyId, classProctoringId);
-        availableTAs.removeIf(ta -> !swapRequestService.isTAAvailable(ta, cp) || swapRequestService.isRequestAlreadySent(userId, ta, cp));
+        availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) || authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId));
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
@@ -140,4 +142,8 @@ public class TAServiceImpl implements TAService {
         }
         return TAProfiles;
     }
+
+    @Autowired
+    TimeIntervalService timeIntervalService;
+
 }
