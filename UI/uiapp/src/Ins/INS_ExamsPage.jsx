@@ -5,6 +5,8 @@ import "./INS_ExamsPage.css";
 import TAItem from "../TAItem";
 import TaskItem from "../TaskItem";
 import axios from "axios";
+import ManualAssignmentModal from "../ManualAssignmentModal"; // adjust path if needed
+
 
 const INS_ExamsPage = () => {
   const [selectedTask, setSelectedTask] = useState({
@@ -20,6 +22,8 @@ const INS_ExamsPage = () => {
     },
     taProfileDTOList: [],
   });
+
+  const [showManualModal, setShowManualModal] = useState(false);
 
   const [selectedTA, setSelectedTA] = useState(null);
   const [proctoringTasks, setProctoringTasks] = useState([]);
@@ -111,6 +115,44 @@ const INS_ExamsPage = () => {
     fetchAvailableTAs();
   }, [selectedTask]);
 
+  const handleManualAssign = () => {
+    if (!selectedTA || !selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id) {
+      alert("Please select both a TA and a task.");
+      return;
+    }
+
+    setShowManualModal(true);
+  };
+
+  const confirmManualAssign = async () => {
+    const classProctoringId = selectedTask.classProctoringTARelationDTO.classProctoringDTO.id;
+    const taId = selectedTA.userId;
+
+    try {
+      const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest", null, {
+        params: {
+          classProctoringId,
+          taId,
+          senderId: 4 // hardcoded instructor ID
+        },
+      });
+
+      if (response.data === true) {
+        alert("TA manually assigned.");
+        setSelectedTA(null);
+        fetchProctoringTasks();
+      } else {
+        alert("Assignment failed.");
+      }
+    } catch (error) {
+      console.error("Manual assignment error:", error);
+      alert("Error occurred.");
+    } finally {
+      setShowManualModal(false);
+    }
+  };
+
+
   return (
     <div className="ins-exam-exams-page">
       <NavbarINS />
@@ -194,7 +236,7 @@ const INS_ExamsPage = () => {
               <option value="low">Low to High</option>
               <option value="high">High to Low</option>
             </select>
-            <button onClick={() => {}}>Apply</button>
+
           </div>
           <div className="ins-exams-ta-list-header">
             <span>Name</span><span>Email</span><span>Department</span><span>Bilkent ID</span><span>Workload</span>
@@ -206,6 +248,18 @@ const INS_ExamsPage = () => {
               <div>No available TAs</div>
             )}
           </div>
+
+          <div className="ins-exam-assign-actions">
+            <button onClick={() => { /* optional auto assign */ }}>Automatic Assign</button>
+            <button onClick={handleManualAssign}>Manual Assign</button>
+          </div>
+
+          <ManualAssignmentModal
+            isOpen={showManualModal}
+            onConfirm={confirmManualAssign}
+            onCancel={() => setShowManualModal(false)}
+          />
+
         </div>
       </div>
     </div>
