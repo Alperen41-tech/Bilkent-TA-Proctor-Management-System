@@ -81,13 +81,13 @@ const DO_Dashboard = () => {
     const prepared = {
       requestType,
       sentDateTime: classProctoringDTO.startDate,
-      classProctoringEventName: classProctoringDTO.courseName + " | " + classProctoringDTO.proctoringName,
+      classProctoringEventName: classProctoringDTO.proctoringName,
       classProctoringStartDate: classProctoringDTO.startDate,
       classProctoringEndDate: classProctoringDTO.endDate,
       taCountNeeded: applicantCountLimit,
       isComplete,
-      senderName: "N/A",
-
+      senderName: classProctoringDTO.courseName + " coordinator" //request.visibleDepartmentId,
+,
       status: null,
       responseDateTime: null,
       isSelected: selectedRequest === request,

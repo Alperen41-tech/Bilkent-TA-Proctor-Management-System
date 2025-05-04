@@ -32,31 +32,31 @@ const DOExamsPage = () => {
       alert("Please select both an exam and a TA before assigning.");
       return;
     }
-  
+
     const assignedTAs = selectedExamItem?.taProfileDTOList || [];
     const isAssigned = assignedTAs.some(
       (ta) => ta.email === selectedTAObj.email
     );
-  
+
     if (isAssigned) {
       alert("This TA is already assigned. Please choose from the available TAs below.");
       return;
     }
-  
+
     setShowManualModal(true);
   };
-  
+
 
   const handleForceAssign = async () => {
     try {
       const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
       const taId = selectedTAObj?.id || selectedTAObj?.userId;
       const senderId = 9; // Temporary hardcoded admin ID
-  
+
       const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest", null, {
         params: { classProctoringId, taId, senderId }
       });
-  
+
       if (response.data === true) {
         alert("TA forcefully assigned.");
         fetchTAs();
@@ -70,18 +70,18 @@ const DOExamsPage = () => {
       alert("An error occurred during force assignment.");
     }
   };
-  
+
 
   const handleSendRequest = async () => {
     try {
       const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
       const taId = selectedTAObj?.id || selectedTAObj?.userId;
       const senderId = 9;
-  
+
       const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/sendAuthStaffProctoringRequest", null, {
         params: { classProctoringId, taId, senderId }
       });
-  
+
       if (response.data === true) {
         alert("Request sent to TA.");
         setShowManualModal(false);
@@ -93,7 +93,7 @@ const DOExamsPage = () => {
       alert("An error occurred while sending request.");
     }
   };
-  
+
 
 
   const handleTAClick = (ta) => {
@@ -129,6 +129,7 @@ const DOExamsPage = () => {
       .filter((item) => item.classProctoringTARelationDTO?.classProctoringDTO || item.classProctoringDTO)
       .map((item) => {
         const proctoring = item.classProctoringTARelationDTO?.classProctoringDTO || item.classProctoringDTO;
+        const proctoring2 = item.classProctoringDTO;
         const key = `${proctoring.courseName}-${proctoring.startDate}`;
         const isSelected = selectedExamKey === key;
 
@@ -139,10 +140,14 @@ const DOExamsPage = () => {
             data={{
               id: proctoring.id,
               course: proctoring.courseName,
-              date: proctoring.startDate,
-              time: proctoring.timeInterval,
+              date: new Date(proctoring.startDate).toLocaleDateString(),
+              time: new Date(proctoring.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              endTime: new Date(proctoring.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               location: proctoring.classrooms,
+              Section: proctoring.section, // or similar
+              examType: proctoring.proctoringName, // e.g., Midterm, Final
             }}
+
             onDelete={(id) => console.log(`Deleted exam with ID: ${id}`)}
             onSelect={() => {
               setSelectedExamKey(key);
@@ -380,6 +385,7 @@ const DOExamsPage = () => {
                     {createTAItem(ta, handleTAClick, selectedTA)}
                   </div>
                 ))
+
               ) : (
                 <div>No TAs assigned</div>
               )}

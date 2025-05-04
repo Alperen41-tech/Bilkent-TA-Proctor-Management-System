@@ -21,14 +21,16 @@ const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }
             <div>{data.title}</div>
           </>
         );
-      case 'exam':
-        return (
-          <>
-            <div>{data.course}</div>
-            <div>{data.date} {data.time}</div>
-            <div>{data.location}</div>
-          </>
-        );
+        case 'exam':
+          return (
+            <>
+              <div><strong>{data.course}</strong> {data.examType && <em>({data.examType})</em>}</div>
+              <div>{data.date} | {data.time} - {data.endTime}</div>
+              <div>Classroom: {data.location}</div>
+              <div>Section: {data.Section ?? '—'}</div>
+            </>
+          );
+        
       case 'course':
         return (
           <>
