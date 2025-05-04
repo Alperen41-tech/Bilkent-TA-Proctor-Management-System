@@ -9,11 +9,13 @@ import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.DTOs.TimeIntervalDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.Department;
+import com.cs319group3.backend.Entities.Log;
 import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
 import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
 import com.cs319group3.backend.Entities.UserEntities.TA;
+import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.*;
@@ -52,6 +54,9 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private LogRepo logRepo;
+
 
     @Override
     public ResponseEntity<List<RequestDTO>> getTASwapRequestsByReceiver(int TAId) {
@@ -72,6 +77,14 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         try {
             TASwapRequest swapRequest = requestMapper.taSwapRequestToEntityMapper(swapRequestReceived);
             taswapRequestRepo.save(swapRequest);
+            String logMessage = "User " + swapRequest.getSenderUser().getUserId() + " sent a swap request (" +
+                    swapRequest.getRequestId() + ") to user " + swapRequest.getReceiverUser().getUserId() + ".";
+            Log log = new Log();
+            log.setMessage(logMessage);
+            log.setLogType(LogType.CREATE);
+            log.setLogDate(LocalDateTime.now());
+            logRepo.save(log);
+
 
             notificationService.createNotification(swapRequest, NotificationType.REQUEST);
 

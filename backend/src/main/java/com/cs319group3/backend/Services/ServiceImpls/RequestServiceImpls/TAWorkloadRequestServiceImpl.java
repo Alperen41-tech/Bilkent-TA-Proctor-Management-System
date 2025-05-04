@@ -3,6 +3,7 @@ package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Entities.Course;
+import com.cs319group3.backend.Entities.Log;
 import com.cs319group3.backend.Entities.OfferedCourse;
 import com.cs319group3.backend.Entities.RelationEntities.CourseInstructorRelation;
 import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
@@ -12,6 +13,7 @@ import com.cs319group3.backend.Entities.UserEntities.DepartmentSecretary;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
+import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.NotificationService;
@@ -52,6 +54,8 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
     private OfferedCourseRepo offeredCourseRepo;
     @Autowired
     private DepartmentSecretaryRepo departmentSecretaryRepo;
+    @Autowired
+    private LogRepo logRepo;
 
     @Override
     public boolean createTAWorkloadRequest(RequestDTO dto, int taId) {
@@ -92,6 +96,13 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
             for (User receiver : receivers) {
                 TAWorkloadRequest workloadRequest = requestMapper.taWorkloadRequestToEntityMapper(dto, receiver);
                 taWorkloadRequestRepo.save(workloadRequest);
+                String logMessage = "User " + workloadRequest.getSenderUser().getUserId() + " sent a workload request (" +
+                        workloadRequest.getRequestId() + ") to user " + workloadRequest.getReceiverUser().getUserId() + ".";
+                Log log = new Log();
+                log.setMessage(logMessage);
+                log.setLogType(LogType.CREATE);
+                log.setLogDate(LocalDateTime.now());
+                logRepo.save(log);
                 notificationService.createNotification(workloadRequest, NotificationType.REQUEST);
             }
 

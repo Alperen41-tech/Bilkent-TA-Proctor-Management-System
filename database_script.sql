@@ -194,7 +194,6 @@ create table class_proctoring_classroom(
 );
 
 create table proctoring_application(
-	
     application_id int primary key auto_increment,
     class_proctoring_id int,
     visible_department_id int,
@@ -319,6 +318,7 @@ create table instructor_additional_ta_request(
     foreign key (class_proctoring_id) references class_proctoring(class_proctoring_id)
 );
 
+
 create table notification(
 	notification_id int primary key auto_increment,
     receiver_id int,
@@ -331,7 +331,12 @@ create table notification(
 );
 
 
-
+create table log(
+	log_id int primary key auto_increment,
+    message varchar(200),
+    log_type varchar(20),
+    log_date datetime
+);
 
 
 
