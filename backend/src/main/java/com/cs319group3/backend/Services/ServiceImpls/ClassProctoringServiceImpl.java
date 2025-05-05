@@ -14,6 +14,7 @@ import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
 import com.cs319group3.backend.Services.AuthStaffProctoringRequestService;
 import com.cs319group3.backend.Services.ClassProctoringService;
 import com.cs319group3.backend.Services.ClassProctoringTARelationService;
+import com.cs319group3.backend.Services.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ import java.util.List;
 public class ClassProctoringServiceImpl implements ClassProctoringService {
 
     @Autowired
-    private LogRepo logRepo;
+    private LogService logService;
 
     @Override
     public List<ClassProctoringDTO> getClassProctoringList() {
@@ -46,11 +47,7 @@ public class ClassProctoringServiceImpl implements ClassProctoringService {
         }
         classProctoringRepo.save(classProctoring);
         String logMessage = "User " + classProctoring.getCreator().getUserId() + " created a class proctoring (" + classProctoring.getClassProctoringId() + ").";
-        Log log = new Log();
-        log.setMessage(logMessage);
-        log.setLogType(LogType.CREATE);
-        log.setLogDate(LocalDateTime.now());
-        logRepo.save(log);
+        logService.createLog(logMessage, LogType.CREATE);
         return true;
     }
 

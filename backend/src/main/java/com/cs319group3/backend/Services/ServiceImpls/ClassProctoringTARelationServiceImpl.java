@@ -12,9 +12,11 @@ import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelati
 
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
+import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.ClassProctoringTARelationService;
+import com.cs319group3.backend.Services.LogService;
 import com.cs319group3.backend.Services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,9 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
     private ClassProctoringRepo classProctoringRepo;
     @Autowired
     private NotificationRepo notificationRepo;
+
+    @Autowired
+    private LogService logService;
 
 
     @Override
@@ -149,6 +154,8 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
         relation.setPaid(!taDepartmentId.equals(classProctoringDepartmentId));
         relation.setId(new ClassProctoringTAKey(classProctoringId, taId));
 
+        String logMessage = "TA " + taId + " is assigned to class proctoring " + classProctoringId + ".";
+        logService.createLog(logMessage, LogType.CREATE);
         classProctoringTARelationRepo.save(relation);
 
         return true;
