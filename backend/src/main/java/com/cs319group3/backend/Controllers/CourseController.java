@@ -3,10 +3,7 @@ import com.cs319group3.backend.DTOs.CourseDTO;
 import com.cs319group3.backend.DTOs.OfferedCourseDTO;
 import com.cs319group3.backend.Services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +23,17 @@ public class CourseController {
     public List<OfferedCourseDTO> getCoursesOfInstructor(@RequestParam int instructorId) {
         System.out.println("getCoursesOfInstructor");
         return courseService.getCoursesOfInstructor(instructorId);
+    }
+
+    @PostMapping("createCourse")
+    public boolean createCourse(@RequestBody CourseDTO dto) {
+        System.out.println("createCourse");
+        return courseService.createCourse(dto);
+    }
+
+    @PostMapping("createOfferedCourse")
+    public boolean createOfferedCourse(@RequestBody OfferedCourseDTO dto) {
+        System.out.println("createOfferedCourse");
+        return courseService.createOfferedCourse(dto);
     }
 }

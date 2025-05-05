@@ -21,5 +21,9 @@ public interface DepartmentRepo extends JpaRepository<Department, Integer> {
     @Query("SELECT d FROM Department d WHERE d.faculty.facultyId = :facultyId AND d.departmentId <> :departmentId")
     List<Department> findByFacultyIdAndDepartmentIdNot(int facultyId,int departmentId);
 
+    @Query("""
+    SELECT dc.departmentCode FROM Department dc
+""")
+    List<String> findAllDepartmentCodes();
 
 }

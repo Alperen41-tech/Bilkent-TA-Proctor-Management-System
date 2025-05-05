@@ -10,4 +10,5 @@ import java.util.List;
 public interface DepartmentService {
     List<DepartmentDTO> getAllDepartmentsInFaculty(int facultyId);
     List<DepartmentDTO> getAllDepartmentsExcept(int facultyId, int departmentId);
+    boolean createDepartment(DepartmentDTO dto);
 }

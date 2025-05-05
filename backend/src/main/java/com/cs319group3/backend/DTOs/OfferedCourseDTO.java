@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 public class OfferedCourseDTO {
     private CourseDTO course;
+    private int courseId;
     private int semesterId;
     private int sectionNo;
     private int offeredCourseId;

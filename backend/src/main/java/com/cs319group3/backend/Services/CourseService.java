@@ -10,5 +10,7 @@ import java.util.Optional;
 
 public interface CourseService {
     List<CourseDTO> getCoursesByDepartmentId(int departmentId);
-    List<OfferedCourseDTO> getCoursesOfInstructor(@RequestParam int instructorId);
+    List<OfferedCourseDTO> getCoursesOfInstructor(int instructorId);
+    boolean createCourse(CourseDTO dto);
+    boolean createOfferedCourse(OfferedCourseDTO dto);
 }

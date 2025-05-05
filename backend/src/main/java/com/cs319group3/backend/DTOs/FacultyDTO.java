@@ -7,9 +7,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DepartmentDTO {
-    private int departmentId;
-    private String departmentCode;
-    private String departmentName;
+public class FacultyDTO {
     private int facultyId;
+    private String facultyName;
 }

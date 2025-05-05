@@ -27,4 +27,10 @@ public class DepartmentController {
         System.out.println("getting all departments except " + departmentId);
         return departmentService.getAllDepartmentsExcept(facultyId, departmentId);
     }
+
+    @PostMapping("createDepartment")
+    public boolean createDepartment(@RequestBody DepartmentDTO dto) {
+        System.out.println("creating department");
+        return departmentService.createDepartment(dto);
+    }
 }
