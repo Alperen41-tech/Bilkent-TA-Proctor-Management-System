@@ -43,7 +43,7 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
     private ClassProctoringRepo classProctoringRepo;
 
 
-    public List<TimeIntervalDTO> getTATimeIntervalsByHour(LocalDateTime startDateTime, LocalDateTime endDateTime, int taId) {
+    /*public List<TimeIntervalDTO> getTATimeIntervalsByHour(LocalDateTime startDateTime, LocalDateTime endDateTime, int taId) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateIntervalDTO dateIntervalDTO = new DateIntervalDTO();
         dateIntervalDTO.setStartDate(startDateTime.format(dtf));
@@ -72,7 +72,7 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
                             filterEndTime.isAfter(intervalStartTime);
                 })
                 .collect(Collectors.toList());
-    }
+    }*/
 
 
 

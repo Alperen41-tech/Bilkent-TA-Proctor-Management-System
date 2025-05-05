@@ -9,5 +9,5 @@ import java.util.List;
 public interface TimeIntervalService {
     public List<TimeIntervalDTO> getTAScheduleById(DateIntervalDTO dateIntervalDTO, int id);
     public List<TimeIntervalDTO> getInstructorScheduleById(DateIntervalDTO dateIntervalDTO, int id);
-    public List<TimeIntervalDTO> getTATimeIntervalsByHour(LocalDateTime startDateTime, LocalDateTime endDateTime, int taId);
+    //public List<TimeIntervalDTO> getTATimeIntervalsByHour(LocalDateTime startDateTime, LocalDateTime endDateTime, int taId);
 }

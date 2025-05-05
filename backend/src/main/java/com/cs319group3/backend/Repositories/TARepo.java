@@ -41,5 +41,7 @@ public interface TARepo extends JpaRepository<TA, Integer> {
 """)
     Integer findDepartmentIdByUserId(@Param("userId") int userId);
 
+    Optional<TA> findByBilkentId(String bilkentId);
+
 
 }

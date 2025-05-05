@@ -5,10 +5,12 @@ import com.cs319group3.backend.CompositeIDs.ClassProctoringTAKey;
 import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.UserEntities.TA;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,4 +48,8 @@ public interface ClassProctoringTARelationRepo extends JpaRepository<ClassProcto
     WHERE c.classProctoring.classProctoringId = :classProctoringId
 """)
     int countAssignedTAs(int classProctoringId);
+
+
+    List<ClassProctoringTARelation> findByTA_UserIdAndClassProctoring_StartDateLessThanEqualAndClassProctoring_EndDateGreaterThan(int taId, LocalDateTime start, LocalDateTime end);
+
 }
