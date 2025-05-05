@@ -8,9 +8,11 @@ import com.cs319group3.backend.Entities.ProctoringApplication;
 import com.cs319group3.backend.Entities.RelationEntities.ProctoringApplicationTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
 import com.cs319group3.backend.Entities.UserEntities.TA;
+import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Enums.ProctoringApplicationType;
 import com.cs319group3.backend.Repositories.*;
+import com.cs319group3.backend.Services.LogService;
 import com.cs319group3.backend.Services.NotificationService;
 import com.cs319group3.backend.Services.ProctoringApplicationService;
 import com.cs319group3.backend.Services.RequestService;
@@ -34,6 +36,8 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
     private TARepo taRepo;
     @Autowired
     private ProctoringApplicationTARelationRepo proctoringApplicationTARelationRepo;
+    @Autowired
+    LogService logService;
 
     @Override
     public List<ProctoringApplicationDTO> getProctoringApplications(int deansOfficeId){
@@ -83,6 +87,8 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
         proctoringApplication.setFinishDate(cpTime.minusDays(3));
 
         proctoringApplication.setApplicantCountLimit(dto.getApplicantCountLimit());
+        String logMessage = "User " + deansOfficeId + " created proctoring application " + proctoringApplication.getApplicationId() + ".";
+        logService.createLog(logMessage, LogType.CREATE);
         proctoringApplicationRepo.save(proctoringApplication);
 
         Request request = requestService.createProctoringApplicationRequest(dto, deansOfficeId);
@@ -122,6 +128,8 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
 
         proctoringApplicationReceieved.setApplicationType(type);
 
+        String logMessage = "Application type " + type + " set to " + proctoringApplicationReceieved.getApplicationId() + ".";
+        logService.createLog(logMessage, LogType.UPDATE);
         proctoringApplicationRepo.save(proctoringApplicationReceieved);
         return true;
     }

@@ -7,8 +7,10 @@ import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.*;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
+import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.*;
+import com.cs319group3.backend.Services.ServiceImpls.LogServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +60,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Autowired
     private AuthStaffProctoringRequestService authStaffProctoringRequestService;
+    @Autowired
+    private LogService logService;
 
 
     @Override
@@ -108,6 +112,12 @@ public class RequestServiceImpl implements RequestService {
 
         request.setApproved(response);
         request.setResponseDate(LocalDateTime.now());
+        String logMessage;
+        if (response)
+            logMessage = "Request " + request.getRequestId() + " accepted by user " + request.getReceiverUser().getUserId() + ".";
+        else
+            logMessage = "Request " + request.getRequestId() + " rejected by user " + request.getReceiverUser().getUserId() + ".";
+        logService.createLog(logMessage, LogType.UPDATE);
         requestRepo.save(request);
         if (request instanceof TAWorkloadRequest) {
             Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());

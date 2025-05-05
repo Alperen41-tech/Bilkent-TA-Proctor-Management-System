@@ -19,6 +19,7 @@ import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.*;
+import com.cs319group3.backend.Services.ServiceImpls.LogServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +56,7 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
     private NotificationService notificationService;
 
     @Autowired
-    private LogRepo logRepo;
+    private LogService logService;
 
 
     @Override
@@ -79,13 +80,7 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
             taswapRequestRepo.save(swapRequest);
             String logMessage = "User " + swapRequest.getSenderUser().getUserId() + " sent a swap request (" +
                     swapRequest.getRequestId() + ") to user " + swapRequest.getReceiverUser().getUserId() + ".";
-            Log log = new Log();
-            log.setMessage(logMessage);
-            log.setLogType(LogType.CREATE);
-            log.setLogDate(LocalDateTime.now());
-            logRepo.save(log);
-
-
+            logService.createLog(logMessage, LogType.CREATE);
             notificationService.createNotification(swapRequest, NotificationType.REQUEST);
 
             return ResponseEntity.ok(true);

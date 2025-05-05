@@ -16,6 +16,7 @@ import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
+import com.cs319group3.backend.Services.LogService;
 import com.cs319group3.backend.Services.NotificationService;
 import com.cs319group3.backend.Services.TAWorkloadRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,8 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
     private DepartmentSecretaryRepo departmentSecretaryRepo;
     @Autowired
     private LogRepo logRepo;
+    @Autowired
+    private LogService logService;
 
     @Override
     public boolean createTAWorkloadRequest(RequestDTO dto, int taId) {
@@ -98,11 +101,7 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
                 taWorkloadRequestRepo.save(workloadRequest);
                 String logMessage = "User " + workloadRequest.getSenderUser().getUserId() + " sent a workload request (" +
                         workloadRequest.getRequestId() + ") to user " + workloadRequest.getReceiverUser().getUserId() + ".";
-                Log log = new Log();
-                log.setMessage(logMessage);
-                log.setLogType(LogType.CREATE);
-                log.setLogDate(LocalDateTime.now());
-                logRepo.save(log);
+                logService.createLog(logMessage, LogType.CREATE);
                 notificationService.createNotification(workloadRequest, NotificationType.REQUEST);
             }
 

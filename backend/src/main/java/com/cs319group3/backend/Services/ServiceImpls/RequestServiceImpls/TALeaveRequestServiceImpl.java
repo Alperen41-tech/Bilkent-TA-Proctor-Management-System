@@ -3,10 +3,12 @@ package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Entities.RequestEntities.TALeaveRequest;
+import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Repositories.DepartmentSecretaryRepo;
 import com.cs319group3.backend.Repositories.NotificationRepo;
 import com.cs319group3.backend.Repositories.TALeaveRequestRepo;
 import com.cs319group3.backend.Repositories.TARepo;
+import com.cs319group3.backend.Services.LogService;
 import com.cs319group3.backend.Services.NotificationService;
 import com.cs319group3.backend.Services.TALeaveRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +36,16 @@ public class TALeaveRequestServiceImpl implements TALeaveRequestService {
 
     @Autowired
     private RequestMapper requestMapper;
+    @Autowired
+    private LogService logService;
 
     @Override
     public boolean createTALeaveRequest(RequestDTO taLeaveRequestDTO, int taId) {
         try{
             TALeaveRequest taLeaveRequest = requestMapper.taLeaveRequestToEntityMapper(taLeaveRequestDTO);
+            String logMessage = "User " + taLeaveRequest.getSenderUser().getUserId() + " sent a leave request (" +
+                    taLeaveRequest.getRequestId() + ") to user " + taLeaveRequest.getReceiverUser().getUserId() + ".";
+            logService.createLog(logMessage, LogType.CREATE);
             tALeaveRequestRepo.save(taLeaveRequest);
 
             notificationService.createNotification(taLeaveRequest, REQUEST);
