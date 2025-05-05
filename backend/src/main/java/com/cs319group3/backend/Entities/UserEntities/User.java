@@ -45,4 +45,8 @@ public class User implements Serializable {
     public String getFullName(){
         return name + " " + surname;
     }
+
+    public void addLogin(Login login){
+        logins.add(login);
+    }
 }
