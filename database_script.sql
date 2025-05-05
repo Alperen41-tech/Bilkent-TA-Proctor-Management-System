@@ -1,4 +1,4 @@
-drop database ta_management_system_db;
+drop database if exists ta_management_system_db;
 create database ta_management_system_db;
 use ta_management_system_db;
 
@@ -338,6 +338,8 @@ create table log(
     log_type varchar(20),
     log_date datetime
 );
+
+create index log_date_idx on log(log_date);
 
 
 
