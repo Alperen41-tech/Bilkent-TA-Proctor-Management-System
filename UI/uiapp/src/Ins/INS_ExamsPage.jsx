@@ -84,7 +84,6 @@ const INS_ExamsPage = () => {
   const handleTaskClick = (task) => {
     setSelectedTask(task);
     setSelectedTA(null);
-    fetchAvailableTAs();
   };
 
   const handleTAClick = (ta) => {

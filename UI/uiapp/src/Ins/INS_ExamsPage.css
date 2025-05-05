@@ -128,3 +128,23 @@
   height: 400px;
   overflow-y: auto;
 }
+
+.ins-exam-assign-actions{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  flex-direction: row;
+  gap: 10px;
+}
+.ins-exam-assign-actions button {
+  padding: 10px;
+  background-color: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  flex: 1;
+}

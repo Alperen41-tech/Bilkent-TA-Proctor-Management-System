@@ -108,6 +108,8 @@ const PaidProctoringPage = () => {
         <div className="proctoring-right">
           <div className="card">
             <h3>TAs Applied for this Task</h3>
+            {/* Applied TA Placeholder */}
+            <div className="assigned-tas">
               {appliedTAs.length > 0 ? (
                 <div className="applied-ta-list">
                   {appliedTAs.map((ta) => createTAItem(ta))}
@@ -115,9 +117,6 @@ const PaidProctoringPage = () => {
               ) : (
                 <p>No TAs have applied for this task yet.</p>
               )}
-            {/* Applied TA Placeholder */}
-            <div className="assigned-tas">
-              
             </div>
           </div>
         </div>
