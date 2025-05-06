@@ -33,6 +33,8 @@ import DO_DashboardPage from "./DO/DO_DashboardPage";
 import DO_TARequestsPage from "./DO/DO_TARequestsPage";
 import DOCreateExamPage from "./DO/DOCreateExamPage";
 
+import Instructor_AdminProfilePage from "./Instructor-Admin/Instructor_AdminProfilePage";
+
 
 
 function App() {
@@ -74,6 +76,7 @@ function App() {
         <Route path="/do-dashboard" element={<DO_DashboardPage />} />
         <Route path="/do-ta-requests" element={<DO_TARequestsPage />} />  
 
+        <Route path="/instructor-admin-profile" element={<Instructor_AdminProfilePage />} />
 
       </Routes>
 
