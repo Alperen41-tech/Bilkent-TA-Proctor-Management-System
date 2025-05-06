@@ -256,11 +256,18 @@ const DOCreateExamPage = () => {
   };
 
   const createTAItem = (ta, onClick, selectedKey) => {
-    const key = `${ta.name}-${ta.surname}-${ta.email}`;
+    const key = `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`;
     return (
-      <TAItem key={key} ta={ta} onClick={() => onClick(ta)} isSelected={selectedKey === key} />
+      <TAItem
+        key={key}
+        ta={ta}
+        onClick={() => onClick(ta)}
+        isSelected={selectedKey === key}
+        inInstructor={true}
+      />
     );
   };
+  
 
   const renderExamItems = () =>
     createdExams.map((exam) => {
@@ -270,7 +277,17 @@ const DOCreateExamPage = () => {
         <AdminDatabaseItem
           key={key}
           type="exam"
-          data={{ id: cp.id, course: cp.courseName, date: cp.startDate, time: cp.timeInterval, location: cp.classrooms }}
+          data={{
+            id: cp.id,
+            course: cp.courseName,
+            date: new Date(cp.startDate).toLocaleDateString(),
+            time: new Date(cp.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            endTime: new Date(cp.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            location: cp.classrooms,
+            Section: cp.section,
+            examType: cp.proctoringName
+          }}
+          
           isSelected={selectedExamKey === key}
           onSelect={() => handleExamSelect(exam, key)}
           onDelete={() => {}}
