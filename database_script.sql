@@ -347,10 +347,13 @@ create table course_ta_instructor_form(
     course_id int,
     semester_id int,
     sent_date datetime,
-    final_date datetime,
     min_ta_load int,
     max_ta_load int,
     number_of_grader int,
+    must_have_tas varchar(200),
+    preferred_tas varchar(500),
+    preferred_graders varchar(200),
+    avoided_tas varchar(200),
     description varchar(500),
     foreign key (course_id) references course(course_id),
     foreign key (semester_id) references semester(semester_id)
@@ -633,9 +636,9 @@ INSERT INTO proctoring_application_ta_relation (proctoring_application_ta_relati
     (3, 3, 2),
     (4, 2, 4);
     
-insert into course_ta_instructor_form (form_id, course_id, semester_id, sent_date, final_date, min_ta_load, max_ta_load, number_of_grader, description) values
-	(1, 1, 1, "2025-05-06 10:00:00", "2025-05-10 20:00:00", 3, 5, 2, "i want tas"),
-    (2, 2, 1, "2025-05-06 11:00:00", "2025-05-10 20:00:00", 1, 3, 4, "more tas"),
-    (3, 3, 1, "2025-05-05 17:00:00", "2025-05-10 20:00:00", 5, 6, 0, "tatata");
+insert into course_ta_instructor_form (form_id, course_id, semester_id, sent_date, min_ta_load, max_ta_load, number_of_grader, must_have_tas, preferred_tas, preferred_graders, avoided_tas, description) values
+	(1, 1, 1, "2025-05-06 10:00:00", 3, 5, 2, "ali 1*ali 2", "ali 5", "ali 7", "", "i want tas"),
+    (2, 2, 1, "2025-05-06 11:00:00", 1, 3, 4, "ali 3", "ali 5*ali 6", "", "ali 4", "more tas"),
+    (3, 3, 1, "2025-05-05 17:00:00", 5, 6, 0, "", "ali 2*ali 4*ali 6", "ali 8", "ali 1","tatata");
     
 
