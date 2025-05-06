@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ClassProctoringRepo extends JpaRepository<ClassProctoring, Integer> {
@@ -57,4 +58,6 @@ public interface ClassProctoringRepo extends JpaRepository<ClassProctoring, Inte
     WHERE rel.TA.userId = :taId
 """)
     List<ClassProctoring> findProctoringsByTAId(@Param("taId") int taId);
+
+    Optional<ClassProctoring> findByClassProctoringId(int proctoringId);
 }

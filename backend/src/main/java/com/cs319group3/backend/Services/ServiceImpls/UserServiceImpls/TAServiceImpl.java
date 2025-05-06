@@ -101,10 +101,30 @@ public class TAServiceImpl implements TAService {
         int courseId = cp.getCourse().getCourseId();
         availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) ||
                 authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId) ||
-                doesTakeCourse(ta.getUserId(), courseId) || !isTAEligible(ta.getUserId(), courseId));
+                doesTakeCourse(ta.getUserId(), courseId) ||
+                !isTAEligible(ta.getUserId(), courseId));
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
+            availableTAProfiles.add(profile);
+        }
+        return availableTAProfiles;
+    }
+
+    @Override
+    public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int classProctoringId, int userId, boolean eligibilityRestriction, boolean oneDayRestriction) {
+        ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
+        List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(departmentCode, classProctoringId);
+        int courseId = cp.getCourse().getCourseId();
+        availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) ||
+                authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId) ||
+                doesTakeCourse(ta.getUserId(), courseId) ||
+                ( eligibilityRestriction && !isTAEligible(ta.getUserId(), courseId)) ||
+                ( oneDayRestriction && !noProctoringInOneDay(ta.getUserId(), classProctoringId)) );
+        List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
+        for (TA ta : availableTAs) {
+            TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
+            profile.setTAOfTheCourse(ta.getAssignedCourse().getCourseId() == courseId);
             availableTAProfiles.add(profile);
         }
         return availableTAProfiles;
@@ -119,9 +139,31 @@ public class TAServiceImpl implements TAService {
         List<TA> availableTAs = taRepo.findAvailableTAsByFaculty(facultyId, classProctoringId);
         int courseId = cp.getCourse().getCourseId();
         availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) ||
-                authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId)
-                || doesTakeCourse(ta.getUserId(), courseId)
-                || !isTAEligible(ta.getUserId(), courseId));
+                authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId) ||
+                doesTakeCourse(ta.getUserId(), courseId) ||
+                !isTAEligible(ta.getUserId(), courseId));
+        List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
+        for (TA ta : availableTAs) {
+            TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
+            availableTAProfiles.add(profile);
+        }
+        return availableTAProfiles;
+    }
+
+    @Override
+    public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int classProctoringId, int userId, boolean eligibilityRestriction, boolean oneDayRestriction) {
+        ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
+        List<TA> availableTAs = taRepo.findAvailableTAsByFaculty(facultyId, classProctoringId);
+        int courseId = cp.getCourse().getCourseId();
+        availableTAs.removeIf(ta -> {
+            boolean unavailable = !taAvailabilityService.isTAAvailable(ta, cp);
+            boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId);
+            boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
+            boolean ineligible = eligibilityRestriction && !isTAEligible(ta.getUserId(), courseId);
+            boolean failsOneDayRule = oneDayRestriction && !noProctoringInOneDay(ta.getUserId(), classProctoringId);
+
+            return unavailable || alreadyRequested || takesSameCourse || ineligible || failsOneDayRule;
+        });
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
@@ -184,5 +226,25 @@ public class TAServiceImpl implements TAService {
             return classYear.get() == 9;
         }
         return true;
+    }
+
+    @Autowired
+    TAAvailabilityService taaAvailabilityService;
+
+    @Override
+    public boolean noProctoringInOneDay(int taId, int proctoringId) {
+        Optional<ClassProctoring> cpOptional = classProctoringRepo.findByClassProctoringId(proctoringId);
+        if(cpOptional.isEmpty()) {
+            return false;
+        }
+        ClassProctoring classProctoring = cpOptional.get();
+        LocalDateTime startTime = classProctoring.getStartDate().minusDays(1);
+        LocalDateTime endTime = classProctoring.getEndDate().plusDays(1);
+        Optional<TA> ta = taRepo.findById(taId);
+        if(ta.isEmpty()) {
+            return false;
+        }
+
+        return !taaAvailabilityService.hasAnotherProctoring(ta.get(), startTime, endTime);
     }
 }

@@ -53,18 +53,21 @@ public class TAAvailabilityServiceImpl implements TAAvailabilityService {
                 || hasAnotherProctoring(ta, startTime, endTime)) ;
     }
 
-    private boolean isLeft(TA ta,  LocalDateTime startTime, LocalDateTime endTime){
+    @Override
+    public boolean isLeft(TA ta,  LocalDateTime startTime, LocalDateTime endTime){
 
         List<TALeaveRequest> approvedRequest = taleaveRequestRepo.findBySenderUser_UserIdAndApprovedTrueAndLeaveStartDateLessThanEqualAndLeaveEndDateGreaterThanEqual(ta.getUserId(), endTime, startTime);
         return !approvedRequest.isEmpty();
     }
 
-    private boolean hasAnotherProctoring(TA ta, LocalDateTime startTime, LocalDateTime endTime){
+    @Override
+    public boolean hasAnotherProctoring(TA ta, LocalDateTime startTime, LocalDateTime endTime){
         List<ClassProctoringTARelation> relations = classProctoringTARelationRepo.findByTA_UserIdAndClassProctoring_StartDateLessThanEqualAndClassProctoring_EndDateGreaterThan(ta.getUserId(), endTime, startTime);
         return !relations.isEmpty();
     }
 
-    private boolean hasLecture(TA ta, LocalDateTime startTime, LocalDateTime endTime){
+    @Override
+    public boolean hasLecture(TA ta, LocalDateTime startTime, LocalDateTime endTime){
         Optional<Student> student = studentRepo.findByBilkentId(ta.getBilkentId());
         if (!student.isPresent()){
             return false;
@@ -82,7 +85,8 @@ public class TAAvailabilityServiceImpl implements TAAvailabilityService {
         return false;
     }
 
-    private boolean hasCourseIntersect(OfferedCourse c, LocalDateTime start, LocalDateTime end) {
+    @Override
+    public boolean hasCourseIntersect(OfferedCourse c, LocalDateTime start, LocalDateTime end) {
         List<OfferedCourseScheduleRelation> relations = c.getSchedule();
 
         for (OfferedCourseScheduleRelation relation : relations) {

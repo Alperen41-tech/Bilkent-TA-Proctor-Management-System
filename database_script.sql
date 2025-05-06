@@ -493,7 +493,8 @@ INSERT INTO class_proctoring (class_proctoring_id, course_id, event_name, creato
 	(2, 2, 'Final Exam', 4, 3, '2025-05-07 17:00:00', '2025-05-07 20:00:00', 2, false),
 	(3, 2, 'Midweek', 4, 1, '2025-05-08 10:00:00', '2025-05-08 12:00:00', 2, false),
 	(4, 1, 'Event 4', 5, 1, '2025-05-09 10:00:00', '2025-05-09 12:00:00', 1, false),
-	(5, 3, 'Event 5', 9, 2, '2025-05-10 10:00:00', '2025-05-10 12:00:00', 2, false);
+	(5, 3, 'Event 5', 9, 2, '2025-05-10 10:00:00', '2025-05-10 12:00:00', 2, false),
+    (6, 7, 'Master Proctoring', 9, 3, '2025-05-11 8:00:00', '2025-05-11 10:00:00', 1, false);
 
 INSERT INTO task_type (task_type_id, course_id, task_type_name, time_limit) VALUES
 	(1, 4, 'Lab Grading', 2),

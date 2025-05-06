@@ -12,8 +12,11 @@ public interface TAService {
     public boolean createNewTA(CreateTADTO createTADTO);
     public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int proctoringId, int userId);
     public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int proctoringId, int userId);
+    public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int proctoringId, int userId, boolean eligibilityRestriction, boolean oneDayRestriction);
+    public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int proctoringId, int userId, boolean eligibilityRestriction, boolean oneDayRestriction);
     public List<TAProfileDTO> getTAsByProctoringId(int proctoringId);
     public List<TAProfileDTO> getAllTAProfiles();
     public boolean doesTakeCourse(int taId, int courseId);
     public boolean isTAEligible(int taId, int courseId);
+    public boolean noProctoringInOneDay(int taId, int proctoringId);
 }
