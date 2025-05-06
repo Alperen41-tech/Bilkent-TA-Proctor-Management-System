@@ -10,4 +10,6 @@ public interface AuthStaffProctoringRequestService {
     public boolean canUnforcedRequestBeSent(int classProctoringId);
     public boolean canForcedRequestBeSent(int classProctoringId);
     public boolean canRequestBeAccepted( int classProctoringId);
+    public boolean sendAuthStaffProctoringRequestAutomaticallyInDepartment( int classProctoringId, String departmentCode, int senderId, int count, boolean eligibilityRestriction, boolean oneDayRestriction, boolean isApproved);
+    public boolean sendAuthStaffProctoringRequestAutomaticallyInFaculty( int classProctoringId, int facultyId, int senderId, int count, boolean eligibilityRestriction, boolean oneDayRestriction, boolean isApproved);
 }

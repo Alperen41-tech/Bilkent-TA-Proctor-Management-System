@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 
+import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.AuthStaffProctoringRequest;
@@ -9,10 +10,14 @@ import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.*;
 import com.cs319group3.backend.Services.ServiceImpls.UserServiceImpls.TAServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,6 +53,9 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
 
     @Autowired
     TAAvailabilityService taAvailabilityService;
+
+    @Autowired
+    ClassProctoringTARelationService classProctoringTARelationService;
 
     @Override
     public boolean sendAuthStaffProctoringRequest(int classProctoringId, int taId, int senderId, boolean isApproved) {
@@ -114,11 +122,59 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
                         " and ends at " + cp.getEndDate().format(formatter) + ".";
                 notificationService.createNotification(request, NotificationType.ASSIGNMENT, approvedDescription);
                 System.out.println(approvedDescription);
+                classProctoringTARelationService.createClassProctoringTARelation(taId, classProctoringId);
             }
         }
         else {
             System.out.println("Bura 7");
             return false;
+        }
+        return true;
+    }
+
+    @Autowired
+    @Lazy
+    TAService taService;
+
+    @Override
+    public boolean sendAuthStaffProctoringRequestAutomaticallyInDepartment( int classProctoringId, String departmentCode, int senderId, int count, boolean eligibilityRestriction, boolean oneDayRestriction, boolean isApproved){
+        int pLimit = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
+        if(!isApproved && (classProctoringService.numberOfTAsAssigned(classProctoringId) + count > pLimit + 3 ||
+                classProctoringService.numberOfTAsAssigned(classProctoringId) >= pLimit)) {
+            return false;
+        }
+        if(isApproved && classProctoringService.numberOfTAsAssigned(classProctoringId) + count > pLimit) {
+            return false;
+        }
+        List<TAProfileDTO> availableTAs = taService.getAllAvailableTAsByDepartmentCode(departmentCode, classProctoringId, senderId, eligibilityRestriction, oneDayRestriction);
+        availableTAs.sort(
+                Comparator.comparing(TAProfileDTO::isTAOfTheCourse, Comparator.reverseOrder())
+                        .thenComparing(TAProfileDTO::getWorkload)
+        );
+        for(int i = 0 ; i < count ; i++){
+            sendAuthStaffProctoringRequest(classProctoringId, availableTAs.get(i).getUserId(), senderId, isApproved);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean sendAuthStaffProctoringRequestAutomaticallyInFaculty( int classProctoringId, int facultyId, int senderId, int count, boolean eligibilityRestriction, boolean oneDayRestriction, boolean isApproved){
+        int pLimit = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
+        if(!isApproved && (classProctoringService.numberOfTAsAssigned(classProctoringId) + count > pLimit + 3 ||
+                classProctoringService.numberOfTAsAssigned(classProctoringId) >= pLimit)) {
+            return false;
+        }
+        if(isApproved && classProctoringService.numberOfTAsAssigned(classProctoringId) + count > pLimit) {
+            return false;
+        }
+        List<TAProfileDTO> availableTAs = taService.getAllAvailableTAsByFacultyId(facultyId, classProctoringId, senderId, eligibilityRestriction, oneDayRestriction);
+        availableTAs.sort(
+                Comparator.comparing(TAProfileDTO::isTAOfTheCourse, Comparator.reverseOrder())
+                        .thenComparing(TAProfileDTO::getWorkload)
+        );
+        for(int i = 0 ; i < count ; i++){
+            System.out.println("Buraaa " + availableTAs.get(i).getUserId());
+            sendAuthStaffProctoringRequest(classProctoringId, availableTAs.get(i).getUserId(), senderId, isApproved);
         }
         return true;
     }

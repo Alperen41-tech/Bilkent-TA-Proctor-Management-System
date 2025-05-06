@@ -106,6 +106,7 @@ public class TAServiceImpl implements TAService {
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
+            profile.setTAOfTheCourse(ta.getAssignedCourse().getCourseId() == courseId);
             availableTAProfiles.add(profile);
         }
         return availableTAProfiles;
@@ -145,6 +146,7 @@ public class TAServiceImpl implements TAService {
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
+            profile.setTAOfTheCourse(ta.getAssignedCourse().getCourseId() == courseId);
             availableTAProfiles.add(profile);
         }
         return availableTAProfiles;
@@ -167,6 +169,7 @@ public class TAServiceImpl implements TAService {
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
+            profile.setTAOfTheCourse(ta.getAssignedCourse().getCourseId() == courseId);
             availableTAProfiles.add(profile);
         }
         return availableTAProfiles;
