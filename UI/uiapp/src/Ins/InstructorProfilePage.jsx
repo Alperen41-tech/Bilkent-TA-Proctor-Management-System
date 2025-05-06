@@ -1,21 +1,47 @@
 // src/InstructorProfilePage.jsx
-import React from "react";
+import React, { use } from "react";
 import "./InstructorProfilePage.css"; // Reusing the same CSS
 import Navbar from "./NavbarINS";
 import axios from "axios";
 import { useState, useEffect, useRef} from "react";
+import { min } from "date-fns";
 
 const InstructorProfilePage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [insProfileInfo, setInsProfileInfo] = useState({courses: []});
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [instructorCourses, setInstructorCourses] = useState([]);
 
   //Refs for password inputs
   const oldPasswordRef = useRef();
   const newPasswordRef = useRef();
   const confirmNewPasswordRef = useRef();
+  const minTALoadRef = useRef();
+  const maxTALoadRef = useRef();
+  const numberOfGraderRef = useRef();
+  const descriptionRef = useRef();
+  const mustHaveTAsRef = useRef();
+  const preferredTAsRef = useRef();
+  const preferredGradersRef = useRef();
+  const unwantedTAsRef = useRef();
+  const instructorIdRef = useRef();
+  const courseIdRef = useRef();
   //-----------------------------------------------------------
 
-
+  const handleCreateForm = async () => {
+    try {
+      const response = await axios.post("http://localhost:8080/ta-request/create");
+      if (response.data) {
+        alert("TA request form created successfully.");
+        setShowFormModal(false);
+      } else {
+        alert("Failed to create TA request form. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating TA request form:", error);
+    }
+  };
+        
   const handleChangePassword = async () => {
     try {
       console.log("Email:", insProfileInfo.email);
@@ -40,18 +66,40 @@ const InstructorProfilePage = () => {
   
   };
 
-  useEffect(() => {
-    const fetchProfileInformation = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/instructor/profile?id=4");
-        setInsProfileInfo(response.data);
-        console.log(insProfileInfo);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
+  const fetchProfileInformation = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/instructor/profile?id=4");
+      setInsProfileInfo(response.data);
+      console.log(insProfileInfo);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  const fetchInstructorCourses = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/course/getCoursesOfInstructor?instructorId=4");
+      if(response.data) {
+        setInstructorCourses(response.data);
+        console.log("Instructor Courses:", response.data);
       }
-    };
+      else {
+        console.log("No courses found for this instructor.");
+      }
+    } catch (error) {
+      console.error("Error fetching instructor courses:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchInstructorCourses();
     fetchProfileInformation();
   }, []);
+
+  useEffect(() => {
+    console.log(insProfileInfo);
+  }
+  , [insProfileInfo]);
 
 
   return (
@@ -83,6 +131,7 @@ const InstructorProfilePage = () => {
           <div className="manage-card">
             <h3>Manage Account</h3>
             <button className="purple-button" onClick={() => setShowChangePasswordModal(true)}>Change Password</button>
+            <button className="purple-button" onClick={() => setShowFormModal(true)}>Create TA Request Form for TA Assignments</button>
           </div>
         </div>
       </div>
@@ -119,6 +168,105 @@ const InstructorProfilePage = () => {
           </div>
         </div>
       )}
+  
+  {showFormModal && (
+  <div className="ins-profile-form-modal-overlay">
+    <form className="ins-profile-form-modal" onSubmit={(e) => {
+      e.preventDefault();
+      handleCreateForm();}}>
+      <h3>Create TA Assignment Form</h3>
+      
+      <label>Course ID</label>
+      <select ref={courseIdRef} required defaultValue="">
+        <option value="" disabled>Select a course</option>
+        {instructorCourses.map((course) => (
+          <option key={course.courseId} value={course.courseId}>
+            {course.course.name} - {course.course.courseCode}
+          </option>
+        ))}
+        
+      </select>
+
+      {/* Integer Fields */}
+      <label>Min TA Load</label>
+      <input
+        type="number"
+        placeholder="Minimum TA load"
+        ref={minTALoadRef}
+        min={0}
+        required
+      />
+
+      <label>Max TA Load</label>
+      <input
+        type="number"
+        placeholder="Maximum TA load"
+        ref={maxTALoadRef}
+        min={0}
+        required
+      />
+
+      <label>Number of Graders</label>
+      <input
+        type="number"
+        placeholder="Number of graders"
+        ref={numberOfGraderRef}
+        min={0}
+        required
+      />
+
+      {/* String Fields */}
+      <label>Must-Have TAs</label>
+      <input
+        type="text"
+        placeholder="Asterisk-separated TA Names"
+        ref={mustHaveTAsRef}
+        pattern="^([^\*]+)(\*[^\*]+)*$"
+        title="Separate TA names with a single asterisk (*), e.g., Ali Vural*Demir Kara"
+      />
+
+      <label>Description</label>
+      <input
+        type="text"
+        placeholder="Reason for must have TAs"
+        ref={descriptionRef}
+      />
+
+      <label>Preferred TAs</label>
+      <input
+        type="text"
+        placeholder="Asterisk-separated preferred TA Names (In order of preference)"
+        ref={preferredTAsRef}
+        pattern="^([^\*]+)(\*[^\*]+)*$"
+        title="Separate TA names with a single asterisk (*), e.g., Ali Vural*Demir Kara"
+      />
+
+      <label>Preferred Graders</label>
+      <input
+        type="text"
+        placeholder="Asterisk-separated grader Names (In order of preference)"
+        ref={preferredGradersRef}
+        pattern="^([^\*]+)(\*[^\*]+)*$"
+        title="Separate TA names with a single asterisk (*), e.g., Ali Vural*Demir Kara"
+      />
+
+      <label>Unwanted TAs</label>
+      <input
+        type="text"
+        placeholder="Comma-separated unwanted TA IDs"
+        ref={unwantedTAsRef}
+        pattern="^([^\*]+)(\*[^\*]+)*$"
+        title="Separate TA names with a single asterisk (*), e.g., Ali Vural*Demir Kara"
+      />
+
+      <div className="modal-buttons">
+        <button className="cancel-button" onClick={() => setShowFormModal(false)}>Cancel</button>
+        <button className="apply-button" type="submit">Apply</button>
+      </div>
+    </form>
+  </div>
+)}
+
     </div>
   );
 };
