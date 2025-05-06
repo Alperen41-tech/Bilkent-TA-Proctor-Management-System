@@ -21,6 +21,11 @@ const AdminDatabasePage = () => {
   const newTaPhoneNumRef = useRef();
   const newTaClassYearRef = useRef();
   const newTaPasswordRef = useRef();
+  const [taRole, setTaRole] = useState("");
+  const [departmentCode, setDepartmentCode] = useState("");
+  const [courseCode, setCourseCode] = useState("");
+  const [taWorkload, setTaWorkload] = useState(20);
+
   //-----------------------------
 
   // Refs for new Proctoring creation
@@ -197,41 +202,71 @@ const AdminDatabasePage = () => {
         />
       )))
   }
-  const createNewTa = async (newTaName, newTaSurname, newTaEmail, newTaId, departmentSelection, newTaCourseName, newTaPhoneNum, newTaClassYear, newTaPassword) => {
+  const createNewTa = async () => {
+    console.log("Calling createNewTa...");
+  
+    const selectedDept = departments.find((d) => d.departmentId === selectedDepartmentId);
+    const selectedCourse = courses.find((c) => c.id === selectedCourseId);
+  
+    if (!selectedDept || !selectedCourse) {
+      alert("Please select a department and a course.");
+      return;
+    }
+  
+    const name = newTaNameRef.current.value;
+    const surname = newTaSurnameRef.current.value;
+    const email = newTaEmailRef.current.value;
+    const bilkentId = newTaIdRef.current.value;
+    const phoneNumber = newTaPhoneNumRef.current.value;
+    const classYear = parseInt(newTaClassYearRef.current.value);
+    const password = newTaPasswordRef.current.value;
+  
     try {
-      console.log("Creating new TA with the following details:");
-      console.log(typeof newTaId);
       const response = await axios.post("http://localhost:8080/ta/createTA", {
         profile: {
-          name: newTaName,
-          surname: newTaSurname,
-          email: newTaEmail,
-          bilkentId: newTaId,
-          departmentName: departmentSelection,
-          courseName: newTaCourseName,
-          phoneNumber: newTaPhoneNum,
+          name,
+          surname,
+          email,
+          bilkentId,
+          role: "TA",
+          departmentName: selectedDept.departmentName,
+          departmentCode: selectedDept.departmentCode, // ✅ correct name
+          courseName: selectedCourse.name,
+          courseCode: selectedCourse.courseCode?.toString(), // ✅ fix field
+          phoneNumber,
           active: true,
-          classYear: parseInt(newTaClassYear, 10),
+          classYear,
+          workload: taWorkload,
         },
         login: {
-          password: newTaPassword,
-          userTypeName: "ta"
-        }
+          email,
+          password,
+          userTypeName: "ta",
+        },
       });
-
-      if (!response.data) {
-        alert("Could not created TA. Try again.");
-      }
-      else {
+  
+      console.log("Response:", response.data);
+  
+      if (response.data === true) {
         alert("TA created successfully!");
-        console.log("TA created successfully:", response.data);
+      } else {
+        alert("Failed to create TA. Check values.");
       }
     } catch (error) {
-      console.error("There was an error with the ta creation:", error);
-      alert("An error occurred. Please try again.");
+      console.error("Error creating TA:", error.response?.data || error.message);
+      alert("An error occurred.");
     }
+  };
+  
 
-  }
+  
+  
+  
+  
+  
+  
+  
+
 
   const createNewProctoring = async (
     eventName,
@@ -322,11 +357,11 @@ const AdminDatabasePage = () => {
           userTypeName: "instructor"
         }
       };
-  
+
       console.log("POST payload:", payload); // <== DEBUG LOG
-  
+
       const response = await axios.post("http://localhost:8080/instructor/createInstructor", payload);
-  
+
       if (response.data === true) {
         alert("Instructor created successfully!");
       } else {
@@ -337,9 +372,9 @@ const AdminDatabasePage = () => {
       alert("An error occurred while creating the instructor.");
     }
   };
-  
-  
-  
+
+
+
 
 
 
@@ -596,53 +631,23 @@ const AdminDatabasePage = () => {
 
 
           {selectedType === "TA" && (
-            <form className="admin-database-type-form" onSubmit={(e) => {
+            <form className="admin-database-type-form" onSubmit={async (e) => {
               e.preventDefault();
-              createNewTa(
-                newTaNameRef.current.value,
-                newTaSurnameRef.current.value,
-                newTaEmailRef.current.value,
-                newTaIdRef.current.value,
-                departmentSelection,
-                newTaCourseNameRef.current.value,
-                newTaPhoneNumRef.current.value,
-                newTaClassYearRef.current.value,
-                newTaPasswordRef.current.value
-              );
-            }}>
+              await createNewTa(); // no args, handled inside
+            }}
+            >
+
               <label>TA Name</label>
-              <input ref={newTaNameRef} type="text" placeholder="enter name" required />
+              <input ref={newTaNameRef} type="text" required />
 
               <label>Surname</label>
-              <input ref={newTaSurnameRef} type="text" placeholder="enter surname" required />
+              <input ref={newTaSurnameRef} type="text" required />
 
               <label>Email</label>
-              <input ref={newTaEmailRef} type="email" placeholder="enter email" required />
+              <input ref={newTaEmailRef} type="email" required />
 
-              <label>ID</label>
-              <input ref={newTaIdRef} type="number" min={0} placeholder="enter ID" required />
-
-              <label>Department</label>
-              <select value={departmentSelection} onChange={(e) => {
-                setDepartmentSelection(e.target.value)
-                console.log("Selected Department:", e.target.value)
-
-              }}>
-                <option value="">Select Department</option>
-                <option value="CS">CS</option>
-                <option value="IE">IE</option>
-                <option value="Other">Other</option>
-              </select>
-
-              <label>Select Type</label>
-              <select value={selectTaWorktime} onChange={(e) => {
-                setSelectTaWorktime(e.target.value)
-                console.log("Selected Worktime For TA:", e.target.value)
-              }}>
-                <option value="">Select Type</option>
-                <option value="FT">Full Time</option>
-                <option value="PT">Part Time</option>
-              </select>
+              <label>Bilkent ID</label>
+              <input ref={newTaIdRef} type="text" required />
 
               <label>Department</label>
               <select
@@ -650,12 +655,10 @@ const AdminDatabasePage = () => {
                 onChange={async (e) => {
                   const deptId = parseInt(e.target.value);
                   setSelectedDepartmentId(deptId);
-
                   try {
-                    const { data } = await axios.get(
-                      "http://localhost:8080/course/getCoursesInDepartment",
-                      { params: { departmentId: deptId } }
-                    );
+                    const { data } = await axios.get("http://localhost:8080/course/getCoursesInDepartment", {
+                      params: { departmentId: deptId },
+                    });
                     setCourses(data || []);
                   } catch (error) {
                     console.error("Error fetching courses:", error);
@@ -685,24 +688,25 @@ const AdminDatabasePage = () => {
                 ))}
               </select>
 
-
               <label>Phone Number</label>
-              <input ref={newTaPhoneNumRef} type="text" placeholder="enter phone number" pattern="^\+\d{1,3}-\d{3}-\d{3}-\d{2}-\d{2}$" title="Phone number must be in the format +CountryCode-xxx-xxx-xx-xx" required />
+              <input ref={newTaPhoneNumRef} type="text" required />
 
               <label>Class Year</label>
-              <input ref={newTaClassYearRef} type="number" min={1} max={6} placeholder="enter class year" required />
+              <input ref={newTaClassYearRef} type="number" min={1} max={6} required />
 
-              <label>Login Informations</label>
-              <input ref={newTaPasswordRef} type="password" placeholder="enter password" required />
+              <label>Password</label>
+              <input ref={newTaPasswordRef} type="password" required />
 
-              <input type="submit" value="Create" className="admin-database-create-type-button" />
+              <input type="submit" value="Create TA" className="admin-database-create-type-button" />
             </form>
           )}
+
+
 
           {selectedType === "Instructor" && (
             <form className="admin-database-type-form" onSubmit={(e) => {
               e.preventDefault();
-            
+
               if (
                 !newInstructorNameRef.current.value ||
                 !newInstructorSurnameRef.current.value ||
@@ -717,7 +721,7 @@ const AdminDatabasePage = () => {
                 alert("Please fill in all required fields.");
                 return;
               }
-            
+
               const name = newInstructorNameRef.current.value;
               const surname = newInstructorSurnameRef.current.value;
               const email = newInstructorEmailRef.current.value;
@@ -728,7 +732,7 @@ const AdminDatabasePage = () => {
               const departmentName = selectedDepartmentName;
               const departmentId = selectedDepartmentId;
               const courses = [selectedInstructorCourse]; // ensure this is valid
-              
+
               console.log("Sending instructor data:", {
                 name,
                 surname,
@@ -741,7 +745,7 @@ const AdminDatabasePage = () => {
                 password,
                 courses
               });
-              
+
               createInstructor(
                 name,
                 surname,
@@ -754,8 +758,8 @@ const AdminDatabasePage = () => {
                 password,
                 courses
               );
-              
-              
+
+
             }}
             >
               <label>Name</label>
