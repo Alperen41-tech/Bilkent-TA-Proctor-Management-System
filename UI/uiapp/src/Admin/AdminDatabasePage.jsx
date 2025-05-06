@@ -43,6 +43,13 @@ const AdminDatabasePage = () => {
   const [endTime, setEndTime] = useState("");
   const [classrooms, setClassrooms] = useState("");
 
+  // Refs for new Course creation
+  const newCourseNameRef = useRef();
+  const newCourseDescRef = useRef();
+  const newCourseCodeRef = useRef();
+  const newCourseCoordinatorIdRef = useRef();
+
+
 
   // Sample data for the database items
   const adminDatabaseItems = [
@@ -217,6 +224,32 @@ const AdminDatabasePage = () => {
   };
 
 
+  const createNewCourse = async (name, description, courseCode, departmentId, coordinatorId) => {
+    try {
+      const response = await axios.post("http://localhost:8080/course/createCourse", {
+        name,
+        description,
+        courseCode: parseInt(courseCode),
+        departmentId,
+        coordinatorId: 4,
+        departmentCode: departments.find((d) => d.departmentId === departmentId)?.departmentName || ""
+      });
+  
+      if (response.data === true) {
+        alert("Course created successfully!");
+      } else {
+        alert("Failed to create course.");
+      }
+    } catch (error) {
+      console.error("Error creating course:", error.response?.data || error.message);
+      alert("An error occurred while creating the course.");
+    }
+  };
+  
+  
+
+
+
   return (
     <div className="admin-database-database-container">
       <NavbarAdmin />
@@ -258,6 +291,7 @@ const AdminDatabasePage = () => {
               <option value="">--Select Type--</option>
               <option value="Proctoring">Proctoring</option>
               <option value="TA">TA</option>
+              <option value="Course">Course</option>
             </select>
           </div>
           {selectedType === "Proctoring" && (
@@ -265,6 +299,7 @@ const AdminDatabasePage = () => {
               className="admin-database-type-form"
               onSubmit={async (e) => {
                 e.preventDefault();
+                createNewCourse();
 
                 if (
                   !newProctoringNameRef.current.value ||
@@ -400,6 +435,68 @@ const AdminDatabasePage = () => {
               />
             </form>
           )}
+
+
+          {selectedType === "Course" && (
+            <form
+              className="admin-database-type-form"
+              onSubmit={(e) => {
+                e.preventDefault();
+
+                if (
+                  !newCourseNameRef.current.value ||
+                  !newCourseDescRef.current.value ||
+                  !newCourseCodeRef.current.value ||
+                  !selectedDepartmentId ||
+                  !newCourseCoordinatorIdRef.current.value
+                ) {
+                  alert("Please fill in all required fields.");
+                  return;
+                }
+
+                createNewCourse(
+                  newCourseNameRef.current.value,
+                  newCourseDescRef.current.value,
+                  newCourseCodeRef.current.value,
+                  selectedDepartmentId,
+                  newCourseCoordinatorIdRef.current.value
+                );
+              }}
+            >
+              <label>Course Name</label>
+              <input ref={newCourseNameRef} type="text" placeholder="e.g., Object-Oriented Programming" required />
+
+              <label>Description</label>
+              <input ref={newCourseDescRef} type="text" placeholder="e.g., Covers Java OOP concepts" required />
+
+              <label>Course Code</label>
+              <input ref={newCourseCodeRef} type="number" placeholder="e.g., 319" required />
+
+              <label>Department</label>
+              <select
+                value={selectedDepartmentId || ""}
+                onChange={(e) => setSelectedDepartmentId(parseInt(e.target.value))}
+                required
+              >
+                <option value="">Select Department</option>
+                {departments.map((dept) => (
+                  <option key={dept.departmentId} value={dept.departmentId}>
+                    {dept.departmentName}
+                  </option>
+                ))}
+              </select>
+
+              <label>Coordinator ID</label>
+              <input ref={newCourseCoordinatorIdRef} type="number" placeholder="e.g., 1023" required />
+
+              <input
+                type="submit"
+                value="Create"
+                className="admin-database-create-type-button"
+              />
+            </form>
+          )}
+
 
 
           {selectedType === "TA" && (
