@@ -5,10 +5,11 @@ import "./INS_ExamsPage.css";
 import TAItem from "../TAItem";
 import TaskItem from "../TaskItem";
 import axios from "axios";
-import ManualAssignmentModal from "../ManualAssignmentModal"; // adjust path if needed
-
+import ManualAssignmentModal from "../ManualAssignmentModal";
 
 const INS_ExamsPage = () => {
+  const instructorId = 4;
+
   const [selectedTask, setSelectedTask] = useState({
     classProctoringTARelationDTO: {
       classProctoringDTO: {
@@ -24,7 +25,6 @@ const INS_ExamsPage = () => {
   });
 
   const [showManualModal, setShowManualModal] = useState(false);
-
   const [selectedTA, setSelectedTA] = useState(null);
   const [proctoringTasks, setProctoringTasks] = useState([]);
   const [availableTAs, setAvailableTAs] = useState([]);
@@ -32,23 +32,111 @@ const INS_ExamsPage = () => {
   const [searchText, setSearchText] = useState("");
   const [sortName, setSortName] = useState("");
   const [sortWorkload, setSortWorkload] = useState("");
+
   const [taCount, setTaCount] = useState(2);
+  const [eventName, setEventName] = useState("");
+  const [examDate, setExamDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [classrooms, setClassrooms] = useState("");
+  const [sectionNo, setSectionNo] = useState(1);
+  const [instructorCourses, setInstructorCourses] = useState([]);
+  const [selectedOfferedCourse, setSelectedOfferedCourse] = useState(null);
+
+  useEffect(() => {
+    fetchProctoringTasks();
+    fetchAvailableTAs();
+    fetchInstructorCourses();
+  }, [selectedTask]);
 
   const fetchProctoringTasks = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/classProctoringTARelation/getClassProctoringOfInstructor?instructorId=4");
-      if (response.data) {
-        setProctoringTasks(response.data);
-      }
+      const response = await axios.get("http://localhost:8080/classProctoringTARelation/getClassProctoringOfInstructor", {
+        params: { instructorId }
+      });
+      setProctoringTasks(response.data || []);
     } catch (error) {
       console.error("Error fetching proctoring tasks:", error);
+    }
+  };
+
+  const fetchInstructorCourses = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/course/getCoursesOfInstructor", {
+        params: { instructorId }
+      });
+      setInstructorCourses(response.data || []);
+    } catch (error) {
+      console.error("Error fetching instructor courses:", error);
+    }
+  };
+
+  const fetchAvailableTAs = async () => {
+    const proctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+    if (!proctoringId) return;
+    try {
+      const response = await axios.get("http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring", {
+        params: {
+          departmentCode: "CS",
+          proctoringId,
+          userId: instructorId,
+        },
+      });
+      const assignedEmails = new Set(selectedTask.taProfileDTOList.map((ta) => ta.email));
+      const filtered = (response.data || []).filter((ta) => !assignedEmails.has(ta.email));
+      setAvailableTAs(filtered);
+    } catch (error) {
+      console.error("Error fetching available TAs:", error);
+    }
+  };
+
+  const handleCreateExam = async () => {
+    if (!eventName || !examDate || !startTime || !endTime || !classrooms || !selectedOfferedCourse || !sectionNo) {
+      alert("Please fill all required fields.");
+      return;
+    }
+    try {
+      const response = await axios.post("http://localhost:8080/classProctoring/createClassProctoring", {
+        courseId: selectedOfferedCourse.course.id, // ✅ Fix this line
+        startDate: `${examDate} ${startTime}:00`,
+        endDate: `${examDate} ${endTime}:00`,
+        classrooms: classrooms.split(",").map((c) => c.trim()),
+        taCount,
+        sectionNo,
+        eventName,
+        creatorId: instructorId,
+      });
+      
+      if (response.data === true) {
+        alert("Exam created successfully!");
+        setEventName("");
+        setExamDate("");
+        setStartTime("");
+        setEndTime("");
+        setClassrooms("");
+        setSelectedOfferedCourse(null);
+        setSectionNo(1);
+        setTaCount(2);
+        fetchProctoringTasks();
+      } else {
+        alert("Failed to create the exam.");
+      }
+    } catch (error) {
+      console.error("Error creating exam:", error);
+      alert("An error occurred: " + (error?.response?.data?.message || error.message));
     }
   };
 
   const handleDiscardTA = async () => {
     if (!selectedTA) return alert("No TA selected to discard.");
     try {
-      const response = await axios.delete(`http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring?classProctoringId=${selectedTask.classProctoringTARelationDTO.classProctoringDTO.id}&taId=${selectedTA.userId}&removerId=4`);
+      const response = await axios.delete("http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring", {
+        params: {
+          classProctoringId: selectedTask.classProctoringTARelationDTO.classProctoringDTO.id,
+          taId: selectedTA.userId,
+          removerId: instructorId,
+        },
+      });
       if (response.data) {
         alert("TA discarded successfully.");
         setSelectedTA(null);
@@ -59,25 +147,29 @@ const INS_ExamsPage = () => {
     }
   };
 
-  const fetchAvailableTAs = async () => {
+  const confirmManualAssign = async () => {
+    const classProctoringId = selectedTask.classProctoringTARelationDTO.classProctoringDTO.id;
+    const taId = selectedTA.userId;
     try {
-      const proctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
-      if (!proctoringId) return;
-
-      const response = await axios.get("http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring", {
+      const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest", null, {
         params: {
-          departmentCode: "CS",
-          proctoringId,
-          userId: 9,
+          classProctoringId,
+          taId,
+          senderId: instructorId,
         },
       });
-
-      // Filter out already assigned TAs
-      const assignedEmails = new Set(selectedTask.taProfileDTOList.map(ta => ta.email));
-      const filtered = (response.data || []).filter(ta => !assignedEmails.has(ta.email));
-      setAvailableTAs(filtered);
+      if (response.data === true) {
+        alert("TA manually assigned.");
+        setSelectedTA(null);
+        fetchProctoringTasks();
+      } else {
+        alert("Assignment failed.");
+      }
     } catch (error) {
-      console.error("Error fetching available TAs:", error);
+      console.error("Manual assignment error:", error);
+      alert("Error occurred.");
+    } finally {
+      setShowManualModal(false);
     }
   };
 
@@ -109,54 +201,10 @@ const INS_ExamsPage = () => {
     );
   };
 
-  useEffect(() => {
-    fetchProctoringTasks();
-    fetchAvailableTAs();
-  }, [selectedTask]);
-
-  const handleManualAssign = () => {
-    if (!selectedTA || !selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id) {
-      alert("Please select both a TA and a task.");
-      return;
-    }
-
-    setShowManualModal(true);
-  };
-
-  const confirmManualAssign = async () => {
-    const classProctoringId = selectedTask.classProctoringTARelationDTO.classProctoringDTO.id;
-    const taId = selectedTA.userId;
-
-    try {
-      const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest", null, {
-        params: {
-          classProctoringId,
-          taId,
-          senderId: 4 // hardcoded instructor ID
-        },
-      });
-
-      if (response.data === true) {
-        alert("TA manually assigned.");
-        setSelectedTA(null);
-        fetchProctoringTasks();
-      } else {
-        alert("Assignment failed.");
-      }
-    } catch (error) {
-      console.error("Manual assignment error:", error);
-      alert("Error occurred.");
-    } finally {
-      setShowManualModal(false);
-    }
-  };
-
-
   return (
     <div className="ins-exam-exams-page">
       <NavbarINS />
       <div className="ins-exam-grid-container">
-        {/* Instructor's Proctor Assignments */}
         <div className="ins-exam-card ins-exam-assignments">
           <h3>Your Assignments with Proctors</h3>
           <div className="task-row">
@@ -174,7 +222,6 @@ const INS_ExamsPage = () => {
           </div>
         </div>
 
-        {/* Assigned TAs */}
         <div className="ins-exam-card ins-exam-assigned-tas">
           <h3>TAs Assigned for this Task</h3>
           <div className="ins-exams-ta-list-header">
@@ -190,32 +237,39 @@ const INS_ExamsPage = () => {
           </button>
         </div>
 
-        {/* New Task */}
         <div className="ins-exam-card ins-exam-create-task">
-          <h3>Create a New Task with Proctoring</h3>
-          <label>Select Task Type</label>
-          <select><option value="">Dropdown</option></select>
-          <label>Time Interval</label>
-          <input type="date" placeholder="Select date" />
-          <label>Start</label>
-          <div className="ins-exam-interval-inputs">
-            <input type="time" placeholder="start" />
-            <label>End</label>
-            <input type="time" placeholder="end" />
-          </div>
-          <label>Proctoring Details</label>
-          <input type="text" placeholder="Task Title" />
-          <input type="text" placeholder="Enter classroom" />
-          <label>TA count</label>
-          <input
-            type="number"
-            className="ta-count-input"
-            value={taCount}
-            onChange={(e) => setTaCount(e.target.value)}
-          />
+          <h3>Create a New Exam</h3>
+          <label>Exam Name</label>
+          <input value={eventName} onChange={(e) => setEventName(e.target.value)} type="text" />
+          <label>Date</label>
+          <input value={examDate} onChange={(e) => setExamDate(e.target.value)} type="date" />
+          <label>Classrooms (comma-separated)</label>
+          <input value={classrooms} onChange={(e) => setClassrooms(e.target.value)} type="text" />
+          <label>Course</label>
+          <select
+            value={selectedOfferedCourse?.offeredCourseId || ""}
+            onChange={(e) => {
+              const course = instructorCourses.find(c => c.offeredCourseId === parseInt(e.target.value));
+              setSelectedOfferedCourse(course);
+            }}>
+            <option value="">Select Course</option>
+            {instructorCourses.map((course) => (
+              <option key={course.offeredCourseId} value={course.offeredCourseId}>
+                {course.course.name}
+              </option>
+            ))}
+          </select>
+          <label>Section No</label>
+          <input type="number" value={sectionNo} onChange={(e) => setSectionNo(Number(e.target.value))} min={1} />
+          <label>Start Time</label>
+          <input value={startTime} onChange={(e) => setStartTime(e.target.value)} type="time" />
+          <label>End Time</label>
+          <input value={endTime} onChange={(e) => setEndTime(e.target.value)} type="time" />
+          <label>TA Count</label>
+          <input type="number" value={taCount} onChange={(e) => setTaCount(Number(e.target.value))} />
+          <button onClick={handleCreateExam}>Create Exam</button>
         </div>
 
-        {/* Available TAs */}
         <div className="ins-exam-card ins-exam-ta-list">
           <h3>Available TAs</h3>
           <div className="ins-exam-filters">
@@ -235,7 +289,6 @@ const INS_ExamsPage = () => {
               <option value="low">Low to High</option>
               <option value="high">High to Low</option>
             </select>
-
           </div>
           <div className="ins-exams-ta-list-header">
             <span>Name</span><span>Email</span><span>Department</span><span>Bilkent ID</span><span>Workload</span>
@@ -247,18 +300,15 @@ const INS_ExamsPage = () => {
               <div>No available TAs</div>
             )}
           </div>
-
           <div className="ins-exam-assign-actions">
-            <button onClick={() => { /* optional auto assign */ }}>Automatic Assign</button>
-            <button onClick={handleManualAssign}>Manual Assign</button>
+            <button onClick={() => {}}>Automatic Assign</button>
+            <button onClick={() => setShowManualModal(true)}>Manual Assign</button>
           </div>
-
           <ManualAssignmentModal
             isOpen={showManualModal}
             onConfirm={confirmManualAssign}
             onCancel={() => setShowManualModal(false)}
           />
-
         </div>
       </div>
     </div>

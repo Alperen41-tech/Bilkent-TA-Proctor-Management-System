@@ -296,18 +296,18 @@ const DOExamsPage = () => {
   const createTAItem = (ta, onClickHandler, selectedTAKey) => {
     const key = `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`;
     const isSelected = selectedTAKey === key;
-  
+
     return (
       <TAItem
         key={key}
         ta={ta}
         onClick={() => onClickHandler(ta)}
         isSelected={isSelected}
-        inInstructor={true} // 🟢 This enables full TA info display
+        inInstructor={true}
       />
     );
   };
-  
+
 
 
 
@@ -383,9 +383,9 @@ const DOExamsPage = () => {
             <div className="assigned-list">
               {selectedExamItem?.taProfileDTOList?.length > 0 ? (
                 selectedExamItem.taProfileDTOList.map((ta) => (
-<div key={ta.email}>
-  {createTAItem(ta, handleTAClick, selectedTA)}
-</div>
+                  <div key={ta.email}>
+                    {createTAItem(ta, handleTAClick, selectedTA)}
+                  </div>
 
                 ))
 

@@ -4,6 +4,8 @@ import "./DOCreateExamPage.css";
 import AdminDatabaseItem from "../Admin/AdminDatabaseItem";
 import TAItem from "../TAItem";
 import axios from "axios";
+import ManualAssignmentModal from "../ManualAssignmentModal";
+
 
 const DOCreateExamPage = () => {
   const facultyId = 1;
@@ -32,6 +34,8 @@ const DOCreateExamPage = () => {
   const [sectionNo, setSectionNo] = useState(1);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const [showManualModal, setShowManualModal] = useState(false);
+
 
   useEffect(() => {
     fetchCreatedExams();
@@ -92,11 +96,99 @@ const DOCreateExamPage = () => {
   const handleAutomaticAssign = () => {
     alert("Automatically assigning TAs...");
   };
-  
+
   const handleManualAssign = () => {
-    alert("Manually assigning TAs...");
+    if (!selectedTAObj || !selectedExamItem) {
+      alert("Please select both an exam and a TA before assigning.");
+      return;
+    }
+
+    const assignedTAs = selectedExamItem?.taProfileDTOList || [];
+    const isAssigned = assignedTAs.some(
+      (ta) => ta.email === selectedTAObj.email
+    );
+
+    if (isAssigned) {
+      alert("This TA is already assigned. Please choose from the available TAs below.");
+      return;
+    }
+
+    setShowManualModal(true);
+  };
+
+  const handleForceAssign = async () => {
+    try {
+      const cpDTO =
+        selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO ||
+        selectedExamItem?.classProctoringDTO;
+  
+      const classProctoringId = cpDTO?.id;
+      const taId = selectedTAObj?.id || selectedTAObj?.userId;
+      const senderId = 9; // Hardcoded admin ID
+  
+      if (!classProctoringId || !taId) {
+        alert("Missing TA or exam data for assignment.");
+        return;
+      }
+  
+      const response = await axios.post(
+        "http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest",
+        null,
+        {
+          params: { classProctoringId, taId, senderId }
+        }
+      );
+  
+      if (response.data === true) {
+        alert("TA forcefully assigned.");
+        fetchTAs();
+        fetchCreatedExams();
+        setShowManualModal(false);
+      } else {
+        alert("Force assignment failed.");
+      }
+    } catch (error) {
+      console.error("Error in force assignment:", error);
+      alert("An error occurred during force assignment.");
+    }
   };
   
+  const handleSendRequest = async () => {
+    try {
+      const cpDTO =
+        selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO ||
+        selectedExamItem?.classProctoringDTO;
+  
+      const classProctoringId = cpDTO?.id;
+      const taId = selectedTAObj?.id || selectedTAObj?.userId;
+      const senderId = 9;
+  
+      if (!classProctoringId || !taId) {
+        alert("Missing TA or exam data for request.");
+        return;
+      }
+  
+      const response = await axios.post(
+        "http://localhost:8080/authStaffProctoringRequestController/sendAuthStaffProctoringRequest",
+        null,
+        {
+          params: { classProctoringId, taId, senderId }
+        }
+      );
+  
+      if (response.data === true) {
+        alert("Request sent to TA.");
+        setShowManualModal(false);
+      } else {
+        alert("Failed to send request.");
+      }
+    } catch (error) {
+      console.error("Error in sending request:", error);
+      alert("An error occurred while sending request.");
+    }
+  };
+  
+
 
   const dismissTA = async () => {
     const taId = selectedTAObj?.userId ?? selectedTAObj?.id;
@@ -112,7 +204,7 @@ const DOCreateExamPage = () => {
       const { data: success } = await axios.delete(
         "http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring",
         {
-          params: { taId, classProctoringId },
+          params: { taId, classProctoringId, removerId: 9 },
         }
       );
 
@@ -186,6 +278,16 @@ const DOCreateExamPage = () => {
   return (
     <div className="do-create-exam-container">
       <NavbarDO />
+
+      <ManualAssignmentModal
+        isOpen={showManualModal}
+        onForceAssign={handleForceAssign}
+        onSendRequest={handleSendRequest}
+        onCancel={() => setShowManualModal(false)}
+      />
+
+
+
       <div className="do-create-exam-content">
         <div className="top-row">
           <div className="your-exams box">
