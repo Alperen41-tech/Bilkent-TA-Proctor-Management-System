@@ -1,16 +1,18 @@
+// TOP IMPORTS
 import React, { useState, useEffect } from "react";
 import NavbarDO from "./NavbarDO";
 import "./DOCreateExamPage.css";
 import AdminDatabaseItem from "../Admin/AdminDatabaseItem";
 import TAItem from "../TAItem";
-import axios from "axios";
 import ManualAssignmentModal from "../ManualAssignmentModal";
+import axios from "axios";
 
-
+// COMPONENT
 const DOCreateExamPage = () => {
   const facultyId = 1;
   const creatorId = 9;
 
+  // --- STATE DECLARATIONS ---
   const [createdExams, setCreatedExams] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -19,12 +21,11 @@ const DOCreateExamPage = () => {
 
   const [selectedExamItem, setSelectedExamItem] = useState(null);
   const [selectedExamKey, setSelectedExamKey] = useState(null);
-
   const [selectedTA, setSelectedTA] = useState(null);
   const [selectedTAObj, setSelectedTAObj] = useState(null);
   const [taDepartmentFilter, setTaDepartmentFilter] = useState("");
+  const [showManualModal, setShowManualModal] = useState(false);
 
-  // Create exam form state
   const [eventName, setEventName] = useState("");
   const [examDate, setExamDate] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -34,21 +35,14 @@ const DOCreateExamPage = () => {
   const [sectionNo, setSectionNo] = useState(1);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
-  const [showManualModal, setShowManualModal] = useState(false);
 
-
-  useEffect(() => {
-    fetchCreatedExams();
-    fetchDepartments();
-  }, []);
-
+  // --- FETCHERS ---
   const fetchCreatedExams = async () => {
     try {
-      const { data } = await axios.get(
-        "http://localhost:8080/classProctoringTARelation/getClassProctoringOfCreator",
-        { params: { creatorId } }
-      );
-      setCreatedExams(data);
+      const { data } = await axios.get("http://localhost:8080/classProctoringTARelation/getClassProctoringOfCreator", {
+        params: { creatorId },
+      });
+      setCreatedExams(data || []);
     } catch (error) {
       console.error("Failed to fetch created exams:", error);
     }
@@ -56,11 +50,10 @@ const DOCreateExamPage = () => {
 
   const fetchDepartments = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/department/getAllDepartmentsInFaculty",
-        { params: { facultyId } }
-      );
-      setDepartments(response.data || []);
+      const { data } = await axios.get("http://localhost:8080/department/getAllDepartmentsInFaculty", {
+        params: { facultyId },
+      });
+      setDepartments(data || []);
     } catch (error) {
       console.error("Error fetching departments:", error);
     }
@@ -68,212 +61,223 @@ const DOCreateExamPage = () => {
 
   const fetchTAs = async (departmentCode, proctoringId) => {
     try {
-      let response;
-      if (!departmentCode) {
-        response = await axios.get(
-          "http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoring",
-          { params: { facultyId, proctoringId, userId: 9 } }
-        );
-      } else {
-        response = await axios.get(
-          "http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring",
-          { params: { departmentCode, proctoringId, userId: 9 } }
-        );
-      }
-      setAllTAs(response.data || []);
-      setTAs(response.data || []);
+      const url = departmentCode
+        ? "http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring"
+        : "http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoring";
+
+      const { data } = await axios.get(url, {
+        params: { facultyId, departmentCode, proctoringId, userId: creatorId },
+      });
+
+      setAllTAs(data || []);
+      setTAs(data || []);
     } catch (error) {
       console.error("Error fetching available TAs:", error);
     }
   };
 
+  // --- EFFECTS ---
+  useEffect(() => {
+    fetchCreatedExams();
+    fetchDepartments();
+  }, []);
+
+  useEffect(() => {
+    if (selectedDepartmentId) {
+      axios
+        .get("http://localhost:8080/course/getCoursesInDepartment", {
+          params: { departmentId: selectedDepartmentId },
+        })
+        .then(({ data }) => setCourses(data || []))
+        .catch(console.error);
+    }
+  }, [selectedDepartmentId]);
+
+  // --- TA ACTIONS ---
   const handleTAClick = (ta) => {
     const key = `${ta.name}-${ta.surname}-${ta.email}`;
     setSelectedTA(key);
     setSelectedTAObj(ta);
   };
 
+  const dismissTA = async () => {
+    const taId = selectedTAObj?.userId ?? selectedTAObj?.id;
+    const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+
+    if (!taId || !classProctoringId) return alert("Invalid TA or exam selection.");
+
+    try {
+      const { data: success } = await axios.delete(
+        "http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring",
+        { params: { taId, classProctoringId, removerId: creatorId } }
+      );
+
+      if (success) {
+        alert("TA dismissed.");
+        fetchCreatedExams();
+        setSelectedTA(null);
+        setSelectedTAObj(null);
+      }
+    } catch (error) {
+      console.error("Error dismissing TA:", error);
+      alert("An error occurred.");
+    }
+  };
+
+
   const handleAutomaticAssign = () => {
-    alert("Automatically assigning TAs...");
+    alert("Automatic assignment logic goes here.");
   };
 
   const handleManualAssign = () => {
-    if (!selectedTAObj || !selectedExamItem) {
-      alert("Please select both an exam and a TA before assigning.");
-      return;
-    }
-
-    const assignedTAs = selectedExamItem?.taProfileDTOList || [];
-    const isAssigned = assignedTAs.some(
-      (ta) => ta.email === selectedTAObj.email
-    );
-
-    if (isAssigned) {
-      alert("This TA is already assigned. Please choose from the available TAs below.");
-      return;
-    }
-
+    if (!selectedExamItem || !selectedTAObj) return alert("Select an exam and TA first.");
+    const alreadyAssigned = selectedExamItem.taProfileDTOList?.some((ta) => ta.email === selectedTAObj.email);
+    if (alreadyAssigned) return alert("This TA is already assigned.");
     setShowManualModal(true);
   };
 
   const handleForceAssign = async () => {
+    const cpId =
+      selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id ||
+      selectedExamItem?.classProctoringDTO?.id ||
+      selectedExamItem?.id;
+  
+    const taId = selectedTAObj?.userId || selectedTAObj?.id;
+  
+    console.log("🔍 Force Assign Debug:", { cpId, taId, selectedExamItem });
+  
+    if (!cpId || !taId) {
+      alert("Missing required IDs for force assignment.");
+      return;
+    }
+  
     try {
-      const cpDTO =
-        selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO ||
-        selectedExamItem?.classProctoringDTO;
-  
-      const classProctoringId = cpDTO?.id;
-      const taId = selectedTAObj?.id || selectedTAObj?.userId;
-      const senderId = 9; // Hardcoded admin ID
-  
-      if (!classProctoringId || !taId) {
-        alert("Missing TA or exam data for assignment.");
-        return;
-      }
-  
-      const response = await axios.post(
+      const { data } = await axios.post(
         "http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest",
         null,
         {
-          params: { classProctoringId, taId, senderId }
+          params: { classProctoringId: cpId, taId, senderId: creatorId },
         }
       );
   
-      if (response.data === true) {
+      if (data === true) {
         alert("TA forcefully assigned.");
-        fetchTAs();
         fetchCreatedExams();
+        fetchTAs(taDepartmentFilter, cpId);
         setShowManualModal(false);
       } else {
         alert("Force assignment failed.");
       }
     } catch (error) {
-      console.error("Error in force assignment:", error);
-      alert("An error occurred during force assignment.");
+      console.error("Force assign error:", error);
+      alert("Error in force assignment.");
     }
   };
   
   const handleSendRequest = async () => {
+    const cpId =
+      selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id ||
+      selectedExamItem?.classProctoringDTO?.id ||
+      selectedExamItem?.id;
+  
+    const taId = selectedTAObj?.userId || selectedTAObj?.id;
+  
+    console.log("📨 Send Request Debug:", { cpId, taId, selectedExamItem });
+  
+    if (!cpId || !taId) {
+      alert("Missing required IDs for request.");
+      return;
+    }
+  
     try {
-      const cpDTO =
-        selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO ||
-        selectedExamItem?.classProctoringDTO;
-  
-      const classProctoringId = cpDTO?.id;
-      const taId = selectedTAObj?.id || selectedTAObj?.userId;
-      const senderId = 9;
-  
-      if (!classProctoringId || !taId) {
-        alert("Missing TA or exam data for request.");
-        return;
-      }
-  
-      const response = await axios.post(
+      const { data } = await axios.post(
         "http://localhost:8080/authStaffProctoringRequestController/sendAuthStaffProctoringRequest",
         null,
         {
-          params: { classProctoringId, taId, senderId }
+          params: { classProctoringId: cpId, taId, senderId: creatorId },
         }
       );
   
-      if (response.data === true) {
-        alert("Request sent to TA.");
+      if (data === true) {
+        alert("Request sent.");
         setShowManualModal(false);
       } else {
         alert("Failed to send request.");
       }
     } catch (error) {
-      console.error("Error in sending request:", error);
-      alert("An error occurred while sending request.");
+      console.error("Send request error:", error);
+      alert("Error sending request.");
     }
   };
   
 
+  const handleExamSelect = (examItem, key) => {
+    setSelectedExamItem(examItem);
+    setSelectedExamKey(key);
+    setSelectedTA(null);
+    setSelectedTAObj(null);
+    const proctoringId = examItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+    fetchTAs("", proctoringId);
+  };
 
-  const dismissTA = async () => {
-    const taId = selectedTAObj?.userId ?? selectedTAObj?.id;
-    const classProctoringId =
-      selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
-
-    if (!taId || !classProctoringId) {
-      alert("Invalid TA or exam selection.");
-      return;
-    }
-
+  const handleCreateExam = async () => {
     try {
-      const { data: success } = await axios.delete(
-        "http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring",
-        {
-          params: { taId, classProctoringId, removerId: 9 },
-        }
-      );
+      const payload = {
+        courseId: selectedCourseId,
+        startDate: `${examDate} ${startTime}:00`,
+        endDate: `${examDate} ${endTime}:00`,
+        classrooms: classrooms.split(",").map((c) => c.trim()),
+        taCount,
+        sectionNo,
+        eventName,
+        creatorId,
+      };
 
-      if (success) {
-        alert("TA dismissed successfully.");
-        setSelectedExamItem((item) => ({
-          ...item,
-          taProfileDTOList: item.taProfileDTOList.filter((t) => t.id !== taId),
-        }));
-        setSelectedTA(null);
-        setSelectedTAObj(null);
+      const { data } = await axios.post("http://localhost:8080/classProctoring/createClassProctoring", payload);
+      if (data === true) {
+        alert("Exam created.");
+        fetchCreatedExams();
+        setEventName("");
+        setExamDate("");
+        setStartTime("");
+        setEndTime("");
+        setClassrooms("");
+        setSelectedDepartmentId(null);
+        setSelectedCourseId(null);
+        setSectionNo(1);
+        setTaCount(2);
       } else {
-        alert("Failed to dismiss the TA. Please try again.");
+        alert("Failed to create exam.");
       }
     } catch (error) {
-      console.error("Error dismissing TA:", error);
-      alert("An error occurred. Please try again.");
+      console.error("Exam creation error:", error);
+      alert("Error occurred.");
     }
   };
 
-  const createTAItem = (ta, onClickHandler, selectedTAKey) => {
+  const createTAItem = (ta, onClick, selectedKey) => {
     const key = `${ta.name}-${ta.surname}-${ta.email}`;
-    const isSelected = selectedTAKey === key;
-
     return (
-      <TAItem
-        key={key}
-        ta={ta}
-        onClick={() => onClickHandler(ta)}
-        isSelected={isSelected}
-      />
+      <TAItem key={key} ta={ta} onClick={() => onClick(ta)} isSelected={selectedKey === key} />
     );
   };
 
-  const createLogsDatabaseItems = () =>
-    createdExams
-      .filter(
-        (item) =>
-          item.classProctoringTARelationDTO &&
-          item.classProctoringTARelationDTO.classProctoringDTO
-      )
-      .map((item) => {
-        const cp = item.classProctoringTARelationDTO.classProctoringDTO;
-        const key = `${cp.courseName}-${cp.startDate}`;
-        const isSelected = selectedExamKey === key;
-
-        return (
-          <AdminDatabaseItem
-            key={key}
-            type="exam"
-            data={{
-              id: cp.id,
-              course: cp.courseName,
-              date: cp.startDate,
-              time: cp.timeInterval,
-              location: cp.classrooms,
-            }}
-            onDelete={(id) => console.log(`Deleted exam with ID: ${id}`)}
-            onSelect={() => {
-              setSelectedExamKey(key);
-              setSelectedExamItem(item);
-              setTaDepartmentFilter("");
-              fetchTAs("", cp.id);
-            }}
-            isSelected={isSelected}
-            inLog={true}
-          />
-        );
-      });
+  const renderExamItems = () =>
+    createdExams.map((exam) => {
+      const cp = exam.classProctoringTARelationDTO.classProctoringDTO;
+      const key = `${cp.courseName}-${cp.startDate}`;
+      return (
+        <AdminDatabaseItem
+          key={key}
+          type="exam"
+          data={{ id: cp.id, course: cp.courseName, date: cp.startDate, time: cp.timeInterval, location: cp.classrooms }}
+          isSelected={selectedExamKey === key}
+          onSelect={() => handleExamSelect(exam, key)}
+          onDelete={() => {}}
+          inLog={true}
+        />
+      );
+    });
 
   return (
     <div className="do-create-exam-container">
@@ -286,17 +290,16 @@ const DOCreateExamPage = () => {
         onCancel={() => setShowManualModal(false)}
       />
 
-
-
+      {/* CONTENT LAYOUT */}
       <div className="do-create-exam-content">
+        {/* TOP: Exams and Assigned TAs */}
         <div className="top-row">
           <div className="your-exams box">
             <h3>Your Exams</h3>
-            <div className="exam-list">{createLogsDatabaseItems()}</div>
+            <div className="exam-list">{renderExamItems()}</div>
           </div>
-
           <div className="assigned-tas box">
-            <h3>TAs Assigned for This Task</h3>
+            <h3>TAs Assigned</h3>
             <div className="ta-assigned-list">
               {selectedExamItem?.taProfileDTOList?.length > 0 ? (
                 selectedExamItem.taProfileDTOList.map((ta) =>
@@ -306,194 +309,49 @@ const DOCreateExamPage = () => {
                 <div>No TAs assigned</div>
               )}
             </div>
-            <button className="dismissTA-button" onClick={dismissTA}>
-              Dismiss
-            </button>
+            <button className="dismissTA-button" onClick={dismissTA}>Dismiss</button>
           </div>
         </div>
 
+        {/* BOTTOM: Create Exam and TA Selection */}
         <div className="bottom-row">
           <div className="create-task box">
-            <div className="type-form">
-              <label>Create Exam</label>
-              <input
-                type="text"
-                placeholder="Enter Exam Name"
-                value={eventName}
-                onChange={(e) => setEventName(e.target.value)}
-              />
-
-              <label>Date</label>
-              <input
-                type="date"
-                value={examDate}
-                onChange={(e) => setExamDate(e.target.value)}
-              />
-
-              <label>Classrooms</label>
-              <input
-                type="text"
-                placeholder="e.g., EE-01,EA-312"
-                value={classrooms}
-                onChange={(e) => setClassrooms(e.target.value)}
-              />
-
-              <label>Department</label>
-              <select
-                value={selectedDepartmentId || ""}
-                onChange={async (e) => {
-                  const departmentId = parseInt(e.target.value);
-                  setSelectedDepartmentId(departmentId);
-
-                  try {
-                    const { data } = await axios.get(
-                      "http://localhost:8080/course/getCoursesInDepartment",
-                      { params: { departmentId } }
-                    );
-                    setCourses(data || []);
-                  } catch (error) {
-                    console.error("Error fetching courses:", error);
-                  }
-                }}
-              >
-                <option value="">Select Department</option>
-                {departments.map((dept) => (
-                  <option key={dept.departmentId} value={dept.departmentId}>
-                    {dept.departmentName}
-                  </option>
-                ))}
-              </select>
-
-              <label>Course</label>
-              <select
-                value={selectedCourseId || ""}
-                onChange={(e) => setSelectedCourseId(parseInt(e.target.value))}
-              >
-                <option value="">Select Course</option>
-                {courses.map((course) => (
-                  <option key={course.id} value={course.id}>
-                    {course.name}
-                  </option>
-                ))}
-              </select>
-
-              <label>Section No</label>
-              <input
-                type="number"
-                value={sectionNo}
-                onChange={(e) => setSectionNo(Number(e.target.value))}
-                min={1}
-              />
-
-              <label>Start Time</label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-              />
-
-              <label>End Time</label>
-              <input
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-              />
-
-              <label>TA Count</label>
-              <input
-                type="number"
-                value={taCount}
-                onChange={(e) => setTaCount(Number(e.target.value))}
-              />
-
-              <button
-                className="create-type-button"
-                onClick={async () => {
-                  if (
-                    !eventName ||
-                    !examDate ||
-                    !startTime ||
-                    !endTime ||
-                    !classrooms ||
-                    !selectedDepartmentId ||
-                    !selectedCourseId ||
-                    !sectionNo
-                  ) {
-                    alert("Please fill all required fields.");
-                    return;
-                  }
-
-                  const startDateTime = `${examDate} ${startTime}:00`;
-                  const endDateTime = `${examDate} ${endTime}:00`;
-
-                  try {
-                    const response = await axios.post(
-                      "http://localhost:8080/classProctoring/createClassProctoring",
-                      {
-                        courseId: selectedCourseId,
-                        startDate: startDateTime,
-                        endDate: endDateTime,
-                        classrooms: classrooms.split(",").map((c) => c.trim()),
-                        taCount,
-                        sectionNo,
-                        eventName,
-                        creatorId: 9
-                      }
-                    );
-
-                    if (response.data === true) {
-                      alert("Exam created successfully!");
-                      fetchCreatedExams();
-                      // reset form
-                      setEventName("");
-                      setExamDate("");
-                      setStartTime("");
-                      setEndTime("");
-                      setClassrooms("");
-                      setSelectedDepartmentId(null);
-                      setSelectedCourseId(null);
-                      setSectionNo(1);
-                      setTaCount(2);
-                    } else {
-                      alert("Failed to create the exam. Try again.");
-                    }
-                  } catch (error) {
-                    console.error("Error creating exam:", error);
-                    alert("An error occurred. Please try again.");
-                  }
-                }}
-              >
-                Create
-              </button>
-            </div>
+            {/* Exam Form */}
+            <label>Create Exam</label>
+            <input type="text" value={eventName} onChange={(e) => setEventName(e.target.value)} placeholder="Exam Name" />
+            <input type="date" value={examDate} onChange={(e) => setExamDate(e.target.value)} />
+            <input type="text" value={classrooms} onChange={(e) => setClassrooms(e.target.value)} placeholder="EE-01, EA-312" />
+            <select value={selectedDepartmentId || ""} onChange={(e) => setSelectedDepartmentId(Number(e.target.value))}>
+              <option value="">Select Department</option>
+              {departments.map((d) => <option key={d.departmentId} value={d.departmentId}>{d.departmentName}</option>)}
+            </select>
+            <select value={selectedCourseId || ""} onChange={(e) => setSelectedCourseId(Number(e.target.value))}>
+              <option value="">Select Course</option>
+              {courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+            <input type="number" value={sectionNo} min={1} onChange={(e) => setSectionNo(Number(e.target.value))} />
+            <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+            <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+            <input type="number" value={taCount} min={1} onChange={(e) => setTaCount(Number(e.target.value))} />
+            <button onClick={handleCreateExam}>Create</button>
           </div>
 
           <div className="choose-tas box">
             <h3>Choose TAs</h3>
-            <div className="choose-header">
-              <select
-                value={taDepartmentFilter}
-                onChange={(e) => {
-                  const selectedDepartment = e.target.value;
-                  setTaDepartmentFilter(selectedDepartment);
-
-                  const proctoringId =
-                    selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
-                  fetchTAs(selectedDepartment, proctoringId);
-                }}
-              >
-                <option value="">Select Department</option>
-                {departments.map((department) => (
-                  <option
-                    key={department.departmentCode}
-                    value={department.departmentCode}
-                  >
-                    {department.departmentName}
-                  </option>
-                ))}
-              </select>
-            </div>
-
+            <select
+              value={taDepartmentFilter}
+              onChange={(e) => {
+                const dept = e.target.value;
+                setTaDepartmentFilter(dept);
+                const pid = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+                fetchTAs(dept, pid);
+              }}
+            >
+              <option value="">Select Department</option>
+              {departments.map((d) => (
+                <option key={d.departmentCode} value={d.departmentCode}>{d.departmentName}</option>
+              ))}
+            </select>
             <div className="choose-list">
               {tas.length > 0 ? (
                 tas.map((ta) => createTAItem(ta, handleTAClick, selectedTA))
@@ -501,14 +359,9 @@ const DOCreateExamPage = () => {
                 <div>No TAs available</div>
               )}
             </div>
-
             <div className="choose-actions">
-              <button className="assign-btn" onClick={handleAutomaticAssign}>
-                Automatically Assign
-              </button>
-              <button className="assign-btn" onClick={handleManualAssign}>
-                Manually Assign
-              </button>
+              <button onClick={handleAutomaticAssign}>Automatically Assign</button>
+              <button onClick={handleManualAssign}>Manually Assign</button>
             </div>
           </div>
         </div>
