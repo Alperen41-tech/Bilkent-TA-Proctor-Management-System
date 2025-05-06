@@ -7,11 +7,13 @@ import { set } from "date-fns";
 
 const AdminLogsPage = () => {
   const [logs, setLogs] = useState([]); 
+  const [sortedSearchedLogs, setSortedSearchedLogs] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [logTypeFilter, setLogTypeFilter] = useState("ALL");
 
   // Refs for start and end date inputs
   const startDateRef = useRef();
   const endDateRef = useRef();
-  const logTypeRef = useRef();
   //----------------------------------------------------------
 
   const fetchAdminLogs = async () => {
@@ -38,23 +40,29 @@ const AdminLogsPage = () => {
   };
 
   const createLogsItems = () => {
-    return(
-    logs.filter((item) => {
-      
-    }).map((item) => (
-      <AdminLogItem
-        key={item.id}
-        logType={item.logType}
-        message={item.message}
-        logDate={item.logDate}
-      />
-    )))
+    return logs
+      .filter((log) => {
+        const logTypeMatch = logTypeFilter === "ALL" || log.logType === logTypeFilter;
+        const messageMatch = log.message.toLowerCase().includes(searchText.toLowerCase());
+        return logTypeMatch && messageMatch;
+      })
+      .map((item) => (
+        <AdminLogItem
+          key={item.id}
+          logType={item.logType}
+          message={item.message}
+          logDate={item.logDate}
+        />
+      ));
   };
-
+  
   useEffect(() => {
     fetchAdminLogs();
   }, []);
 
+  
+
+  
   return (
     <div className="logs-container">
       <NavbarAdmin />
@@ -62,19 +70,26 @@ const AdminLogsPage = () => {
         <div className="logs-content">
           <div className="logs-table">
             <div className="table-header">
-              <input
-                type="text"
-                placeholder="Search by name, ex. CS 202"
-                className="search-input"
-              />
-              <select ref={logTypeRef} className="data-type-select">
-                <option value="CREATE">Create</option>
-                <option value="UPDATE">Update</option>
-                <option value="DELETE">Delete</option>
-                <option value="LOGIN">Login</option>
-                <option value="LOGOUT">Logout</option>
-              </select>
-              <button className="search-button">Search</button>
+            <input
+              type="text"
+              placeholder="Search by message, e.g., CS 202"
+              className="search-input"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+            <select
+              className="data-type-select"
+              value={logTypeFilter}
+              onChange={(e) => setLogTypeFilter(e.target.value)}
+            >
+              <option value="ALL">All</option>
+              <option value="CREATE">Create</option>
+              <option value="UPDATE">Update</option>
+              <option value="DELETE">Delete</option>
+              <option value="LOGIN">Login</option>
+              <option value="LOGOUT">Logout</option>
+            </select>
+
             </div>
             <div className="table-body">
                   {createLogsItems()}

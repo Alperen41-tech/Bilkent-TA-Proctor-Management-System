@@ -65,6 +65,34 @@ const AdminDatabasePage = () => {
 
 
 
+  const handleImportClick = async () => {
+    if (!selectedFile) {
+      alert("Please select a file.");
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+  
+    try {
+      const response = await axios.post("http://localhost:8080/excel/processTAAssignmentExcel", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+  
+      if (response.status === 200) {
+        alert("Excel file successfully. Imported.");
+      } else {
+        alert("Upload failed.");
+      }
+    } catch (error) {
+      console.error("File dump error:", error);
+      alert("A problem occured.");
+    }
+  };
+  
+
 
 
   // Sample data for the database items
@@ -806,7 +834,7 @@ const AdminDatabasePage = () => {
         <div className="admin-database-dump-new-data">
           <h3>Dump New Data</h3>
           <div className="admin-database-upload-container">
-            <div className="admin-database-drag-drop-area">
+            <div className="admin-database-drag-drop-area" style={selectedFile ? { backgroundColor: "#f0f0f0" } : {}}>
               <p>Drag &amp; Drop file here</p>
               <p>or</p>
               <label htmlFor="file-upload" className="admin-database-choose-file-label">
@@ -821,8 +849,8 @@ const AdminDatabasePage = () => {
               <p>Supported formats: Excel</p>
             </div>
             <div className="admin-database-upload-buttons">
-              <button className="admin-database-import-button">Import</button>
-              <button className="admin-database-cancel-button">Cancel</button>
+              <button onClick={handleImportClick} className="admin-database-import-button">Import</button>
+              <button className="admin-database-cancel-button" onClick={()=>setSelectedFile(null)}>Cancel</button>
             </div>
           </div>
         </div>
