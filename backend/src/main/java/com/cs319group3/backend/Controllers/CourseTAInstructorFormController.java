@@ -17,7 +17,7 @@ public class CourseTAInstructorFormController {
     @Autowired
     private CourseTAInstructorFormService courseTAInstructorFormService;
 
-    @GetMapping("create")
+    @PostMapping("create")
     public ResponseEntity<Boolean> createForm(@RequestBody CourseTAInstructorFormDTO form) {
         return courseTAInstructorFormService.createForm(form);
     }

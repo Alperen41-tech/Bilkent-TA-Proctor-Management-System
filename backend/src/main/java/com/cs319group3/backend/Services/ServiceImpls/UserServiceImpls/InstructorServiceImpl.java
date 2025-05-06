@@ -40,6 +40,9 @@ public class InstructorServiceImpl implements InstructorService {
     @Autowired
     LoginRepo loginRepo;
 
+    @Autowired
+    InstructorProfileMapper instructorProfileMapper;
+
     @Override
     public InstructorProfileDTO getInstructorProfileById(int id){
         Optional<Instructor> optionalInstructor = instructorRepo.findByUserId(id);
@@ -48,7 +51,7 @@ public class InstructorServiceImpl implements InstructorService {
             throw new RuntimeException("Instructor with ID " + id + " not found.");
         }
 
-        return InstructorProfileMapper.essentialMapper(optionalInstructor.get());
+        return instructorProfileMapper.essentialMapper(optionalInstructor.get());
     }
 
 
@@ -64,7 +67,7 @@ public class InstructorServiceImpl implements InstructorService {
         }
 
 
-        Instructor instructor = InstructorProfileMapper.toEntity(profile);
+        Instructor instructor = instructorProfileMapper.toEntity(profile);
         Login loginEntity = loginMapper.essentialEntityToLogin(login, instructor);
 
         if(loginEntity == null) {
