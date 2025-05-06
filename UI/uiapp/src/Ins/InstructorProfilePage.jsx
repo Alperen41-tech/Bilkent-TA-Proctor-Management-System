@@ -30,7 +30,28 @@ const InstructorProfilePage = () => {
 
   const handleCreateForm = async () => {
     try {
-      const response = await axios.post("http://localhost:8080/ta-request/create");
+      console.log("Course ID:", courseIdRef.current.value);
+      console.log("Min TA Load:", minTALoadRef.current.value);
+      console.log("Max TA Load:", maxTALoadRef.current.value);
+      console.log("Number of Graders:", numberOfGraderRef.current.value);
+      console.log("Description:", descriptionRef.current.value);
+      console.log("Must-Have TAs:", mustHaveTAsRef.current.value);
+      console.log("Preferred TAs:", preferredTAsRef.current.value);
+      console.log("Preferred Graders:", preferredGradersRef.current.value);
+      console.log("Unwanted TAs:", unwantedTAsRef.current.value);
+
+      const response = await axios.post("http://localhost:8080/courseTAInstructorForm/create",{
+        instructorId: 4,
+        courseId: courseIdRef.current.value,
+        minTALoad: minTALoadRef.current.value,
+        maxTALoad: maxTALoadRef.current.value,
+        numberOfGrader: numberOfGraderRef.current.value,
+        description: descriptionRef.current.value,
+        mustHaveTAs: mustHaveTAsRef.current.value,
+        preferredTAs: preferredTAsRef.current.value,
+        preferredGraders: preferredGradersRef.current.value,
+        avoidedTAs: unwantedTAsRef.current.value
+      });
       if (response.data) {
         alert("TA request form created successfully.");
         setShowFormModal(false);
@@ -98,8 +119,9 @@ const InstructorProfilePage = () => {
 
   useEffect(() => {
     console.log(insProfileInfo);
+    console.log(instructorCourses);
   }
-  , [insProfileInfo]);
+  , [insProfileInfo,instructorCourses]);
 
 
   return (
@@ -180,7 +202,7 @@ const InstructorProfilePage = () => {
       <select ref={courseIdRef} required defaultValue="">
         <option value="" disabled>Select a course</option>
         {instructorCourses.map((course) => (
-          <option key={course.courseId} value={course.courseId}>
+          <option key={course.course.id} value={course.course.id}>
             {course.course.name} - {course.course.courseCode}
           </option>
         ))}
@@ -219,46 +241,45 @@ const InstructorProfilePage = () => {
       <label>Must-Have TAs</label>
       <input
         type="text"
-        placeholder="Asterisk-separated TA Names"
+        placeholder="Comma-separated TA names"
         ref={mustHaveTAsRef}
-        pattern="^([^\*]+)(\*[^\*]+)*$"
-        title="Separate TA names with a single asterisk (*), e.g., Ali Vural*Demir Kara"
+        pattern="^([^,]+)(,[^,]+)*$"
+        title="Separate TA names with a single comma (,), e.g., Ali Vural,Demir Kara"
       />
 
       <label>Description</label>
       <input
         type="text"
-        placeholder="Reason for must have TAs"
+        placeholder="Reason for must-have TAs"
         ref={descriptionRef}
       />
 
       <label>Preferred TAs</label>
       <input
         type="text"
-        placeholder="Asterisk-separated preferred TA Names (In order of preference)"
+        placeholder="Comma-separated preferred TA names (in order)"
         ref={preferredTAsRef}
-        pattern="^([^\*]+)(\*[^\*]+)*$"
-        title="Separate TA names with a single asterisk (*), e.g., Ali Vural*Demir Kara"
+        pattern="^([^,]+)(,[^,]+)*$"
+        title="Separate TA names with a single comma (,), e.g., Ali Vural,Demir Kara"
       />
 
       <label>Preferred Graders</label>
       <input
         type="text"
-        placeholder="Asterisk-separated grader Names (In order of preference)"
+        placeholder="Comma-separated grader names (in order)"
         ref={preferredGradersRef}
-        pattern="^([^\*]+)(\*[^\*]+)*$"
-        title="Separate TA names with a single asterisk (*), e.g., Ali Vural*Demir Kara"
+        pattern="^([^,]+)(,[^,]+)*$"
+        title="Separate grader names with a single comma (,), e.g., Ali Vural,Demir Kara"
       />
 
       <label>Unwanted TAs</label>
       <input
         type="text"
-        placeholder="Comma-separated unwanted TA IDs"
+        placeholder="Comma-separated unwanted TA names"
         ref={unwantedTAsRef}
-        pattern="^([^\*]+)(\*[^\*]+)*$"
-        title="Separate TA names with a single asterisk (*), e.g., Ali Vural*Demir Kara"
+        pattern="^([^,]+)(,[^,]+)*$"
+        title="Separate TA names with a single comma (,), e.g., Ali Vural,Demir Kara"
       />
-
       <div className="modal-buttons">
         <button className="cancel-button" onClick={() => setShowFormModal(false)}>Cancel</button>
         <button className="apply-button" type="submit">Apply</button>
