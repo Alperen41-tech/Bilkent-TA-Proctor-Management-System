@@ -49,6 +49,22 @@ const AdminDatabasePage = () => {
   const newCourseCodeRef = useRef();
   const newCourseCoordinatorIdRef = useRef();
 
+  //instructor
+  const newInstructorNameRef = useRef();
+  const newInstructorSurnameRef = useRef();
+  const newInstructorEmailRef = useRef();
+  const newInstructorBilkentIdRef = useRef();
+  const newInstructorRoleRef = useRef();
+  const newInstructorPhoneRef = useRef();
+  const newInstructorCoursesRef = useRef();
+  const newInstructorPasswordRef = useRef();
+
+  const [selectedDepartmentName, setSelectedDepartmentName] = useState("");
+  const [selectedInstructorCourses, setSelectedInstructorCourses] = useState([]);
+  const [selectedInstructorCourse, setSelectedInstructorCourse] = useState("");
+
+
+
 
 
   // Sample data for the database items
@@ -234,7 +250,7 @@ const AdminDatabasePage = () => {
         coordinatorId: 4,
         departmentCode: departments.find((d) => d.departmentId === departmentId)?.departmentName || ""
       });
-  
+
       if (response.data === true) {
         alert("Course created successfully!");
       } else {
@@ -245,8 +261,60 @@ const AdminDatabasePage = () => {
       alert("An error occurred while creating the course.");
     }
   };
+
+  const createInstructor = async (
+    name,
+    surname,
+    email,
+    bilkentId,
+    role,
+    departmentName,
+    departmentId,
+    phoneNumber,
+    password,
+    courses = []
+  ) => {
+    try {
+      const payload = {
+        instructorDTO: {
+          name,
+          surname,
+          email,
+          bilkentId,
+          role,
+          departmentName,
+          departmentId,
+          active: true,
+          courses,
+          phoneNumber
+        },
+        loginDTO: {
+          email,
+          password,
+          userTypeName: "instructor"
+        }
+      };
+  
+      console.log("POST payload:", payload); // <== DEBUG LOG
+  
+      const response = await axios.post("http://localhost:8080/instructor/createInstructor", payload);
+  
+      if (response.data === true) {
+        alert("Instructor created successfully!");
+      } else {
+        alert("Failed to create instructor.");
+      }
+    } catch (error) {
+      console.error("Error creating instructor:", error.response?.data || error.message);
+      alert("An error occurred while creating the instructor.");
+    }
+  };
   
   
+  
+
+
+
 
 
 
@@ -292,6 +360,7 @@ const AdminDatabasePage = () => {
               <option value="Proctoring">Proctoring</option>
               <option value="TA">TA</option>
               <option value="Course">Course</option>
+              <option value="Instructor">Instructor</option>
             </select>
           </div>
           {selectedType === "Proctoring" && (
@@ -299,7 +368,6 @@ const AdminDatabasePage = () => {
               className="admin-database-type-form"
               onSubmit={async (e) => {
                 e.preventDefault();
-                createNewCourse();
 
                 if (
                   !newProctoringNameRef.current.value ||
@@ -602,6 +670,136 @@ const AdminDatabasePage = () => {
               <input type="submit" value="Create" className="admin-database-create-type-button" />
             </form>
           )}
+
+          {selectedType === "Instructor" && (
+            <form className="admin-database-type-form" onSubmit={(e) => {
+              e.preventDefault();
+            
+              if (
+                !newInstructorNameRef.current.value ||
+                !newInstructorSurnameRef.current.value ||
+                !newInstructorEmailRef.current.value ||
+                !newInstructorBilkentIdRef.current.value ||
+                !newInstructorRoleRef.current.value ||
+                !selectedDepartmentId ||
+                !selectedInstructorCourse ||
+                !newInstructorPhoneRef.current.value ||
+                !newInstructorPasswordRef.current.value
+              ) {
+                alert("Please fill in all required fields.");
+                return;
+              }
+            
+              const name = newInstructorNameRef.current.value;
+              const surname = newInstructorSurnameRef.current.value;
+              const email = newInstructorEmailRef.current.value;
+              const bilkentId = newInstructorBilkentIdRef.current.value;
+              const role = newInstructorRoleRef.current.value;
+              const phoneNumber = newInstructorPhoneRef.current.value;
+              const password = newInstructorPasswordRef.current.value;
+              const departmentName = selectedDepartmentName;
+              const departmentId = selectedDepartmentId;
+              const courses = [selectedInstructorCourse]; // ensure this is valid
+              
+              console.log("Sending instructor data:", {
+                name,
+                surname,
+                email,
+                bilkentId,
+                role,
+                departmentName,
+                departmentId,
+                phoneNumber,
+                password,
+                courses
+              });
+              
+              createInstructor(
+                name,
+                surname,
+                email,
+                bilkentId,
+                role,
+                departmentName,
+                departmentId,
+                phoneNumber,
+                password,
+                courses
+              );
+              
+              
+            }}
+            >
+              <label>Name</label>
+              <input ref={newInstructorNameRef} type="text" required placeholder="e.g., Zeynep" />
+
+              <label>Surname</label>
+              <input ref={newInstructorSurnameRef} type="text" required placeholder="e.g., Aslan" />
+
+              <label>Email</label>
+              <input ref={newInstructorEmailRef} type="email" required placeholder="e.g., zeynep@bilkent.edu.tr" />
+
+              <label>Bilkent ID</label>
+              <input ref={newInstructorBilkentIdRef} type="text" required placeholder="e.g., 10001" />
+
+              <label>Role</label>
+              <input ref={newInstructorRoleRef} type="text" required placeholder="e.g., Associate Professor" />
+
+              <label>Department</label>
+              <select
+                value={selectedDepartmentId || ""}
+                onChange={async (e) => {
+                  const deptId = parseInt(e.target.value);
+                  setSelectedDepartmentId(deptId);
+
+                  const dept = departments.find((d) => d.departmentId === deptId);
+                  setSelectedDepartmentName(dept?.departmentName || "");
+
+                  try {
+                    const { data } = await axios.get(
+                      "http://localhost:8080/course/getCoursesInDepartment",
+                      { params: { departmentId: deptId } }
+                    );
+                    setCourses(data || []);
+                  } catch (error) {
+                    console.error("Error fetching courses:", error);
+                  }
+                }}
+                required
+              >
+                <option value="">Select Department</option>
+                {departments.map((dept) => (
+                  <option key={dept.departmentId} value={dept.departmentId}>
+                    {dept.departmentName}
+                  </option>
+                ))}
+              </select>
+
+              <label>Phone Number</label>
+              <input ref={newInstructorPhoneRef} type="text" required placeholder="e.g., +90-555-123-45-67" />
+
+              <label>Course</label>
+              <select
+                value={selectedInstructorCourse || ""}
+                onChange={(e) => setSelectedInstructorCourse(e.target.value)}
+                required
+              >
+                <option value="">Select Course</option>
+                {courses.map((course) => (
+                  <option key={course.id} value={course.name}>
+                    {course.name}
+                  </option>
+                ))}
+              </select>
+
+              <label>Password</label>
+              <input ref={newInstructorPasswordRef} type="password" required placeholder="Set login password" />
+
+              <input type="submit" value="Create Instructor" className="admin-database-create-type-button" />
+            </form>
+          )}
+
+
         </div>
 
         {/* Right Panel: Dump New Data */}
