@@ -19,7 +19,7 @@ public class LogController {
     @Autowired
     LogService logService;
 
-    @GetMapping("getByDate")
+    @PostMapping("getByDate")
     List<LogDTO> getLogs(@RequestBody DateIntervalDTO dateIntervalDTO) {
         return logService.getLogs(dateIntervalDTO);
     }

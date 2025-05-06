@@ -15,6 +15,19 @@ const Instructor_AdminProfilePage = () => {
   const confirmNewPasswordRef = useRef();
   //-----------------------------------------------------------
 
+  const handleGetTaConstraints = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/excel/getRequirementsExcel");
+      if (response.data) {
+        console.log("TA constraints fetched successfully.");
+        console.log("TA Constraints:", response.data);
+      } else {
+        alert("Failed to fetch TA constraints. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error fetching TA constraints:", error);
+    }
+  };
 
   const handleChangePassword = async () => {
     try {
@@ -83,7 +96,7 @@ const Instructor_AdminProfilePage = () => {
           <div className="manage-card">
             <h3>Manage Account</h3>
             <button className="purple-button" onClick={() => setShowChangePasswordModal(true)}>Change Password</button>
-            <button className="purple-button">Get Instructor's TA constraints</button>
+            <button className="purple-button" onClick={() => handleGetTaConstraints()}>Get Instructor's TA constraints</button>
           </div>
         </div>
       </div>

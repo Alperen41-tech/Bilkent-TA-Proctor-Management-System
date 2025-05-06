@@ -1,83 +1,60 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./AdminLogsPage.css";
 import NavbarAdmin from "./NavbarAdmin";
-import AdminDatabaseItem from "./AdminDatabaseItem";
+import AdminLogItem from "./AdminLogItem";
+import axios from "axios";
+import { set } from "date-fns";
 
 const AdminLogsPage = () => {
-  const [logs, setLogs] = useState([]); // Empty list, no hardcoded data
+  const [logs, setLogs] = useState([]); 
 
-  const adminDatabaseItems = [
-    {
-      type: 'ta',
-      data: {
-        id: 1,
-        name: "Ali Kılıç",
-        email: "ali.kilic@ug.bilkent.edu.tr",
-        department: "Computer Engineering"
+  // Refs for start and end date inputs
+  const startDateRef = useRef();
+  const endDateRef = useRef();
+  const logTypeRef = useRef();
+  //----------------------------------------------------------
+
+  const fetchAdminLogs = async () => {
+    try {
+      const response = await axios.post("http://localhost:8080/log/getByDate", {
+        startDate: startDateRef.current.value ? startDateRef.current.value + " 00:00:00": new Date().toISOString().split("T")[0] + " 00:00:00",
+        endDate: endDateRef.current.value ? endDateRef.current.value + " 23:59:59" : new Date().toISOString().split("T")[0] + " 23:59:59",
+      }); 
+      if(response.data) {
+        setLogs(response.data);
+        console.log("Logs fetched successfully:", response.data);
       }
-    },
-    {
-      type: 'instructor',
-      data: {
-        id: 2,
-        name: "Dr. Zeynep Aslan",
-        email: "zeynep.aslan@bilkent.edu.tr",
-        title: "Associate Professor"
+      else {
+        console.error("No logs found or error in response:", response);
       }
-    },
-    {
-      type: 'exam',
-      data: {
-        id: 3,
-        course: "CS 319",
-        date: "2025-03-15",
-        time: "10:00 AM",
-        location: "EE-214"
-      }
-    },
-    {
-      type: 'course',
-      data: {
-        id: 4,
-        code: "CS 319",
-        name: "Object-Oriented Software Engineering",
-        instructor: "Dr. Zeynep Aslan"
-      }
-    },
-    {
-      type: 'class',
-      data: {
-        id: 5,
-        room: "EE-214",
-        capacity: 35
-      }
-    },
-    {
-      type: 'student',
-      data: {
-        id: 6,
-        name: "Elif Kaya",
-        email: "elif.kaya@ug.bilkent.edu.tr",
-        studentId: "22123478"
-      }
+    } catch (error) {
+      console.error("Error fetching admin logs:", error);
     }
-  ];
+  }
 
+  const handleSetConstraints = () => {
+    setLogs([]);
+    fetchAdminLogs();
+  };
 
-  const createLogsDatabaseItems = () => {
+  const createLogsItems = () => {
     return(
-    adminDatabaseItems.map((item) => (
-      <AdminDatabaseItem
-        key={`${item.type}-${item.data.id}`}
-        type={item.type}
-        data={item.data}
-        onDelete={(id) => console.log(`Deleted ${item.type} with ID: ${id}`)}
-        onSelect={(data) => false}
-        isSelected={false}
-        inLog={true} // Assuming this is not a log item
+    logs.filter((item) => {
+      
+    }).map((item) => (
+      <AdminLogItem
+        key={item.id}
+        logType={item.logType}
+        message={item.message}
+        logDate={item.logDate}
       />
     )))
-  }
+  };
+
+  useEffect(() => {
+    fetchAdminLogs();
+  }, []);
+
   return (
     <div className="logs-container">
       <NavbarAdmin />
@@ -90,18 +67,36 @@ const AdminLogsPage = () => {
                 placeholder="Search by name, ex. CS 202"
                 className="search-input"
               />
-              <select className="data-type-select">
-                <option value="Quiz Proctoring">Quiz Proctoring</option>
-                <option value="Exam Proctoring">Exam Proctoring</option>
+              <select ref={logTypeRef} className="data-type-select">
+                <option value="CREATE">Create</option>
+                <option value="UPDATE">Update</option>
+                <option value="DELETE">Delete</option>
+                <option value="LOGIN">Login</option>
+                <option value="LOGOUT">Logout</option>
               </select>
               <button className="search-button">Search</button>
             </div>
             <div className="table-body">
-                  {createLogsDatabaseItems()}
+                  {createLogsItems()}
             </div>
           </div>
 
-          <div className="set-globals">
+          
+        </div>
+
+        <div className="log-details">
+          <div className="log-constraints-section">
+            <h3>Set Constraints for Logs</h3>
+            <div className="admin-logs-constraint-inputs">
+              <label>Start Date</label>
+              <input ref={startDateRef} type="date" className="start-date-input" />
+              <label>End Date</label>
+              <input ref={endDateRef} type="date" className="end-date-input" />
+              <button onClick={()=>handleSetConstraints()} className="admin-log-set-constraints-button">Set Constraints</button>
+            </div>
+          </div>
+
+          <div className="set-globals-section">
             <h4>Set Globals</h4>
             <div className="globals-inputs">
               <label>Term - Spring 2025</label>
@@ -110,20 +105,12 @@ const AdminLogsPage = () => {
             </div>
             <div className="globals-inputs">
               <label>Proctoring Cap</label>
-              <input type="text" placeholder="e.g., Spring" />
+              <input type="text" placeholder="e.g., 6" />
               <button className="set-proctoring-button">Set Proctoring Cap</button>
             </div>
           </div>
         </div>
 
-        <div className="log-details">
-          <h3>View Log Details</h3>
-          <div className="placeholder">[ Logs data from DB ]</div>
-          <div className="action-buttons">
-            <button className="create-report-button">Create Annual Report</button>
-            <button className="export-logs-button">Export Logs</button>
-          </div>
-        </div>
       </div>
     </div>
   );
