@@ -2,7 +2,6 @@ package com.cs319group3.backend.Controllers.UserControllers;
 
 import com.cs319group3.backend.DTOs.CreateInstructorDTO;
 import com.cs319group3.backend.DTOs.InstructorProfileDTO;
-import com.cs319group3.backend.DTOs.TaskTypeDTO;
 import com.cs319group3.backend.Services.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -14,7 +13,7 @@ import java.util.List;
 @RequestMapping("instructor")
 @ComponentScan(basePackages = {"com.cs319group3.backend.Controllers.UserControllers"})
 @CrossOrigin(origins = "http://localhost:3000")
-public class InstructorContoller {
+public class InstructorController {
 
     @Autowired
     private InstructorService instructorServiceImpl;
@@ -29,6 +28,11 @@ public class InstructorContoller {
     public boolean createInstructor(@RequestBody CreateInstructorDTO createInstuctorDTO){
         System.out.println("create instructor");
         return instructorServiceImpl.createInstructor(createInstuctorDTO);
+    }
+
+    @GetMapping("getAllInstructors")
+    public List<InstructorProfileDTO> getAllInstructors(){
+        return instructorServiceImpl.getAllInstructors();
     }
 
 

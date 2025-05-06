@@ -37,4 +37,9 @@ public class CourseController {
         System.out.println("createOfferedCourse");
         return courseService.createOfferedCourse(dto);
     }
+
+    @GetMapping("getAllCourses")
+    public List<CourseDTO> getAllCourses() {
+        return courseService.getAllCourses();
+    }
 }

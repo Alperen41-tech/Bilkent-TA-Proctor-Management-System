@@ -101,4 +101,15 @@ public class CourseServiceImpl implements CourseService {
         offeredCourseRepo.save(offeredCourse);
         return true;
     }
+
+    @Override
+    public List<CourseDTO> getAllCourses() {
+        List<Course> courses = courseRepo.findAll();
+        List<CourseDTO> courseDTOs = new ArrayList<>();
+        for (Course course : courses) {
+            CourseDTO courseDTO = CourseMapper.toCourseDTO(course);
+            courseDTOs.add(courseDTO);
+        }
+        return courseDTOs;
+    }
 }

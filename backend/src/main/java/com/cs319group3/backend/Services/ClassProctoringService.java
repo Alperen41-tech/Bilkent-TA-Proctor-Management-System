@@ -12,5 +12,6 @@ public interface ClassProctoringService {
     public boolean createClassProctoring(CreateClassProctoringDTO dto);
     public int numberOfRequestsSent(int classProctoringId);
     public int numberOfTAsAssigned(int classProctoringId);
+    public List<ClassProctoringDTO> getAllClassProctoring();
 }
 

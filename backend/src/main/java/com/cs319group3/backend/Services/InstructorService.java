@@ -11,4 +11,5 @@ public interface InstructorService {
 
     public InstructorProfileDTO getInstructorProfileById(int id);
     public boolean createInstructor(CreateInstructorDTO ciDTO);
+    public List<InstructorProfileDTO> getAllInstructors();
 }

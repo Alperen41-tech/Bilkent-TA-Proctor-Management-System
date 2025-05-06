@@ -13,4 +13,5 @@ public interface CourseService {
     List<OfferedCourseDTO> getCoursesOfInstructor(int instructorId);
     boolean createCourse(CourseDTO dto);
     boolean createOfferedCourse(OfferedCourseDTO dto);
+    List<CourseDTO> getAllCourses();
 }

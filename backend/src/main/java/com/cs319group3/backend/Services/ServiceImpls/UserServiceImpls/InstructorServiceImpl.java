@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,5 +81,15 @@ public class InstructorServiceImpl implements InstructorService {
         loginRepo.save(loginEntity);
 
         return true;
+    }
+
+    @Override
+    public List<InstructorProfileDTO> getAllInstructors() {
+        List<Instructor> instructors = instructorRepo.findAll();
+        List<InstructorProfileDTO> instructorProfileDTOs = new ArrayList<>();
+        for (Instructor instructor : instructors) {
+            instructorProfileDTOs.add(instructorProfileMapper.essentialMapper(instructor));
+        }
+        return instructorProfileDTOs;
     }
 }

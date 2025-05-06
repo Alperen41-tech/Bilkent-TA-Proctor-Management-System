@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -66,6 +67,16 @@ public class ClassProctoringServiceImpl implements ClassProctoringService {
     @Override
     public int numberOfTAsAssigned(int classProctoringId) {
         return classProctoringTARelationRepo.countAssignedTAs(classProctoringId);
+    }
+
+    @Override
+    public List<ClassProctoringDTO> getAllClassProctoring() {
+        List<ClassProctoring> classProctoringList = classProctoringRepo.findAll();
+        List<ClassProctoringDTO> classProctoringDTOList = new ArrayList<>();
+        for (ClassProctoring classProctoring : classProctoringList) {
+            classProctoringDTOList.add(ClassProctoringMapper.essentialMapper(classProctoring));
+        }
+        return classProctoringDTOList;
     }
 
 }
