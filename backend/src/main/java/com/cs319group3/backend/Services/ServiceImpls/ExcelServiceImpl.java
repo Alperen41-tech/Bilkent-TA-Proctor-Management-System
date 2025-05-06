@@ -42,11 +42,6 @@ public class ExcelServiceImpl implements ExcelService {
                 setRow(row, form);
             }
 
-            // Write the workbook to the specified output file
-            try (FileOutputStream fileOut = new FileOutputStream("D:/cs319/main_repo/updated.xlsx")) {
-                wb.write(fileOut);
-            }
-
             wb.write(outStream);
             return outStream.toByteArray();
         }
