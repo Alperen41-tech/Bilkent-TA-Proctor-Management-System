@@ -26,6 +26,7 @@ public class TAServiceImpl implements TAService {
 
     @Autowired
     private LoginRepo loginRepo;
+
     @Autowired
     private ClassProctoringTARelationRepo classProctoringTARelationRepo;
 
@@ -94,7 +95,8 @@ public class TAServiceImpl implements TAService {
     public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int classProctoringId, int userId) {
         ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(departmentCode, classProctoringId);
-        availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) || authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId));
+        int courseId = cp.getCourse().getCourseId();
+        availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) || authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId) || doesTakeCourse(ta.getUserId(), courseId));
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
@@ -110,7 +112,8 @@ public class TAServiceImpl implements TAService {
     public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int classProctoringId, int userId) {
         ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByFaculty(facultyId, classProctoringId);
-        availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) || authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId));
+        int courseId = cp.getCourse().getCourseId();
+        availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) || authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId) || doesTakeCourse(ta.getUserId(), courseId));
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
@@ -144,6 +147,34 @@ public class TAServiceImpl implements TAService {
     }
 
     @Autowired
-    TimeIntervalService timeIntervalService;
+    CourseRepo courseRepo;
 
+    @Override
+    public boolean doesTakeCourse(int taId, int courseId) {
+        List<Integer> listOfCourseIds = courseRepo.findAllCourseIdsByUserId(taId);
+        return listOfCourseIds.contains(courseId);
+    }
+
+    @Autowired
+    StudentRepo studentRepo;
+
+    @Override
+    public boolean isTAEligible(int taId, int courseId) {
+        Optional<Integer> courseCode = courseRepo.findCourseCodeByCourseId(courseId);
+        if(courseCode.isEmpty()) {
+            //must be handled appropriately
+            return false;
+        }
+        int code = courseCode.get();
+        if(code / 100 > 4){
+            Optional<Integer> classYear = studentRepo.findClassById(taId);
+            if(classYear.isEmpty()) {
+                //must be handled appropriately
+                return false;
+            }
+
+            return classYear.get() == 9;
+        }
+        return true;
+    }
 }

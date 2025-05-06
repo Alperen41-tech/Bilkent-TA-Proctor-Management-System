@@ -14,4 +14,6 @@ public interface TAService {
     public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int proctoringId, int userId);
     public List<TAProfileDTO> getTAsByProctoringId(int proctoringId);
     public List<TAProfileDTO> getAllTAProfiles();
+    public boolean doesTakeCourse(int taId, int courseId);
+    public boolean isTAEligible(int taId, int courseId);
 }

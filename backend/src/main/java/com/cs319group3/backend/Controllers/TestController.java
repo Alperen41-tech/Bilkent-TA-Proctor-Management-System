@@ -8,6 +8,7 @@ import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.ClassProctoringRepo;
 import com.cs319group3.backend.Repositories.TARepo;
 import com.cs319group3.backend.Services.TAAvailabilityService;
+import com.cs319group3.backend.Services.TAService;
 import com.cs319group3.backend.Services.TimeIntervalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,5 +60,17 @@ public class TestController {
         c.setStartDate(start);
         c.setEndDate(end);
         return taAvailabilityService.isTAAvailable(ta.get(), c);
+    }
+
+    @Autowired
+    TAService taService;
+    @GetMapping("isTAEligible")
+    public boolean isTAEligible(@RequestParam int taId, @RequestParam int courseId){
+        return taService.isTAEligible(taId, courseId);
+    }
+
+    @GetMapping("doesTakeCourse")
+    public boolean doesTakeCourse(@RequestParam int taId, @RequestParam int courseId){
+        return taService.doesTakeCourse(taId, courseId);
     }
 }
