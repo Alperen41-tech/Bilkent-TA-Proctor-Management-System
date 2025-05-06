@@ -356,7 +356,6 @@ create table course_ta_instructor_form(
     foreign key (semester_id) references semester(semester_id)
 );
 
-
 insert into time_interval (day, start_time, end_time) values
 	('Monday', '08:30:00', '09:20:00'),
     ('Monday', '09:30:00', '10:20:00'),
@@ -634,6 +633,9 @@ INSERT INTO proctoring_application_ta_relation (proctoring_application_ta_relati
     (3, 3, 2),
     (4, 2, 4);
     
-    
+insert into course_ta_instructor_form (form_id, course_id, semester_id, sent_date, final_date, min_ta_load, max_ta_load, number_of_grader, description) values
+	(1, 1, 1, "2025-05-06 10:00:00", "2025-05-10 20:00:00", 3, 5, 2, "i want tas"),
+    (2, 2, 1, "2025-05-06 11:00:00", "2025-05-10 20:00:00", 1, 3, 4, "more tas"),
+    (3, 3, 1, "2025-05-05 17:00:00", "2025-05-10 20:00:00", 5, 6, 0, "tatata");
     
 
