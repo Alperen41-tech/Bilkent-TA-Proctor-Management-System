@@ -342,6 +342,19 @@ create table log(
 create index log_date_idx on log(log_date);
 
 
+create table course_ta_instructor_form(
+	form_id int primary key auto_increment,
+    course_id int,
+    semester_id int,
+    sent_date datetime,
+    final_date datetime,
+    min_ta_load int,
+    max_ta_load int,
+    number_of_grader int,
+    description varchar(500),
+    foreign key (course_id) references course(course_id),
+    foreign key (semester_id) references semester(semester_id)
+);
 
 
 insert into time_interval (day, start_time, end_time) values
