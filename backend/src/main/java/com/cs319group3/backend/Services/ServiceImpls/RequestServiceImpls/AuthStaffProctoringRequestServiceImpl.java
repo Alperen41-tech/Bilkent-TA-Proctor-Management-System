@@ -21,9 +21,10 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
     @Autowired
     AuthStaffProctoringRequestRepo authStaffProctoringRequestRepo;
 
+    // Checks among the unapproved requests
     @Override
     public boolean isRequestAlreadySent(int senderId, int receiverId, int classProctoringId){
-        Optional<AuthStaffProctoringRequest> request = authStaffProctoringRequestRepo.findBySenderUserUserIdAndReceiverUserUserIdAndClassProctoringClassProctoringId(senderId, receiverId, classProctoringId);
+        Optional<AuthStaffProctoringRequest> request = authStaffProctoringRequestRepo.findBySenderUserUserIdAndReceiverUserUserIdAndClassProctoringClassProctoringIdAndApprovedFalse(senderId, receiverId, classProctoringId);
         return request.isPresent();
     }
 

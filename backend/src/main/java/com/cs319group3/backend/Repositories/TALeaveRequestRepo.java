@@ -14,5 +14,5 @@ public interface TALeaveRequestRepo extends JpaRepository<TALeaveRequest, Intege
     List<TALeaveRequest> findByReceiverUser_UserId(int userId);
     List<TALeaveRequest> findBySenderUser_UserId(int userId);
 
-    List<TALeaveRequest> findBySenderUser_UserIdAndIsApprovedTrueAndLeaveStartDateLessThanEqualAndLeaveEndDateGreaterThanEqual(int userId, LocalDateTime startDate, LocalDateTime endDate);
+    List<TALeaveRequest> findBySenderUser_UserIdAndApprovedTrueAndLeaveStartDateLessThanEqualAndLeaveEndDateGreaterThanEqual(int userId, LocalDateTime startDate, LocalDateTime endDate);
 }

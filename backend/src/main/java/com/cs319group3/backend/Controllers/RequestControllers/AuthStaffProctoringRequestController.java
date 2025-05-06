@@ -34,7 +34,8 @@ public class AuthStaffProctoringRequestController {
     public boolean forceAuthStaffProctoringRequest(int classProctoringId, int taId, int senderId) {
         System.out.println("Force auth staff request sent.");
         if(authStaffProctoringRequestService.sendAuthStaffProctoringRequest(classProctoringId, taId, senderId, true)){
-            classProctoringTARelation.createClassProctoringTARelation(classProctoringId, taId);
+            boolean check = classProctoringTARelation.createClassProctoringTARelation(taId, classProctoringId);
+            System.out.println("Burası " + check);
             return true;
         }
         return false;

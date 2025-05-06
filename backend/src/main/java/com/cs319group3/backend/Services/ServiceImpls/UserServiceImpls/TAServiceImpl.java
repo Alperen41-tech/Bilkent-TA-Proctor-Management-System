@@ -96,7 +96,9 @@ public class TAServiceImpl implements TAService {
         ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(departmentCode, classProctoringId);
         int courseId = cp.getCourse().getCourseId();
-        availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) || authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId) || doesTakeCourse(ta.getUserId(), courseId));
+        availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) ||
+                authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId) ||
+                doesTakeCourse(ta.getUserId(), courseId) || !isTAEligible(ta.getUserId(), courseId));
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
@@ -113,7 +115,10 @@ public class TAServiceImpl implements TAService {
         ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByFaculty(facultyId, classProctoringId);
         int courseId = cp.getCourse().getCourseId();
-        availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) || authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId) || doesTakeCourse(ta.getUserId(), courseId));
+        availableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, cp) ||
+                authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId)
+                || doesTakeCourse(ta.getUserId(), courseId)
+                || !isTAEligible(ta.getUserId(), courseId));
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
             TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);

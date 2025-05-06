@@ -26,7 +26,10 @@ public class Request{
     private int requestId;
 
     private LocalDateTime sentDate;
-    private boolean isApproved;
+
+    @Column(name = "is_approved")
+    private boolean approved;
+
     private LocalDateTime responseDate;
     private String description;
 

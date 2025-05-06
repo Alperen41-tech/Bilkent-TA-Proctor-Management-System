@@ -462,7 +462,10 @@ insert into course (course_id, department_id, course_code, course_name, coordina
 	(1, 1, 311, 'Linear Algebra and Beverages in Computer Science', 4),
     (2, 1, 211, 'Data Structures', 4),
     (3, 1, 466, 'Cacirology', 5),
-    (4, 2, 176, 'What Is IE', 6);
+    (4, 2, 176, 'Course 4', 4),
+    (5, 1, 234, 'Course 5', 5),
+    (6, 2, 173, 'Course 6', 6),
+    (7, 1, 501, 'Course 7', 6);
     
 insert into ta_type (ta_type_id, type_name, ta_load) values
 	(1, "regular", 2),
@@ -571,12 +574,12 @@ INSERT INTO offered_course (offered_course_id, course_id, section_no, semester_i
 	(1, 1, 3, 1),
 	(2, 1, 1, 2),
 	(3, 1, 2, 3),
-	(4, 2, 3, 1),
-	(5, 2, 3, 2),
-	(6, 2, 1, 3),
-	(7, 3, 2, 1),
-	(8, 3, 2, 2),
-	(9, 3, 2, 3),
+	(4, 6, 3, 1),
+	(5, 6, 3, 2),
+	(6, 6, 1, 3),
+	(7, 5, 2, 1),
+	(8, 5, 2, 2),
+	(9, 5, 2, 3),
 	(10, 4, 1, 1),
 	(11, 4, 1, 2),
 	(12, 4, 2, 3);

@@ -55,7 +55,7 @@ public class TAAvailabilityServiceImpl implements TAAvailabilityService {
 
     private boolean isLeft(TA ta,  LocalDateTime startTime, LocalDateTime endTime){
 
-        List<TALeaveRequest> approvedRequest = taleaveRequestRepo.findBySenderUser_UserIdAndIsApprovedTrueAndLeaveStartDateLessThanEqualAndLeaveEndDateGreaterThanEqual(ta.getUserId(), endTime, startTime);
+        List<TALeaveRequest> approvedRequest = taleaveRequestRepo.findBySenderUser_UserIdAndApprovedTrueAndLeaveStartDateLessThanEqualAndLeaveEndDateGreaterThanEqual(ta.getUserId(), endTime, startTime);
         return !approvedRequest.isEmpty();
     }
 

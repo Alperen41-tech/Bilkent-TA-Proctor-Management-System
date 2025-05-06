@@ -15,7 +15,7 @@ public interface InstructorAdditionalTARequestRepo extends JpaRepository<Instruc
     @Query("""
 SELECT r FROM InstructorAdditionalTARequest r 
 WHERE r.receiverUser.userId = :receiverId 
-AND r.isApproved = false
+AND r.approved = false
 AND r.isSentToSecretary = false
 AND r.responseDate IS NULL
 """)
@@ -23,7 +23,7 @@ AND r.responseDate IS NULL
     @Query("""
 SELECT r FROM InstructorAdditionalTARequest r 
 WHERE r.receiverUser.userId = :receiverId 
-AND r.isApproved = true
+AND r.approved = true
 AND r.isSentToSecretary = false
 """)
     List<InstructorAdditionalTARequest> findByReceiverIdAndIsApprovedTrue(int receiverId);
