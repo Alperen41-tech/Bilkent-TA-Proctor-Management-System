@@ -26,7 +26,6 @@ public class CourseTAInstructorForm {
     private int formId;
 
     private LocalDateTime sentDate;
-    private LocalDateTime finalDate;
 
     @Column(name = "min_ta_load")
     private int minTALoad;
@@ -36,61 +35,26 @@ public class CourseTAInstructorForm {
 
     private String description;
 
+    @Column(name = "must_have_tas")
+    private String mustHaveTAs;
+
+    @Column(name = "preferred_tas")
+    private String preferredTAs;
+
+    private String preferredGraders;
+
+    @Column(name = "avoided_tas")
+    private String avoidedTAs;
+
     @ManyToOne
-    @JoinColumn(name = "coordinator_id")
-    private Instructor coordinator;
+    @JoinColumn(name = "instructor_id")
+    private Instructor instructor;
 
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
 
     @ManyToOne
-    @JoinColumn(name = "semester")
+    @JoinColumn(name = "semester_id")
     private Semester semester;
-
-    @ManyToMany
-    @JoinTable(
-            name = "must_have_tas",
-            joinColumns = @JoinColumn(name = "form_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<TA> mustHaveTAs;
-
-
-    @ManyToMany
-    @JoinTable(
-            name = "preferred_tas",
-            joinColumns = @JoinColumn(name = "form_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    @OrderColumn(name = "preference_rank")  // This creates an additional column to maintain order
-    private List<TA> preferredTAs;
-
-
-    @ManyToMany
-    @JoinTable(
-            name = "preferred_graders",
-            joinColumns = @JoinColumn(name = "form_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    @OrderColumn(name = "preference_rank")  // This creates an additional column to maintain order
-    private List<TA> preferredGraders;
-
-    @ManyToMany
-    @JoinTable(
-            name = "unwantedTAs",
-            joinColumns = @JoinColumn(name = "form_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<TA> unwantedTAs;
-
-
-
-
-
-
-
-
-
-
 }

@@ -60,6 +60,4 @@ public class TestController {
         c.setEndDate(end);
         return taAvailabilityService.isTAAvailable(ta.get(), c);
     }
-
-
 }
