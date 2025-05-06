@@ -17,7 +17,7 @@ public class TAProfileDTO {
     private String departmentName;
     private String departmentCode;
     private String courseName;
-    private String courseCode;
+    private int courseCode;
     private String phoneNumber;
     private Boolean active;
     private int classYear;

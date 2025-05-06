@@ -38,7 +38,7 @@ public class TAProfileMapper {
         // Fix here:
         if (ta.getAssignedCourse() != null) {
             dto.setCourseName(ta.getAssignedCourse().getCourseName());
-            dto.setCourseCode(ta.getAssignedCourse().getCourseFullName());
+            dto.setCourseCode(ta.getAssignedCourse().getCourseCode());
         } else {
             dto.setCourseName(null); // or "Not Assigned"
         }
@@ -62,12 +62,13 @@ public class TAProfileMapper {
     }
 
     public TA essentialEntityToTA(TAProfileDTO dto) {
-        Course course = courseRepo.findByCourseName(dto.getCourseName())
+        Course course = courseRepo.findByCourseCode(dto.getCourseCode())
                 .orElse(null);
-        Department department = departmentRepo.findByDepartmentCode(dto.getDepartmentName())
+        Department department = departmentRepo.findByDepartmentCode(dto.getDepartmentCode())
                 .orElse(null);
 
         if (department == null || course == null) {
+            System.out.println("Bu ney be" + (department == null) + " "+ (course == null));
             return null;
         }
 

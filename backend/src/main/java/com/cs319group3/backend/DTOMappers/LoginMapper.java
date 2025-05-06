@@ -6,6 +6,7 @@ import com.cs319group3.backend.Entities.UserEntities.DeansOffice;
 import com.cs319group3.backend.Entities.UserEntities.DepartmentSecretary;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import com.cs319group3.backend.Entities.UserEntities.TA;
+import com.cs319group3.backend.Entities.UserType;
 import com.cs319group3.backend.Repositories.UserTypeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,9 +19,11 @@ public class LoginMapper {
 
     public Login essentialEntityToLogin(LoginDTO dto, TA ta) {
         Login login = new Login();
-        login.setUser(ta); // because TA extends User
+        login.setUser(ta);
         login.setPassword(dto.getPassword());
-        login.setUserType(userTypeRepo.findByUserTypeName("ta"));
+
+        UserType userType = userTypeRepo.findByUserTypeName("ta");
+        login.setUserType(userType);
         return login;
     }
 

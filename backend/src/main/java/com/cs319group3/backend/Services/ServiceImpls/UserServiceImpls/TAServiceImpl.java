@@ -60,6 +60,7 @@ public class TAServiceImpl implements TAService {
             // Check duplicate by bilkentId or email
             if (userRepo.findByBilkentId(profile.getBilkentId()).isPresent() ||
                     userRepo.findByEmail(profile.getEmail()).isPresent()) {
+                System.out.println("Bura 1");
                 return false; // Duplicate
             }
 
@@ -68,6 +69,7 @@ public class TAServiceImpl implements TAService {
             Login loginEntity = loginMapper.essentialEntityToLogin(login, ta);
 
             if(ta == null || loginEntity == null) {
+                System.out.println("Bura 2 "+ (ta == null) + " " + (loginEntity == null));
                 return false;
             }
 
@@ -78,6 +80,7 @@ public class TAServiceImpl implements TAService {
         } catch (Exception e) {
             // Log the exception for debugging
             e.printStackTrace();
+            System.out.println("Bura 3");
             return false;
         }
     }
