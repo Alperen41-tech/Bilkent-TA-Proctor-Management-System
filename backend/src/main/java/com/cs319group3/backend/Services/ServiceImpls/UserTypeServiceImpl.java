@@ -18,11 +18,22 @@ public class UserTypeServiceImpl implements UserTypeService {
     @Autowired
     private UserTypeRepo userTypeDAO;
 
+    @Autowired
+    private UserTypeRepo userTypeRepo;
+
 
     @Override
     public ResponseEntity<String> createUserType(UserType userType) {
         userTypeDAO.save(userType);
         return new ResponseEntity<>("Succesfully created user type", HttpStatus.CREATED);
+    }
+
+    @Override
+    public boolean createUserType(String name) {
+        UserType userType = new UserType();
+        userType.setUserTypeName(name);
+        userTypeRepo.save(userType);
+        return true;
     }
 
     @Override

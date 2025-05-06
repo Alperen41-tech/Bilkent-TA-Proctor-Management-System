@@ -16,6 +16,11 @@ public class UserTypeController {
     @Autowired
     private UserTypeService userTypeService;
 
+    @PostMapping("createUserTypeEntity")
+    public boolean createUserTypeEntity(@RequestParam String name) {
+        System.out.println("Creating User Type Entity");
+        return userTypeService.createUserType(name);
+    }
 
     @PostMapping("createUserType")
     public ResponseEntity<String> createUserType(@RequestBody UserType userType) {
