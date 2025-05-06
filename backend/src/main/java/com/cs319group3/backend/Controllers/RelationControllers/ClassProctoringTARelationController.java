@@ -86,15 +86,9 @@ public class ClassProctoringTARelationController {
     }
 
     @GetMapping("getClassProctoringOfCreator")
-    public ResponseEntity<?> getClassProctoringOfCreator(@RequestParam int creatorId){
+    public List<ClassProctoringAndTAsDTO> getClassProctoringOfCreator(@RequestParam int creatorId){
         System.out.println("getClassProctoringOfCreator called with creatorId = " + creatorId);
-        try {
-            List<ClassProctoringAndTAsDTO> result = classProctoringAndTAs.getClassProctoringsOfCreator(creatorId);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            e.printStackTrace(); // 👈 THIS WILL SHOW THE ERROR IN BACKEND CONSOLE
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server Error: " + e.getMessage());
-        }
+        return classProctoringAndTAs.getClassProctoringsOfCreator(creatorId);
     }
 
     @GetMapping("getClassProctoringOfInstructor")
