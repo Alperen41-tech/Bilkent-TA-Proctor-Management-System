@@ -22,7 +22,7 @@ public class InstructorProfileMapper {
 
     public InstructorProfileDTO essentialMapper(Instructor instructor) {
         InstructorProfileDTO instructorProfileDTO = new InstructorProfileDTO();
-        instructorProfileDTO.setRole("Instructor"); //Should be changed
+        instructorProfileDTO.setRole("instructor");
         instructorProfileDTO.setName(instructor.getName());
         instructorProfileDTO.setSurname(instructor.getSurname());
         instructorProfileDTO.setEmail(instructor.getEmail());
