@@ -17,17 +17,30 @@ const Instructor_AdminProfilePage = () => {
 
   const handleGetTaConstraints = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/excel/getRequirementsExcel");
-      if (response.data) {
-        console.log("TA constraints fetched successfully.");
-        console.log("TA Constraints:", response.data);
-      } else {
-        alert("Failed to fetch TA constraints. Please try again.");
-      }
+      const response = await axios.get("http://localhost:8080/excel/getRequirementsExcel", {
+        responseType: "blob", // 🔥 this is crucial to receive binary data correctly
+      });
+  
+      // Create a blob and a temporary download link
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+  
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "TARequirements.xlsx"); // file name
+      document.body.appendChild(link);
+      link.click();
+      link.remove(); // clean up
+  
+      console.log("TA constraints downloaded successfully.");
     } catch (error) {
-      console.error("Error fetching TA constraints:", error);
+      console.error("Error downloading TA constraints:", error);
+      alert("Failed to download TA constraints.");
     }
   };
+  
 
   const handleChangePassword = async () => {
     try {
