@@ -116,7 +116,7 @@ const INS_SchedulePage = () => {
                                   style={{
                                     height: `${(event.duration / 60) * cellHeight}px`,
                                     marginTop: `${(event.offset / 60) * cellHeight}px`,
-                                    backgroundColor: event.eventType == "lecture" ? "#a8d5ff" : event.eventType == "proctoring" ?  "#9DC08B": event.eventType == "leave of absence" ? "#e03e3e" : "white",
+                                    backgroundColor: event.eventType == "lecture" ? "#a8d5ff" : event.eventType == "proctoring" ?  "#9DC08B": event.eventType == "leave of absence" ? "#e03e3e" : event.eventType == "exam" ? "#FF8700" : "white",
                                   }}
                                 >
                                   <div>

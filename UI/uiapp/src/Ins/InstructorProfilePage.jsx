@@ -206,9 +206,7 @@ const InstructorProfilePage = () => {
             {course.course.name} - {course.course.courseCode}
           </option>
         ))}
-        
       </select>
-
       {/* Integer Fields */}
       <label>Min TA Load</label>
       <input

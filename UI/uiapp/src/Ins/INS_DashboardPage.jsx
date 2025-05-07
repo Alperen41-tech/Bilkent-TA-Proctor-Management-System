@@ -16,6 +16,9 @@ const INS_DashboardPage = () => {
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [selectedRespondedWorkloadRequest, setSelectedRespondedWorkloadRequest] = useState(null);
+  const [instructorCourses, setInstructorCourses] = useState([]);
+  const [selectedCreateTaskCourse, setSelectedCreateTaskCourse] = useState({});
+  const [selectedDeleteTaskCourse, setSelectedDeleteTaskCourse] = useState({});
 
 // Refs for form inputs
   const newTaskTypeNameRef = useRef();
@@ -49,13 +52,32 @@ const INS_DashboardPage = () => {
     return <div onClick={() => {setShowRespondedWorkloadDetails(true);onSelect();}}> <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status} /> </div>;
   }
 
+  const fetchInstructorCourses = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/course/getCoursesOfInstructor?instructorId=4");
+      if (response.data) {
+        console.log("Fetched Courses:", response.data);
+        setInstructorCourses(response.data);
+      } else {
+        alert("Could not fetch courses. Try again.");
+      }
+    } catch (error) {
+      console.error("There was an error with fetching courses:", error);
+    }
+  };
+
   const fetchNotifications = async () => {
     try {
       const response = await axios.get("http://localhost:8080/notification/get?id=4");
-      setNotifications(response.data);
-      console.log(notifications);
+      if(response.data){
+        setNotifications(response.data);
+        console.log(notifications);
+      }
+      else {
+        alert("Could not fetch notifications. Try again.");
+      }
     } catch (error) {
-      console.error("Error fetching task types:", error);
+      console.error("Error fetching notifications:", error);
     }
   };
 
@@ -103,8 +125,8 @@ const INS_DashboardPage = () => {
 
   const postTaskType = async (taskTypeName, taskLimit) => {
     try {
-      const response = await axios.post("http://localhost:8080/taskType/createTaskType?courseId=3", {
-        courseName: "Cacirology",
+      const response = await axios.post(`http://localhost:8080/taskType/createTaskType?courseId=${selectedCreateTaskCourse.course.id}`, {
+        courseName: selectedCreateTaskCourse.course.name,
         taskTypeName: taskTypeName,
         taskLimit: parseInt(taskLimit,10),       
       });
@@ -115,53 +137,56 @@ const INS_DashboardPage = () => {
       else {
         alert("Task Type created successfully!");
         console.log("Task Type created successfully:", response.data);
-        fetchTaskTypes(); 
       }
     } catch (error) {
       console.error("There was an error with the Task Type creation:", error);
       alert("An error occurred. Please try again.");
     }
   };
+  
   const deleteTaskType = async (taskTypeName) => {
     try {
       const response = await axios.delete("http://localhost:8080/taskType/deleteTaskType?", {
            params: {
-            courseId: 3,
+            courseId: selectedDeleteTaskCourse.course.id,
             taskTypeName: taskTypeName,
            }
       });
-
       if (!response.data) {
         alert("Could not delete the Task Type. Try again.");
       } 
       else {
         alert("Task Type deleted successfully!");
         console.log("Task Type deleted successfully:", response.data);
-        fetchTaskTypes();
       }
     } catch (error) {
       console.error("There was an error with the Task Type deletion:", error);
-      alert("An error occurred. Please try again.");
+      alert(error.response.data.message);
     }
   };
 
   const fetchTaskTypes = async () => {
+    if (!selectedDeleteTaskCourse || !selectedDeleteTaskCourse.course) {
+      console.warn("No valid course selected for fetching task types.");
+      return;
+    }
+  
     try {
-      const response = await axios.get("http://localhost:8080/taskType/getTaskTypeNames?courseId=3");
+      const response = await axios.get(
+        `http://localhost:8080/taskType/getTaskTypeNames?courseId=${selectedDeleteTaskCourse.course.id}`
+      );
       if (response.data) {
         console.log("Fetched Task Types:", response.data);
         setTaskTypes(response.data);
-        
       } else {
         alert("Could not fetch Task Types. Try again.");
       }
-      
-
-    }catch (error) {
+    } catch (error) {
       console.error("There was an error with fetching Task Types:", error);
       alert("An error occurred. Please try again.");
     }
   };
+  
 
   const cancelPendingRequest = async (requestId) => {
     try {
@@ -180,11 +205,18 @@ const INS_DashboardPage = () => {
   };
 
   useEffect(() => {
-    fetchTaskTypes();
     fetchReceivedRequests();
     fetchPendingRequests();
     fetchNotifications();
+    fetchInstructorCourses();
   }, []);
+
+  useEffect(() => {
+    if (selectedDeleteTaskCourse) {
+      fetchTaskTypes();
+    }
+  }
+  , [selectedDeleteTaskCourse]);
 
   return (
     <div className="dashboard-page">
@@ -207,15 +239,11 @@ const INS_DashboardPage = () => {
                   {pendingRequests.map((req, index) => createPendingRequest(req, index))}
                 </div>
               )}
-
               {activeTab === "received" && (
                 <div>
                   {receivedRequests.filter((enr, index) => {return enr.status === null}).map((req, index) => createReceivedRequest(req, index))}
                 </div>
               )}
-
-
-
               {activeTab === "tasks" && (
                 <div >{receivedRequests.filter((rq,index) =>{
                   if (rq.requestType !== "TAWorkloadRequest") return false;                  
@@ -233,8 +261,6 @@ const INS_DashboardPage = () => {
                 )}
                 </div>
               )}
-
-
             </div>
           </div>
           {/* Bottom Left Panel */}
@@ -283,25 +309,67 @@ const INS_DashboardPage = () => {
               <div className="bottom-left-task">
                 <div className="task-type-create-form">
                   <h3>Create Task Type</h3>
-                  <form onSubmit={(e) => {postTaskType(newTaskTypeNameRef.current.value, newTaskLimitRef.current.value); e.preventDefault();}}>
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    if(selectedCreateTaskCourse === "Select Course"){
+                      alert("Please select a course.");
+                      return;
+                    }
+                    postTaskType(newTaskTypeNameRef.current.value, newTaskLimitRef.current.value); 
+                  }}>
+                    <label>Select Course</label>
+                    <select required onChange={(e) => {
+                      if(e.target.value === "Select Course"){
+                        setSelectedCreateTaskCourse({});
+                      }
+                      else {
+                        const obj = instructorCourses.find((course) => course.course.id.toString() === e.target.value);
+                        setSelectedCreateTaskCourse(obj);}}
+                      }>
+                      <option value="Select Course">Select Course</option>
+                      {instructorCourses.map((course, index) => (
+                        <option key={index} value={course.course.id}>{course.course.name}</option>
+                      ))}
+                    </select>
                     <label>Task Type</label>
-                    <input ref={newTaskTypeNameRef} type="text" placeholder="Task Type" />
+                    <input required ref={newTaskTypeNameRef} type="text" placeholder="Task Type" />
                     <label>Maximum Time Limit</label>
                     <div className="time-inputs">
-                      <input ref={newTaskLimitRef} type="number" placeholder="Hours" min={0} />
+                      <input required ref={newTaskLimitRef} type="number" placeholder="Hours" min={0} />
                     </div>
                     <button className="button" type="submit">Create Task Type</button>
                   </form>
                 </div>
                 <div className="task-type-delete-form">
                   <h3>Delete Task Type</h3>
-                  <label>Select Task Type</label>
-                  <form onSubmit={(e) => {deleteTaskType(selectedForDeleteTaskType.current.value); e.preventDefault();}}>
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    if(selectedDeleteTaskCourse === "Select Course"){
+                      alert("Please select a course.");
+                      return;
+                    }
+                    deleteTaskType(selectedForDeleteTaskType.current.value); e.preventDefault();}}>
+                    <label>Select Course</label>
+                      <select required onChange={(e) => {
+                        if(e.target.value === "Select Course"){
+                          setSelectedDeleteTaskCourse({});
+                        }
+                        else {
+                          const obj = instructorCourses.find((course) => course.course.id.toString() === e.target.value);
+                          setSelectedDeleteTaskCourse(obj);
+                        }
+                       }}>
+                        <option value="Select Course">Select Course</option>
+                        {instructorCourses.map((course, index) => (
+                          <option key={index} value={course.course.id}>{course.course.name}</option>
+                        ))}
+                      </select>
+                    <label>Select Task Type</label>
                     <select ref={selectedForDeleteTaskType}>
                       <option value="task1">Select Task Type to Delete</option>
-                      {taskTypes.map((taskType, index) => (
+                      {selectedDeleteTaskCourse ? taskTypes.map((taskType, index) => (
                         <option key={index} value={taskType}>{taskType}</option>
-                      ))}
+                      )) : null}
                     </select>
                     <button type="submit">Delete Task Type</button>
                   </form>

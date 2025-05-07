@@ -119,22 +119,19 @@
     flex:1;
   }
   
-  .task-type-create-form form,
-  .swap-form form {
+  .task-type-create-form form{
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
 
-  .task-type-delete-form form,
-  .swap-form form {
+  .task-type-delete-form form{
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    margin-top: 10px;
+    gap: 10px;
   }
   .task-type-delete-form form button {
-    margin-top: 52px;
+    margin-top: 63px;
   }
   
   .time-inputs {

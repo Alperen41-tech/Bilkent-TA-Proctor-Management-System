@@ -42,6 +42,8 @@
     padding: 10px;
     text-align: center;
     flex: 3;
+    max-height: 80vh;
+    overflow-y: auto;
   }
   .assigned-tas{
     margin-top: 10px;
