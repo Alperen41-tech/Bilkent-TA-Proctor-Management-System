@@ -70,6 +70,7 @@ const AdminDatabasePage = () => {
 
   const [coursesData, setCoursesData] = useState([]);
   const [instructorsData, setInstructorsData] = useState([]);
+  const [proctoringsData, setProctoringsData] = useState([]);
 
 
 
@@ -123,6 +124,16 @@ const AdminDatabasePage = () => {
         console.error("Error fetching instructors:", error);
       }
     }
+
+    if (type === "Proctoring") {
+      try {
+        const { data } = await axios.get("http://localhost:8080/classProctoring/getAllClassProctorings");
+        setProctoringsData(data || []);
+      } catch (error) {
+        console.error("Error fetching proctorings:", error);
+      }
+    }
+    
   };
   
 
@@ -162,7 +173,6 @@ const AdminDatabasePage = () => {
           key={`course-${course.courseCode}`}
           type="course"
           data={course}
-          onDelete={(id) => console.log(`Deleted course with ID: ${id}`)}
           onSelect={(data) => setSelectedData(data)}
           isSelected={selectedData.courseCode === course.courseCode}
           inLog={false}
@@ -176,13 +186,35 @@ const AdminDatabasePage = () => {
           key={`instructor-${instructor.bilkentId || index}`}
           type="instructor"
           data={instructor}
-          onDelete={(id) => console.log(`Deleted instructor with ID: ${id}`)}
           onSelect={(data) => setSelectedData(data)}
           isSelected={selectedData.bilkentId === instructor.bilkentId}
           inLog={false}
         />
       ));
     }
+
+    if (selectedType === "Proctoring" && proctoringsData.length > 0) {
+      return proctoringsData.map((exam) => (
+        <AdminDatabaseItem
+          key={`proctoring-${exam.id}`}
+          type="exam"
+          data={{
+            id: exam.id,
+            course: exam.courseName,
+            examType: exam.proctoringName,
+            date: exam.startDate?.split("T")[0],
+            time: exam.startDate?.split("T")[1]?.substring(0, 5),
+            endTime: exam.endDate?.split("T")[1]?.substring(0, 5),
+            location: exam.classrooms,
+            Section: exam.section
+          }}
+          onSelect={(data) => setSelectedData(data)}
+          isSelected={selectedData.id === exam.id}
+          inLog={false}
+        />
+      ));
+    }
+    
   
     return <p style={{ padding: "1rem" }}>No data to display.</p>;
   };
@@ -382,6 +414,8 @@ const AdminDatabasePage = () => {
 
               <option value="Course">Course</option>
               <option value="Instructor">Instructor</option>
+              <option value="Proctoring">Proctoring</option> {/* ✅ Already exists — good */}
+
             </select>
 
             <button className="admin-database-search-button">Search</button>
