@@ -98,9 +98,12 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
         requests.removeIf(tAAvailabilityRequest -> !tAAvailabilityRequest.isApproved());
         addLeaveOfAbsence(scheduleStart, scheduleEnd, schedule, requests, fromDate, toDate);
 
-        //add schedule of ta's courses
+        //add schedule of ta's course exams
         Optional<Student> optionalStudent = studentRepo.findByBilkentId(optionalTA.get().getBilkentId());
         List<CourseStudentRelation> courseStudentRelations = optionalStudent.get().getCourseStudentRelations();
+        addTACourseProctorings(courseStudentRelations, fromDate, toDate, schedule);
+
+        //add schedule of ta's courses
         addTaCourses(courseStudentRelations, schedule);
 
         //TODO Optional objects may not exist in the database
@@ -108,9 +111,6 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
         //add schedule of proctorings
         List<ClassProctoringTARelation> classProctorings = optionalTA.get().getClassProctoringTARelations();
         addTAProctorings(classProctorings, fromDate, toDate, schedule);
-
-        //add schedule of ta's course exams
-        addTACourseProctorings(courseStudentRelations, fromDate, toDate, schedule);
 
         return schedule;
     }
