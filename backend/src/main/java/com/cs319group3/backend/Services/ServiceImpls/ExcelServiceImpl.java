@@ -1,11 +1,14 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
+import com.cs319group3.backend.CompositeIDs.OfferedCourseScheduleKey;
 import com.cs319group3.backend.Entities.*;
+import com.cs319group3.backend.Entities.RelationEntities.OfferedCourseScheduleRelation;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.ExcelService;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +41,14 @@ public class ExcelServiceImpl implements ExcelService {
     private TATypeRepo taTypeRepo;
     @Autowired
     private InstructorRepo instructorRepo;
+    @Autowired
+    private SemesterRepo semesterRepo;
+    @Autowired
+    private OfferedCourseRepo offeredCourseRepo;
+    @Autowired
+    private TimeIntervalRepo timeIntervalRepo;
+    @Autowired
+    private OfferedCourseScheduleRelationRepo offeredCourseScheduleRelationRepo;
 
 
     public byte[] generateExcelFromTemplate() throws IOException {
@@ -141,34 +153,6 @@ public class ExcelServiceImpl implements ExcelService {
         taRepo.save(currTA);
     }
 
-    @Override
-    public void uploadStudents(MultipartFile file) throws IOException {
-        try(InputStream inputStream = file.getInputStream();
-            Workbook workbook = new XSSFWorkbook(inputStream)) {
-            Sheet sheet = workbook.getSheetAt(0);
-
-            for (Row row : sheet) {
-                // Skip header row
-                if (row.getRowNum() < 1)
-                    continue;
-
-                // Extract data from Excel cells
-                String bilkentId = getStringCellValue(row.getCell(0));
-                String name = getStringCellValue(row.getCell(1));
-                String surname = getStringCellValue(row.getCell(2));
-                String email = getStringCellValue(row.getCell(3));
-                String phoneNumber = getStringCellValue(row.getCell(4));
-                int classYear = (int) row.getCell(5).getNumericCellValue();
-                String departmentCode = getStringCellValue(row.getCell(6));
-
-                // Create the student using extracted data
-                uploadStudent(bilkentId, name, surname, email, phoneNumber, classYear, departmentCode);
-            }
-
-        }
-    }
-
-
     // Helper method to safely get string cell values
     private String getStringCellValue(Cell cell) {
         if (cell == null) {
@@ -186,7 +170,131 @@ public class ExcelServiceImpl implements ExcelService {
         }
     }
 
-    private void uploadStudent(String bilkentId, String name, String surname, String email, String phoneNumber, int classYear, String departmentCode) {
+
+    @Override
+    public void uploadAllData(MultipartFile file) throws IOException {
+
+        try(InputStream inputStream = file.getInputStream();
+            Workbook workbook = new XSSFWorkbook(inputStream)) {
+            Sheet studentsSheet = workbook.getSheetAt(0);
+            Sheet tasSheet = workbook.getSheetAt(1);
+            Sheet instructorSheet = workbook.getSheetAt(2);
+            Sheet courseSheet = workbook.getSheetAt(3);
+            Sheet offeredCoursesSheet = workbook.getSheetAt(4);
+            Sheet scheduleSheet = workbook.getSheetAt(5);
+
+
+            uploadStudents(studentsSheet);
+            uploadTAs(tasSheet);
+            uploadInstructors(instructorSheet);
+            uploadCourses(courseSheet);
+            uploadOfferedCourses(offeredCoursesSheet);
+            uploadSchedule(scheduleSheet);
+        }
+
+    }
+
+    private void uploadSchedule(Sheet scheduleSheet) {
+
+        for (Row row : scheduleSheet) {
+            // Skip header row
+            if (row.getRowNum() < 1)
+                continue;
+
+            String departmentCode = getStringCellValue(row.getCell(0));
+            int courseCode = (int) row.getCell(1).getNumericCellValue();
+            int sectionNo = (int) row.getCell(2).getNumericCellValue();
+            String semester = getStringCellValue(row.getCell(3));
+            int term = (int) row.getCell(4).getNumericCellValue();
+            String day = getStringCellValue(row.getCell(5));
+            int block = (int) row.getCell(6).getNumericCellValue();
+
+            saveSchedule(departmentCode, courseCode, sectionNo, semester, term, day, block);
+
+        }
+    }
+
+    private void saveSchedule(String departmentCode, int courseCode, int sectionNo, String semester, int term ,String day, int block) {
+
+        Optional<Course> course = courseRepo.findByDepartment_DepartmentCodeAndCourseCode(departmentCode, courseCode);
+        if (!course.isPresent()) {
+            throw new RuntimeException("failed because course with code " + courseCode + " does not exist");
+        }
+
+        Optional<Semester> currSemester = semesterRepo.findByYearAndTerm(semester, term);
+        if (!currSemester.isPresent()) {
+            throw new RuntimeException("failed because semester " + semester + " does not exist");
+        }
+
+
+        Optional<OfferedCourse> offeredCourse = offeredCourseRepo.findByCourseAndSemesterAndSectionNo(course.get(), currSemester.get(), sectionNo);
+        if (!offeredCourse.isPresent()) {
+            throw new RuntimeException("failed because course " + courseCode + " does not exist");
+        }
+
+        int dayth;
+        if (day.equals("Monday")){
+            dayth = 0;
+        }else if (day.equals("Tuesday")){
+            dayth = 1;
+        }else if (day.equals("Wednesday")){
+            dayth = 2;
+        }else if (day.equals("Thursday")){
+            dayth = 3;
+        }else if (day.equals("Friday")){
+            dayth = 4;
+        }else {
+            throw new RuntimeException("failed because day " + day + " does not exist");
+        }
+
+        int timeIntervalId = dayth * 9 + block;
+
+        TimeInterval timeInterval = timeIntervalRepo.findById(timeIntervalId).get();
+
+        OfferedCourseScheduleKey key = new OfferedCourseScheduleKey(
+                offeredCourse.get().getOfferedCourseId(),  // Make sure this getter exists
+                timeInterval.getTimeIntervalId()           // Make sure this getter exists
+        );
+
+        // Check if this relationship already exists
+        if (offeredCourseScheduleRelationRepo.existsById(key)) {
+            // if schedule exist just pass over;
+            return;
+        }
+
+        // Create and save the relationship with the proper embedded ID
+        OfferedCourseScheduleRelation offeredCourseScheduleRelation = new OfferedCourseScheduleRelation();
+        offeredCourseScheduleRelation.setId(key);          // Set the embedded ID
+        offeredCourseScheduleRelation.setCourse(offeredCourse.get());
+        offeredCourseScheduleRelation.setTimeInterval(timeInterval);
+
+        offeredCourseScheduleRelationRepo.save(offeredCourseScheduleRelation);
+    }
+
+
+    private void uploadStudents(Sheet students)  {
+        for (Row row : students) {
+            // Skip header row
+            if (row.getRowNum() < 1)
+                continue;
+
+            // Extract data from Excel cells
+            String bilkentId = getStringCellValue(row.getCell(0));
+            String name = getStringCellValue(row.getCell(1));
+            String surname = getStringCellValue(row.getCell(2));
+            String email = getStringCellValue(row.getCell(3));
+            String phoneNumber = getStringCellValue(row.getCell(4));
+            int classYear = (int) row.getCell(5).getNumericCellValue();
+            String departmentCode = getStringCellValue(row.getCell(6));
+
+            // Create the student using extracted data
+            saveStudent(bilkentId, name, surname, email, phoneNumber, classYear, departmentCode);
+        }
+    }
+
+
+
+    private void saveStudent(String bilkentId, String name, String surname, String email, String phoneNumber, int classYear, String departmentCode) {
         // Create new student object
         Student newStudent = new Student();
         newStudent.setBilkentId(bilkentId);
@@ -209,33 +317,26 @@ public class ExcelServiceImpl implements ExcelService {
         studentRepo.save(newStudent);
     }
 
+    private void uploadTAs(Sheet taSheet){
 
-    @Override
-    public void uploadTAs(MultipartFile file) throws IOException{
+        for (Row row : taSheet) {
+            if (row.getRowNum() < 1)
+                continue;
 
-        try(InputStream inputStream = file.getInputStream();
-            Workbook workbook = new XSSFWorkbook(inputStream)) {
+            String bilkentId = getStringCellValue(row.getCell(0));
+            String name = getStringCellValue(row.getCell(1));
+            String surname = getStringCellValue(row.getCell(2));
+            String email = getStringCellValue(row.getCell(3));
+            String phoneNumber = getStringCellValue(row.getCell(4));
+            int classYear = (int) row.getCell(5).getNumericCellValue();
+            String departmentCode = getStringCellValue(row.getCell(6));
+            String taType = getStringCellValue(row.getCell(7));
 
-            Sheet sheet = workbook.getSheetAt(0);
-            for (Row row : sheet) {
-                if (row.getRowNum() < 1)
-                    continue;
-
-                String bilkentId = getStringCellValue(row.getCell(0));
-                String name = getStringCellValue(row.getCell(1));
-                String surname = getStringCellValue(row.getCell(2));
-                String email = getStringCellValue(row.getCell(3));
-                String phoneNumber = getStringCellValue(row.getCell(4));
-                int classYear = (int) row.getCell(5).getNumericCellValue();
-                String departmentCode = getStringCellValue(row.getCell(6));
-                String taType = getStringCellValue(row.getCell(7));
-
-                uploadTA(bilkentId, name, surname, email, phoneNumber, classYear, departmentCode, taType);
-            }
+            saveTA(bilkentId, name, surname, email, phoneNumber, classYear, departmentCode, taType);
         }
     }
 
-    private void uploadTA(String bilkentId, String name, String surname, String email, String phoneNumber, int classYear, String departmentCode, String taType){
+    private void saveTA(String bilkentId, String name, String surname, String email, String phoneNumber, int classYear, String departmentCode, String taType){
 
         TA newTA = new TA();
 
@@ -262,32 +363,26 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
 
-    @Override
-    public void uploadInstructors(MultipartFile file) throws IOException {
+    private void uploadInstructors(Sheet instructorSheet) throws IOException {
 
-        try(InputStream inputStream = file.getInputStream();
-            Workbook workbook = new XSSFWorkbook(inputStream)) {
+        for (Row row : instructorSheet) {
+            if (row.getRowNum() < 1)
+                continue;
 
-            Sheet sheet = workbook.getSheetAt(0);
-            for (Row row : sheet) {
-                if (row.getRowNum() < 1)
-                    continue;
+            String bilkentId = getStringCellValue(row.getCell(0));
+            String name = getStringCellValue(row.getCell(1));
+            String surname = getStringCellValue(row.getCell(2));
+            String email = getStringCellValue(row.getCell(3));
+            String phoneNumber = getStringCellValue(row.getCell(4));
+            String departmentCode = getStringCellValue(row.getCell(5));
 
-                String bilkentId = getStringCellValue(row.getCell(0));
-                String name = getStringCellValue(row.getCell(1));
-                String surname = getStringCellValue(row.getCell(2));
-                String email = getStringCellValue(row.getCell(3));
-                String phoneNumber = getStringCellValue(row.getCell(4));
-                String departmentCode = getStringCellValue(row.getCell(5));
-
-                uploadInstructor(bilkentId, name, surname, email, phoneNumber, departmentCode);
-            }
+            saveInstructor(bilkentId, name, surname, email, phoneNumber, departmentCode);
         }
     }
 
 
 
-    private void uploadInstructor(String bilkentId, String name, String surname, String email, String phoneNumber, String departmentCode) {
+    private void saveInstructor(String bilkentId, String name, String surname, String email, String phoneNumber, String departmentCode) {
         Instructor newInstructor = new Instructor();
 
         Optional<Department> department = departmentRepo.findByDepartmentCode(departmentCode);
@@ -303,31 +398,22 @@ public class ExcelServiceImpl implements ExcelService {
         instructorRepo.save(newInstructor);
     }
 
-    @Override
-    public void uploadCourses(MultipartFile file) throws IOException{
+    private void uploadCourses(Sheet courseSheet){
 
-        try(InputStream inputStream = file.getInputStream();
-            Workbook workbook = new XSSFWorkbook(inputStream)) {
+        for (Row row : courseSheet) {
+            if (row.getRowNum() < 1)
+                continue;
 
-            Sheet sheet = workbook.getSheetAt(0);
-            for (Row row : sheet) {
-                if (row.getRowNum() < 1)
-                    continue;
+            String departmentCode = getStringCellValue(row.getCell(0));
+            double courseCode = row.getCell(1).getNumericCellValue();
+            String courseName = getStringCellValue(row.getCell(2));
+            String coordinatorId = getStringCellValue(row.getCell(3));
 
-                String departmentCode = getStringCellValue(row.getCell(0));
-                double courseCode = row.getCell(1).getNumericCellValue();
-                String courseName = getStringCellValue(row.getCell(2));
-                String coordinatorId = getStringCellValue(row.getCell(3));
-
-
-
-                uploadCourse(departmentCode, (int) courseCode, courseName, coordinatorId);
-            }
+            saveCourse(departmentCode, (int) courseCode, courseName, coordinatorId);
         }
     }
 
-
-    private void uploadCourse(String departmentCode, int courseCode, String courseName, String coordinatorId) {
+    private void saveCourse(String departmentCode, int courseCode, String courseName, String coordinatorId) {
 
         Course course = new Course();
         Optional<Department> department = departmentRepo.findByDepartmentCode(departmentCode);
@@ -357,4 +443,46 @@ public class ExcelServiceImpl implements ExcelService {
         user.setPhoneNumber(phoneNumber);
         user.setActive(true); // Set as active by default
     }
+
+
+    private void uploadOfferedCourses(Sheet offeredCoursesSheet) {
+        for (Row row : offeredCoursesSheet) {
+            // Skip header row
+            if (row.getRowNum() < 1)
+                continue;
+
+            String departmentCode = getStringCellValue(row.getCell(0));
+            int courseCode = (int) row.getCell(1).getNumericCellValue();
+            int sectionNo = (int) row.getCell(2).getNumericCellValue();
+            String semester = getStringCellValue(row.getCell(3));
+            int term = (int) row.getCell(4).getNumericCellValue();
+
+            saveOfferedCourse(departmentCode, courseCode, sectionNo, semester, term);
+
+        }
+    }
+
+    private void saveOfferedCourse(String departmentCode, int courseCode, int sectionNo, String semester, int term) {
+
+        Optional<Course> course = courseRepo.findByDepartment_DepartmentCodeAndCourseCode(departmentCode, courseCode);
+        if (!course.isPresent()) {
+            throw new RuntimeException("failed because course with code " + departmentCode + " " + courseCode + " does not exist");
+        }
+
+        Optional<Semester> currSemester = semesterRepo.findByYearAndTerm(semester, term);
+        if (!currSemester.isPresent()) {
+            throw new RuntimeException("failed because semester " + semester + " does not exist");
+        }
+
+        OfferedCourse offeredCourse = new OfferedCourse();
+        offeredCourse.setCourse(course.get());
+        offeredCourse.setSectionNo(sectionNo);
+        offeredCourse.setSemester(currSemester.get());
+
+        offeredCourseRepo.save(offeredCourse);
+    }
+
+
+
+
 }

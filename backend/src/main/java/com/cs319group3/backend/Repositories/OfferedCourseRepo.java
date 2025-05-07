@@ -2,6 +2,7 @@ package com.cs319group3.backend.Repositories;
 
 import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.OfferedCourse;
+import com.cs319group3.backend.Entities.Semester;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -20,4 +21,7 @@ public interface OfferedCourseRepo extends JpaRepository<OfferedCourse, Integer>
 
     List<OfferedCourse> findByCourse_CourseId(int courseCourseId);
     Optional<OfferedCourse> findByOfferedCourseIdAndSemester_SemesterId(int offeredCourseId, int semesterId);
+
+    Optional<OfferedCourse> findByCourseAndSemesterAndSectionNo(Course course, Semester semester, int sectionNo);
+
 }

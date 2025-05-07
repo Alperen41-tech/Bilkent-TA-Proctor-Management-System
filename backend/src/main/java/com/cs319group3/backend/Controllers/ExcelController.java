@@ -2,8 +2,10 @@ package com.cs319group3.backend.Controllers;
 
 import com.cs319group3.backend.Services.ExcelService;
 import org.apache.coyote.Response;
+import org.etsi.uri.x01903.v13.ResponderIDType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,10 +54,10 @@ public class ExcelController {
     }
 
 
-    @PostMapping("uploadStudents")
-    public ResponseEntity<Boolean> uploadStudents(@RequestParam(name = "file") MultipartFile file) {
+    @PostMapping("uploadAllData")
+    public ResponseEntity<Boolean> uploadAllData(@RequestParam(name = "file") MultipartFile file) {
         try {
-            excelService.uploadStudents(file);
+            excelService.uploadAllData(file);
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
         catch (Exception e){
@@ -63,43 +65,6 @@ public class ExcelController {
             return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @PostMapping("uploadTAs")
-    public ResponseEntity<Boolean> uploadTAs(@RequestParam(name = "file") MultipartFile file) {
-        try {
-            excelService.uploadTAs(file);
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("uploadInstructors")
-    public ResponseEntity<?> uploadInstructors(@RequestParam(name = "file") MultipartFile file) {
-        try {
-            excelService.uploadInstructors(file);
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("uploadCourses")
-    public ResponseEntity<?> uploadCourses(@RequestParam(name = "file") MultipartFile file) {
-        try {
-            excelService.uploadCourses(file);
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
 
 
 
