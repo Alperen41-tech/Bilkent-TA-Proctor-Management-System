@@ -71,6 +71,8 @@ const AdminDatabasePage = () => {
   const [coursesData, setCoursesData] = useState([]);
   const [instructorsData, setInstructorsData] = useState([]);
   const [proctoringsData, setProctoringsData] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
+
 
 
 
@@ -106,7 +108,7 @@ const AdminDatabasePage = () => {
   const handleTypeChange = async (e) => {
     const type = e.target.value;
     setSelectedType(type);
-  
+
     if (type === "Course") {
       try {
         const { data } = await axios.get("http://localhost:8080/course/getAllCourses");
@@ -115,7 +117,7 @@ const AdminDatabasePage = () => {
         console.error("Error fetching courses:", error);
       }
     }
-  
+
     if (type === "Instructor") {
       try {
         const { data } = await axios.get("http://localhost:8080/instructor/getAllInstructors");
@@ -133,9 +135,9 @@ const AdminDatabasePage = () => {
         console.error("Error fetching proctorings:", error);
       }
     }
-    
+
   };
-  
+
 
 
 
@@ -167,58 +169,76 @@ const AdminDatabasePage = () => {
   };
 
   const createDatabaseItems = () => {
+    const keyword = searchKeyword.toLowerCase();
+  
     if (selectedType === "Course" && coursesData.length > 0) {
-      return coursesData.map((course) => (
-        <AdminDatabaseItem
-          key={`course-${course.courseCode}`}
-          type="course"
-          data={course}
-          onSelect={(data) => setSelectedData(data)}
-          isSelected={selectedData.courseCode === course.courseCode}
-          inLog={false}
-        />
-      ));
+      return coursesData
+        .filter((course) =>
+          course.name.toLowerCase().includes(keyword) ||
+          course.courseCode.toString().includes(keyword)
+        )
+        .map((course) => (
+          <AdminDatabaseItem
+            key={`course-${course.courseCode}`}
+            type="course"
+            data={course}
+            onSelect={(data) => setSelectedData(data)}
+            isSelected={selectedData.courseCode === course.courseCode}
+            inLog={false}
+          />
+        ));
     }
   
     if (selectedType === "Instructor" && instructorsData.length > 0) {
-      return instructorsData.map((instructor, index) => (
-        <AdminDatabaseItem
-          key={`instructor-${instructor.bilkentId || index}`}
-          type="instructor"
-          data={instructor}
-          onSelect={(data) => setSelectedData(data)}
-          isSelected={selectedData.bilkentId === instructor.bilkentId}
-          inLog={false}
-        />
-      ));
+      return instructorsData
+        .filter((instructor) =>
+          instructor.name.toLowerCase().includes(keyword) ||
+          instructor.surname.toLowerCase().includes(keyword) ||
+          instructor.email.toLowerCase().includes(keyword)
+        )
+        .map((instructor, index) => (
+          <AdminDatabaseItem
+            key={`instructor-${instructor.bilkentId || index}`}
+            type="instructor"
+            data={instructor}
+            onSelect={(data) => setSelectedData(data)}
+            isSelected={selectedData.bilkentId === instructor.bilkentId}
+            inLog={false}
+          />
+        ));
     }
-
-    if (selectedType === "Proctoring" && proctoringsData.length > 0) {
-      return proctoringsData.map((exam) => (
-        <AdminDatabaseItem
-          key={`proctoring-${exam.id}`}
-          type="exam"
-          data={{
-            id: exam.id,
-            course: exam.courseName,
-            examType: exam.proctoringName,
-            date: exam.startDate?.split("T")[0],
-            time: exam.startDate?.split("T")[1]?.substring(0, 5),
-            endTime: exam.endDate?.split("T")[1]?.substring(0, 5),
-            location: exam.classrooms,
-            Section: exam.section
-          }}
-          onSelect={(data) => setSelectedData(data)}
-          isSelected={selectedData.id === exam.id}
-          inLog={false}
-        />
-      ));
-    }
-    
   
-    return <p style={{ padding: "1rem" }}>No data to display.</p>;
+    if (selectedType === "Proctoring" && proctoringsData.length > 0) {
+      return proctoringsData
+        .filter((exam) =>
+          exam.courseName.toLowerCase().includes(keyword) ||
+          exam.proctoringName.toLowerCase().includes(keyword)
+        )
+        .map((exam) => (
+          <AdminDatabaseItem
+            key={`proctoring-${exam.id}`}
+            type="exam"
+            data={{
+              id: exam.id,
+              course: exam.courseName,
+              examType: exam.proctoringName,
+              date: exam.startDate?.split("T")[0],
+              time: exam.startDate?.split("T")[1]?.substring(0, 5),
+              endTime: exam.endDate?.split("T")[1]?.substring(0, 5),
+              location: exam.classrooms,
+              Section: exam.section
+            }}
+            onSelect={(data) => setSelectedData(data)}
+            isSelected={selectedData.id === exam.id}
+            inLog={false}
+          />
+        ));
+    }
+  
+    return <p style={{ padding: "1rem" }}>Please select a type to be displayed.</p>;
   };
   
+
 
 
   const createNewTa = async () => {
@@ -408,9 +428,15 @@ const AdminDatabasePage = () => {
       <div className="admin-database-database-top">
         <div className="admin-database-search-data-section">
           <div className="admin-database-search-bar">
-            <input type="text" placeholder="Name: ex. CS 202, Ahmet" />
+            <input
+              type="text"
+              placeholder="Name: ex. CS 202, Ahmet"
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+            />
+
             <select value={selectedType} onChange={handleTypeChange}>
-              <option value="Choose">choose</option>
+              <option value="Choose">Select a type</option>
 
               <option value="Course">Course</option>
               <option value="Instructor">Instructor</option>
@@ -427,10 +453,6 @@ const AdminDatabasePage = () => {
               </div>
             </div>
           </div>
-        </div>
-        <div className="admin-database-view-data-details">
-          <h3>View Data Details</h3>
-          <p>Select an entry from the table to see details.</p>
         </div>
       </div>
 
