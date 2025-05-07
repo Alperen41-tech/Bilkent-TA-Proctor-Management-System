@@ -4,6 +4,7 @@ import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.AuthStaffProctoringRequest;
+import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
@@ -61,23 +62,38 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
     public boolean sendAuthStaffProctoringRequest(int classProctoringId, int taId, int senderId, boolean isApproved) {
 
         if(isApproved && !canForcedRequestBeSent(classProctoringId)) {
-            System.out.println("Bura 1");
+            System.out.println("Proctoring is full");
             return false;
         }
 
         if(!isApproved && !canUnforcedRequestBeSent(classProctoringId)) {
-            System.out.println("Bura 2");
+            System.out.println("Too many requests");
             return false;
         }
 
         Optional<ClassProctoringTARelation> cptr = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classProctoringId, taId);
-        if(cptr.isPresent() || !taAvailabilityService.isTAAvailable(taRepo.findByUserId(taId).get(), classProcRepo.findById(classProctoringId).get())) {
-            System.out.println("Bura 3 " + cptr.isPresent());
+        Optional<TA> taOpt = taRepo.findByUserId(taId);
+        Optional<ClassProctoring> cpOptional = classProcRepo.findById(classProctoringId);
+
+        if (taOpt.isEmpty()) {
+            System.out.println("TA not found");
+            return false;
+        }
+        if (cpOptional.isEmpty()) {
+            System.out.println("ClassProctoring not found");
+            return false;
+        }
+        if (cptr.isPresent()) {
+            System.out.println("Already assigned");
+            return false;
+        }
+        if (!taAvailabilityService.isTAAvailable(taOpt.get(), cpOptional.get())) {
+            System.out.println("TA not available");
             return false;
         }
 
         if(isRequestAlreadySent(senderId, taId, classProctoringId) ) {
-            System.out.println("Bura 4");
+            System.out.println("An unapproved request is already sent");
             return false;
         }
         AuthStaffProctoringRequest request = new AuthStaffProctoringRequest();
@@ -86,7 +102,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
         if (sender.isPresent()) {
             request.setSenderUser(sender.get());
         } else {
-            System.out.println("Bura 5");
+            System.out.println("Given sender is not found");
             return false;
         }
 
@@ -94,7 +110,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
         if (receiver.isPresent()) {
             request.setReceiverUser(receiver.get());
         } else {
-            System.out.println("Bura 6");
+            System.out.println("Given receiver is not found");
             return false;
         }
 
@@ -126,7 +142,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
             }
         }
         else {
-            System.out.println("Bura 7");
+            System.out.println("Given proctoring is not found");
             return false;
         }
         return true;
@@ -141,17 +157,24 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
         int pLimit = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
         if(!isApproved && (classProctoringService.numberOfTAsAssigned(classProctoringId) + count > pLimit + 3 ||
                 classProctoringService.numberOfTAsAssigned(classProctoringId) >= pLimit)) {
+            System.out.println("Request limit is exceeded");
             return false;
         }
         if(isApproved && classProctoringService.numberOfTAsAssigned(classProctoringId) + count > pLimit) {
+            System.out.println("Proctoring ta limit is exceeded");
             return false;
         }
         List<TAProfileDTO> availableTAs = taService.getAllAvailableTAsByDepartmentCode(departmentCode, classProctoringId, senderId, eligibilityRestriction, oneDayRestriction);
+        if(availableTAs.size() < count) {
+            System.out.println("There are not enough available tas");
+            return false;
+        }
         availableTAs.sort(
                 Comparator.comparing(TAProfileDTO::isTAOfTheCourse, Comparator.reverseOrder())
                         .thenComparing(TAProfileDTO::getWorkload)
         );
         for(int i = 0 ; i < count ; i++){
+            System.out.println("Sending auth staff proctoring request: " + i);
             sendAuthStaffProctoringRequest(classProctoringId, availableTAs.get(i).getUserId(), senderId, isApproved);
         }
         return true;
@@ -162,18 +185,24 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
         int pLimit = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
         if(!isApproved && (classProctoringService.numberOfTAsAssigned(classProctoringId) + count > pLimit + 3 ||
                 classProctoringService.numberOfTAsAssigned(classProctoringId) >= pLimit)) {
+            System.out.println("Request limit is exceeded");
             return false;
         }
         if(isApproved && classProctoringService.numberOfTAsAssigned(classProctoringId) + count > pLimit) {
+            System.out.println("Proctoring ta limit is exceeded");
             return false;
         }
         List<TAProfileDTO> availableTAs = taService.getAllAvailableTAsByFacultyId(facultyId, classProctoringId, senderId, eligibilityRestriction, oneDayRestriction);
+        if(availableTAs.size() < count) {
+            System.out.println("There are not enough available tas");
+            return false;
+        }
         availableTAs.sort(
                 Comparator.comparing(TAProfileDTO::isTAOfTheCourse, Comparator.reverseOrder())
                         .thenComparing(TAProfileDTO::getWorkload)
         );
         for(int i = 0 ; i < count ; i++){
-            System.out.println("Buraaa " + availableTAs.get(i).getUserId());
+            System.out.println("Sending auth staff proctoring request: " + i);
             sendAuthStaffProctoringRequest(classProctoringId, availableTAs.get(i).getUserId(), senderId, isApproved);
         }
         return true;
@@ -182,17 +211,20 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
     @Autowired
     ClassProctoringService classProctoringService;
 
+    //Redundant Repo Call
     @Override
     public boolean canUnforcedRequestBeSent(int classProctoringId) {
         int tasAssigned = classProctoringService.numberOfTAsAssigned(classProctoringId);
         int totalUnapprovedRequests = classProctoringService.numberOfRequestsSent(classProctoringId);
         int taCount = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
         if(tasAssigned >= taCount){
+            System.out.println("There is no place left in classProctoring: "+classProctoringId);
             return false;
         }
         return tasAssigned + totalUnapprovedRequests < taCount + 3;
     }
 
+    //Redundant repo call
     @Override
     public boolean canForcedRequestBeSent(int classProctoringId){
         int tasAssigned = classProctoringService.numberOfTAsAssigned(classProctoringId);
@@ -200,6 +232,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
         return tasAssigned < taCount;
     }
 
+    //Redundant repo call
     @Override
     public boolean canRequestBeAccepted(int classProctoringId) {
         int tasAssigned = classProctoringService.numberOfTAsAssigned(classProctoringId);
