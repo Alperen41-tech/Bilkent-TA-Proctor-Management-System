@@ -25,11 +25,55 @@ const DOExamsPage = () => {
   const [departmentFilter, setDepartmentFilter] = useState("");
 
   const [showAutoModal, setShowAutoModal] = useState(false);
+  const [taCount, setTaCount] = useState(1);
+  const [eligibilityRestriction, setEligibilityRestriction] = useState(false);
+  const [oneDayRestriction, setOneDayRestriction] = useState(false);
+  const [autoSuggestedTAs, setAutoSuggestedTAs] = useState([]);
+
 
   // Dummy logic for "Automatic Assign"
-  const handleAutomaticAssign = () => {
-    setShowAutoModal(true);
+  const handleAutomaticAssign = async () => {
+
+    console.log("📤 Automatic Assign triggered");
+console.log("Selected Exam ID:", selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id);
+console.log("TA Count:", taCount);
+console.log("Eligibility Restriction:", eligibilityRestriction);
+console.log("One Day Restriction:", oneDayRestriction);
+
+    if (!selectedExamItem) {
+      alert("Please select an exam first.");
+      return;
+    }
+
+    const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+    if (!classProctoringId) {
+      alert("Invalid exam data.");
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
+        {
+          params: {
+            classProctoringId,
+            departmentCode: "CS",
+            senderId: 9,
+            count: taCount,
+            eligibilityRestriction,
+            oneDayRestriction,
+          },
+        }
+      );
+
+      setAutoSuggestedTAs(response.data || []);
+      setShowAutoModal(true);
+    } catch (error) {
+      console.error("Error during automatic assignment:", error);
+      alert("Failed to get suggested TAs.");
+    }
   };
+
 
 
 
@@ -168,7 +212,6 @@ const DOExamsPage = () => {
               Section: proctoring.section,
               examType: proctoring.proctoringName,
             }}
-            onDelete={(id) => console.log(`Deleted exam with ID: ${id}`)}
             onSelect={() => {
               setSelectedExamKey(key);
               setSelectedExamItem(item);
@@ -190,17 +233,15 @@ const DOExamsPage = () => {
 
       if (!departmentCode || departmentCode === "") {
         // Fetch all available TAs in faculty
-        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoring', {
-          params: { facultyId: facultyId, proctoringId: proctoringId, userId: 9 },
+        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoringWithRestriction', {
+          params: { facultyId: facultyId, proctoringId: proctoringId, userId: 9, eligibilityRestriction: eligibilityRestriction, oneDayRestriction: oneDayRestriction },
         });
       } else {
         // Fetch available TAs in selected department
-        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring', {
-          params: { departmentCode: departmentCode, proctoringId: proctoringId, userId: 9 },
+        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoringWithRestriction', {
+          params: { departmentCode: departmentCode, proctoringId: proctoringId, userId: 9, eligibilityRestriction: eligibilityRestriction, oneDayRestriction: oneDayRestriction },
         });
       }
-
-      console.log("Fetched Available TAs: ", response.data);
       setAllTAs(response.data || []);
       setTAs(response.data || []);
     } catch (error) {
@@ -227,7 +268,6 @@ const DOExamsPage = () => {
           params: { departmentCode: departmentCode },
         });
       }
-      console.log("Fetched Exams: ", response.data);
       setExamItems(response.data || []);
     } catch (error) {
       console.error('Error fetching exams:', error);
@@ -347,7 +387,9 @@ const DOExamsPage = () => {
       <AutomaticAssignmentModal
         isOpen={showAutoModal}
         onClose={() => setShowAutoModal(false)}
+        suggestedTAs={autoSuggestedTAs}
       />
+
 
 
       <div className="do-exams-content">
@@ -468,22 +510,35 @@ const DOExamsPage = () => {
 
               <div className="checkbox-options" style={{ marginTop: "1rem" }}>
                 <label>
-                  <input type="checkbox" /> Checkbox 1
+                  <input
+                    type="checkbox"
+                    checked={eligibilityRestriction}
+                    onChange={(e) => setEligibilityRestriction(e.target.checked)}
+                  />
+                  Eligibility Restriction
                 </label>
                 <br />
                 <label>
-                  <input type="checkbox" /> Checkbox 2
+                  <input
+                    type="checkbox"
+                    checked={oneDayRestriction}
+                    onChange={(e) => setOneDayRestriction(e.target.checked)}
+                  />
+                  One Day Restriction
                 </label>
+                <br />
+                <label>
+                  Enter TA count:
+                  <input
+                    type="number"
+                    min="1"
+                    value={taCount}
+                    onChange={(e) => setTaCount(parseInt(e.target.value))}
+                    style={{ marginLeft: "0.5rem", width: "60px" }}
+                  />
+                </label>
+
               </div>
-              <label>
-                Enter TA count:
-                <input
-                  type="number"
-                  min="1"
-                  placeholder="e.g., 2"
-                  style={{ marginLeft: "0.5rem", width: "60px" }}
-                />
-              </label>
 
             </div>
 
