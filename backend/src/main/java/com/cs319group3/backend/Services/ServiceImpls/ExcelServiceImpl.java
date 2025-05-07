@@ -1,10 +1,8 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
-import com.cs319group3.backend.Entities.Course;
-import com.cs319group3.backend.Entities.CourseTAInstructorForm;
-import com.cs319group3.backend.Entities.Department;
-import com.cs319group3.backend.Entities.Student;
+import com.cs319group3.backend.Entities.*;
 import com.cs319group3.backend.Entities.UserEntities.TA;
+import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.ExcelService;
 import org.apache.poi.ss.usermodel.*;
@@ -36,6 +34,9 @@ public class ExcelServiceImpl implements ExcelService {
     private TARepo taRepo;
     @Autowired
     private StudentRepo studentRepo;
+    @Autowired
+    private TATypeRepo taTypeRepo;
+
 
     public byte[] generateExcelFromTemplate() throws IOException {
         // Load template from classpath (inside the .jar)
@@ -166,6 +167,7 @@ public class ExcelServiceImpl implements ExcelService {
         }
     }
 
+
     // Helper method to safely get string cell values
     private String getStringCellValue(Cell cell) {
         if (cell == null) {
@@ -206,4 +208,66 @@ public class ExcelServiceImpl implements ExcelService {
         studentRepo.save(newStudent);
     }
 
+
+    @Override
+    public void uploadTAs(MultipartFile file) throws IOException{
+
+        try(InputStream inputStream = file.getInputStream();
+            Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+            for (Row row : sheet) {
+                if (row.getRowNum() < 1)
+                    continue;
+
+                String bilkentId = getStringCellValue(row.getCell(0));
+                String name = getStringCellValue(row.getCell(1));
+                String surname = getStringCellValue(row.getCell(2));
+                String email = getStringCellValue(row.getCell(3));
+                String phoneNumber = getStringCellValue(row.getCell(4));
+                int classYear = (int) row.getCell(5).getNumericCellValue();
+                String departmentCode = getStringCellValue(row.getCell(6));
+                String taType = getStringCellValue(row.getCell(7));
+
+                uploadTA(bilkentId, name, surname, email, phoneNumber, classYear, departmentCode, taType);
+            }
+        }
+    }
+
+    private void uploadTA(String bilkentId, String name, String surname, String email, String phoneNumber, int classYear, String departmentCode, String taType){
+
+        TA newTA = new TA();
+
+        Optional<Department> department = departmentRepo.findByDepartmentCode(departmentCode);
+        if (department.isPresent()) {
+            newTA.setDepartment(department.get());
+        } else {
+            // Handle case when department not found
+            throw new RuntimeException("Department with code " + departmentCode + " not found");
+        }
+
+        Optional<TAType> currTAType = taTypeRepo.findByTypeName(taType);
+        if (department.isPresent()) {
+            newTA.setTaType(currTAType.get());
+        } else {
+            // Handle case when department not found
+            throw new RuntimeException("TA type with " + taType + " not found");
+        }
+
+        setUserEssentials(newTA, bilkentId, name, surname, email, phoneNumber);
+        newTA.setClassYear(classYear);
+
+        taRepo.save(newTA);
+    }
+
+
+    private void setUserEssentials(User user, String bilkentId, String name, String surname, String email, String phoneNumber) {
+        // Set basic user properties
+        user.setBilkentId(bilkentId);
+        user.setName(name);
+        user.setSurname(surname);
+        user.setEmail(email);
+        user.setPhoneNumber(phoneNumber);
+        user.setActive(true); // Set as active by default
+    }
 }
