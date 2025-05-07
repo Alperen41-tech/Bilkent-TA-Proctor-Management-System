@@ -68,6 +68,9 @@ const AdminDatabasePage = () => {
   const [selectedInstructorCourses, setSelectedInstructorCourses] = useState([]);
   const [selectedInstructorCourse, setSelectedInstructorCourse] = useState("");
 
+  const [coursesData, setCoursesData] = useState([]);
+
+
 
 
   const handleImportClick = async () => {
@@ -75,17 +78,17 @@ const AdminDatabasePage = () => {
       alert("Please select a file.");
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("file", selectedFile);
-  
+
     try {
       const response = await axios.post("http://localhost:8080/excel/processTAAssignmentExcel", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-  
+
       if (response.status === 200) {
         alert("Excel file successfully. Imported.");
       } else {
@@ -96,73 +99,26 @@ const AdminDatabasePage = () => {
       alert("A problem occured.");
     }
   };
-  
 
+  const handleTypeChange = async (e) => {
+    const type = e.target.value;
+    setSelectedType(type);
 
-
-  // Sample data for the database items
-  const adminDatabaseItems = [
-    {
-      type: 'ta',
-      data: {
-        id: 1,
-        name: "Ali Kılıç",
-        email: "ali.kilic@ug.bilkent.edu.tr",
-        department: "Computer Engineering"
-      }
-    },
-    {
-      type: 'instructor',
-      data: {
-        id: 2,
-        name: "Dr. Zeynep Aslan",
-        email: "zeynep.aslan@bilkent.edu.tr",
-        title: "Associate Professor"
-      }
-    },
-    {
-      type: 'exam',
-      data: {
-        id: 3,
-        course: "CS 319",
-        date: "2025-03-15",
-        time: "10:00 AM",
-        location: "EE-214"
-      }
-    },
-    {
-      type: 'course',
-      data: {
-        id: 4,
-        code: "CS 319",
-        name: "Object-Oriented Software Engineering",
-        instructor: "Dr. Zeynep Aslan"
-      }
-    },
-    {
-      type: 'class',
-      data: {
-        id: 5,
-        room: "EE-214",
-        capacity: 35
-      }
-    },
-    {
-      type: 'student',
-      data: {
-        id: 6,
-        name: "Elif Kaya",
-        email: "elif.kaya@ug.bilkent.edu.tr",
-        studentId: "22123478"
+    if (type === "Course") {
+      try {
+        const { data } = await axios.get("http://localhost:8080/course/getAllCourses");
+        setCoursesData(data || []);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
       }
     }
-  ];
-
-
-
-  const handleTypeChange = (e) => {
-    setSelectedType(e.target.value);
   };
+
+
+
+
+
+
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -187,32 +143,37 @@ const AdminDatabasePage = () => {
     }
   };
 
-
   const createDatabaseItems = () => {
-    return (
-      adminDatabaseItems.map((item) => (
+    if (selectedType === "Course" && coursesData.length > 0) {
+      return coursesData.map((course) => (
         <AdminDatabaseItem
-          key={`${item.type}-${item.data.id}`}
-          type={item.type}
-          data={item.data}
-          onDelete={(id) => console.log(`Deleted ${item.type} with ID: ${id}`)}
+          key={`course-${course.id}`}
+          type="course"
+          data={course}  // ✅ pass the full object directly
+          onDelete={(id) => console.log(`Deleted course with ID: ${id}`)}
           onSelect={(data) => setSelectedData(data)}
-          isSelected={selectedData.id === item.data.id}
-          inLog={false} // Assuming this is not a log item
+          isSelected={selectedData.id === course.id}
+          inLog={false}
         />
-      )))
-  }
+      ));
+      
+    }
+
+    return <p style={{ padding: "1rem" }}>No data to display.</p>;
+  };
+
+
   const createNewTa = async () => {
     console.log("Calling createNewTa...");
-  
+
     const selectedDept = departments.find((d) => d.departmentId === selectedDepartmentId);
     const selectedCourse = courses.find((c) => c.id === selectedCourseId);
-  
+
     if (!selectedDept || !selectedCourse) {
       alert("Please select a department and a course.");
       return;
     }
-  
+
     const name = newTaNameRef.current.value;
     const surname = newTaSurnameRef.current.value;
     const email = newTaEmailRef.current.value;
@@ -220,7 +181,7 @@ const AdminDatabasePage = () => {
     const phoneNumber = newTaPhoneNumRef.current.value;
     const classYear = parseInt(newTaClassYearRef.current.value);
     const password = newTaPasswordRef.current.value;
-  
+
     try {
       const response = await axios.post("http://localhost:8080/ta/createTA", {
         profile: {
@@ -244,9 +205,9 @@ const AdminDatabasePage = () => {
           userTypeName: "ta",
         },
       });
-  
+
       console.log("Response:", response.data);
-  
+
       if (response.data === true) {
         alert("TA created successfully!");
       } else {
@@ -257,15 +218,15 @@ const AdminDatabasePage = () => {
       alert("An error occurred.");
     }
   };
-  
 
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
+
+
 
 
   const createNewProctoring = async (
@@ -390,11 +351,12 @@ const AdminDatabasePage = () => {
         <div className="admin-database-search-data-section">
           <div className="admin-database-search-bar">
             <input type="text" placeholder="Name: ex. CS 202, Ahmet" />
-            <select>
-              <option value="">Data Type</option>
-              <option value="Midterm">Midterm</option>
-              <option value="Exam">Exam</option>
+            <select value={selectedType} onChange={handleTypeChange}>
+              <option value="Choose">choose</option>
+
+              <option value="Course">Course</option>
             </select>
+
             <button className="admin-database-search-button">Search</button>
           </div>
           <div className="admin-database-data-table">
@@ -854,7 +816,7 @@ const AdminDatabasePage = () => {
             </div>
             <div className="admin-database-upload-buttons">
               <button onClick={handleImportClick} className="admin-database-import-button">Import</button>
-              <button className="admin-database-cancel-button" onClick={()=>setSelectedFile(null)}>Cancel</button>
+              <button className="admin-database-cancel-button" onClick={() => setSelectedFile(null)}>Cancel</button>
             </div>
           </div>
         </div>
