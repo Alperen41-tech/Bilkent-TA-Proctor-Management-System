@@ -218,4 +218,31 @@
   .admin-db-item-selected {
     background-color: #d1d2ff;
   }
+
+
+  
+
+  .admin-db-item {
+    font-size: 1rem; /* or increase to 1.1rem or 1.2rem as needed */
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: #e8eaff; /* example background for visibility */
+    margin-bottom: 0.75rem;
+  }
+  
+  .admin-db-item .course-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .admin-db-item .course-description {
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+  }
+  
+  .admin-db-item .course-meta {
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+  
   

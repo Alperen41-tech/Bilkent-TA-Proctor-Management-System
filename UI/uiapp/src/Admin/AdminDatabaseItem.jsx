@@ -7,7 +7,7 @@ const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }
 
   const renderDetails = () => {
     switch (type) {
-      case 'ta':
+      case 'ta2':
         return (
           <>
             <div>{data.name}</div>
@@ -87,6 +87,27 @@ const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }
             </div>
           </>
         );
+
+
+      case 'ta':
+        return (
+          <>
+            <div className="course-title">
+              <strong>{data.name} {data.surname}</strong> — {data.email}
+            </div>
+            <div className="course-meta">
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <small><strong>Bilkent ID:</strong> {data.bilkentId}</small>
+                <small><strong>Phone:</strong> {data.phoneNumber}</small>
+              </div>
+              <small><strong>Department:</strong> {data.departmentName}</small><br />
+              <small><strong>Course:</strong> {data.courseName} ({data.courseCode})</small><br />
+              <small><strong>Workload:</strong> {data.workload}</small><br />
+            </div>
+
+          </>
+        );
+
 
 
 
