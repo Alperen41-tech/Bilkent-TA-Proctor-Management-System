@@ -1,7 +1,6 @@
 package com.cs319group3.backend.DTOMappers;
 
 import com.cs319group3.backend.DTOs.InstructorProfileDTO;
-import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.OfferedCourse;
 import com.cs319group3.backend.Entities.RelationEntities.CourseInstructorRelation;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
@@ -44,7 +43,7 @@ public class InstructorProfileMapper {
             int currentSemesterId = generalVariableRepo.getSemesterId();
             if (c.getSemester().getSemesterId() == currentSemesterId){
                 String courseName = relation.getCourse().getCourse().getCourseName();
-                courseName = courseName + " - " + relation.getCourse().getCourse().getCourseFullName();
+                courseName = courseName + " - " + relation.getCourse().getCourse().getCourseFullCode();
                 if (seen.add(courseName)) { // add returns false if courseName is already in the set
                     courseNames.add(courseName);
                 }

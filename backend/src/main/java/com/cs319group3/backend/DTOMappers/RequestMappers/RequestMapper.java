@@ -263,7 +263,7 @@ public class RequestMapper {
         else
             requestDTO.setTaskTypeName(request.getTaskType().getTaskTypeName());
         requestDTO.setTimeSpent(request.getTimeSpent());
-        requestDTO.setCourseCode(request.getCourse().getCourseFullName());
+        requestDTO.setCourseCode(request.getCourse().getCourseFullCode());
         return requestDTO;
     }
 

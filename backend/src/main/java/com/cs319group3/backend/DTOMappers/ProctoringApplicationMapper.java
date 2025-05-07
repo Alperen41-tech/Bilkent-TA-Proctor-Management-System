@@ -31,7 +31,7 @@ public class ProctoringApplicationMapper {
         proctoringApplicationDTO.setComplete(proctoringApplication.isComplete());
         proctoringApplicationDTO.setClassProctoringDTO(ClassProctoringMapper.essentialMapper(proctoringApplication.getClassProctoring()));
 
-        String courseFullName = proctoringApplication.getClassProctoring().getCourse().getCourseFullName();
+        String courseFullName = proctoringApplication.getClassProctoring().getCourse().getCourseFullCode();
         String departmentName = proctoringApplication.getClassProctoring().getCourse().getDepartment().getDepartmentName();
 
         proctoringApplicationDTO.setCourseFullName(courseFullName);

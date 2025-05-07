@@ -21,6 +21,7 @@ public class ClassProctoringDTO {
     private int id;
     private String proctoringName;
     private String courseName;
+    private String courseCode;
     private int section;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

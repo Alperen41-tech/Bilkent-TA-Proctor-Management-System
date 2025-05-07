@@ -13,10 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,7 +62,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     private void setRow(Row row, CourseTAInstructorForm form){
         row.createCell(0).setCellValue(form.getInstructor().getFullName());
-        row.createCell(1).setCellValue(form.getCourse().getCourseFullName());
+        row.createCell(1).setCellValue(form.getCourse().getCourseFullCode());
         row.createCell(2).setCellValue(form.getMinTALoad());
         row.createCell(3).setCellValue(form.getMaxTALoad());
         row.createCell(4).setCellValue(form.getNumberOfGrader());

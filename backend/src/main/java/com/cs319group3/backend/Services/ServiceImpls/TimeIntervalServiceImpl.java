@@ -4,7 +4,6 @@ import com.cs319group3.backend.DTOMappers.TimeIntervalMapper;
 import com.cs319group3.backend.DTOs.DateIntervalDTO;
 import com.cs319group3.backend.DTOs.TimeIntervalDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
-import com.cs319group3.backend.Entities.OfferedCourse;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RelationEntities.CourseInstructorRelation;
 import com.cs319group3.backend.Entities.RelationEntities.CourseStudentRelation;
@@ -26,7 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class TimeIntervalServiceImpl implements TimeIntervalService {
@@ -186,7 +184,7 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
 
     private void addTaCourses(List<CourseStudentRelation> courseStudentRelations, List<TimeIntervalDTO> schedule) {
         for (CourseStudentRelation courseStudentRelation : courseStudentRelations) {
-            String name = courseStudentRelation.getCourse().getCourse().getCourseFullName() + " - " + courseStudentRelation.getCourse().getSectionNo();
+            String name = courseStudentRelation.getCourse().getCourse().getCourseFullCode() + " - " + courseStudentRelation.getCourse().getSectionNo();
             List<OfferedCourseScheduleRelation> courseSchedule = courseStudentRelation.getCourse().getSchedule();
             for (OfferedCourseScheduleRelation offeredCourseScheduleRelation : courseSchedule) {
                 TimeInterval timeInterval = offeredCourseScheduleRelation.getTimeInterval();
@@ -225,7 +223,7 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
 
     private void addInstructorCourses(List<CourseInstructorRelation> courses, List<TimeIntervalDTO> schedule) {
         for (CourseInstructorRelation course : courses) {
-            String name = course.getCourse().getCourse().getCourseFullName() + " - " + course.getCourse().getSectionNo();
+            String name = course.getCourse().getCourse().getCourseFullCode() + " - " + course.getCourse().getSectionNo();
             List<OfferedCourseScheduleRelation> courseSchedule = course.getCourse().getSchedule();
             for (OfferedCourseScheduleRelation offeredCourseScheduleRelation : courseSchedule) {
                 TimeInterval timeInterval = offeredCourseScheduleRelation.getTimeInterval();
@@ -259,7 +257,7 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
                 proctoringInterval.setDay(eventStart.getDayOfWeek().toString());
                 proctoringInterval.setStartTime(eventStart.toLocalTime());
                 proctoringInterval.setEndTime(eventEnd.toLocalTime());
-                String eventName = classProctoring.getCourse().getCourseFullName() + " - " + classProctoring.getEventName();
+                String eventName = classProctoring.getCourse().getCourseFullCode() + " - " + classProctoring.getEventName();
                 TimeIntervalDTO timeIntervalDTO;
                 if (ofStudent)
                     timeIntervalDTO = TimeIntervalMapper.essentialMapper(proctoringInterval, "exam", eventName);

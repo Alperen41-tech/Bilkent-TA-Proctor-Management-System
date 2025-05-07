@@ -34,7 +34,7 @@ public class Course {
     private Instructor coordinator;
 
 
-    public String getCourseFullName() {
+    public String getCourseFullCode() {
         return department.getDepartmentCode() + " " + courseCode;
     }
 
