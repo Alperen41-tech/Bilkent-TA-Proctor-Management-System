@@ -287,6 +287,8 @@ public class ExcelServiceImpl implements ExcelService {
         }
     }
 
+
+
     private void uploadInstructor(String bilkentId, String name, String surname, String email, String phoneNumber, String departmentCode) {
         Instructor newInstructor = new Instructor();
 
@@ -301,6 +303,50 @@ public class ExcelServiceImpl implements ExcelService {
         setUserEssentials(newInstructor, bilkentId, name, surname, email, phoneNumber);
 
         instructorRepo.save(newInstructor);
+    }
+
+    @Override
+    public void uploadCourses(MultipartFile file) throws IOException{
+
+        try(InputStream inputStream = file.getInputStream();
+            Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+            for (Row row : sheet) {
+                if (row.getRowNum() < 1)
+                    continue;
+
+                String departmentCode = getStringCellValue(row.getCell(0));
+                double courseCode = row.getCell(1).getNumericCellValue();
+                String courseName = getStringCellValue(row.getCell(2));
+                String coordinatorId = getStringCellValue(row.getCell(3));
+
+
+
+                uploadCourse(departmentCode, (int) courseCode, courseName, coordinatorId);
+            }
+        }
+    }
+
+
+    private void uploadCourse(String departmentCode, int courseCode, String courseName, String coordinatorId) {
+
+        Course course = new Course();
+        Optional<Department> department = departmentRepo.findByDepartmentCode(departmentCode);
+        if (!department.isPresent()) {
+            throw new RuntimeException("Department with code " + departmentCode + " not found");
+        }
+
+        Optional<Instructor> instructor = instructorRepo.findByBilkentId(coordinatorId);
+        if (!instructor.isPresent()) {
+            throw new RuntimeException("Instructor with id " + coordinatorId + " not found");
+        }
+
+        course.setCoordinator(instructor.get());
+        course.setDepartment(department.get());
+        course.setCourseCode(courseCode);
+        course.setCourseName(courseName);
+        courseRepo.save(course);
     }
 
 

@@ -19,4 +19,6 @@ WHERE instructor.userId=:instructorId
 """)
     Integer getDepartmentId(int instructorId);
 
+    Optional<Instructor> findByBilkentId(String bilkentID);
+
 }
