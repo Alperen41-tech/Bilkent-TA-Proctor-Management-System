@@ -10,6 +10,7 @@ import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.*;
+import com.cs319group3.backend.Services.ServiceImpls.ClassProctoringTARelationServiceImpl;
 import com.cs319group3.backend.Services.ServiceImpls.LogServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,6 +63,8 @@ public class RequestServiceImpl implements RequestService {
     private AuthStaffProctoringRequestService authStaffProctoringRequestService;
     @Autowired
     private LogService logService;
+    @Autowired
+    private ClassProctoringTARelationService classProctoringTARelationService;
 
 
     @Override
@@ -73,41 +76,52 @@ public class RequestServiceImpl implements RequestService {
 
         Request request = optionalRequest.get();
 
-        try{
-            if (request instanceof TAWorkloadRequest) {
-                TAWorkloadRequest req = (TAWorkloadRequest) request;
-                List<TAWorkloadRequest> reqs = taWorkloadRequestRepo.findByWorkloadId(req.getWorkloadId());
-                for (TAWorkloadRequest req1 : reqs) {
-                    if (!(req1.getRequestId() == requestId)) {
-                        deleteRequest(req1.getRequestId());
+        if (response){
+            try{
+                if (request instanceof TAWorkloadRequest) {
+                    Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());
+                    if (ta.isEmpty()) {
+                        throw new RuntimeException("No such TA");
                     }
+                    ta.get().setWorkload(taWorkloadRequestService.getTotalWorkload(request.getSenderUser().getUserId()));
+                    taRepo.save(ta.get());
                 }
-            } else if (request instanceof TASwapRequest) {
-                if (response){
+                else if (request instanceof TASwapRequest) {
                     TASwapRequest req = (TASwapRequest) request;
                     swapRequestService.acceptSwapRequest(requestId);
                 }
-            } else if (request instanceof TALeaveRequest) {
-                TALeaveRequest req = (TALeaveRequest) request;
-
-            } else if (request instanceof InstructorAdditionalTARequest) {
-                InstructorAdditionalTARequest req = (InstructorAdditionalTARequest) request;
-            } else if (request instanceof AuthStaffProctoringRequest) {
-                AuthStaffProctoringRequest req = (AuthStaffProctoringRequest) request;
-                if(!authStaffProctoringRequestService.canRequestBeAccepted(req.getClassProctoring().getClassProctoringId())) {
-                    request.setApproved(false);
-                    request.setResponseDate(LocalDateTime.now());
-                    requestRepo.save(request);
-                    System.out.println("Request automatically rejected due to full proctoring");
-                    return false;
+                else if (request instanceof AuthStaffProctoringRequest) {
+                    AuthStaffProctoringRequest req = (AuthStaffProctoringRequest) request;
+                    if(!authStaffProctoringRequestService.canRequestBeAccepted(req.getClassProctoring().getClassProctoringId())) {
+                        request.setApproved(false);
+                        request.setResponseDate(LocalDateTime.now());
+                        requestRepo.save(request);
+                        System.out.println("Request automatically rejected due to full proctoring");
+                        return false;
+                    }
+                    else{
+                        classProctoringTARelationService.createClassProctoringTARelation(req.getReceiverUser().getUserId(), req.getClassProctoring().getClassProctoringId());
+                    }
                 }
-            } else {
-                return false; // unknown type
+                else {
+                    return false; // unknown type
+                }
+            }
+            catch (Exception e){
+                System.out.println(e.getMessage());
+                return false;
             }
         }
-        catch (Exception e){
-            System.out.println(e.getMessage());
-            return false;
+
+
+        if (request instanceof TAWorkloadRequest) {
+            TAWorkloadRequest req = (TAWorkloadRequest) request;
+            List<TAWorkloadRequest> reqs = taWorkloadRequestRepo.findByWorkloadId(req.getWorkloadId());
+            for (TAWorkloadRequest req1 : reqs) {
+                if (req1.getRequestId() != requestId) {
+                    deleteRequest(req1.getRequestId());
+                }
+            }
         }
 
         request.setApproved(response);
@@ -119,14 +133,7 @@ public class RequestServiceImpl implements RequestService {
             logMessage = "Request " + request.getRequestId() + " rejected by user " + request.getReceiverUser().getUserId() + ".";
         logService.createLog(logMessage, LogType.UPDATE);
         requestRepo.save(request);
-        if (request instanceof TAWorkloadRequest) {
-            Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());
-            if (ta.isEmpty()) {
-                throw new RuntimeException("No such TA");
-            }
-            ta.get().setWorkload(taWorkloadRequestService.getTotalWorkload(request.getSenderUser().getUserId()));
-            taRepo.save(ta.get());
-        }
+
         notificationService.createNotification(request, APPROVAL);
 
         return true;
