@@ -25,4 +25,6 @@ public interface CourseRepo extends JpaRepository<Course, Integer> {
     Optional<Integer> findCourseCodeByCourseId(int courseId);
 
     Optional<Course> findByCourseCode(Integer courseCode);
+
+    Optional<Course> findByDepartment_DepartmentCodeAndCourseCode(String departmentCode, int courseCode);
 }

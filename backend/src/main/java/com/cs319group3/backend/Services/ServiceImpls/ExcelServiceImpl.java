@@ -1,14 +1,19 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
+import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.CourseTAInstructorForm;
+import com.cs319group3.backend.Entities.Department;
+import com.cs319group3.backend.Entities.UserEntities.TA;
+import com.cs319group3.backend.Repositories.CourseRepo;
 import com.cs319group3.backend.Repositories.CourseTAInstructorFormRepo;
+import com.cs319group3.backend.Repositories.DepartmentRepo;
+import com.cs319group3.backend.Repositories.TARepo;
 import com.cs319group3.backend.Services.ExcelService;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -16,15 +21,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ExcelServiceImpl implements ExcelService {
 
+    private static final String TEMPLATE_PATH = "/excelResources/TARequirementsTemplate.xlsx";
 
     @Autowired
     private CourseTAInstructorFormRepo courseTAInstructorFormRepo;
-
-    private static final String TEMPLATE_PATH = "/excelResources/TARequirementsTemplate.xlsx";
+    @Autowired
+    private DepartmentRepo departmentRepo;
+    @Autowired
+    private CourseRepo courseRepo;
+    @Autowired
+    private TARepo taRepo;
 
     public byte[] generateExcelFromTemplate() throws IOException {
         // Load template from classpath (inside the .jar)
@@ -54,11 +65,80 @@ public class ExcelServiceImpl implements ExcelService {
         row.createCell(3).setCellValue(form.getMaxTALoad());
         row.createCell(4).setCellValue(form.getNumberOfGrader());
         row.createCell(5).setCellValue(form.getMustHaveTAs().replace("*", "\n"));
-        row.createCell(6).setCellValue(form.getPreferredTAs().replace("*", ""));
-        row.createCell(7).setCellValue(form.getPreferredGraders().replace("*", ""));
-        row.createCell(8).setCellValue(form.getAvoidedTAs().replace("*", ""));
+        row.createCell(6).setCellValue(form.getPreferredTAs().replace("*", "\n"));
+        row.createCell(7).setCellValue(form.getPreferredGraders().replace("*", "\n"));
+        row.createCell(8).setCellValue(form.getAvoidedTAs().replace("*", "\n"));
         row.createCell(9).setCellValue(form.getDescription());
     }
 
+    @Override
+    public void processTAAssignmentExcel(MultipartFile file) throws IOException {
+
+        try (InputStream inputStream = file.getInputStream();
+             Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+            Sheet sheet = workbook.getSheetAt(0); // First sheet
+
+            Row headerRow = sheet.getRow(0);
+            Row headerRow2 = sheet.getRow(1);
+
+
+
+            if (headerRow == null) {
+                throw new RuntimeException("empty sheet cannot be processed");
+            }
+
+            // Example: Loop through all rows and cells
+            for (Row row : sheet) {
+
+                String ss = row.getCell(0).getStringCellValue();
+
+                if (row.getRowNum() < 9)
+                    continue; // skip header
+
+                for (Cell cell : row) {
+
+                    if (cell.getColumnIndex() < 4)
+                        continue;
+
+                    if (cell.getNumericCellValue() >= 0){
+
+                        int columnIndex = cell.getColumnIndex();
+                        String departmentCode = headerRow.getCell(columnIndex).getStringCellValue();
+                        double courseCode = headerRow2.getCell(columnIndex).getNumericCellValue();
+                        DataFormatter formatter = new DataFormatter();
+                        String taId = formatter.formatCellValue(row.getCell(1));
+
+                        assignTA(departmentCode, (int)courseCode, taId);
+                        break;
+                    }
+                } 
+            }
+        }
+    }
+
+    private void assignTA(String departmentCode, int courseCode, String taId) throws RuntimeException{
+
+        Optional<Department> department = departmentRepo.findByDepartmentCode(departmentCode);
+        if (!department.isPresent()) {
+            throw new RuntimeException("failed because department with code " + departmentCode + " does not exist");
+        }
+
+        Optional<Course> course = courseRepo.findByDepartment_DepartmentCodeAndCourseCode(department.get().getDepartmentCode(), courseCode);
+        if (!course.isPresent()) {
+            throw new RuntimeException("failed because course " + departmentCode + courseCode + " does not exist");
+        }
+
+        Optional<TA> ta = taRepo.findByBilkentId(taId);
+        if (!ta.isPresent()) {
+            throw new RuntimeException("ta with id " + taId + " does not exist");
+        }
+
+        TA currTA = ta.get();
+        Course currCourse = course.get();
+
+        currTA.setAssignedCourse(currCourse);
+        taRepo.save(currTA);
+    }
 
 }
