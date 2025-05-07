@@ -428,8 +428,8 @@ insert into semester (semester_id, year, term) values
     (2, '2024-2025', 2),
     (3, '2025-2026', 1);
     
-insert into general_variable (semester_id, ta_proctoring_cap_time) values
-	(2, 25);
+insert into general_variable (general_variable_id ,semester_id, ta_proctoring_cap_time) values
+	(1, 2, 25);
     
 insert into user (user_id, bilkent_id, name, surname, email, phone_number, is_active) values
 	(1, '23103131', 'Emir', 'Atlas', 'emirinmaili@bilkent.edu.tr', '+905353533535', true),
