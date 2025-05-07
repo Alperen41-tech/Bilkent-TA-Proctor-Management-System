@@ -3,6 +3,8 @@ import React from 'react';
 import './AdminDatabaseItem.css';
 
 const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }) => {
+  console.log("Course data passed to AdminDatabaseItem:", data);
+
   const renderDetails = () => {
     switch (type) {
       case 'ta':
@@ -13,7 +15,7 @@ const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }
             <div>{data.department}</div>
           </>
         );
-      case 'instructor':
+      case 'instructor2':
         return (
           <>
             <div>{data.name}</div>
@@ -55,25 +57,38 @@ const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }
           </>
         );
 
-case 'course':
-  return (
-    <>
-      <div className="course-title">
-        <strong>{data.courseCode}</strong> — {data.name || "Unnamed Course"}
-      </div>
-      <div className="course-description">
-        {data.description?.trim() ? data.description : "No description available."}
-      </div>
-      <div className="course-meta">
-        <small>
-          <strong>Department:</strong>{" "}
-          {data.departmentCode || `ID ${data.departmentId}` || "Unknown"}
-        </small>
-      </div>
-    </>
-  );
+      case 'instructor':
+        return (
+          <>
+            <div><strong>{data.name} {data.surname}</strong></div>
+            <div>{data.email}</div>
+            <div><em>{data.role}</em></div>
+            <div>Dept: {data.departmentName}</div>
+            <div>Phone: {data.phoneNumber}</div>
+            <div>Courses: {data.courses?.join(', ') || 'None'}</div>
+          </>
+        );
 
-        
+
+      case 'course':
+        return (
+          <>
+            <div className="course-title">
+              <strong>{data.courseCode}</strong> — {data.name || "Unnamed Course"}
+            </div>
+            <div className="course-description">
+              {data.description?.trim() ? data.description : "No description available."}
+            </div>
+            <div className="course-meta">
+              <small>
+                <strong>Department:</strong>{" "}
+                {data.departmentCode || `ID ${data.departmentId}` || "Unknown"}
+              </small>
+            </div>
+          </>
+        );
+
+
 
       default:
         return <div>Unknown type</div>;
@@ -86,7 +101,7 @@ case 'course':
         {renderDetails()}
       </div>
       {!inLog && (<div className="admin-db-delete" onClick={() => onDelete(data.id)}>
-        🗑️
+
       </div>)}
 
     </div>

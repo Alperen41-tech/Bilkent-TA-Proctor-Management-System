@@ -69,6 +69,8 @@ const AdminDatabasePage = () => {
   const [selectedInstructorCourse, setSelectedInstructorCourse] = useState("");
 
   const [coursesData, setCoursesData] = useState([]);
+  const [instructorsData, setInstructorsData] = useState([]);
+
 
 
 
@@ -103,7 +105,7 @@ const AdminDatabasePage = () => {
   const handleTypeChange = async (e) => {
     const type = e.target.value;
     setSelectedType(type);
-
+  
     if (type === "Course") {
       try {
         const { data } = await axios.get("http://localhost:8080/course/getAllCourses");
@@ -112,7 +114,17 @@ const AdminDatabasePage = () => {
         console.error("Error fetching courses:", error);
       }
     }
+  
+    if (type === "Instructor") {
+      try {
+        const { data } = await axios.get("http://localhost:8080/instructor/getAllInstructors");
+        setInstructorsData(data || []);
+      } catch (error) {
+        console.error("Error fetching instructors:", error);
+      }
+    }
   };
+  
 
 
 
@@ -147,20 +159,34 @@ const AdminDatabasePage = () => {
     if (selectedType === "Course" && coursesData.length > 0) {
       return coursesData.map((course) => (
         <AdminDatabaseItem
-          key={`course-${course.id}`}
+          key={`course-${course.courseCode}`}
           type="course"
-          data={course}  // ✅ pass the full object directly
+          data={course}
           onDelete={(id) => console.log(`Deleted course with ID: ${id}`)}
           onSelect={(data) => setSelectedData(data)}
-          isSelected={selectedData.id === course.id}
+          isSelected={selectedData.courseCode === course.courseCode}
           inLog={false}
         />
       ));
-      
     }
-
+  
+    if (selectedType === "Instructor" && instructorsData.length > 0) {
+      return instructorsData.map((instructor, index) => (
+        <AdminDatabaseItem
+          key={`instructor-${instructor.bilkentId || index}`}
+          type="instructor"
+          data={instructor}
+          onDelete={(id) => console.log(`Deleted instructor with ID: ${id}`)}
+          onSelect={(data) => setSelectedData(data)}
+          isSelected={selectedData.bilkentId === instructor.bilkentId}
+          inLog={false}
+        />
+      ));
+    }
+  
     return <p style={{ padding: "1rem" }}>No data to display.</p>;
   };
+  
 
 
   const createNewTa = async () => {
@@ -355,6 +381,7 @@ const AdminDatabasePage = () => {
               <option value="Choose">choose</option>
 
               <option value="Course">Course</option>
+              <option value="Instructor">Instructor</option>
             </select>
 
             <button className="admin-database-search-button">Search</button>
