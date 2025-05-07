@@ -4,6 +4,7 @@ import com.cs319group3.backend.DTOs.GeneralVariableDTO;
 import com.cs319group3.backend.Entities.GeneralVariable;
 import com.cs319group3.backend.Entities.Semester;
 import com.cs319group3.backend.Repositories.GeneralVariableRepo;
+import com.cs319group3.backend.Repositories.SemesterRepo;
 import com.cs319group3.backend.Services.GeneralVariableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import java.util.Optional;
 public class GeneralVariableServiceImpl implements GeneralVariableService {
     @Autowired
     private GeneralVariableRepo generalVariableRepo;
+    @Autowired
+    private SemesterRepo semesterRepo;
 
     @Override
     public boolean changeSemester(String semester) {
@@ -25,14 +28,26 @@ public class GeneralVariableServiceImpl implements GeneralVariableService {
         Semester sm = new Semester();
         String[] parts = semester.split(" ");
         sm.setYear(parts[0]);
-        if (parts[1].equalsIgnoreCase("fall"))
+        int term;
+        if (parts[1].equalsIgnoreCase("fall")) {
             sm.setTerm(1);
-        else if (parts[1].equalsIgnoreCase("spring"))
+            term = 1;
+        }
+        else if (parts[1].equalsIgnoreCase("spring")) {
             sm.setTerm(2);
+            term = 2;
+        }
         else {
             throw new RuntimeException("Wrong term input");
         }
         generalVariable.setSemester(sm);
+        Optional<Semester> smstr = semesterRepo.findByYearAndTerm(parts[0], term);
+        if (smstr.isEmpty()) {
+            Semester newSemester = new Semester();
+            newSemester.setYear(parts[0]);
+            newSemester.setTerm(term);
+            semesterRepo.save(newSemester);
+        }
         generalVariableRepo.save(generalVariable);
         return true;
     }
