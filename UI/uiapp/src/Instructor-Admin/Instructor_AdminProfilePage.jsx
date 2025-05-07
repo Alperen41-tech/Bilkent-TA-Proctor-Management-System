@@ -8,12 +8,46 @@ import { useState, useEffect, useRef} from "react";
 const Instructor_AdminProfilePage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [insProfileInfo, setInsProfileInfo] = useState({courses: []});
+  const [selectedFile, setSelectedFile] = useState(null);
 
   //Refs for password inputs
   const oldPasswordRef = useRef();
   const newPasswordRef = useRef();
   const confirmNewPasswordRef = useRef();
   //-----------------------------------------------------------
+
+  const handleImportClick = async () => {
+    if (!selectedFile) {
+      alert("Please select a file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      const response = await axios.post("http://localhost:8080/excel/processTAAssignmentExcel", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 200) {
+        alert("Excel file successfully. Imported.");
+      } else {
+        alert("Upload failed.");
+      }
+    } catch (error) {
+      console.error("File dump error:", error);
+      alert("A problem occured.");
+    }
+  };
+
+  const handleFileChange = (e) => {
+      if (e.target.files && e.target.files[0]) {
+        setSelectedFile(e.target.files[0]);
+      }
+    };
 
   const handleGetTaConstraints = async () => {
     try {
@@ -110,6 +144,48 @@ const Instructor_AdminProfilePage = () => {
             <h3>Manage Account</h3>
             <button className="purple-button" onClick={() => setShowChangePasswordModal(true)}>Change Password</button>
             <button className="purple-button" onClick={() => handleGetTaConstraints()}>Get Instructor's TA constraints</button>
+          </div>
+          <div className="ins-admin-dump-new-data">
+            <h3>Dump New Data</h3>
+            <div className="ins-admin-upload-container">
+              {!selectedFile && 
+                <div className="ins-admin-drag-drop-area">              
+                  <p>Drag &amp; Drop file here</p>
+                  <p>or</p>
+                  <label htmlFor="file-upload" className="ins-admin-choose-file-label">
+                    Choose File 📄
+                  </label>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    onChange={handleFileChange}
+                    style={{ display: "none" }}
+                  />
+                  <p>Supported formats: Excel</p>
+                </div>
+              }
+              {selectedFile && (
+                <div className="ins-admin-drag-drop-area" style={{
+                  backgroundColor: "#e0ffe0",
+                  border: "2px dashed #4CAF50",
+                  padding: "16px",
+                  borderRadius: "8px",
+                  textAlign: "center",
+                }}
+            >
+                  
+                  <p style={{ fontWeight: "bold", color: "#2e7d32" }}>
+                    ✅ File successfully selected!
+                  </p>
+                  <p><strong>Name:</strong> {selectedFile.name}</p>
+                  <p><strong>Size:</strong> {(selectedFile.size / 1024).toFixed(2)} KB</p>
+                </div>
+              )}
+              <div className="ins-admin-upload-buttons">
+                <button onClick={handleImportClick} className="ins-admin-import-button">Import</button>
+                <button className="ins-admin-cancel-button" onClick={() => setSelectedFile(null)}>Cancel</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

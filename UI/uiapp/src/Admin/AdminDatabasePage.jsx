@@ -3,6 +3,7 @@ import NavbarAdmin from "./NavbarAdmin";
 import "./AdminDatabasePage.css";
 import AdminDatabaseItem from "./AdminDatabaseItem";
 import axios from "axios";
+
 import { type } from "@testing-library/user-event/dist/type";
 
 const AdminDatabasePage = () => {
@@ -138,19 +139,11 @@ const AdminDatabasePage = () => {
 
   };
 
-
-
-
-
-
-
-
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
     }
   };
-
 
   useEffect(() => {
     fetchDepartments();
@@ -239,8 +232,6 @@ const AdminDatabasePage = () => {
   };
   
 
-
-
   const createNewTa = async () => {
     console.log("Calling createNewTa...");
 
@@ -297,16 +288,6 @@ const AdminDatabasePage = () => {
     }
   };
 
-
-
-
-
-
-
-
-
-
-
   const createNewProctoring = async (
     eventName,
     courseId,
@@ -340,7 +321,6 @@ const AdminDatabasePage = () => {
       alert("An error occurred. Please try again.");
     }
   };
-
 
   const createNewCourse = async (name, description, courseCode, departmentId, coordinatorId) => {
     try {
@@ -411,14 +391,6 @@ const AdminDatabasePage = () => {
       alert("An error occurred while creating the instructor.");
     }
   };
-
-
-
-
-
-
-
-
 
   return (
     <div className="admin-database-database-container">
@@ -673,8 +645,6 @@ const AdminDatabasePage = () => {
             </form>
           )}
 
-
-
           {selectedType === "TA" && (
             <form className="admin-database-type-form" onSubmit={async (e) => {
               e.preventDefault();
@@ -745,8 +715,6 @@ const AdminDatabasePage = () => {
               <input type="submit" value="Create TA" className="admin-database-create-type-button" />
             </form>
           )}
-
-
 
           {selectedType === "Instructor" && (
             <form className="admin-database-type-form" onSubmit={(e) => {
@@ -875,28 +843,45 @@ const AdminDatabasePage = () => {
               <input type="submit" value="Create Instructor" className="admin-database-create-type-button" />
             </form>
           )}
-
-
         </div>
 
         {/* Right Panel: Dump New Data */}
         <div className="admin-database-dump-new-data">
           <h3>Dump New Data</h3>
           <div className="admin-database-upload-container">
-            <div className="admin-database-drag-drop-area" style={selectedFile ? { backgroundColor: "#f0f0f0" } : {}}>
-              <p>Drag &amp; Drop file here</p>
-              <p>or</p>
-              <label htmlFor="file-upload" className="admin-database-choose-file-label">
-                Choose File
-              </label>
-              <input
-                id="file-upload"
-                type="file"
-                onChange={handleFileChange}
-                style={{ display: "none" }}
-              />
-              <p>Supported formats: Excel</p>
-            </div>
+            {!selectedFile && 
+              <div className="admin-database-drag-drop-area">              
+                <p>Drag &amp; Drop file here</p>
+                <p>or</p>
+                <label htmlFor="file-upload" className="admin-database-choose-file-label">
+                  Choose File 📄
+                </label>
+                <input
+                  id="file-upload"
+                  type="file"
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                />
+                <p>Supported formats: Excel</p>
+              </div>
+            }
+            {selectedFile && (
+              <div className="admin-database-drag-drop-area" style={{
+                backgroundColor: "#e0ffe0",
+                border: "2px dashed #4CAF50",
+                padding: "16px",
+                borderRadius: "8px",
+                textAlign: "center",
+              }}
+          >
+                
+                <p style={{ fontWeight: "bold", color: "#2e7d32" }}>
+                  ✅ File successfully selected!
+                </p>
+                <p><strong>Name:</strong> {selectedFile.name}</p>
+                <p><strong>Size:</strong> {(selectedFile.size / 1024).toFixed(2)} KB</p>
+              </div>
+            )}
             <div className="admin-database-upload-buttons">
               <button onClick={handleImportClick} className="admin-database-import-button">Import</button>
               <button className="admin-database-cancel-button" onClick={() => setSelectedFile(null)}>Cancel</button>
