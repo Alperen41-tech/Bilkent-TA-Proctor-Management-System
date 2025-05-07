@@ -4,6 +4,7 @@ import com.cs319group3.backend.DTOMappers.TimeIntervalMapper;
 import com.cs319group3.backend.DTOs.DateIntervalDTO;
 import com.cs319group3.backend.DTOs.TimeIntervalDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
+import com.cs319group3.backend.Entities.OfferedCourse;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RelationEntities.CourseInstructorRelation;
 import com.cs319group3.backend.Entities.RelationEntities.CourseStudentRelation;
@@ -110,6 +111,9 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
         List<ClassProctoringTARelation> classProctorings = optionalTA.get().getClassProctoringTARelations();
         addTAProctorings(classProctorings, fromDate, toDate, schedule);
 
+        //add schedule of ta's course exams
+        addTACourseProctorings(courseStudentRelations, fromDate, toDate, schedule);
+
         return schedule;
     }
 
@@ -212,19 +216,11 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
     }
 
     private void addTAProctorings(List<ClassProctoringTARelation> classProctorings, LocalDateTime fromDate, LocalDateTime toDate, List<TimeIntervalDTO> schedule) {
+        List<ClassProctoring> proctorings = new ArrayList<>();
         for (ClassProctoringTARelation classProctoringTARelation : classProctorings) {
-            LocalDateTime eventStart = classProctoringTARelation.getClassProctoring().getStartDate();
-            LocalDateTime eventEnd = classProctoringTARelation.getClassProctoring().getEndDate();
-            if (eventStart.isAfter(fromDate) && eventStart.isBefore(toDate)) {
-                TimeInterval proctoringInterval = new TimeInterval();
-                proctoringInterval.setDay(eventStart.getDayOfWeek().toString());
-                proctoringInterval.setStartTime(eventStart.toLocalTime());
-                proctoringInterval.setEndTime(eventEnd.toLocalTime());
-                String eventName = classProctoringTARelation.getClassProctoring().getCourse().getCourseFullName() + " - " + classProctoringTARelation.getClassProctoring().getEventName();
-                TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(proctoringInterval, "proctoring", eventName);
-                schedule.add(timeIntervalDTO);
-            }
+            proctorings.add(classProctoringTARelation.getClassProctoring());
         }
+        addClassProctorings(proctorings, fromDate, toDate, schedule, false);
     }
 
     private void addInstructorCourses(List<CourseInstructorRelation> courses, List<TimeIntervalDTO> schedule) {
@@ -243,20 +239,34 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
         for(CourseInstructorRelation course : courses) {
             int courseId = course.getCourse().getCourse().getCourseId();
             List<ClassProctoring> proctorings = classProctoringRepo.findByCourse_CourseId(courseId);
-            for (ClassProctoring classProctoring : proctorings) {
-                LocalDateTime eventStart = classProctoring.getStartDate();
-                LocalDateTime eventEnd = classProctoring.getEndDate();
-                if (eventStart.isAfter(fromDate) && eventStart.isBefore(toDate)) {
-                    TimeInterval proctoringInterval = new TimeInterval();
-                    proctoringInterval.setDay(eventStart.getDayOfWeek().toString());
-                    proctoringInterval.setStartTime(eventStart.toLocalTime());
-                    proctoringInterval.setEndTime(eventEnd.toLocalTime());
-                    String eventName = classProctoring.getCourse().getCourseFullName() + " - " + classProctoring.getEventName();
-                    TimeIntervalDTO timeIntervalDTO = TimeIntervalMapper.essentialMapper(proctoringInterval, "proctoring", eventName);
-                    schedule.add(timeIntervalDTO);
-                }
-            }
+            addClassProctorings(proctorings, fromDate, toDate, schedule, false);
         }
     }
 
+    private void addTACourseProctorings(List<CourseStudentRelation> courses, LocalDateTime fromDate, LocalDateTime toDate, List<TimeIntervalDTO> schedule) {
+        for (CourseStudentRelation course : courses) {
+            List<ClassProctoring> classProctorings = classProctoringRepo.findByCourse_CourseId(course.getCourse().getCourse().getCourseId());
+            addClassProctorings(classProctorings, fromDate, toDate, schedule, true);
+        }
+    }
+
+    private void addClassProctorings(List<ClassProctoring> proctorings, LocalDateTime fromDate, LocalDateTime toDate, List<TimeIntervalDTO> schedule, boolean ofStudent) {
+        for (ClassProctoring classProctoring : proctorings) {
+            LocalDateTime eventStart = classProctoring.getStartDate();
+            LocalDateTime eventEnd = classProctoring.getEndDate();
+            if (eventStart.isAfter(fromDate) && eventStart.isBefore(toDate)) {
+                TimeInterval proctoringInterval = new TimeInterval();
+                proctoringInterval.setDay(eventStart.getDayOfWeek().toString());
+                proctoringInterval.setStartTime(eventStart.toLocalTime());
+                proctoringInterval.setEndTime(eventEnd.toLocalTime());
+                String eventName = classProctoring.getCourse().getCourseFullName() + " - " + classProctoring.getEventName();
+                TimeIntervalDTO timeIntervalDTO;
+                if (ofStudent)
+                    timeIntervalDTO = TimeIntervalMapper.essentialMapper(proctoringInterval, "exam", eventName);
+                else
+                    timeIntervalDTO = TimeIntervalMapper.essentialMapper(proctoringInterval, "proctoring", eventName);
+                schedule.add(timeIntervalDTO);
+            }
+        }
+    }
 }
