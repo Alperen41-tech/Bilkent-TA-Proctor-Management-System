@@ -292,9 +292,9 @@ const AdminDatabasePage = () => {
           bilkentId,
           role: "TA",
           departmentName: selectedDept.departmentName,
-          departmentCode: selectedDept.departmentCode, // ✅ correct name
+          departmentCode: selectedDept.departmentCode, 
           courseName: selectedCourse.name,
-          courseCode: selectedCourse.courseCode?.toString(), // ✅ fix field
+          courseCode: selectedCourse.courseCode?.toString(),
           phoneNumber,
           active: true,
           classYear,

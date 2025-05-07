@@ -125,14 +125,28 @@ const DOExamsPage = () => {
 
 
   const createLogsDatabaseItems = () => {
+    const query = searchQuery.toLowerCase().trim();
+  
     return examItems
-      .filter((item) => item.classProctoringTARelationDTO?.classProctoringDTO || item.classProctoringDTO)
+      .filter((item) => {
+        const proctoring = item.classProctoringTARelationDTO?.classProctoringDTO || item.classProctoringDTO;
+        if (!proctoring) return false;
+  
+        const course = proctoring.courseName?.toLowerCase() || "";
+        const location = proctoring.classrooms?.toLowerCase() || "";
+        const section = proctoring.section?.toString() || "";
+  
+        return (
+          course.includes(query) ||
+          location.includes(query) ||
+          section.includes(query)
+        );
+      })
       .map((item) => {
         const proctoring = item.classProctoringTARelationDTO?.classProctoringDTO || item.classProctoringDTO;
-        const proctoring2 = item.classProctoringDTO;
         const key = `${proctoring.courseName}-${proctoring.startDate}`;
         const isSelected = selectedExamKey === key;
-
+  
         return (
           <AdminDatabaseItem
             key={key}
@@ -144,10 +158,9 @@ const DOExamsPage = () => {
               time: new Date(proctoring.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               endTime: new Date(proctoring.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               location: proctoring.classrooms,
-              Section: proctoring.section, // or similar
-              examType: proctoring.proctoringName, // e.g., Midterm, Final
+              Section: proctoring.section,
+              examType: proctoring.proctoringName,
             }}
-
             onDelete={(id) => console.log(`Deleted exam with ID: ${id}`)}
             onSelect={() => {
               setSelectedExamKey(key);
@@ -160,8 +173,8 @@ const DOExamsPage = () => {
           />
         );
       });
-
   };
+  
 
 
   const fetchTAs = async (departmentCode, proctoringId) => {
@@ -362,10 +375,6 @@ const DOExamsPage = () => {
                 <option disabled>Loading departments...</option>
               )}
             </select>
-
-
-
-            <button className="search-button">Search</button>
           </div>
 
           <div className="exams-table">
