@@ -41,6 +41,7 @@ create table semester(
 
 
 create table general_variable(
+	general_variable_id int,
 	semester_id int,
     ta_proctoring_cap_time int,
     foreign key (semester_id) references semester(semester_id)

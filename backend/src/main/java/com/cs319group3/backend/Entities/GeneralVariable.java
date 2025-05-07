@@ -23,7 +23,7 @@ public class GeneralVariable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int generalVariableId;
 
-    private int TAProctoringCapTime;
+    private int taProctoringCapTime;
 
     @OneToOne
     @JoinColumn(name = "semester_id")
