@@ -75,11 +75,6 @@ const AdminDatabasePage = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [tasData, setTAsData] = useState([]);
 
-
-
-
-
-
   const handleImportClick = async () => {
     if (!selectedFile) {
       alert("Please select a file.");
@@ -90,7 +85,7 @@ const AdminDatabasePage = () => {
     formData.append("file", selectedFile);
 
     try {
-      const response = await axios.post("http://localhost:8080/excel/processTAAssignmentExcel", formData, {
+      const response = await axios.post("http://localhost:8080/excel/uploadAllData", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

@@ -130,9 +130,9 @@ const DashboardPage = () => {
         fetchTaWorkloadRequests(); 
         fetchPendingRequests();
       }
-      
     } catch (error) {
-      console.error("Error fetching task types:", error);
+      console.error(error.response.data.message);
+      alert(error.response.data.message);
     }
   };
 
