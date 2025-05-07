@@ -1,0 +1,66 @@
+.auto-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .auto-modal {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 30px;
+    width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+  }
+  
+  .auto-modal h2 {
+    margin-bottom: 20px;
+  }
+  
+  .auto-modal-list {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    min-height: 150px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .auto-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .auto-button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .auto-button.cancel {
+    background-color: #e5e7eb;
+    color: #333;
+  }
+  
+  .auto-button.dismiss {
+    background-color: #facc15;
+    color: #000;
+  }
+  
+  .auto-button.confirm {
+    background-color: #6366f1;
+    color: white;
+  }
+  

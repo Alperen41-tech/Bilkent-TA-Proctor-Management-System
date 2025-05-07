@@ -446,11 +446,7 @@ const AdminDatabasePage = () => {
               <option value="Instructor">Instructor</option>
               <option value="Proctoring">Proctoring</option>
               <option value="TA">TA</option>
-
-
             </select>
-
-            <button className="admin-database-search-button">Search</button>
           </div>
           <div className="admin-database-data-table">
             <div className="admin-database-table-body">

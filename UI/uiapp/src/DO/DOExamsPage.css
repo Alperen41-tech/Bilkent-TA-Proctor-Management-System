@@ -140,3 +140,38 @@
     cursor: pointer;
   }
   
+
+  .choose-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .extra-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding-top: 10px;
+  }
+  
+  .checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .ta-count-input input {
+    margin-left: 0.5rem;
+    padding: 4px 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 80px;
+  }
+  

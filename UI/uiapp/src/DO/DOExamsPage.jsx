@@ -5,6 +5,7 @@ import AdminDatabaseItem from "../Admin/AdminDatabaseItem";
 import TAItem from "../TAItem";
 import axios from "axios";
 import ManualAssignmentModal from "../ManualAssignmentModal";
+import AutomaticAssignmentModal from "../AutomaticAssignmentModal";
 
 
 
@@ -22,10 +23,16 @@ const DOExamsPage = () => {
   // For the search bar
   const [searchQuery, setSearchQuery] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("");
+
+  const [showAutoModal, setShowAutoModal] = useState(false);
+
   // Dummy logic for "Automatic Assign"
   const handleAutomaticAssign = () => {
-    alert("Automatic assignment logic goes here.");
+    setShowAutoModal(true);
   };
+
+
+
   // Dummy logic for "Manually Assign"
   const handleManualAssign = () => {
     if (!selectedTAObj || !selectedExamItem) {
@@ -126,16 +133,16 @@ const DOExamsPage = () => {
 
   const createLogsDatabaseItems = () => {
     const query = searchQuery.toLowerCase().trim();
-  
+
     return examItems
       .filter((item) => {
         const proctoring = item.classProctoringTARelationDTO?.classProctoringDTO || item.classProctoringDTO;
         if (!proctoring) return false;
-  
+
         const course = proctoring.courseName?.toLowerCase() || "";
         const location = proctoring.classrooms?.toLowerCase() || "";
         const section = proctoring.section?.toString() || "";
-  
+
         return (
           course.includes(query) ||
           location.includes(query) ||
@@ -146,7 +153,7 @@ const DOExamsPage = () => {
         const proctoring = item.classProctoringTARelationDTO?.classProctoringDTO || item.classProctoringDTO;
         const key = `${proctoring.courseName}-${proctoring.startDate}`;
         const isSelected = selectedExamKey === key;
-  
+
         return (
           <AdminDatabaseItem
             key={key}
@@ -174,7 +181,7 @@ const DOExamsPage = () => {
         );
       });
   };
-  
+
 
 
   const fetchTAs = async (departmentCode, proctoringId) => {
@@ -337,6 +344,12 @@ const DOExamsPage = () => {
         onCancel={() => setShowManualModal(false)}
       />
 
+      <AutomaticAssignmentModal
+        isOpen={showAutoModal}
+        onClose={() => setShowAutoModal(false)}
+      />
+
+
       <div className="do-exams-content">
         {/* LEFT SECTION */}
         <div className="left-section">
@@ -452,7 +465,28 @@ const DOExamsPage = () => {
               <button className="assign-button" onClick={handleManualAssign}>
                 Manually Assign
               </button>
+
+              <div className="checkbox-options" style={{ marginTop: "1rem" }}>
+                <label>
+                  <input type="checkbox" /> Checkbox 1
+                </label>
+                <br />
+                <label>
+                  <input type="checkbox" /> Checkbox 2
+                </label>
+              </div>
+              <label>
+                Enter TA count:
+                <input
+                  type="number"
+                  min="1"
+                  placeholder="e.g., 2"
+                  style={{ marginLeft: "0.5rem", width: "60px" }}
+                />
+              </label>
+
             </div>
+
           </div>
 
 
