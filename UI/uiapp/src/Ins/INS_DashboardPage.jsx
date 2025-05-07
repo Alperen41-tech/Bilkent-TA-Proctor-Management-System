@@ -394,13 +394,6 @@ const INS_DashboardPage = () => {
               </div>
             ))}
           </div>
-
-          <div className="stats-box">
-            <div className="stat">Unapproved Works: 7</div>
-            <div className="stat">Total Works Last Week: 45 Hours</div>
-            <div className="stat">Upcoming TA Tasks: 1</div>
-            <div className="stat">Days Until Next TA Task: 3 </div>
-          </div>
         </div>
       </div>
       {showRespondedWorkloadDetails && (

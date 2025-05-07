@@ -207,7 +207,7 @@ const INS_ExamsPage = () => {
       <div className="ins-exam-grid-container">
         <div className="ins-exam-card ins-exam-assignments">
           <h3>Your Assignments with Proctors</h3>
-          <div className="task-row">
+          <div className="ins-exam-page-task-row">
             {proctoringTasks.map((task) =>
               createTaskItem(
                 task.classProctoringTARelationDTO.classProctoringDTO.id,

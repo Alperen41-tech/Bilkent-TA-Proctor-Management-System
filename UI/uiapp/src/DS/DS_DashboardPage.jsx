@@ -243,7 +243,7 @@ const DS_DashboardPage = () => {
           </div>
 
           {/* Top Left Panel */}
-          <div className="tab-content">
+          <div className="ds-dashboard-tab-content">
             {activeTab === "pending" && (
               <div className="ds-dashboard-pending-request-panel">{pendingRequests.map((req, index) => createPendingRequest(req, index))}</div>
             )}

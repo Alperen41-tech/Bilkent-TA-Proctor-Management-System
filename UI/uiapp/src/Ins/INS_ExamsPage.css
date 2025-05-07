@@ -125,7 +125,7 @@
   border-radius: 10px;
 }
 .ins-exam-ta-list-items {
-  height: 400px;
+  max-height: 60vh;
   overflow-y: auto;
 }
 
@@ -147,4 +147,12 @@
   cursor: pointer;
   transition: background-color 0.3s;
   flex: 1;
+}
+
+.ins-exam-page-task-row{
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.ins-exam-assign-ta-button{
+  margin-top: 10px;
 }

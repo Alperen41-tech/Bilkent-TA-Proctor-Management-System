@@ -52,7 +52,8 @@
     min-height: 150px;
     padding: 10px;
     border:none;
-    
+    max-height: 80vh;
+    overflow-y: auto;
   }
   
   .request-details {
@@ -76,6 +77,8 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+    max-height: 80vh;
+    overflow-y: auto;
   }
   
   .stats-box {
