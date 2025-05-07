@@ -24,7 +24,7 @@ public class TaskTypeController {
     }
 
     @DeleteMapping("deleteTaskType")
-    public ResponseEntity<?> deleteTaskType(@RequestParam int courseId, @RequestParam String taskTypeName) {
+    public boolean deleteTaskType(@RequestParam int courseId, @RequestParam String taskTypeName) {
         System.out.println("Deleting task type.");
         return taskTypeService.deleteTaskType(courseId, taskTypeName);
     }

@@ -41,18 +41,17 @@ public class TaskTypeServiceImpl implements TaskTypeService {
     }
 
     @Override
-    public ResponseEntity<?> deleteTaskType(int courseId, String taskTypeName) {
-
+    public boolean deleteTaskType(int courseId, String taskTypeName) {
 
         List<TAWorkloadRequest> requests = taWorkloadRequestRepo.findByTaskType_TaskTypeName(taskTypeName);
         if(!requests.isEmpty()) {
-            return ResponseEntity.badRequest().body(new ApiResponse(false, "Task type " + taskTypeName + " already exists"));
+            throw new RuntimeException("Task type " + taskTypeName + " already in use");
         }
 
         if(taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(taskTypeName, courseId).isPresent()){
             TaskType taskType = taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(taskTypeName, courseId).get();
             taskTypeRepo.delete(taskType);
-            return new ResponseEntity<>(true, HttpStatus.ACCEPTED);
+            return true;
         }
         else{
             throw new RuntimeException("Task type with name " + taskTypeName + " not found.");

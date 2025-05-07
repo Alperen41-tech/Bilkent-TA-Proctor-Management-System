@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface TaskTypeService {
     public boolean createTaskType(TaskTypeDTO dto, int courseId);
-    public ResponseEntity<?> deleteTaskType(@RequestParam int courseId, @RequestParam String taskTypeName);
+    public boolean deleteTaskType(@RequestParam int courseId, @RequestParam String taskTypeName);
     public List<String> getTaskTypeNames(int courseId);
 }
