@@ -121,13 +121,16 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
 
     @Override
     public boolean createClassProctoringTARelation(int taId, int classProctoringId) {
+        System.out.println("Creating ClassProctoringTARelation for taId: " + taId + " classProctoringId: " + classProctoringId);
         int count = classProctoringTARelationRepo.countByClassProctoringId(classProctoringId);
         int taLimit = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
         if(count >= taLimit) {
+            System.out.println("Class proctoring is full");
             return false;
         }
         Optional<ClassProctoringTARelation> classProctoringTARelation = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classProctoringId, taId);
         if (classProctoringTARelation.isPresent()) {
+            System.out.println("No such ClassProctoringTARelation found");
             return false;
         }
         // Fetch needed IDs first (cheap queries)
@@ -135,6 +138,7 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
         Integer taDepartmentId = taRepo.findDepartmentIdByUserId(taId);
 
         if (classProctoringDepartmentId == null || taDepartmentId == null) {
+            System.out.println("No department found");
             return false;
         }
 
@@ -143,6 +147,7 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
         Optional<ClassProctoring> cpOpt = classProctoringRepo.findById(classProctoringId);
 
         if (taOpt.isEmpty() || cpOpt.isEmpty()) {
+            System.out.println("TA or ClassProctoring not found");
             return false;
         }
 

@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Controllers.RequestControllers;
 
+import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.UserEntities.TA;
@@ -9,6 +10,8 @@ import com.cs319group3.backend.Services.AuthenticationService;
 import com.cs319group3.backend.Services.ClassProctoringTARelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("authStaffProctoringRequestController")
@@ -33,27 +36,27 @@ public class AuthStaffProctoringRequestController {
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequest(classProctoringId, taId, senderId, true);
     }
 
-    @PostMapping("sendAuthStaffProctoringRequestAutomaticallyInDepartment")
-    public boolean sendAuthStaffProctoringRequestAutomaticallyInDepartment(@RequestParam int classProctoringId, @RequestParam String departmentCode, @RequestParam int senderId, @RequestParam int count, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
+    @GetMapping("selectAuthStaffProctoringRequestAutomaticallyInDepartment")
+    public List<TAProfileDTO> selectAuthStaffProctoringRequestAutomaticallyInDepartment(@RequestParam int classProctoringId, @RequestParam String departmentCode, @RequestParam int senderId, @RequestParam int count, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
         System.out.println("Class proctoring request sent.");
-        return authStaffProctoringRequestService.sendAuthStaffProctoringRequestAutomaticallyInDepartment(classProctoringId, departmentCode, senderId, count, eligibilityRestriction, oneDayRestriction, false);
+        return authStaffProctoringRequestService.sendAuthStaffProctoringRequestAutomaticallyInDepartment(classProctoringId, departmentCode, senderId, count, eligibilityRestriction, oneDayRestriction);
     }
 
-    @PostMapping("sendAuthStaffProctoringRequestAutomaticallyInFaculty")
-    public boolean sendAuthStaffProctoringRequestAutomaticallyInFaculty(@RequestParam int classProctoringId, @RequestParam int facultyId, @RequestParam int senderId, @RequestParam int count, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
+    @GetMapping("selectAuthStaffProctoringRequestAutomaticallyInFaculty")
+    public List<TAProfileDTO> selectAuthStaffProctoringRequestAutomaticallyInFaculty(@RequestParam int classProctoringId, @RequestParam int facultyId, @RequestParam int senderId, @RequestParam int count, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
         System.out.println("Class proctoring request sent.");
-        return authStaffProctoringRequestService.sendAuthStaffProctoringRequestAutomaticallyInFaculty(classProctoringId, facultyId, senderId, count, eligibilityRestriction, oneDayRestriction, false);
+        return authStaffProctoringRequestService.sendAuthStaffProctoringRequestAutomaticallyInFaculty(classProctoringId, facultyId, senderId, count, eligibilityRestriction, oneDayRestriction);
     }
 
-    @PostMapping("forceAuthStaffProctoringRequestAutomaticallyInDepartment")
-    public boolean forceAuthStaffProctoringRequestAutomaticallyInDepartment(@RequestParam int classProctoringId,@RequestParam String departmentCode, @RequestParam int senderId, @RequestParam int count, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
-
-        return authStaffProctoringRequestService.sendAuthStaffProctoringRequestAutomaticallyInDepartment(classProctoringId, departmentCode, senderId, count, eligibilityRestriction, oneDayRestriction, true);
+    @PostMapping("unforcedAssign")
+    public boolean unforcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId, @RequestParam int senderId) {
+        System.out.println("Force assign request sent.");
+        return authStaffProctoringRequestService.sendAuthStaffProctoringRequests(dtoList, classProctoringId, senderId, false);
     }
 
-    @PostMapping("forceAuthStaffProctoringRequestAutomaticallyInFaculty")
-    public boolean forceAuthStaffProctoringRequestAutomaticallyInFaculty( @RequestParam int classProctoringId, @RequestParam int facultyId, @RequestParam int senderId, @RequestParam int count, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
-
-        return authStaffProctoringRequestService.sendAuthStaffProctoringRequestAutomaticallyInFaculty(classProctoringId, facultyId, senderId, count, eligibilityRestriction, oneDayRestriction, true);
+    @PostMapping("forcedAssign")
+    public boolean forcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId, @RequestParam int senderId) {
+        System.out.println("Force assign request sent.");
+        return authStaffProctoringRequestService.sendAuthStaffProctoringRequests(dtoList, classProctoringId, senderId, true);
     }
 }
