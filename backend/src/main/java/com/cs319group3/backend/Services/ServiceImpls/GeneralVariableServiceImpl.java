@@ -31,22 +31,21 @@ public class GeneralVariableServiceImpl implements GeneralVariableService {
         int term;
         if (parts[1].equalsIgnoreCase("fall")) {
             sm.setTerm(1);
-            term = 1;
         }
         else if (parts[1].equalsIgnoreCase("spring")) {
             sm.setTerm(2);
-            term = 2;
         }
         else {
             throw new RuntimeException("Wrong term input");
         }
         generalVariable.setSemester(sm);
-        Optional<Semester> smstr = semesterRepo.findByYearAndTerm(parts[0], term);
+        Optional<Semester> smstr = semesterRepo.findByYearAndTerm(parts[0], sm.getTerm());
         if (smstr.isEmpty()) {
-            Semester newSemester = new Semester();
-            newSemester.setYear(parts[0]);
-            newSemester.setTerm(term);
-            semesterRepo.save(newSemester);
+            semesterRepo.save(sm);
+            generalVariable.setSemester(sm);
+        }
+        else {
+            generalVariable.setSemester(smstr.get());
         }
         generalVariableRepo.save(generalVariable);
         return true;
