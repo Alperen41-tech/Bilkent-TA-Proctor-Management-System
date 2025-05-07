@@ -17,4 +17,6 @@ public interface TAWorkloadRequestRepo extends JpaRepository<TAWorkloadRequest, 
     SELECT MAX(workloadId) AS workloadId FROM TAWorkloadRequest
 """)
     Integer getMaxWorkloadId();
+
+    List<TAWorkloadRequest> findByTaskType_TaskTypeName(String taskTypeName);
 }

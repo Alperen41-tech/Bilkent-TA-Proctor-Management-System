@@ -2,7 +2,9 @@ package com.cs319group3.backend.Controllers;
 
 import com.cs319group3.backend.DTOs.TaskTypeDTO;
 import com.cs319group3.backend.Services.TaskTypeService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +24,7 @@ public class TaskTypeController {
     }
 
     @DeleteMapping("deleteTaskType")
-    public boolean deleteTaskType(@RequestParam int courseId, @RequestParam String taskTypeName) {
+    public ResponseEntity<?> deleteTaskType(@RequestParam int courseId, @RequestParam String taskTypeName) {
         System.out.println("Deleting task type.");
         return taskTypeService.deleteTaskType(courseId, taskTypeName);
     }
