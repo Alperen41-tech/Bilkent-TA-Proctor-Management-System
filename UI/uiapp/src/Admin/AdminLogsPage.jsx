@@ -7,13 +7,16 @@ import { set } from "date-fns";
 
 const AdminLogsPage = () => {
   const [logs, setLogs] = useState([]); 
-  const [sortedSearchedLogs, setSortedSearchedLogs] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [logTypeFilter, setLogTypeFilter] = useState("ALL");
+  const [globalSemester, setGlobalSemester] = useState(null);
+  const [globalProctoringCap, setGlobalProctoringCap] = useState(null);
 
   // Refs for start and end date inputs
   const startDateRef = useRef();
   const endDateRef = useRef();
+  const globalSemesterRef = useRef();
+  const globalProctoringCapRef = useRef();
   //----------------------------------------------------------
 
   const fetchAdminLogs = async () => {
@@ -58,11 +61,52 @@ const AdminLogsPage = () => {
   
   useEffect(() => {
     fetchAdminLogs();
+    fetchGlobalData();
   }, []);
 
-  
+  const handleSetTerm = async () => {
+    const term = globalSemesterRef.current.value;
+    try {
+      const response = await axios.post(`http://localhost:8080/generalVariable/changeSemester?semester=${term}`);
+      if (response.data) {
+        console.log("Term set successfully:", response.data);
+      } else {
+        console.error("Error setting term:", response);
+      }
+    } catch (error) {
+      console.error("Error setting term:", error);
+    }
+  };
 
-  
+  const handleSetProctoringCap = async () => {
+    const proctoringCap = globalProctoringCapRef.current.value;
+    try {
+      const response = await axios.post(`http://localhost:8080/generalVariable/changeProctoringCap?proctoringCap=${proctoringCap}`);
+      if (response.data) {
+        console.log("Proctoring cap set successfully:", response.data);
+      } else {
+        console.error("Error setting proctoring cap:", response);
+      }
+    } catch (error) {
+      console.error("Error setting proctoring cap:", error);
+    }
+  };
+
+  const fetchGlobalData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/generalVariable/getGeneralVariable");
+      if (response.data) {
+        console.log("Global data fetched successfully:", response.data);
+        setGlobalSemester(response.data.semester);
+        setGlobalProctoringCap(response.data.proctoringCap);
+      } else {
+        console.error("Error fetching global data:", response);
+      }
+    } catch (error) {
+      console.error("Error fetching global data:", error);
+    }
+  };
+
   return (
     <div className="logs-container">
       <NavbarAdmin />
@@ -95,8 +139,6 @@ const AdminLogsPage = () => {
                   {createLogsItems()}
             </div>
           </div>
-
-          
         </div>
 
         <div className="log-details">
@@ -113,19 +155,18 @@ const AdminLogsPage = () => {
 
           <div className="set-globals-section">
             <h4>Set Globals</h4>
-            <div className="globals-inputs">
-              <label>Term - Spring 2025</label>
-              <input type="text" placeholder="e.g., Spring" />
-              <button className="set-term-button">Set Term</button>
-            </div>
-            <div className="globals-inputs">
-              <label>Proctoring Cap</label>
-              <input type="text" placeholder="e.g., 6" />
-              <button className="set-proctoring-button">Set Proctoring Cap</button>
-            </div>
+            <form className="globals-inputs" onSubmit={(e) => {e.preventDefault(); handleSetTerm();}}>
+              <label>Term - {globalSemester}</label>
+              <input ref={globalSemesterRef} type="text" placeholder="e.g.,2024-2025 Spring" pattern="^\d{4}-\d{4} (Spring|Fall)$" title="Format must be: YYYY-YYYY Season (e.g., 2024-2025 Spring)" required/>
+              <button className="set-term-button" type="submit">Set Term</button>
+            </form>
+            <form className="globals-inputs" onsSubmit={(e) => {e.preventDefault(); handleSetProctoringCap();}}>
+              <label>Proctoring Cap - {globalProctoringCap}</label>
+              <input ref={globalProctoringCapRef} type="number" min={0} placeholder="e.g., 6" required/>
+              <button className="set-proctoring-button" type="submit">Set Proctoring Cap</button>
+            </form>
           </div>
         </div>
-
       </div>
     </div>
   );
