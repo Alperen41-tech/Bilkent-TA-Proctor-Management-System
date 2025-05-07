@@ -18,6 +18,7 @@ public interface CourseRepo extends JpaRepository<Course, Integer> {
     JOIN Student s ON u.bilkentId = s.bilkentId
     JOIN CourseStudentRelation csr ON s.studentId = csr.student.studentId
     JOIN OfferedCourse oc ON csr.course.offeredCourseId = oc.offeredCourseId
+    WHERE u.userId = :userId
 """)
     List<Integer> findAllCourseIdsByUserId(int userId);
 
