@@ -96,6 +96,7 @@ const ProfilePage = () => {
           <p><strong>Role</strong><br />{taProfileInfo.role}</p>
           <p><strong>Department</strong><br />{taProfileInfo.departmentName}</p>
           <p><strong>Course</strong><br />{taProfileInfo.courseName}</p>
+          <p><strong>Total Workload</strong><br />{taProfileInfo.workload}</p>
         </div>
 
         <div className="right-section">
@@ -103,13 +104,6 @@ const ProfilePage = () => {
             <h3>Manage Account</h3>
             <button className="purple-button" onClick={() => setShowChangePasswordModal(true)}>Change Password</button>
             <button className="purple-button" onClick={() => setShowUnavailabilityModal(true)}>Set Unavailability</button>
-          </div>
-
-          <div className="stats-card">
-            <div className="stat">Total Hours Worked: 7</div>
-            <div className="stat">Pending Proctor Approvals: 2</div>
-            <div className="stat">Upcoming TA Tasks: 1</div>
-            <div className="stat">Days Until Next TA Task: 3</div>
           </div>
         </div>
       </div>

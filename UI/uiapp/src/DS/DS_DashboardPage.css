@@ -223,7 +223,7 @@
     max-height: 80vh;
     overflow-y: auto;
   }
-.notifications{
-  max-height: 80vh;
+.ds-dashboard-notification-panel{
+  max-height: 30vh;
   overflow-y: auto;
 }

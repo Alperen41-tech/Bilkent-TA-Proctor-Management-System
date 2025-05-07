@@ -14,8 +14,8 @@ const TaskItem = ({ task, onClick, isSelected }) => {
     onClick={handleClick}>
       <div className="property"><strong>Course:</strong> {task.course}</div>
       <div className="property"><strong>Task:</strong> {task.name}</div>
-      <div className="property"><strong>Date:</strong> {task.date}</div>
-      <div className="property"><strong>Time:</strong> {task.timeInterval}</div>
+      <div className="property"><strong>Date:</strong> {task.date ? task.date.split("T")[0]: null}</div>
+      <div className="property"><strong>Time:</strong> {task.timeInterval && task.date ? task.date.split("T")[1].substring(0,5)+"-"+task.timeInterval.split("T")[1].substring(0,5): null}</div>
       <div className="property"><strong>Classrooms:</strong> {task.classroom}</div>
     </div>
   );

@@ -22,7 +22,7 @@ const WorkloadEntryItem = ({ taskTitle, courseCode, date, duration, comment, sta
       
       <span className="workload-entry-item-entry-item">{taskTitle}</span>
       <span className="workload-entry-item-entry-item">{courseCode}</span>
-      <span className="workload-entry-item-entry-item">{date}</span>
+      <span className="workload-entry-item-entry-item">{date ? date.split("T")[0] + " " + date.split("T")[1].substring(0,5) : null}</span>
       <span className="workload-entry-item-entry-item">{Math.floor(parseInt(duration, 10) / 60)} Hours {parseInt(duration,10)%60} Min</span>
       <span className="workload-entry-item-entry-item">{comment.length != 0 ? comment : "-"}</span>
     </div>

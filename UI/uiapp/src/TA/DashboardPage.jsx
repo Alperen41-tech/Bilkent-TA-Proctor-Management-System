@@ -368,13 +368,6 @@ const DashboardPage = () => {
               </div>
             ))}
           </div>
-
-          <div className="ta-dashboard-stats-box">
-            <div className="ta-dashboard-stat">Total Hours Worked: 7</div>
-            <div className="ta-dashboard-stat">Hours Awaiting Approval: 2.5</div>
-            <div className="ta-dashboard-stat">Upcoming Proctoring Duties: 1</div>
-            <div className="ta-dashboard-stat">Days Until Next Proctoring: 3</div>
-          </div>
         </div>
       </div>
     </div>

@@ -305,6 +305,7 @@ const DS_DashboardPage = () => {
         <div className="dashboard-right">
           <div className="notifications">
           <h3>Notifications</h3>
+          <div className="ds-dashboard-notification-panel">
             {notifications.map((notification, index) => (
               <div key={index} className="ta-dashboard-notification-item">
                 <NotificationItem
@@ -315,6 +316,7 @@ const DS_DashboardPage = () => {
                 />
               </div>
             ))}
+          </div>
           </div>
 
           <div className="right-bottom">

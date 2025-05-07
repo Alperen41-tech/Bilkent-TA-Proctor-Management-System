@@ -10,9 +10,10 @@ const ProctoringDutyItem = ({ duty, isSelected, onSelect, onLockedStatusChange }
       className={`proctoring-duty-item-duty-item ${isLocked ? 'proctoring-duty-item-locked' : ''} ${isSelected ? 'proctoring-duty-item-selected' : ''}`}
       onClick={() => onSelect(duty.classProctoringDTO.id)}
     >
+      <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.courseCode}</span>
       <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.proctoringName}</span>
-      <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.startDate}</span>
-      <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.endDate}</span>
+      <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.startDate ? duty.classProctoringDTO.startDate.split("T")[0]: null}</span>
+      <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.startDate && duty.classProctoringDTO.endDate ? duty.classProctoringDTO.startDate.split("T")[1].substring(0,5) + "-"+ duty.classProctoringDTO.endDate.split("T")[1].substring(0,5) : null}</span>
       <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.classrooms}</span>
       <div className="proctoring-duty-item-duty-field proctoring-duty-item-status-container">
         <input
