@@ -76,6 +76,17 @@ public class ExcelController {
         }
     }
 
+    @PostMapping("uploadInstructors")
+    public ResponseEntity<Boolean> uploadInstructors(@RequestParam(name = "file") MultipartFile file) {
+        try {
+            excelService.uploadInstructors(file);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 

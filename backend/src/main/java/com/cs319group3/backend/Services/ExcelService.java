@@ -13,4 +13,6 @@ public interface ExcelService {
     void uploadStudents(MultipartFile file) throws IOException;
 
     void uploadTAs(MultipartFile file) throws IOException;
+
+    void uploadInstructors(MultipartFile file) throws IOException;
 }

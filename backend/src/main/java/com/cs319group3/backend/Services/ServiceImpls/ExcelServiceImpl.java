@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
 import com.cs319group3.backend.Entities.*;
+import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Repositories.*;
@@ -36,6 +37,8 @@ public class ExcelServiceImpl implements ExcelService {
     private StudentRepo studentRepo;
     @Autowired
     private TATypeRepo taTypeRepo;
+    @Autowired
+    private InstructorRepo instructorRepo;
 
 
     public byte[] generateExcelFromTemplate() throws IOException {
@@ -258,6 +261,46 @@ public class ExcelServiceImpl implements ExcelService {
         newTA.setClassYear(classYear);
 
         taRepo.save(newTA);
+    }
+
+
+    @Override
+    public void uploadInstructors(MultipartFile file) throws IOException {
+
+        try(InputStream inputStream = file.getInputStream();
+            Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+            for (Row row : sheet) {
+                if (row.getRowNum() < 1)
+                    continue;
+
+                String bilkentId = getStringCellValue(row.getCell(0));
+                String name = getStringCellValue(row.getCell(1));
+                String surname = getStringCellValue(row.getCell(2));
+                String email = getStringCellValue(row.getCell(3));
+                String phoneNumber = getStringCellValue(row.getCell(4));
+                String departmentCode = getStringCellValue(row.getCell(5));
+
+                uploadInstructor(bilkentId, name, surname, email, phoneNumber, departmentCode);
+            }
+        }
+    }
+
+    private void uploadInstructor(String bilkentId, String name, String surname, String email, String phoneNumber, String departmentCode) {
+        Instructor newInstructor = new Instructor();
+
+        Optional<Department> department = departmentRepo.findByDepartmentCode(departmentCode);
+        if (department.isPresent()) {
+            newInstructor.setDepartment(department.get());
+        }
+        else {
+            throw new RuntimeException("Department with code " + departmentCode + " not found");
+        }
+
+        setUserEssentials(newInstructor, bilkentId, name, surname, email, phoneNumber);
+
+        instructorRepo.save(newInstructor);
     }
 
 
