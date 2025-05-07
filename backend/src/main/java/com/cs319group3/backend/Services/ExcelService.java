@@ -9,4 +9,6 @@ public interface ExcelService {
     public byte[] generateExcelFromTemplate() throws IOException;
 
     void processTAAssignmentExcel(MultipartFile file) throws IOException;
+
+    void uploadStudents(MultipartFile file) throws IOException;
 }

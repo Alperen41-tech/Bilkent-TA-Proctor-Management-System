@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Controllers;
 
 import com.cs319group3.backend.Services.ExcelService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +50,21 @@ public class ExcelController {
             return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    @PostMapping("uploadStudents")
+    public ResponseEntity<Boolean> uploadStudents(@RequestParam(name = "file") MultipartFile file) {
+        try {
+            excelService.uploadStudents(file);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
 
 

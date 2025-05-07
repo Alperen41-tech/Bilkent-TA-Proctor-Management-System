@@ -3,11 +3,9 @@ package com.cs319group3.backend.Services.ServiceImpls;
 import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.CourseTAInstructorForm;
 import com.cs319group3.backend.Entities.Department;
+import com.cs319group3.backend.Entities.Student;
 import com.cs319group3.backend.Entities.UserEntities.TA;
-import com.cs319group3.backend.Repositories.CourseRepo;
-import com.cs319group3.backend.Repositories.CourseTAInstructorFormRepo;
-import com.cs319group3.backend.Repositories.DepartmentRepo;
-import com.cs319group3.backend.Repositories.TARepo;
+import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.ExcelService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -36,6 +34,8 @@ public class ExcelServiceImpl implements ExcelService {
     private CourseRepo courseRepo;
     @Autowired
     private TARepo taRepo;
+    @Autowired
+    private StudentRepo studentRepo;
 
     public byte[] generateExcelFromTemplate() throws IOException {
         // Load template from classpath (inside the .jar)
@@ -73,7 +73,6 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public void processTAAssignmentExcel(MultipartFile file) throws IOException {
-
         try (InputStream inputStream = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(inputStream)) {
 
@@ -81,8 +80,6 @@ public class ExcelServiceImpl implements ExcelService {
 
             Row headerRow = sheet.getRow(0);
             Row headerRow2 = sheet.getRow(1);
-
-
 
             if (headerRow == null) {
                 throw new RuntimeException("empty sheet cannot be processed");
@@ -106,8 +103,7 @@ public class ExcelServiceImpl implements ExcelService {
                         int columnIndex = cell.getColumnIndex();
                         String departmentCode = headerRow.getCell(columnIndex).getStringCellValue();
                         double courseCode = headerRow2.getCell(columnIndex).getNumericCellValue();
-                        DataFormatter formatter = new DataFormatter();
-                        String taId = formatter.formatCellValue(row.getCell(1));
+                        String taId = getStringCellValue(row.getCell(1));
 
                         assignTA(departmentCode, (int)courseCode, taId);
                         break;
@@ -116,6 +112,8 @@ public class ExcelServiceImpl implements ExcelService {
             }
         }
     }
+
+
 
     private void assignTA(String departmentCode, int courseCode, String taId) throws RuntimeException{
 
@@ -139,6 +137,73 @@ public class ExcelServiceImpl implements ExcelService {
 
         currTA.setAssignedCourse(currCourse);
         taRepo.save(currTA);
+    }
+
+    @Override
+    public void uploadStudents(MultipartFile file) throws IOException {
+        try(InputStream inputStream = file.getInputStream();
+            Workbook workbook = new XSSFWorkbook(inputStream)) {
+            Sheet sheet = workbook.getSheetAt(0);
+
+            for (Row row : sheet) {
+                // Skip header row
+                if (row.getRowNum() < 1)
+                    continue;
+
+                // Extract data from Excel cells
+                String bilkentId = getStringCellValue(row.getCell(0));
+                String name = getStringCellValue(row.getCell(1));
+                String surname = getStringCellValue(row.getCell(2));
+                String email = getStringCellValue(row.getCell(3));
+                String phoneNumber = getStringCellValue(row.getCell(4));
+                int classYear = (int) row.getCell(5).getNumericCellValue();
+                String departmentCode = getStringCellValue(row.getCell(6));
+
+                // Create the student using extracted data
+                uploadStudent(bilkentId, name, surname, email, phoneNumber, classYear, departmentCode);
+            }
+
+        }
+    }
+
+    // Helper method to safely get string cell values
+    private String getStringCellValue(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                // Convert numeric to string if needed
+                return String.valueOf((int) cell.getNumericCellValue());
+            default:
+                return "";
+        }
+    }
+
+    private void uploadStudent(String bilkentId, String name, String surname, String email, String phoneNumber, int classYear, String departmentCode) {
+        // Create new student object
+        Student newStudent = new Student();
+        newStudent.setBilkentId(bilkentId);
+        newStudent.setName(name);
+        newStudent.setSurname(surname);
+        newStudent.setEmail(email);
+        newStudent.setPhoneNumber(phoneNumber);
+        newStudent.setClassYear(classYear);
+        newStudent.setActive(true); // Set as active by default
+
+        // Find and set the department
+        Optional<Department> department = departmentRepo.findByDepartmentCode(departmentCode);
+        if (department.isPresent()) {
+            newStudent.setDepartment(department.get());
+        } else {
+            // Handle case when department not found
+            throw new RuntimeException("Department with code " + departmentCode + " not found");
+        }
+
+        studentRepo.save(newStudent);
     }
 
 }
