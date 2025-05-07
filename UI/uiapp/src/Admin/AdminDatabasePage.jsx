@@ -73,6 +73,7 @@ const AdminDatabasePage = () => {
   const [instructorsData, setInstructorsData] = useState([]);
   const [proctoringsData, setProctoringsData] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [tasData, setTAsData] = useState([]);
 
 
 
@@ -137,6 +138,16 @@ const AdminDatabasePage = () => {
       }
     }
 
+    if (type === "TA") {
+      try {
+        const { data } = await axios.get("http://localhost:8080/ta/getAllTAProfiles");
+        setTAsData(data || []);
+      } catch (error) {
+        console.error("Error fetching TAs:", error);
+      }
+    }
+    
+
   };
 
   const handleFileChange = (e) => {
@@ -163,7 +174,7 @@ const AdminDatabasePage = () => {
 
   const createDatabaseItems = () => {
     const keyword = searchKeyword.toLowerCase();
-  
+
     if (selectedType === "Course" && coursesData.length > 0) {
       return coursesData
         .filter((course) =>
@@ -181,7 +192,7 @@ const AdminDatabasePage = () => {
           />
         ));
     }
-  
+
     if (selectedType === "Instructor" && instructorsData.length > 0) {
       return instructorsData
         .filter((instructor) =>
@@ -200,7 +211,7 @@ const AdminDatabasePage = () => {
           />
         ));
     }
-  
+
     if (selectedType === "Proctoring" && proctoringsData.length > 0) {
       return proctoringsData
         .filter((exam) =>
@@ -227,10 +238,31 @@ const AdminDatabasePage = () => {
           />
         ));
     }
-  
+
+
+    if (selectedType === "TA" && tasData.length > 0) {
+      return tasData
+        .filter((ta) =>
+          ta.name.toLowerCase().includes(keyword) ||
+          ta.surname.toLowerCase().includes(keyword) ||
+          ta.email.toLowerCase().includes(keyword)
+        )
+        .map((ta) => (
+          <AdminDatabaseItem
+            key={`ta-${ta.userId}`}
+            type="ta"
+            data={ta}
+            onSelect={(data) => setSelectedData(data)}
+            isSelected={selectedData.userId === ta.userId}
+            inLog={false}
+          />
+        ));
+    }
+    
+
     return <p style={{ padding: "1rem" }}>Please select a type to be displayed.</p>;
   };
-  
+
 
   const createNewTa = async () => {
     console.log("Calling createNewTa...");
@@ -412,7 +444,9 @@ const AdminDatabasePage = () => {
 
               <option value="Course">Course</option>
               <option value="Instructor">Instructor</option>
-              <option value="Proctoring">Proctoring</option> {/* ✅ Already exists — good */}
+              <option value="Proctoring">Proctoring</option>
+              <option value="TA">TA</option>
+
 
             </select>
 
@@ -849,8 +883,8 @@ const AdminDatabasePage = () => {
         <div className="admin-database-dump-new-data">
           <h3>Dump New Data</h3>
           <div className="admin-database-upload-container">
-            {!selectedFile && 
-              <div className="admin-database-drag-drop-area">              
+            {!selectedFile &&
+              <div className="admin-database-drag-drop-area">
                 <p>Drag &amp; Drop file here</p>
                 <p>or</p>
                 <label htmlFor="file-upload" className="admin-database-choose-file-label">
@@ -873,8 +907,8 @@ const AdminDatabasePage = () => {
                 borderRadius: "8px",
                 textAlign: "center",
               }}
-          >
-                
+              >
+
                 <p style={{ fontWeight: "bold", color: "#2e7d32" }}>
                   ✅ File successfully selected!
                 </p>
