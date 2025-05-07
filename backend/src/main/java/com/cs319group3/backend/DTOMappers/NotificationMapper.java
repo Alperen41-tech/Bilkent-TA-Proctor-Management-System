@@ -9,12 +9,16 @@ public class NotificationMapper {
         NotificationDTO dto = new NotificationDTO();
         dto.setNotificationType(notification.getNotificationType().name());
         dto.setMessage(message);
-        dto.setRequestId(notification.getRequest().getRequestId());
-        dto.setRequestType(notification.getRequest().getClass().getSimpleName());
-        if (notification.getNotificationType() == NotificationType.REQUEST || notification.getNotificationType() == NotificationType.ASSIGNMENT)
-            dto.setDate(notification.getRequest().getSentDate().toString());
-        else if (notification.getNotificationType() == NotificationType.APPROVAL)
-            dto.setDate(notification.getRequest().getResponseDate().toString());
+
+        if (notification.getRequest() != null){
+            dto.setRequestId(notification.getRequest().getRequestId());
+            dto.setRequestType(notification.getRequest().getClass().getSimpleName());
+            if (notification.getNotificationType() == NotificationType.REQUEST || notification.getNotificationType() == NotificationType.ASSIGNMENT)
+                dto.setDate(notification.getRequest().getSentDate().toString());
+            else if (notification.getNotificationType() == NotificationType.APPROVAL)
+                dto.setDate(notification.getRequest().getResponseDate().toString());
+        }
+
         return dto;
     }
 }
