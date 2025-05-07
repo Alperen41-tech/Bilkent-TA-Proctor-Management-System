@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, use } from "react";
 import "./AdminLogsPage.css";
 import NavbarAdmin from "./NavbarAdmin";
 import AdminLogItem from "./AdminLogItem";
@@ -66,10 +66,12 @@ const AdminLogsPage = () => {
 
   const handleSetTerm = async () => {
     const term = globalSemesterRef.current.value;
+    console.log(term);
     try {
       const response = await axios.post(`http://localhost:8080/generalVariable/changeSemester?semester=${term}`);
       if (response.data) {
         console.log("Term set successfully:", response.data);
+        fetchGlobalData();
       } else {
         console.error("Error setting term:", response);
       }
@@ -84,6 +86,8 @@ const AdminLogsPage = () => {
       const response = await axios.post(`http://localhost:8080/generalVariable/changeProctoringCap?proctoringCap=${proctoringCap}`);
       if (response.data) {
         console.log("Proctoring cap set successfully:", response.data);
+        alert("Proctoring cap set successfully!");
+        fetchGlobalData();
       } else {
         console.error("Error setting proctoring cap:", response);
       }
@@ -160,7 +164,7 @@ const AdminLogsPage = () => {
               <input ref={globalSemesterRef} type="text" placeholder="e.g.,2024-2025 Spring" pattern="^\d{4}-\d{4} (Spring|Fall)$" title="Format must be: YYYY-YYYY Season (e.g., 2024-2025 Spring)" required/>
               <button className="set-term-button" type="submit">Set Term</button>
             </form>
-            <form className="globals-inputs" onsSubmit={(e) => {e.preventDefault(); handleSetProctoringCap();}}>
+            <form className="globals-inputs" onSubmit={(e) => {e.preventDefault(); handleSetProctoringCap();}}>
               <label>Proctoring Cap - {globalProctoringCap}</label>
               <input ref={globalProctoringCapRef} type="number" min={0} placeholder="e.g., 6" required/>
               <button className="set-proctoring-button" type="submit">Set Proctoring Cap</button>
