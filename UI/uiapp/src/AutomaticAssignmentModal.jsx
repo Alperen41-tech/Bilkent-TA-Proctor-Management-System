@@ -3,7 +3,7 @@ import "./AutomaticAssignmentModal.css";
 import TAItem from "./TAItem";
 import axios from "axios";
 
-const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs, selectedExamId }) => {
+const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs, selectedExamId, refreshAfterAssignment }) => {
   const [selectedTAKeys, setSelectedTAKeys] = useState([]);
   const [forceAssign, setForceAssign] = useState(false);
 
@@ -51,10 +51,14 @@ const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs, selectedExamI
       });
 
       if (response.data === true) {
-        alert("TAs successfully assigned.");
+        alert(" TAs successfully assigned.");
+        if (refreshAfterAssignment) {
+          refreshAfterAssignment(); 
+        }
       } else {
-        alert("Assignment failed.");
+        alert(" Assignment failed.");
       }
+      
 
       onClose();
     } catch (error) {

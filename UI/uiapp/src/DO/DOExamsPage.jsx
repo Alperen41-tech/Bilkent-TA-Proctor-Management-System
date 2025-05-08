@@ -29,6 +29,7 @@ const DOExamsPage = () => {
   const [eligibilityRestriction, setEligibilityRestriction] = useState(false);
   const [oneDayRestriction, setOneDayRestriction] = useState(false);
   const [autoSuggestedTAs, setAutoSuggestedTAs] = useState([]);
+  
 
 
   // Dummy logic for "Automatic Assign"
@@ -408,7 +409,10 @@ const DOExamsPage = () => {
         onClose={() => setShowAutoModal(false)}
         suggestedTAs={autoSuggestedTAs}
         selectedExamId={selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id}
+        refreshAfterAssignment={() => fetchExams(departmentFilter)} // ✅ call fetchExams again
       />
+
+
 
 
 
