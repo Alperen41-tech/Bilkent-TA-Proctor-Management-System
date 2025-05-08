@@ -74,6 +74,8 @@ const AdminDatabasePage = () => {
   const [proctoringsData, setProctoringsData] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [tasData, setTAsData] = useState([]);
+  const [createSectionType, setCreateSectionType] = useState("");
+
 
   const handleImportClick = async () => {
     if (!selectedFile) {
@@ -101,6 +103,27 @@ const AdminDatabasePage = () => {
       alert("A problem occured.");
     }
   };
+
+  const fetchDataForType = async (type) => {
+    try {
+      if (type === "Course") {
+        const { data } = await axios.get("http://localhost:8080/course/getAllCourses");
+        setCoursesData(data || []);
+      } else if (type === "Instructor") {
+        const { data } = await axios.get("http://localhost:8080/instructor/getAllInstructors");
+        setInstructorsData(data || []);
+      } else if (type === "Proctoring") {
+        const { data } = await axios.get("http://localhost:8080/classProctoring/getAllClassProctorings");
+        setProctoringsData(data || []);
+      } else if (type === "TA") {
+        const { data } = await axios.get("http://localhost:8080/ta/getAllTAProfiles");
+        setTAsData(data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching data for", type, error);
+    }
+  };
+  
 
   const handleTypeChange = async (e) => {
     const type = e.target.value;
@@ -141,7 +164,7 @@ const AdminDatabasePage = () => {
         console.error("Error fetching TAs:", error);
       }
     }
-    
+
 
   };
 
@@ -170,7 +193,7 @@ const AdminDatabasePage = () => {
   const createDatabaseItems = () => {
     const keyword = searchKeyword.toLowerCase();
 
-    if (selectedType === "Course" && coursesData.length > 0) {
+    if (createSectionType === "Course" && coursesData.length > 0) {
       return coursesData
         .filter((course) =>
           course.name.toLowerCase().includes(keyword) ||
@@ -188,7 +211,7 @@ const AdminDatabasePage = () => {
         ));
     }
 
-    if (selectedType === "Instructor" && instructorsData.length > 0) {
+    if (createSectionType === "Instructor" && instructorsData.length > 0) {
       return instructorsData
         .filter((instructor) =>
           instructor.name.toLowerCase().includes(keyword) ||
@@ -207,7 +230,7 @@ const AdminDatabasePage = () => {
         ));
     }
 
-    if (selectedType === "Proctoring" && proctoringsData.length > 0) {
+    if (createSectionType === "Proctoring" && proctoringsData.length > 0) {
       return proctoringsData
         .filter((exam) =>
           exam.courseName.toLowerCase().includes(keyword) ||
@@ -235,7 +258,7 @@ const AdminDatabasePage = () => {
     }
 
 
-    if (selectedType === "TA" && tasData.length > 0) {
+    if (createSectionType === "TA" && tasData.length > 0) {
       return tasData
         .filter((ta) =>
           ta.name.toLowerCase().includes(keyword) ||
@@ -253,7 +276,7 @@ const AdminDatabasePage = () => {
           />
         ));
     }
-    
+
 
     return <p style={{ padding: "1rem" }}>Please select a type to be displayed.</p>;
   };
@@ -287,7 +310,7 @@ const AdminDatabasePage = () => {
           bilkentId,
           role: "TA",
           departmentName: selectedDept.departmentName,
-          departmentCode: selectedDept.departmentCode, 
+          departmentCode: selectedDept.departmentCode,
           courseName: selectedCourse.name,
           courseCode: selectedCourse.courseCode?.toString(),
           phoneNumber,
@@ -434,14 +457,24 @@ const AdminDatabasePage = () => {
               onChange={(e) => setSearchKeyword(e.target.value)}
             />
 
-            <select value={selectedType} onChange={handleTypeChange}>
-              <option value="Choose">Select a type</option>
-
+            {/* Top: drives the table */}
+            <select
+              value={createSectionType}
+              onChange={async (e) => {
+                const type = e.target.value;
+                setCreateSectionType(type);
+                await fetchDataForType(type); // fetch only
+              }}
+            >
+              <option value="">Select a type</option>
               <option value="Course">Course</option>
               <option value="Instructor">Instructor</option>
               <option value="Proctoring">Proctoring</option>
               <option value="TA">TA</option>
             </select>
+
+
+
           </div>
           <div className="admin-database-data-table">
             <div className="admin-database-table-body">
@@ -733,7 +766,6 @@ const AdminDatabasePage = () => {
 
               <label>Class Year</label>
               <input ref={newTaClassYearRef} type="number" min={1} max={6} required />
-
               <label>Password</label>
               <input ref={newTaPasswordRef} type="password" required />
 

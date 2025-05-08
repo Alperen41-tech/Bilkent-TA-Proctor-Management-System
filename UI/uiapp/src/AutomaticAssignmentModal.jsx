@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./AutomaticAssignmentModal.css";
 import TAItem from "./TAItem";
+import axios from "axios";
 
-const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs }) => {
+const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs, selectedExamId }) => {
   const [selectedTAKeys, setSelectedTAKeys] = useState([]);
-  const [forceAssign, setForceAssign] = useState(false); // ✅ NEW
+  const [forceAssign, setForceAssign] = useState(false);
 
   const toggleSelectTA = (ta) => {
     const key = `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`;
@@ -18,16 +19,48 @@ const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs }) => {
     return selectedTAKeys.includes(key);
   };
 
-  const handleConfirm = () => {
-    const selectedTAs = suggestedTAs.filter((ta) =>
-      selectedTAKeys.includes(
-        `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`
+  const handleConfirm = async () => {
+    const selectedTAs = suggestedTAs
+      .filter((ta) =>
+        selectedTAKeys.includes(
+          `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`
+        )
       )
-    );
-    console.log("✅ Selected TAs to assign:", selectedTAs);
-    console.log("🚨 Force Assign Enabled:", forceAssign);
-    // TODO: Send selectedTAs and forceAssign flag to backend
-    onClose();
+      .map((ta) => ({ userId: ta.userId || ta.id }));
+
+    if (selectedTAs.length === 0) {
+      alert("Please select at least one TA.");
+      return;
+    }
+
+    const endpoint = forceAssign
+      ? "http://localhost:8080/authStaffProctoringRequestController/forcedAssign"
+      : "http://localhost:8080/authStaffProctoringRequestController/unforcedAssign";
+
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await axios.post(endpoint, selectedTAs, {
+        params: {
+          classProctoringId: selectedExamId,
+          senderId: 9,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data === true) {
+        alert("TAs successfully assigned.");
+      } else {
+        alert("Assignment failed.");
+      }
+
+      onClose();
+    } catch (error) {
+      console.error("Assignment error:", error);
+      alert("An error occurred during assignment.");
+    }
   };
 
   if (!isOpen) return null;
@@ -53,8 +86,7 @@ const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs }) => {
           )}
         </div>
 
-        {/* ✅ Force Assign Checkbox */}
-        <div style={{ marginTop: "1rem" }}>
+        <div className="force-assign-checkbox" style={{ marginTop: "1rem" }}>
           <label>
             <input
               type="checkbox"
@@ -66,12 +98,8 @@ const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs }) => {
         </div>
 
         <div className="auto-modal-actions">
-          <button className="auto-button cancel" onClick={onClose}>
-            Cancel
-          </button>
-          <button className="auto-button confirm" onClick={handleConfirm}>
-            Confirm
-          </button>
+          <button className="auto-button cancel" onClick={onClose}>Cancel</button>
+          <button className="auto-button confirm" onClick={handleConfirm}>Confirm</button>
         </div>
       </div>
     </div>

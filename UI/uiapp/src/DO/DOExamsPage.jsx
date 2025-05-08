@@ -35,10 +35,10 @@ const DOExamsPage = () => {
   const handleAutomaticAssign = async () => {
 
     console.log("📤 Automatic Assign triggered");
-console.log("Selected Exam ID:", selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id);
-console.log("TA Count:", taCount);
-console.log("Eligibility Restriction:", eligibilityRestriction);
-console.log("One Day Restriction:", oneDayRestriction);
+    console.log("Selected Exam ID:", selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id);
+    console.log("TA Count:", taCount);
+    console.log("Eligibility Restriction:", eligibilityRestriction);
+    console.log("One Day Restriction:", oneDayRestriction);
 
     if (!selectedExamItem) {
       alert("Please select an exam first.");
@@ -103,10 +103,10 @@ console.log("One Day Restriction:", oneDayRestriction);
       const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
       const taId = selectedTAObj?.id || selectedTAObj?.userId;
       const senderId = 9; // Temporary hardcoded admin ID
-      
+
       const token = localStorage.getItem("token");
       const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest", null, {
-        params: { classProctoringId, taId, senderId },
+        params: { classProctoringId, taId },
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -243,7 +243,7 @@ console.log("One Day Restriction:", oneDayRestriction);
         // Fetch all available TAs in faculty
         const token = localStorage.getItem("token");
         response = await axios.get('http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoringWithRestriction', {
-          params: { facultyId: facultyId, proctoringId: proctoringId, eligibilityRestriction: eligibilityRestriction, oneDayRestriction: oneDayRestriction },headers: {
+          params: { facultyId: facultyId, proctoringId: proctoringId, eligibilityRestriction: eligibilityRestriction, oneDayRestriction: oneDayRestriction }, headers: {
             Authorization: `Bearer ${token}`
           }
         });
@@ -337,9 +337,11 @@ console.log("One Day Restriction:", oneDayRestriction);
       const token = localStorage.getItem("token");
       const { data: success } = await axios.delete(
         "http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring",
-        { params: { taId, classProctoringId}, headers: {
+        {
+          params: { taId, classProctoringId }, headers: {
             Authorization: `Bearer ${token}`
-          }}
+          }
+        }
       );
 
       if (success) {
@@ -405,7 +407,9 @@ console.log("One Day Restriction:", oneDayRestriction);
         isOpen={showAutoModal}
         onClose={() => setShowAutoModal(false)}
         suggestedTAs={autoSuggestedTAs}
+        selectedExamId={selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id}
       />
+
 
 
 
@@ -454,6 +458,20 @@ console.log("One Day Restriction:", oneDayRestriction);
             {createLogsDatabaseItems()}
 
           </div>
+
+          {selectedExamItem && (
+            <div className="exam-details-panel">
+              <h3>Exam Details</h3>
+              <p><strong>Course:</strong> {selectedExamItem.classProctoringTARelationDTO?.classProctoringDTO?.courseName}</p>
+              <p><strong>Exam Type:</strong> {selectedExamItem.classProctoringTARelationDTO?.classProctoringDTO?.proctoringName}</p>
+              <p><strong>Date:</strong> {new Date(selectedExamItem.classProctoringTARelationDTO?.classProctoringDTO?.startDate).toLocaleDateString()}</p>
+              <p><strong>Time:</strong> {new Date(selectedExamItem.classProctoringTARelationDTO?.classProctoringDTO?.startDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
+              <p><strong>End Time:</strong> {new Date(selectedExamItem.classProctoringTARelationDTO?.classProctoringDTO?.endDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
+              <p><strong>Location:</strong> {selectedExamItem.classProctoringTARelationDTO?.classProctoringDTO?.classrooms}</p>
+              <p><strong>Section:</strong> {selectedExamItem.classProctoringTARelationDTO?.classProctoringDTO?.section}</p>
+            </div>
+          )}
+
         </div>
 
         {/* RIGHT SECTION */}
