@@ -10,26 +10,26 @@ const LoginPage = () => {
   //For storing email and password
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [isAdmin, setIsAdmin] = React.useState(false);
 
   
   const handleLogin = async () => {
-    navigate("dashboard"); // Change this to the appropriate page for your role
-    //navigate("ds-dashboard"); // Change this to the appropriate page for your role
-    /*
+    //navigate("dashboard"); 
+    //navigate("ds-dashboard");
     try {
-
+      console.log(isAdmin);
       console.log("Email:", email);
       console.log("Password:", password);
       // Make the API call to the Spring Boot backend
-      const response = await axios.post("http://localhost:8080/api/login", {
-        email: email,      // User input for email
-        password: password,  // User input for password
+      const response = await axios.post("http://localhost:8080/auth/login", {
+        email: email,
+        password: password, 
+        userTypeName: isAdmin ? "admin" : null,
       });
 
-      // Check if the login was successful based on the response
-      if (response.data) { // Assuming the response is a boolean or an object
-        // If login is successful, navigate to the desired page
-        navigate("/ins-dashboard"); // Change this to the appropriate page for your role
+      if (response.data) {
+        navigate("/ins-dashboard");
+        localStorage.setItem("token", response.data.token);
       } else {
         // Handle unsuccessful login (e.g., show an error message)
         alert("Invalid credentials. Please try again.");
@@ -37,7 +37,7 @@ const LoginPage = () => {
     } catch (error) {
       console.error("There was an error with the login request:", error);
       alert("An error occurred. Please try again.");
-    }*/
+    }
   };
 
   return (
@@ -62,8 +62,22 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
-            <div className="forgot-password">
-              <a href="#" onClick={() => setShowForgotPasswordModal(true)}>Forgot password?</a>
+            <div className="login-page-constaint-checkboxes">
+              <div className="is-admin-checkbox">
+                <input
+                  type="checkbox"
+                  id="isAdmin"
+                  name="isAdmin"
+                  checked={isAdmin}
+                  onChange={(e) => setIsAdmin(e.target.checked)}
+                />
+                <label htmlFor="isAdmin">Is admin?</label>
+
+                
+              </div>
+              <div className="forgot-password">
+                <a href="#" onClick={() => setShowForgotPasswordModal(true)}>Forgot password?</a>
+              </div>
             </div>
             <button onClick={handleLogin}>Login</button>
           </div>

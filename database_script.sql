@@ -444,8 +444,9 @@ insert into user (user_id, bilkent_id, name, surname, email, phone_number, is_ac
     (10, '23139433', 'Zakir', 'Jakir', 'jacirkazir@bilkent.edu.tr', '+905382468334', true);
     
 insert into login (login_id, user_id, password, user_type_id) values
-	(1, 1, 'benadminim31', 5),
-    (2, 1, 'simdideta', 1);
+	(1, 1, '$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi', 5),
+    (2, 1, '$2a$10$iksFnrsDdEvoKcDfKiTvoO0pfWHXEB5..eAa.zjeQSpk.eQoQo4e2', 1);
+    
     
 insert into deans_office (user_id, faculty_id) values
 	(9, 1);
