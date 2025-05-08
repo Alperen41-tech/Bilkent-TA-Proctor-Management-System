@@ -67,7 +67,7 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
         }
 
         List<ClassProctoringTARelation> relations = classProctoringTARelationRepo
-                .findByClassProctoring_Course_Department_DepartmentIdAndTA_UserId(ta.get().getUserId(), taId);
+                .findByClassProctoring_Course_Department_DepartmentIdAndTA_UserId(ta.get().getDepartment().getDepartmentId(), taId);
 
         return ClassProctoringTARelationMapper.essentialMapper(relations);
 

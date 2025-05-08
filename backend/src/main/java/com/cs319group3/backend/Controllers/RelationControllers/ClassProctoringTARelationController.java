@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Controllers.RelationControllers;
 
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.ClassProctoringAndTAsDTO;
 import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
 import com.cs319group3.backend.Services.ClassProctoringAndTAsService;
@@ -21,14 +22,17 @@ import java.util.List;
 public class ClassProctoringTARelationController {
 
     @Autowired
-    public ClassProctoringTARelationService classProctoringTARelationService;
+    private ClassProctoringTARelationService classProctoringTARelationService;
     @Autowired
     private ClassProctoringAndTAsService classProctoringAndTAs;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
 
     @GetMapping("getTAsClassProctorings")
-    public List<ClassProctoringTARelationDTO> getTAsClassProctorings(@RequestParam("id") int id){
+    public List<ClassProctoringTARelationDTO> getTAsClassProctorings(){
         try {
+            int id = currentUserUtil.getCurrentUserId();
             return classProctoringTARelationService.getTAsClassProctoringDTOs(id);
         }
         catch (Exception e) {
@@ -39,9 +43,10 @@ public class ClassProctoringTARelationController {
 
 
     @GetMapping("getTAsClassProctoringsByDepartment")
-    public List<ClassProctoringTARelationDTO> getTAsClassProctoringsByDepartment(@RequestParam("id") int id){
+    public List<ClassProctoringTARelationDTO> getTAsClassProctoringsByDepartment(){
         try{
-            return classProctoringTARelationService.getTAsClassProctoringsByDepartment(id);
+            int userId = currentUserUtil.getCurrentUserId();
+            return classProctoringTARelationService.getTAsClassProctoringsByDepartment(userId);
         }
         catch (Exception e) {
             e.printStackTrace();
