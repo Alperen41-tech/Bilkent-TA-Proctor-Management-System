@@ -78,7 +78,16 @@ public class RequestServiceImpl implements RequestService {
 
         if (response){
             try{
-                if (request instanceof TASwapRequest) {
+                if (request instanceof TAWorkloadRequest) {
+                    TAWorkloadRequest req = (TAWorkloadRequest) request;
+                    List<TAWorkloadRequest> reqs = taWorkloadRequestRepo.findByWorkloadIdAndRequestIdNot(req.getWorkloadId(), requestId);
+                    for (TAWorkloadRequest req1 : reqs) {
+                        if (req1.getRequestId() != requestId) {
+                            requestRepo.delete(req1);
+                        }
+                    }
+                }
+                else if (request instanceof TASwapRequest) {
                     TASwapRequest req = (TASwapRequest) request;
                     swapRequestService.acceptSwapRequest(requestId);
                 }
@@ -105,16 +114,6 @@ public class RequestServiceImpl implements RequestService {
             }
         }
 
-
-        if (request instanceof TAWorkloadRequest) {
-            TAWorkloadRequest req = (TAWorkloadRequest) request;
-            List<TAWorkloadRequest> reqs = taWorkloadRequestRepo.findByWorkloadIdAndRequestIdNot(req.getWorkloadId(), requestId);
-            for (TAWorkloadRequest req1 : reqs) {
-                if (req1.getRequestId() != requestId) {
-                    deleteRequest(req1.getRequestId());
-                }
-            }
-        }
 
         request.setApproved(response);
         request.setResponseDate(LocalDateTime.now());
