@@ -446,9 +446,9 @@ insert into user (user_id, bilkent_id, name, surname, email, phone_number, is_ac
 insert into login (login_id, user_id, password, user_type_id) values
 	(1, 1, '$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi', 5),
     (2, 1, '$2a$10$iksFnrsDdEvoKcDfKiTvoO0pfWHXEB5..eAa.zjeQSpk.eQoQo4e2', 1),
-    (3, 7, "$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi", 3),  -- secretary
-    (4, 9, "$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi", 4); -- deans
-    
+    (3, 7, "$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi", 3), -- secretary
+    (4, 9, "$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi", 4), -- deans
+    (5, 4, "$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi", 2); -- instrcutor
     
 insert into deans_office (user_id, faculty_id) values
 	(9, 1);
