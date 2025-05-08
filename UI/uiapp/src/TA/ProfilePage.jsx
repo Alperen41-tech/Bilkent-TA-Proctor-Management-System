@@ -54,6 +54,12 @@ const ProfilePage = () => {
   const handleSetUnavailability = async () => {
     try {
       const token = localStorage.getItem("token");
+      console.log("Start Date:", inputStartDateRef.current.value);
+      console.log("Start Time:", inputStartTimeRef.current.value);
+      console.log("End Date:", inputEndDateRef.current.value);
+      console.log("End Time:", inputEndTimeRef.current.value);
+      console.log("Details:", inputDetailsRef.current.value);
+      console.log("Token:", token);
       const response = await axios.post("http://localhost:8080/taLeaveRequest/create", {
         description: inputDetailsRef.current.value,
         leaveStartDate: inputStartDateRef.current.value + "T" + inputStartTimeRef.current.value + ":00",

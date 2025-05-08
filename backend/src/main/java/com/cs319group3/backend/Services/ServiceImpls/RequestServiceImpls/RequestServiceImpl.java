@@ -132,7 +132,12 @@ public class RequestServiceImpl implements RequestService {
         else
             logMessage = "Request " + request.getRequestId() + " rejected by user " + request.getReceiverUser().getUserId() + ".";
         logService.createLog(logMessage, LogType.UPDATE);
-        requestRepo.save(request);
+        try {
+            requestRepo.save(request);
+        } catch (Exception e) {
+            e.printStackTrace();  // or log the error
+            throw e;
+        }
 
         notificationService.createNotification(request, APPROVAL);
 

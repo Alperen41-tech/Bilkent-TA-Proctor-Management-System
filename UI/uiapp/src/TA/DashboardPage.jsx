@@ -236,6 +236,7 @@ const DashboardPage = () => {
       if (response.data) {
         alert("Request canceled successfully.");
         fetchPendingRequests();
+        fetchTaWorkloadRequests();
         setSelectedRequest(null);
       } else {
         alert("Failed to cancel the request. Please try again.");
@@ -250,7 +251,6 @@ const DashboardPage = () => {
       }
     }
   };
-
 
   useEffect(() => {
     fetchNotifications();
