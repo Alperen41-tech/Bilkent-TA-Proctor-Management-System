@@ -1,9 +1,35 @@
 import React, { useEffect, useState } from "react";
 import "./AutomaticAssignmentModal.css";
 import TAItem from "./TAItem";
-import axios from "axios";
 
 const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs }) => {
+  const [selectedTAKeys, setSelectedTAKeys] = useState([]);
+  const [forceAssign, setForceAssign] = useState(false); // ✅ NEW
+
+  const toggleSelectTA = (ta) => {
+    const key = `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`;
+    setSelectedTAKeys((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  };
+
+  const isSelected = (ta) => {
+    const key = `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`;
+    return selectedTAKeys.includes(key);
+  };
+
+  const handleConfirm = () => {
+    const selectedTAs = suggestedTAs.filter((ta) =>
+      selectedTAKeys.includes(
+        `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`
+      )
+    );
+    console.log("✅ Selected TAs to assign:", selectedTAs);
+    console.log("🚨 Force Assign Enabled:", forceAssign);
+    // TODO: Send selectedTAs and forceAssign flag to backend
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -17,7 +43,8 @@ const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs }) => {
               <TAItem
                 key={`${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`}
                 ta={ta}
-                isSelected={false}
+                isSelected={isSelected(ta)}
+                onClick={() => toggleSelectTA(ta)}
                 inInstructor={true}
               />
             ))
@@ -26,13 +53,29 @@ const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs }) => {
           )}
         </div>
 
+        {/* ✅ Force Assign Checkbox */}
+        <div style={{ marginTop: "1rem" }}>
+          <label>
+            <input
+              type="checkbox"
+              checked={forceAssign}
+              onChange={(e) => setForceAssign(e.target.checked)}
+            />
+            {" "}Force Assign
+          </label>
+        </div>
+
         <div className="auto-modal-actions">
-          <button className="auto-button cancel" onClick={onClose}>Close</button>
+          <button className="auto-button cancel" onClick={onClose}>
+            Cancel
+          </button>
+          <button className="auto-button confirm" onClick={handleConfirm}>
+            Confirm
+          </button>
         </div>
       </div>
     </div>
   );
 };
-  
 
 export default AutomaticAssignmentModal;
