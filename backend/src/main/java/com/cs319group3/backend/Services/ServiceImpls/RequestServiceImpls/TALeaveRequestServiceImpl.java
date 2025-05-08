@@ -42,6 +42,7 @@ public class TALeaveRequestServiceImpl implements TALeaveRequestService {
     @Override
     public boolean createTALeaveRequest(RequestDTO taLeaveRequestDTO, int taId) {
         try{
+            taLeaveRequestDTO.setSenderId(taId);
             TALeaveRequest taLeaveRequest = requestMapper.taLeaveRequestToEntityMapper(taLeaveRequestDTO);
             String logMessage = "User " + taLeaveRequest.getSenderUser().getUserId() + " sent a leave request (" +
                     taLeaveRequest.getRequestId() + ") to user " + taLeaveRequest.getReceiverUser().getUserId() + ".";
