@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.cs319group3.backend.Enums.NotificationType.APPROVAL;
@@ -79,13 +81,12 @@ public class RequestServiceImpl implements RequestService {
         if (response){
             try{
                 if (request instanceof TAWorkloadRequest) {
-                    TAWorkloadRequest req = (TAWorkloadRequest) request;
-                    List<TAWorkloadRequest> reqs = taWorkloadRequestRepo.findByWorkloadIdAndRequestIdNot(req.getWorkloadId(), requestId);
-                    for (TAWorkloadRequest req1 : reqs) {
-                        if (req1.getRequestId() != requestId) {
-                            requestRepo.delete(req1);
-                        }
+                    Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());
+                    if (ta.isEmpty()) {
+                        throw new RuntimeException("No such TA");
                     }
+                    ta.get().setWorkload(ta.get().getWorkload() + ((TAWorkloadRequest) request).getTimeSpent());
+                    taRepo.save(ta.get());
                 }
                 else if (request instanceof TASwapRequest) {
                     TASwapRequest req = (TASwapRequest) request;
@@ -102,6 +103,12 @@ public class RequestServiceImpl implements RequestService {
                     }
                     else{
                         classProctoringTARelationService.createClassProctoringTARelation(req.getReceiverUser().getUserId(), req.getClassProctoring().getClassProctoringId());
+                        Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());
+                        if (ta.isEmpty()) {
+                            throw new RuntimeException("No such TA");
+                        }
+                        long minutes = ChronoUnit.MINUTES.between(req.getClassProctoring().getStartDate(), req.getClassProctoring().getEndDate());
+                        ta.get().setWorkload(ta.get().getWorkload() + (int)minutes);
                     }
                 }
                 else {
@@ -114,6 +121,15 @@ public class RequestServiceImpl implements RequestService {
             }
         }
 
+        if (request instanceof TAWorkloadRequest) {
+            TAWorkloadRequest req = (TAWorkloadRequest) request;
+            List<TAWorkloadRequest> reqs = taWorkloadRequestRepo.findByWorkloadIdAndRequestIdNot(req.getWorkloadId(), requestId);
+            for (TAWorkloadRequest req1 : reqs) {
+                if (req1.getRequestId() != requestId) {
+                    requestRepo.delete(req1);
+                }
+            }
+        }
 
         request.setApproved(response);
         request.setResponseDate(LocalDateTime.now());
@@ -128,15 +144,6 @@ public class RequestServiceImpl implements RequestService {
         } catch (Exception e) {
             e.printStackTrace();  // or log the error
             throw e;
-        }
-
-        if (request instanceof TAWorkloadRequest) {
-            Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());
-            if (ta.isEmpty()) {
-                throw new RuntimeException("No such TA");
-            }
-            ta.get().setWorkload(taWorkloadRequestService.getTotalWorkload(request.getSenderUser().getUserId()));
-            taRepo.save(ta.get());
         }
 
         notificationService.createNotification(request, APPROVAL);
