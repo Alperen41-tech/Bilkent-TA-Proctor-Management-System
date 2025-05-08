@@ -34,4 +34,11 @@ public class InstructorAdditionalTARequestController {
         int receiverId = currentUserUtil.getCurrentUserId();
         return instructorAdditionalTARequestService.getUnapprovedInstructorAdditionalTARequests(receiverId);
     }
+
+    @PostMapping("createInstructorAdditionalTARequest")
+    public boolean createInstructorAdditionalTARequest(@RequestBody RequestDTO requestDTO) {
+        int senderId = currentUserUtil.getCurrentUserId();
+        return instructorAdditionalTARequestService.createInstructorAdditionalTARequest(requestDTO, senderId);
+    }
+
 }

@@ -12,13 +12,17 @@ public interface AuthStaffProctoringRequestRepo extends JpaRepository<AuthStaffP
 
     List<AuthStaffProctoringRequest> findByReceiverUser_UserId(int userId);
     List<AuthStaffProctoringRequest> findBySenderUser_UserId(int userId);
-    Optional<AuthStaffProctoringRequest> findBySenderUserUserIdAndReceiverUserUserIdAndClassProctoringClassProctoringIdAndApprovedFalse(int senderId, int taId, int classProctoringId);
+    List<AuthStaffProctoringRequest> findBySenderUserUserIdAndReceiverUserUserIdAndClassProctoringClassProctoringIdAndApprovedFalseAndResponseDateIsNull(int senderId, int taId, int classProctoringId);
+
+    List<AuthStaffProctoringRequest> findByClassProctoringClassProctoringIdAndResponseDateIsNullAndApprovedFalse(
+            int classProctoringId
+    );
 
     @Query("""
     SELECT COUNT(asp)
     FROM AuthStaffProctoringRequest asp
     JOIN Request r ON asp.requestId = r.requestId
-    WHERE asp.classProctoring.classProctoringId = :classProctoringId AND r.approved = false
+    WHERE asp.classProctoring.classProctoringId = :classProctoringId AND r.approved = false AND r.responseDate = null
 """)
     int numberOfRequestsSent(int classProctoringId);
 }

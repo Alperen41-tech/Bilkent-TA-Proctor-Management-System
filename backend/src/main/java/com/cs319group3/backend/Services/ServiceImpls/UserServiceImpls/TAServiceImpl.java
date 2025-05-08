@@ -36,6 +36,9 @@ public class TAServiceImpl implements TAService {
     @Autowired
     private CurrentUserUtil currentUserUtil;
 
+    @Autowired
+    TAProfileMapper taProfileMapper;
+
 
     @Override
     public TAProfileDTO getTAProfileById(int id) {
@@ -45,14 +48,12 @@ public class TAServiceImpl implements TAService {
             throw new RuntimeException("TA with ID " + id + " not found.");
         }
 
-        return TAProfileMapper.essentialMapper(optionalTA.get());
+        return taProfileMapper.essentialMapper(optionalTA.get());
     }
 
     @Autowired
     LoginMapper loginMapper;
 
-    @Autowired
-    TAProfileMapper taProfileMapper;
 
     @Override
     public boolean createNewTA(CreateTADTO dto) {
@@ -104,12 +105,14 @@ public class TAServiceImpl implements TAService {
             boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId);
             boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
 
+            System.out.println("TA with id " + ta.getUserId() + ": " + unavailable + ", " + alreadyRequested + ", " + takesSameCourse);
+
             return unavailable || alreadyRequested || takesSameCourse;
         });
 
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
-            TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
+            TAProfileDTO profile = taProfileMapper.essentialMapper(ta);
             profile.setTAOfTheCourse(ta.getAssignedCourse().getCourseId() == courseId);
             availableTAProfiles.add(profile);
         }
@@ -134,7 +137,7 @@ public class TAServiceImpl implements TAService {
 
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
-            TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
+            TAProfileDTO profile = taProfileMapper.essentialMapper(ta);
             profile.setTAOfTheCourse(ta.getAssignedCourse().getCourseId() == courseId);
             availableTAProfiles.add(profile);
         }
@@ -152,18 +155,16 @@ public class TAServiceImpl implements TAService {
 
         availableTAs.removeIf(ta -> {
             boolean unavailable = !taAvailabilityService.isTAAvailable(ta, cp);
-            System.out.println("1. ta with id "+ta.getUserId()+ "is" + unavailable);
             boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId);
-            System.out.println("2. ta with id "+ta.getUserId()+ "is" + alreadyRequested);
             boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
-            System.out.println("3. ta with id "+ta.getUserId()+ "is" + takesSameCourse);
+            System.out.println("TA with id " + ta.getUserId() + ": " + unavailable + ", " + alreadyRequested + ", " + takesSameCourse);
 
             return unavailable || alreadyRequested || takesSameCourse;
         });
 
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
-            TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
+            TAProfileDTO profile = taProfileMapper.essentialMapper(ta);
             profile.setTAOfTheCourse(ta.getAssignedCourse().getCourseId() == courseId);
             availableTAProfiles.add(profile);
         }
@@ -189,7 +190,7 @@ public class TAServiceImpl implements TAService {
 
         List<TAProfileDTO> availableTAProfiles = new ArrayList<>();
         for (TA ta : availableTAs) {
-            TAProfileDTO profile = TAProfileMapper.essentialMapper(ta);
+            TAProfileDTO profile = taProfileMapper.essentialMapper(ta);
             profile.setTAOfTheCourse(ta.getAssignedCourse().getCourseId() == courseId);
             availableTAProfiles.add(profile);
         }
@@ -202,7 +203,7 @@ public class TAServiceImpl implements TAService {
         List<TA> tas = taRepo.findAll();
         List<TAProfileDTO> TAProfiles = new ArrayList<>();
         for (TA ta : tas) {
-            TAProfileDTO dto = TAProfileMapper.essentialMapper(ta);
+            TAProfileDTO dto = taProfileMapper.essentialMapper(ta);
             dto.setWorkload(ta.getWorkload());
             TAProfiles.add(dto);
         }

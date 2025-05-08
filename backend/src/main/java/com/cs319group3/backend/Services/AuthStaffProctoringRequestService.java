@@ -16,5 +16,5 @@ public interface AuthStaffProctoringRequestService {
     public boolean canRequestBeAccepted( int classProctoringId);
     public List<TAProfileDTO> sendAuthStaffProctoringRequestAutomaticallyInDepartment(int classProctoringId, String departmentCode, int senderId, int count, boolean eligibilityRestriction, boolean oneDayRestriction);
     public List<TAProfileDTO> sendAuthStaffProctoringRequestAutomaticallyInFaculty( int classProctoringId, int facultyId, int senderId, int count, boolean eligibilityRestriction, boolean oneDayRestriction);
-    public void deleteRequestsIfNeeded(int classProctoringId);
+    public void rejectRequestsIfNeeded(int classProctoringId);
 }

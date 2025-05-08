@@ -77,6 +77,28 @@ public class RequestMapper {
         return taSwapRequest;
     }
 
+    public InstructorAdditionalTARequest instructorAdditionalTARequestToEntityMapper(RequestDTO dto){
+
+        InstructorAdditionalTARequest instructorAdditionalTARequest = new InstructorAdditionalTARequest();
+        try{
+            essentialToEntityMapper(instructorAdditionalTARequest, dto);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        Optional<ClassProctoring> classProctoring = classProctoringRepo.findById(dto.getClassProctoringId());
+
+        if (!classProctoring.isPresent()) {
+            throw new RuntimeException("ClassProctoring cannot be found in database");
+        }
+
+        instructorAdditionalTARequest.setTaCount(dto.getTaCountNeeded());
+        instructorAdditionalTARequest.setSentToSecretary(false);
+        instructorAdditionalTARequest.setClassProctoring(classProctoring.get());
+
+        return instructorAdditionalTARequest;
+    }
+
     public TALeaveRequest taLeaveRequestToEntityMapper(RequestDTO dto) throws Exception{
         TALeaveRequest taLeaveRequest = new TALeaveRequest();
         try {
@@ -231,6 +253,8 @@ public class RequestMapper {
 
         return requestDTO;
     }
+
+
 
     public List<RequestDTO> instructorAdditionalTARequestMapper(List<InstructorAdditionalTARequest> requests) {
         List<RequestDTO> requestDTOs = new ArrayList<>();

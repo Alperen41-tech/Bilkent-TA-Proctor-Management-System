@@ -31,6 +31,9 @@ public class ProctoringApplicationTARelationServiceImpl implements ProctoringApp
     @Autowired
     private TARepo taRepo;
 
+    @Autowired
+    private TAProfileMapper taProfileMapper;
+
     @Override
     public ResponseEntity<Boolean> createProctoringApplicationTARelation(int proctoringApplicationId, int taId) {
 
@@ -69,7 +72,7 @@ public class ProctoringApplicationTARelationServiceImpl implements ProctoringApp
         List<TAProfileDTO> profiles = new ArrayList<>();
 
         relations.forEach(rel -> {
-            profiles.add(TAProfileMapper.essentialMapper(rel.getTA()));
+            profiles.add(taProfileMapper.essentialMapper(rel.getTA()));
         });
 
         return profiles;

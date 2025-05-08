@@ -22,6 +22,7 @@ public class TAProfileDTO {
     private Boolean active;
     private int classYear;
     private int workload;
+    private int paidProctoringCount;
 
     //For finding available tas in a class proctoring
     private boolean isTAOfTheCourse;

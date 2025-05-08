@@ -9,4 +9,5 @@ import java.util.List;
 public interface InstructorAdditionalTARequestService {
     List<RequestDTO> getApprovedInstructorAdditionalTARequests(@RequestParam int receiverId);
     List<RequestDTO> getUnapprovedInstructorAdditionalTARequests(@RequestParam int receiverId);
+    boolean createInstructorAdditionalTARequest(RequestDTO requestDTO, int senderId);
 }
