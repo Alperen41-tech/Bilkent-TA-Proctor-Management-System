@@ -241,13 +241,19 @@ console.log("One Day Restriction:", oneDayRestriction);
 
       if (!departmentCode || departmentCode === "") {
         // Fetch all available TAs in faculty
+        const token = localStorage.getItem("token");
         response = await axios.get('http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoringWithRestriction', {
-          params: { facultyId: facultyId, proctoringId: proctoringId, userId: 9, eligibilityRestriction: eligibilityRestriction, oneDayRestriction: oneDayRestriction },
+          params: { facultyId: facultyId, proctoringId: proctoringId, eligibilityRestriction: eligibilityRestriction, oneDayRestriction: oneDayRestriction },headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
       } else {
         // Fetch available TAs in selected department
+        const token = localStorage.getItem("token");
         response = await axios.get('http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoringWithRestriction', {
-          params: { departmentCode: departmentCode, proctoringId: proctoringId, userId: 9, eligibilityRestriction: eligibilityRestriction, oneDayRestriction: oneDayRestriction },
+          params: { departmentCode: departmentCode, proctoringId: proctoringId, eligibilityRestriction: eligibilityRestriction, oneDayRestriction: oneDayRestriction }, headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
       }
       setAllTAs(response.data || []);

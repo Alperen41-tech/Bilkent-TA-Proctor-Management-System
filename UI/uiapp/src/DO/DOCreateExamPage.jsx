@@ -64,12 +64,15 @@ const DOCreateExamPage = () => {
 
   const fetchTAs = async (departmentCode, proctoringId) => {
     try {
+      const token = localStorage.getItem("token");
       const url = departmentCode
         ? "http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring"
         : "http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoring";
 
       const { data } = await axios.get(url, {
-        params: { facultyId, departmentCode, proctoringId, userId: creatorId },
+        params: { facultyId, departmentCode, proctoringId, userId: creatorId },headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       setAllTAs(data || []);

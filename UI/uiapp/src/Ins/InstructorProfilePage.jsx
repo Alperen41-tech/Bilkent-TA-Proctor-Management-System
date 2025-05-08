@@ -89,7 +89,12 @@ const InstructorProfilePage = () => {
 
   const fetchProfileInformation = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/instructor/profile?id=4");
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8080/instructor/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setInsProfileInfo(response.data);
       console.log(insProfileInfo);
     } catch (error) {

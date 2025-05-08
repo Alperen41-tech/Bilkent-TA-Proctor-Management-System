@@ -36,9 +36,14 @@ const SchedulePage = () => {
   const fetchScheduleInformation = async () => {
     const requestId = ++latestRequest.current;
     try {
-      const response = await axios.post("http://localhost:8080/timeInterval/taSchedule?id=2", {
+      const token = localStorage.getItem("token");
+      const response = await axios.post("http://localhost:8080/timeInterval/taSchedule", {
         startDate: format(currentStartDate, "yyyy-MM-dd"),
         endDate: format(currentEndDate, "yyyy-MM-dd"),
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       console.log("Fetched schedule data:", response.data);
   

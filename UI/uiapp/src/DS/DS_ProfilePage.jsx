@@ -42,7 +42,12 @@ const DSProfilePage = () => {
   useEffect(() => {
     const fetchProfileInformation = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/departmentSecretary/profile?id=7");
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:8080/departmentSecretary/profile",{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setDsProfileInfo(response.data);
         console.log(dsProfileInfo);
       } catch (error) {

@@ -41,7 +41,12 @@ const AdminProfilePage = () => {
   useEffect(() => {
     const fetchProfileInformation = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/admin/getAdminProfile?adminId=1");
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:8080/admin/getAdminProfile", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setAdminProfileInfo(response.data);
         console.log(adminProfileInfo);
       } catch (error) {

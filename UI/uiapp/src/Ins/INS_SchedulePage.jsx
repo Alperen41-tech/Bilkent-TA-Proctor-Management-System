@@ -34,10 +34,15 @@ const INS_SchedulePage = () => {
 
     const fetchScheduleInformation = async () => {
       const requestId = ++latestRequest.current;
+      const token = localStorage.getItem("token");
       try {
-        const response = await axios.post("http://localhost:8080/timeInterval/instructorSchedule?id=5", {
+        const response = await axios.post("http://localhost:8080/timeInterval/instructorSchedule", {
           startDate: format(currentStartDate, "yyyy-MM-dd"),
           endDate: format(currentEndDate, "yyyy-MM-dd"),
+        },{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
         console.log("Fetched schedule data:", response.data);
     

@@ -43,7 +43,12 @@ const DO_ProfilePage = () => {
   useEffect(() => {
     const fetchProfileInformation = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/deansOffice/profile?id=9");
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:8080/deansOffice/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setDoProfileInfo(response.data);
         console.log(doProfileInfo);
       } catch (error) {

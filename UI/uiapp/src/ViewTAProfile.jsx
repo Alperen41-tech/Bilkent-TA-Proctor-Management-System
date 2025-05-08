@@ -14,7 +14,8 @@ const ViewTAProfile = ({ taId = 2 }) => {
 
   const fetchScheduleInformation = async () => {
     try {
-      const response = await axios.post(`http://localhost:8080/timeInterval/taSchedule?id=${taId}`, {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(`http://localhost:8080/timeInterval/taScheduleInInstructor?id=${taId}`, {
         startDate: format(currentStartDate, "yyyy-MM-dd"),
         endDate: format(currentEndDate, "yyyy-MM-dd"),
       });
@@ -53,7 +54,7 @@ const ViewTAProfile = ({ taId = 2 }) => {
   useEffect(() => {
     const fetchTA = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/ta/profile?id=${taId}`);
+        const res = await axios.get(`http://localhost:8080/ta/profileById?id=${taId}`);
         setProfile(res.data);
       } catch (err) {
         console.error("Failed to load TA profile", err);

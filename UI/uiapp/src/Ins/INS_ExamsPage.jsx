@@ -82,12 +82,15 @@ const INS_ExamsPage = () => {
     const proctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
     if (!proctoringId) return;
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.get("http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring", {
         params: {
           departmentCode: "CS",
           proctoringId,
-          userId: instructorId,
         },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       const assignedEmails = new Set(selectedTask.taProfileDTOList.map((ta) => ta.email));
       const filtered = (response.data || []).filter((ta) => !assignedEmails.has(ta.email));
