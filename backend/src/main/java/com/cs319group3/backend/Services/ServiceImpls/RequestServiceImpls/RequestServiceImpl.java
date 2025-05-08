@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -109,6 +108,7 @@ public class RequestServiceImpl implements RequestService {
                         }
                         long minutes = ChronoUnit.MINUTES.between(req.getClassProctoring().getStartDate(), req.getClassProctoring().getEndDate());
                         ta.get().setWorkload(ta.get().getWorkload() + (int)minutes);
+                        authStaffProctoringRequestService.rejectRequestsIfNeeded(req.getClassProctoring().getClassProctoringId());
                     }
                 }
                 else {

@@ -228,12 +228,19 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
         return tasAssigned < taCount;
     }
 
+    //redundant repo call
     @Override
-    public void deleteRequestsIfNeeded(int classProctoringId) {
+    public void rejectRequestsIfNeeded(int classProctoringId) {
         int taCount = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
         int assignedTAs = classProctoringService.numberOfTAsAssigned(classProctoringId);
         if(assignedTAs >= taCount){
-
+            List<AuthStaffProctoringRequest> unresponded = authStaffProctoringRequestRepo.findByClassProctoringClassProctoringIdAndResponseDateIsNullAndApprovedFalse(classProctoringId);
+            for(AuthStaffProctoringRequest request : unresponded){
+                request.setResponseDate(LocalDateTime.now());
+                String description = " The request sent regarding to the class proctoring " + request.getClassProctoring().getEventName() + " is automatically rejected because capacity has been filled. ";
+                System.out.println(description);
+                notificationService.createNotification(request, NotificationType.APPROVAL, description);
+            }
         }
     }
 
