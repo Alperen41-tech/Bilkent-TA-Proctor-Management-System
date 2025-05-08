@@ -20,4 +20,5 @@ public class ProctoringApplicationDTO {
     private Boolean isAppliedByTA;
     private String courseFullName;
     private String departmentName;
+    private String departmentCode;
 }

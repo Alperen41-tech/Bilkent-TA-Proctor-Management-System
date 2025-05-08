@@ -36,6 +36,7 @@ public class ClassProctoringMapper {
         classProctoringDTO.setEndDate(classProctoring.getEndDate());
         List<String> tempClassrooms = classProctoring.getClassrooms().stream().map(cpc -> cpc.getId().getClassroom()).collect(Collectors.toList());
         classProctoringDTO.setCourseCode(classProctoring.getCourse().getCourseFullCode());
+        classProctoringDTO.setDepartmentCode(classProctoring.getCourse().getDepartment().getDepartmentCode());
 
         StringBuffer strBuffer = new StringBuffer();
         int i= 0;
