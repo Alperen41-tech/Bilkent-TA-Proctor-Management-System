@@ -121,6 +121,9 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
     TAService taService;
 
     @Autowired
+    TAProfileMapper taProfileMapper;
+
+    @Autowired
     TAAvailabilityService taAvailabilityService;
 
     @Override
@@ -140,7 +143,7 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         departmentAvailableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, classProctoringReceived)
                                                 || isRequestAlreadySent(taId, ta, classProctoringReceived));
 
-        return TAProfileMapper.essentialMapper(departmentAvailableTAs);
+        return taProfileMapper.essentialMapper(departmentAvailableTAs);
     }
 
     @Override

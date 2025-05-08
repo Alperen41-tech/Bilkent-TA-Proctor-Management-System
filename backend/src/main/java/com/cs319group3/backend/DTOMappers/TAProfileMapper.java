@@ -4,6 +4,8 @@ import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.UserEntities.TA;
+import com.cs319group3.backend.Repositories.ClassProctoringRepo;
+import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
 import com.cs319group3.backend.Repositories.CourseRepo;
 import com.cs319group3.backend.Repositories.DepartmentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +21,12 @@ public class TAProfileMapper {
     CourseRepo courseRepo;
 
     @Autowired
+    ClassProctoringTARelationRepo classProctoringTARelationRepo;
+
+    @Autowired
     DepartmentRepo departmentRepo;
 
-    public static TAProfileDTO essentialMapper(TA ta) {
+    public TAProfileDTO essentialMapper(TA ta) {
         TAProfileDTO dto = new TAProfileDTO();
 
         dto.setUserId(ta.getUserId());
@@ -34,6 +39,8 @@ public class TAProfileMapper {
         dto.setActive(ta.isActive());
         dto.setClassYear(ta.getClassYear());
         dto.setWorkload(ta.getWorkload());
+        dto.setPaidProctoringCount(classProctoringTARelationRepo.countClassProctoringTARelationsByTA_UserIdAndIsPaid(ta.getUserId(), true));
+
 
         // Fix here:
         if (ta.getAssignedCourse() != null) {
@@ -53,7 +60,7 @@ public class TAProfileMapper {
         return dto;
     }
 
-    public static List<TAProfileDTO> essentialMapper(List<TA> taList) {
+    public List<TAProfileDTO> essentialMapper(List<TA> taList) {
         List<TAProfileDTO> dtoList = new ArrayList<>();
         for (TA ta : taList) {
             dtoList.add(essentialMapper(ta));
