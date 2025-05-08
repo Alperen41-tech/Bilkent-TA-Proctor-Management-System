@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Controllers.RequestControllers;
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Services.TAWorkloadRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ public class TAWorkloadRequestController {
 
     @Autowired
     private TAWorkloadRequestService taWorkloadRequestService;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
     @PostMapping("create")
     public boolean createTAWorkloadRequest(@RequestBody RequestDTO taWorkloadRequestDTO, @RequestParam("id") int taId) {
@@ -23,12 +26,14 @@ public class TAWorkloadRequestController {
     }
 
     @GetMapping("getByTA")
-    public List<RequestDTO> getTAWorkloadRequestsByTA(@RequestParam("id") int taId) {
-        return taWorkloadRequestService.getTAWorkloadRequestsByTA(taId);
+    public List<RequestDTO> getTAWorkloadRequestsByTA() {
+        int userId = currentUserUtil.getCurrentUserId();
+        return taWorkloadRequestService.getTAWorkloadRequestsByTA(userId);
     }
 
     @GetMapping("getByInstructor")
-    public List<RequestDTO> getTAWorkloadRequestsByInstructor(@RequestParam("instructorId") int instructorId) {
-        return taWorkloadRequestService.getTAWorkloadRequestsByInstructor(instructorId);
+    public List<RequestDTO> getTAWorkloadRequestsByInstructor() {
+        int userId = currentUserUtil.getCurrentUserId();
+        return taWorkloadRequestService.getTAWorkloadRequestsByInstructor(userId);
     }
 }

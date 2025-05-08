@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Controllers.RequestControllers;
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
@@ -19,20 +20,22 @@ import java.util.List;
 public class AuthStaffProctoringRequestController {
 
     @Autowired
-    AuthStaffProctoringRequestService authStaffProctoringRequestService;
+    private AuthStaffProctoringRequestService authStaffProctoringRequestService;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
+    @Autowired
+    private ClassProctoringTARelationService classProctoringTARelation;
+
 
     @PostMapping("sendAuthStaffProctoringRequest")
-    public boolean sendAuthStaffProctoringRequest(@RequestParam int classProctoringId, @RequestParam int taId,@RequestParam int senderId) {
-        System.out.println("Class proctoring request sent.");
+    public boolean sendAuthStaffProctoringRequest(@RequestParam int classProctoringId, @RequestParam int taId) {
+        int senderId = currentUserUtil.getCurrentUserId();
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequest(classProctoringId, taId, senderId, false);
     }
 
-    @Autowired
-    ClassProctoringTARelationService classProctoringTARelation;
-
     @PostMapping("forceAuthStaffProctoringRequest")
-    public boolean forceAuthStaffProctoringRequest(@RequestParam int classProctoringId, @RequestParam int taId, @RequestParam int senderId) {
-        System.out.println("Force auth staff request sent.");
+    public boolean forceAuthStaffProctoringRequest(@RequestParam int classProctoringId, @RequestParam int taId) {
+        int senderId = currentUserUtil.getCurrentUserId();
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequest(classProctoringId, taId, senderId, true);
     }
 

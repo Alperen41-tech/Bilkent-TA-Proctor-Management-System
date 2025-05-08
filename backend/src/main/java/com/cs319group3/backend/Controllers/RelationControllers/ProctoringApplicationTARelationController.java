@@ -24,9 +24,8 @@ public class ProctoringApplicationTARelationController {
 
 
     @PostMapping("create")
-    public ResponseEntity<Boolean> createProctoringApplicationTARelation(@RequestParam(name = "applicationId") int proctoringApplicationId, @RequestParam(name = "taId") int taId) {
-
-        //int taId = currentUserUtil.getCurrentUserId();
+    public ResponseEntity<Boolean> createProctoringApplicationTARelation(@RequestParam(name = "applicationId") int proctoringApplicationId ) {
+        int taId = currentUserUtil.getCurrentUserId();
         return proctoringApplicationTARelationService.createProctoringApplicationTARelation(proctoringApplicationId, taId);
     }
 
