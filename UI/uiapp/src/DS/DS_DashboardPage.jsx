@@ -12,13 +12,13 @@ import { set } from "date-fns";
 
 const DS_DashboardPage = () => {
   const [selectedAppliedStudentsId, setSelectedAppliedStudentsId] = useState([]);
-  const [selectedATAIds, setSelectedATAIds] = useState([]);
-  
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [sortName, setSortName] = useState("");  
   const [sortWorkload, setSortWorkload] = useState("");
+  const [sortedSearchAppliedTAs, setSortedSearchAppliedTAs] = useState([]);
+  const [sortedSearchAvailableTAs, setSortedSearchAvailableTAs] = useState([]);
   
   const [avaliableTAs, setAvailableTAs] = useState([]);
   const [appliedTAs, setAppliedTAs] = useState([]);
@@ -50,18 +50,12 @@ const DS_DashboardPage = () => {
     console.log("Selected TA:", id);
   };
 
-  const handleAvaTAClick = (id) => { 
-    if (selectedATAIds && !selectedATAIds.includes(id)) {
-      setSelectedATAIds((prev) => [...prev, id]);
-    }
-    else {
-      setSelectedATAIds((prev) => prev.filter((studentId) => studentId !== id));
-    }
-    console.log("Selected TA:", id);
-  };
-
   const handleForceAssignment = async () => {
     try {
+      if (selectedAppliedStudentsId.length === 0) {
+        alert("Please select at least one student to assign.");
+        return;
+      }
       const token = localStorage.getItem("token");
       const response = await axios.post(
         "http://localhost:8080/authStaffProctoringRequestController/forcedAssign",
@@ -79,6 +73,7 @@ const DS_DashboardPage = () => {
       if (response.data) {
         alert("Force assignment completed successfully.");
         fetchAppliedStudents();
+        fetchAvaliableTAs();
       } else {
         alert("Failed to complete force assignment. Please try again.");
       }
@@ -94,6 +89,11 @@ const DS_DashboardPage = () => {
   
   const handleOfferAssignment = async () => {
     try {
+      if (selectedAppliedStudentsId.length === 0) {
+        alert("Please select at least one student to assign.");
+        return;
+      }
+
       const token = localStorage.getItem("token");
       const response = await axios.post(
         "http://localhost:8080/authStaffProctoringRequestController/unforcedAssign",
@@ -111,6 +111,7 @@ const DS_DashboardPage = () => {
       if (response.data) {
         alert("Unforced assignment completed successfully.");
         fetchAppliedStudents();
+        fetchAvaliableTAs();
       } else {
         alert("Failed to complete unforce assignment. Please try again.");
       }
@@ -185,12 +186,17 @@ const DS_DashboardPage = () => {
 
   const fetchAvaliableTAs = async () => {
     try {
+      const token = localStorage.getItem("token");
+      console.log("Selected PPR:", selectedPPR);
       const response = await axios.get("http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring", {
         params: {
-          departmentCode: selectedPPR.classProctoringDTO.departmentName === "Computer Engineering" ? "CS" : "Industrial Engineering" ? "IE" : null,
+          departmentCode: selectedPPR.departmentName === "Computer Engineering" ? "CS" : "IE",
           proctoringId: selectedPPR.classProctoringDTO.id,
         },
-      }); // Adjust the URL as needed
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }); // Adjust the URL as needed);
       if (response.data) {
         setAvailableTAs(response.data);
       }
@@ -317,13 +323,13 @@ const DS_DashboardPage = () => {
   }
 
   const createAppliedTAItems = () => {
-    return appliedTAs.map((ta) => (
-      <DS_DashboardTAItem name={ta.name} surname={ta.surname} onSelect={()=> handleASC(ta.userId)} isSelected={selectedAppliedStudentsId.includes(ta.userId)} id={ta.bilkentId} bgColor={""} email={ta.email}/>
+    return sortedSearchAppliedTAs.map((ta) => (
+      <DS_DashboardTAItem name={ta.name} surname={ta.surname} onSelect={()=> handleASC(ta.userId)} isSelected={selectedAppliedStudentsId.includes(ta.userId)} id={ta.bilkentId} bgColor={""} email={ta.email} paidProctoringCount={ta.paidProctoringCount}/>
     ));
   }
   const createAvaliableTAItems = () => {
-    return avaliableTAs.map((ta) => (
-      <DS_DashboardTAItem name={ta.name} onSelect={handleAvaTAClick} isSelected={selectedATAIds.includes(ta.id)} id={ta.id} bgColor={""} email={ta.email}/>
+    return sortedSearchAvailableTAs.map((ta) => (
+      <DS_DashboardTAItem name={ta.name} surname={ta.surname} onSelect={()=> handleASC(ta.userId)} isSelected={selectedAppliedStudentsId.includes(ta.userId)} id={ta.bilkentId} bgColor={""} email={ta.email} paidProctoringCount={ta.paidProctoringCount}/>
     ));
   }
 
@@ -356,17 +362,53 @@ const DS_DashboardPage = () => {
       fetchAvaliableTAs();
     }
   }, [paidProctorings, selectedPPR]);
+
+  useEffect(() => {
+    const sortAndSearch = (taList) => {
+      let filtered = [...taList];
+  
+      // Search (by name or surname)
+      if (searchText.trim() !== "") {
+        const lower = searchText.toLowerCase();
+        filtered = filtered.filter(
+          (ta) =>
+            ta.name.toLowerCase().includes(lower) ||
+            ta.surname.toLowerCase().includes(lower)
+        );
+      }
+  
+      // Sort by name
+      if (sortName === "asc") {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+      } else if (sortName === "desc") {
+        filtered.sort((a, b) => b.name.localeCompare(a.name));
+      }
+  
+      // Sort by workload
+      if (sortWorkload === "low") {
+        filtered.sort((a, b) => a.workload - b.workload);
+      } else if (sortWorkload === "high") {
+        filtered.sort((a, b) => b.workload - a.workload);
+      }
+  
+      return filtered;
+    };
+  
+    setSortedSearchAppliedTAs(sortAndSearch(appliedTAs));
+    setSortedSearchAvailableTAs(sortAndSearch(avaliableTAs));
+  }, [appliedTAs, avaliableTAs, searchText, sortName, sortWorkload]);
+  
   
   useEffect(() => {
     console.log(paidProctorings);
     console.log(selectedPPR);
     console.log(appliedTAs);
+    console.log(avaliableTAs);
     console.log(selectedAppliedStudentsId);
-    console.log(selectedATAIds);
     console.log(taSelectRestrictionsCount);
     console.log(taSelectRestrictionsEligibility);
     console.log(taSelectRestrictionsOneDay);
-  }, [appliedTAs, selectedAppliedStudentsId, selectedATAIds, selectedPPR, paidProctorings, taSelectRestrictionsCount, taSelectRestrictionsEligibility, taSelectRestrictionsOneDay]);
+  }, [appliedTAs, selectedAppliedStudentsId, selectedPPR, paidProctorings, taSelectRestrictionsCount, taSelectRestrictionsEligibility, taSelectRestrictionsOneDay, avaliableTAs]);
 
   return (
     <div className="dashboard-page">
@@ -537,12 +579,19 @@ const DS_DashboardPage = () => {
                 {appliedTAs.length > 0 ? (
                   <div>
                     {selectedAppliedStudentsId.map((id) => {
-                      return (
+                      return (isManualAssignment ? (
+                        avaliableTAs.filter((ta) => ta.userId === id).map(({ name,surname, bilkentId }) => (
+                          <div className="ds-dashboard-ta-list-item-content">
+                            <div className="ds-dashboard-ta-list-item-name">Name: {name} {surname}</div>
+                            <div className="ds-dashboard-ta-list-item-id">Student ID: {bilkentId}</div>
+                          </div>
+                        )))
+                        :(
                         appliedTAs.filter((ta) => ta.userId === id).map(({ name,surname, bilkentId }) => (
                         <div className="ds-dashboard-ta-list-item-content">
                           <div className="ds-dashboard-ta-list-item-name">Name: {name} {surname}</div>
                           <div className="ds-dashboard-ta-list-item-id">Student ID: {bilkentId}</div>
-                        </div>
+                        </div>)
                       )))
                     }               
                     )}
