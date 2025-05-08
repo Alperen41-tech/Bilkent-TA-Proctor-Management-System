@@ -3,9 +3,11 @@ package com.cs319group3.backend.Services.ServiceImpls.RelationServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.TAProfileMapper;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
+import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.ProctoringApplication;
 import com.cs319group3.backend.Entities.RelationEntities.ProctoringApplicationTARelation;
 import com.cs319group3.backend.Entities.UserEntities.TA;
+import com.cs319group3.backend.Repositories.ClassProctoringRepo;
 import com.cs319group3.backend.Repositories.ProctoringApplicationRepo;
 import com.cs319group3.backend.Repositories.ProctoringApplicationTARelationRepo;
 import com.cs319group3.backend.Repositories.TARepo;
@@ -33,6 +35,8 @@ public class ProctoringApplicationTARelationServiceImpl implements ProctoringApp
 
     @Autowired
     private TAProfileMapper taProfileMapper;
+    @Autowired
+    private ClassProctoringRepo classProctoringRepo;
 
     @Override
     public ResponseEntity<Boolean> createProctoringApplicationTARelation(int proctoringApplicationId, int taId) {
@@ -82,6 +86,30 @@ public class ProctoringApplicationTARelationServiceImpl implements ProctoringApp
     public int getApplicantCount(int applicationId) {
         List<ProctoringApplicationTARelation> relations = proctoringApplicationTARelationRepo.findByProctoringApplication_ApplicationId(applicationId);
         return relations.size();
+    }
+
+    @Override
+    public boolean deleteProctoringApplicationTARelation(int clasProctoringId, TAProfileDTO applicant) {
+
+        Optional<ClassProctoring> classProctoringOptional = classProctoringRepo.findById(clasProctoringId);
+        if (!classProctoringOptional.isPresent()){
+            throw new RuntimeException("classProctoring not found");
+        }
+
+        Optional<TA> taOptional = taRepo.findById(applicant.getUserId());
+        if (!taOptional.isPresent()){
+            throw new RuntimeException("ta not found");
+        }
+
+
+
+        Optional<ProctoringApplicationTARelation> relation = proctoringApplicationTARelationRepo.findByProctoringApplication_ClassProctoringAndTA(classProctoringOptional.get(), taOptional.get());
+
+        if (relation.isPresent()){
+            proctoringApplicationTARelationRepo.delete(relation.get());
+        }
+
+        return true;
     }
 
 

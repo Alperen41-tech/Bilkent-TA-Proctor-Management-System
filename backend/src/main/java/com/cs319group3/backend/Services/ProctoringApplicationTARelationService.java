@@ -15,4 +15,7 @@ public interface ProctoringApplicationTARelationService {
     List<TAProfileDTO> getAllApplicants(int applicationId);
 
     int getApplicantCount(int applicationId);
+
+    boolean deleteProctoringApplicationTARelation(int clasProctoringId, TAProfileDTO applicant);
+
 }

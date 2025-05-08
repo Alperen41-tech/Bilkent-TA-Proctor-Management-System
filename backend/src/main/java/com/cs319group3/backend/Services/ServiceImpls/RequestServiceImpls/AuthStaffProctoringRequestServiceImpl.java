@@ -3,6 +3,7 @@ package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
+import com.cs319group3.backend.Entities.RelationEntities.ProctoringApplicationTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.AuthStaffProctoringRequest;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
@@ -58,6 +59,9 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
 
     @Autowired
     ClassProctoringTARelationService classProctoringTARelationService;
+
+    @Autowired
+    private ProctoringApplicationTARelationService proctoringApplicationTARelationService;
 
     @Override
     public boolean sendAuthStaffProctoringRequest(int classProctoringId, int taId, int senderId, boolean isApproved) {
@@ -154,6 +158,9 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
     public boolean sendAuthStaffProctoringRequests(List<TAProfileDTO> dtoList, int classProctoringId, int senderId, boolean isApproved){
         for(TAProfileDTO dto : dtoList) {
             boolean sent = sendAuthStaffProctoringRequest(classProctoringId, dto.getUserId(), senderId, isApproved);
+            if (sent){
+                proctoringApplicationTARelationService.deleteProctoringApplicationTARelation(classProctoringId, dto);
+            }
             System.out.println("Request is sent? " + sent);
         }
         return true;

@@ -1,6 +1,8 @@
 package com.cs319group3.backend.Repositories;
 
+import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ProctoringApplicationTARelation;
+import com.cs319group3.backend.Entities.UserEntities.TA;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +19,5 @@ public interface ProctoringApplicationTARelationRepo extends JpaRepository<Proct
 
     List<ProctoringApplicationTARelation> findByProctoringApplication_ApplicationId(int proctoringApplicationId);
 
+    Optional<ProctoringApplicationTARelation> findByProctoringApplication_ClassProctoringAndTA(ClassProctoring classProctoring, TA ta);
 }

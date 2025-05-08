@@ -1,20 +1,20 @@
 package com.cs319group3.backend.Controllers;
 
 import com.cs319group3.backend.DTOs.DateIntervalDTO;
+import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.DTOs.TimeIntervalDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.TimeInterval;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.ClassProctoringRepo;
 import com.cs319group3.backend.Repositories.TARepo;
+import com.cs319group3.backend.Services.ProctoringApplicationTARelationService;
+import com.cs319group3.backend.Services.ServiceImpls.RelationServiceImpls.ProctoringApplicationTARelationServiceImpl;
 import com.cs319group3.backend.Services.TAAvailabilityService;
 import com.cs319group3.backend.Services.TAService;
 import com.cs319group3.backend.Services.TimeIntervalService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Time;
 import java.time.LocalDate;
@@ -39,6 +39,9 @@ public class TestController {
 
     @Autowired
     ClassProctoringRepo classProctoringRepo;
+
+    @Autowired
+    private ProctoringApplicationTARelationService proctoringApplicationTARelationService;
 
     @GetMapping("getSchedule")
     public List<TimeIntervalDTO> getSchedule(@RequestParam("bilkentId") String bilkentId, @RequestParam("start") String start, @RequestParam("end") String end){
@@ -73,4 +76,5 @@ public class TestController {
     public boolean doesTakeCourse(@RequestParam int taId, @RequestParam int courseId){
         return taService.doesTakeCourse(taId, courseId);
     }
+
 }
