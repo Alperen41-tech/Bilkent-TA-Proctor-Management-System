@@ -78,15 +78,7 @@ public class RequestServiceImpl implements RequestService {
 
         if (response){
             try{
-                if (request instanceof TAWorkloadRequest) {
-                    Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());
-                    if (ta.isEmpty()) {
-                        throw new RuntimeException("No such TA");
-                    }
-                    ta.get().setWorkload(taWorkloadRequestService.getTotalWorkload(request.getSenderUser().getUserId()));
-                    taRepo.save(ta.get());
-                }
-                else if (request instanceof TASwapRequest) {
+                if (request instanceof TASwapRequest) {
                     TASwapRequest req = (TASwapRequest) request;
                     swapRequestService.acceptSwapRequest(requestId);
                 }
@@ -116,7 +108,7 @@ public class RequestServiceImpl implements RequestService {
 
         if (request instanceof TAWorkloadRequest) {
             TAWorkloadRequest req = (TAWorkloadRequest) request;
-            List<TAWorkloadRequest> reqs = taWorkloadRequestRepo.findByWorkloadId(req.getWorkloadId());
+            List<TAWorkloadRequest> reqs = taWorkloadRequestRepo.findByWorkloadIdAndRequestIdNot(req.getWorkloadId(), requestId);
             for (TAWorkloadRequest req1 : reqs) {
                 if (req1.getRequestId() != requestId) {
                     deleteRequest(req1.getRequestId());
@@ -137,6 +129,15 @@ public class RequestServiceImpl implements RequestService {
         } catch (Exception e) {
             e.printStackTrace();  // or log the error
             throw e;
+        }
+
+        if (request instanceof TAWorkloadRequest) {
+            Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());
+            if (ta.isEmpty()) {
+                throw new RuntimeException("No such TA");
+            }
+            ta.get().setWorkload(taWorkloadRequestService.getTotalWorkload(request.getSenderUser().getUserId()));
+            taRepo.save(ta.get());
         }
 
         notificationService.createNotification(request, APPROVAL);

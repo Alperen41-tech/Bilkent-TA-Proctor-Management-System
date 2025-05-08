@@ -12,6 +12,7 @@ public interface TAWorkloadRequestRepo extends JpaRepository<TAWorkloadRequest, 
     List<TAWorkloadRequest> findBySenderUser_UserId(int senderUserUserId);
     List<TAWorkloadRequest> findByReceiverUser_UserId(int receiverUserUserId);
     List<TAWorkloadRequest> findByWorkloadId(int workloadId);
+    List<TAWorkloadRequest> findByWorkloadIdAndRequestIdNot(int workloadId, int requestId);
 
     @Query("""
     SELECT MAX(workloadId) AS workloadId FROM TAWorkloadRequest
