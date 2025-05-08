@@ -6,6 +6,8 @@ import TAItem from "../TAItem";
 import TaskItem from "../TaskItem";
 import axios from "axios";
 import ManualAssignmentModal from "../ManualAssignmentModal";
+import AutomaticAssignmentModal from "../AutomaticAssignmentModal";
+
 
 const INS_ExamsPage = () => {
   const instructorId = 4;
@@ -42,6 +44,12 @@ const INS_ExamsPage = () => {
   const [sectionNo, setSectionNo] = useState(1);
   const [instructorCourses, setInstructorCourses] = useState([]);
   const [selectedOfferedCourse, setSelectedOfferedCourse] = useState(null);
+  const [eligibilityRestriction, setEligibilityRestriction] = useState(false);
+  const [oneDayRestriction, setOneDayRestriction] = useState(false);
+  const [showAutoModal, setShowAutoModal] = useState(false);
+  const [autoSuggestedTAs, setAutoSuggestedTAs] = useState([]);
+
+
 
   useEffect(() => {
     fetchProctoringTasks();
@@ -107,7 +115,7 @@ const INS_ExamsPage = () => {
     }
     try {
       const response = await axios.post("http://localhost:8080/classProctoring/createClassProctoring", {
-        courseId: selectedOfferedCourse.course.id, // ✅ Fix this line
+        courseId: selectedOfferedCourse.course.id,
         startDate: `${examDate} ${startTime}:00`,
         endDate: `${examDate} ${endTime}:00`,
         classrooms: classrooms.split(",").map((c) => c.trim()),
@@ -116,7 +124,7 @@ const INS_ExamsPage = () => {
         eventName,
         creatorId: instructorId,
       });
-      
+
       if (response.data === true) {
         alert("Exam created successfully!");
         setEventName("");
@@ -160,16 +168,96 @@ const INS_ExamsPage = () => {
     }
   };
 
+
+  const handleForceAssign = async () => {
+    const classProctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+    const taId = selectedTA?.userId || selectedTA?.id;
+
+    if (!classProctoringId || !taId) {
+      alert("Missing exam or TA selection.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest",
+        null,
+        {
+          params: { classProctoringId, taId, senderId: instructorId },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data === true) {
+        alert("TA forcefully assigned.");
+        setShowManualModal(false);
+        setSelectedTA(null);
+        fetchProctoringTasks();
+      } else {
+        alert("Force assignment failed.");
+      }
+    } catch (error) {
+      console.error("Error in force assignment:", error);
+      alert("An error occurred during force assignment.");
+    }
+  };
+
+
+
+  const handleSendRequest = async () => {
+    const classProctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+    const taId = selectedTA?.userId || selectedTA?.id;
+
+    if (!classProctoringId || !taId) {
+      alert("Missing exam or TA selection.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "http://localhost:8080/authStaffProctoringRequestController/sendAuthStaffProctoringRequest",
+        null,
+        {
+          params: { classProctoringId, taId, senderId: instructorId },
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+        }
+      );
+
+      if (response.data === true) {
+        alert("Request sent to TA.");
+        setShowManualModal(false);
+        setSelectedTA(null);
+        fetchProctoringTasks();
+      } else {
+        alert("Failed to send request.");
+      }
+    } catch (error) {
+      console.error("Error in sending request:", error);
+      alert("An error occurred while sending request.");
+    }
+  };
+
+
   const confirmManualAssign = async () => {
     const classProctoringId = selectedTask.classProctoringTARelationDTO.classProctoringDTO.id;
     const taId = selectedTA.userId;
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest", null, {
         params: {
           classProctoringId,
           taId,
-          senderId: instructorId,
         },
+
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       if (response.data === true) {
         alert("TA manually assigned.");
@@ -200,6 +288,41 @@ const INS_ExamsPage = () => {
     const isSelected = selectedTask.classProctoringTARelationDTO.classProctoringDTO.id === id;
     return <TaskItem key={id} task={task} onClick={onClickHandler} isSelected={isSelected} />;
   };
+
+  const handleAutomaticAssign = async () => {
+    const classProctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+    if (!classProctoringId) {
+      alert("Please select a task first.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const { data } = await axios.get(
+        "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
+        {
+          params: {
+            classProctoringId,
+            departmentCode: "CS", // You can make this dynamic later
+            senderId: instructorId,
+            count: taCount,
+            eligibilityRestriction,
+            oneDayRestriction,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setAutoSuggestedTAs(data || []);
+      setShowAutoModal(true);
+    } catch (error) {
+      console.error("Auto assign error:", error);
+      alert("Failed to get suggested TAs.");
+    }
+  };
+
 
   const createTAItem = (ta, onClickHandler) => {
     const isSelected = selectedTA?.email === ta.email;
@@ -314,14 +437,58 @@ const INS_ExamsPage = () => {
             )}
           </div>
           <div className="ins-exam-assign-actions">
-            <button onClick={() => {}}>Automatic Assign</button>
+            <button onClick={handleAutomaticAssign}>Automatic Assign</button>
             <button onClick={() => setShowManualModal(true)}>Manual Assign</button>
+
+            <br />
+            <div className="ins-exam-restriction-checkboxes" style={{ marginTop: "1rem" }}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={eligibilityRestriction}
+                  onChange={(e) => setEligibilityRestriction(e.target.checked)}
+                /> Eligibility Restriction
+              </label>
+              <br />
+              <br />
+              <label>
+                <input
+                  type="checkbox"
+                  checked={oneDayRestriction}
+                  onChange={(e) => setOneDayRestriction(e.target.checked)}
+                /> One Day Restriction
+              </label>
+              <br />
+              <br />
+              <label>
+                TA Count:
+                <input
+                  type="number"
+                  min="1"
+                  value={taCount}
+                  onChange={(e) => setTaCount(Number(e.target.value))}
+                  style={{ width: "60px", marginLeft: "0.5rem" }}
+                />
+              </label>
+            </div>
           </div>
+
           <ManualAssignmentModal
             isOpen={showManualModal}
-            onConfirm={confirmManualAssign}
+            onForceAssign={handleForceAssign}
+            onSendRequest={handleSendRequest}
             onCancel={() => setShowManualModal(false)}
           />
+
+
+          <AutomaticAssignmentModal
+            isOpen={showAutoModal}
+            onClose={() => setShowAutoModal(false)}
+            suggestedTAs={autoSuggestedTAs}
+            selectedExamId={selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.id}
+            refreshAfterAssignment={fetchProctoringTasks}
+          />
+
         </div>
       </div>
     </div>

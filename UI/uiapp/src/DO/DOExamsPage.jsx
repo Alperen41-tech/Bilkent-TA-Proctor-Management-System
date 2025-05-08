@@ -108,7 +108,6 @@ const DOExamsPage = () => {
     try {
       const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
       const taId = selectedTAObj?.id || selectedTAObj?.userId;
-      const senderId = 9; // Temporary hardcoded admin ID
 
       const token = localStorage.getItem("token");
       const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest", null, {
