@@ -40,8 +40,9 @@ public class AuthStaffProctoringRequestController {
     }
 
     @GetMapping("selectAuthStaffProctoringRequestAutomaticallyInDepartment")
-    public List<TAProfileDTO> selectAuthStaffProctoringRequestAutomaticallyInDepartment(@RequestParam int classProctoringId, @RequestParam String departmentCode, @RequestParam int senderId, @RequestParam int count, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
+    public List<TAProfileDTO> selectAuthStaffProctoringRequestAutomaticallyInDepartment(@RequestParam int classProctoringId, @RequestParam String departmentCode, @RequestParam int count, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
         System.out.println("Class proctoring request sent.");
+        int senderId = currentUserUtil.getCurrentUserId();
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequestAutomaticallyInDepartment(classProctoringId, departmentCode, senderId, count, eligibilityRestriction, oneDayRestriction);
     }
 
@@ -52,14 +53,16 @@ public class AuthStaffProctoringRequestController {
     }
 
     @PostMapping("unforcedAssign")
-    public boolean unforcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId, @RequestParam int senderId) {
+    public boolean unforcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId) {
         System.out.println("Force assign request sent.");
+        int senderId = currentUserUtil.getCurrentUserId();
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequests(dtoList, classProctoringId, senderId, false);
     }
 
     @PostMapping("forcedAssign")
-    public boolean forcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId, @RequestParam int senderId) {
+    public boolean forcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId) {
         System.out.println("Force assign request sent.");
+        int senderId = currentUserUtil.getCurrentUserId();
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequests(dtoList, classProctoringId, senderId, true);
     }
 }
