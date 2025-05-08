@@ -8,6 +8,7 @@ import NotificationItem from "../NotificationItem";
 import axios from "axios";
 import PendingRequestItem from "../PendingRequestItem";
 import ReceivedRequestItem from "../ReceivedRequestItem";
+import { set } from "date-fns";
 
 const DS_DashboardPage = () => {
   const [selectedAppliedStudentsId, setSelectedAppliedStudentsId] = useState([]);
@@ -19,7 +20,7 @@ const DS_DashboardPage = () => {
   const [sortName, setSortName] = useState("");  
   const [sortWorkload, setSortWorkload] = useState("");
   
-  
+  const [avaliableTAs, setAvailableTAs] = useState([]);
   const [appliedTAs, setAppliedTAs] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [receivedRequests, setReceivedRequests] = useState([]);
@@ -28,6 +29,10 @@ const DS_DashboardPage = () => {
   const [isAppliedAssignment, setIsAppliedAssignment] = useState(false);
   const [isManualAssignment, setIsManualAssignment] = useState(false);
   const [selectedPPR, setSelectedPPR] = useState(null);
+
+  const [taSelectRestrictionsCount, setTASelectRestrictionsCount] = useState(1);
+  const [taSelectRestrictionsEligibility, setTASelectRestrictionsEligibility] = useState(false);
+  const [taSelectRestrictionsOneDay, setTASelectRestrictionsOneDay] = useState(false);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -55,11 +60,68 @@ const DS_DashboardPage = () => {
     console.log("Selected TA:", id);
   };
 
-  const handleForceAssignment = () => {
-    console.log("Force Assignment clicked");
+  const handleForceAssignment = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "http://localhost:8080/authStaffProctoringRequestController/forcedAssign",
+        selectedAppliedStudentsId.map((id) => ({ userId: id })),
+        {
+          params: {
+            classProctoringId: selectedPPR.classProctoringDTO.id,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (response.data) {
+        alert("Force assignment completed successfully.");
+        fetchAppliedStudents();
+      } else {
+        alert("Failed to complete force assignment. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during force assignment:", error);
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("An error occurred during force assignment. Please try again.");
+      }
+    }
   };
-  const handleOfferAssignment = () => {
-    console.log("Offer Assignment clicked");
+  
+  const handleOfferAssignment = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "http://localhost:8080/authStaffProctoringRequestController/unforcedAssign",
+        selectedAppliedStudentsId.map((id) => ({ userId: id })),
+        {
+          params: {
+            classProctoringId: selectedPPR.classProctoringDTO.id,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (response.data) {
+        alert("Unforced assignment completed successfully.");
+        fetchAppliedStudents();
+      } else {
+        alert("Failed to complete unforce assignment. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during force assignment:", error);
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("An error occurred during force assignment. Please try again.");
+      }
+    }
   };
 
   const fetchReceivedRequests = async () => {
@@ -118,6 +180,63 @@ const DS_DashboardPage = () => {
       }
     } catch (error) {
       console.error("Error fetching paid proctoring requests applicants:", error);
+    }
+  };
+
+  const fetchAvaliableTAs = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring", {
+        params: {
+          departmentCode: selectedPPR.classProctoringDTO.departmentName === "Computer Engineering" ? "CS" : "Industrial Engineering" ? "IE" : null,
+          proctoringId: selectedPPR.classProctoringDTO.id,
+        },
+      }); // Adjust the URL as needed
+      if (response.data) {
+        setAvailableTAs(response.data);
+      }
+      else{
+        console.log("No paid proctoring requests found.");
+      }
+    } catch (error) {
+      console.error("Error fetching paid proctoring requests:", error);
+      if (error.response && error.response.data) {
+        alert(error.response.data.message);
+      }
+      else {
+        alert("An error occurred during fetching avaliable TAs. Please try again.");
+      }
+    }
+  };
+
+  const handleAutomaticSelect = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment`, {
+        params: {
+          classProctoringId: selectedPPR.classProctoringDTO.id,
+          departmentCode: selectedPPR.departmentName === "Computer Engineering" ? "CS" : "Industrial Engineering" ? "IE" : null,
+          count: taSelectRestrictionsCount,
+          eligibilityRestriction: taSelectRestrictionsEligibility,
+          oneDayRestriction: taSelectRestrictionsOneDay,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response.data) {
+        alert("Automatic selection completed successfully.");
+        setSelectedAppliedStudentsId(response.data.map((student) => student.userId));
+      } else {
+        alert("Failed to complete automatic selection. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during automatic selection:", error);
+      if (error.response && error.response.data) {
+        alert(error.response.data.message);
+      }
+      else {
+        alert("An error occurred during automatic selection. Please try again.");
+      }
     }
   };
 
@@ -203,9 +322,9 @@ const DS_DashboardPage = () => {
     ));
   }
   const createAvaliableTAItems = () => {
-    /*return tas.map((ta) => (
+    return avaliableTAs.map((ta) => (
       <DS_DashboardTAItem name={ta.name} onSelect={handleAvaTAClick} isSelected={selectedATAIds.includes(ta.id)} id={ta.id} bgColor={""} email={ta.email}/>
-    ));*/
+    ));
   }
 
   const fetchNotifications = async () => {
@@ -232,7 +351,10 @@ const DS_DashboardPage = () => {
   useEffect(() => {
     setIsAppliedAssignment(selectedPPR && selectedPPR.applicationType === "APPLICATION");
     setIsManualAssignment(selectedPPR && selectedPPR.applicationType === "ASSIGNMENT");
-    fetchAppliedStudents();
+    if (selectedPPR) {
+      fetchAppliedStudents();
+      fetchAvaliableTAs();
+    }
   }, [paidProctorings, selectedPPR]);
   
   useEffect(() => {
@@ -241,7 +363,10 @@ const DS_DashboardPage = () => {
     console.log(appliedTAs);
     console.log(selectedAppliedStudentsId);
     console.log(selectedATAIds);
-  }, [appliedTAs, selectedAppliedStudentsId, selectedATAIds]);
+    console.log(taSelectRestrictionsCount);
+    console.log(taSelectRestrictionsEligibility);
+    console.log(taSelectRestrictionsOneDay);
+  }, [appliedTAs, selectedAppliedStudentsId, selectedATAIds, selectedPPR, paidProctorings, taSelectRestrictionsCount, taSelectRestrictionsEligibility, taSelectRestrictionsOneDay]);
 
   return (
     <div className="dashboard-page">
@@ -276,9 +401,25 @@ const DS_DashboardPage = () => {
                 
               <div className="ta-list-container">
                 <h3 className="ta-list-title">Applied Students</h3>
-                <div className="buttons">
-                  <button >Automatic Select</button>
+                <div className="ds-dashboard-filters">
+                  <input
+                    type="text"
+                    placeholder="🔍 Search by name"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                  />
+                  <select value={sortName} onChange={(e) => setSortName(e.target.value)}>
+                    <option value="">Sort by Name</option>
+                    <option value="asc">A → Z</option>
+                    <option value="desc">Z → A</option>
+                  </select>
+                  <select value={sortWorkload} onChange={(e) => setSortWorkload(e.target.value)}>
+                    <option value="">Sort by Workload</option>
+                    <option value="low">Low to High</option>
+                    <option value="high">High to Low</option>
+                  </select>
                 </div>
+
                 <div className="ta-list">
                 {appliedTAs.length > 0 ? (
                     <div>{createAppliedTAItems()}</div>
@@ -308,9 +449,23 @@ const DS_DashboardPage = () => {
                   <option value="low">Low to High</option>
                   <option value="high">High to Low</option>
                 </select>
-                <button>Automatic Select</button>
+                <div className="ds-ta-select-restrictions">
+                    <div className="ds-ta-select-restrictions-inputs">
+                      <label htmlFor="taSelectRestrictionsCount">TA Select Restrictions Count</label>
+                      <input type="number" min={1} id="taSelectRestrictionsCount" name="taSelectRestrictionsCount" value={taSelectRestrictionsCount} onChange={(e) => setTASelectRestrictionsCount(e.target.value)} />
+                    </div>
+                    <div className="ds-ta-select-restrictions-inputs">
+                      <label htmlFor="taSelectRestrictionsEligibility">TA Select Restrictions Eligibility</label>
+                      <input type="checkbox" id="taSelectRestrictionsEligibility" name="taSelectRestrictionsEligibility" value={taSelectRestrictionsEligibility} checked={taSelectRestrictionsEligibility} onChange={(e) => setTASelectRestrictionsEligibility(e.target.checked)} />
+                    </div>
+                    <div className="ds-ta-select-restrictions-inputs">
+                      <label htmlFor="taSelectRestrictionsOneDay">TA Select Restrictions One Day</label>
+                      <input type="checkbox" id="taSelectRestrictionsOneDay" name="taSelectRestrictionsOneDay" value={taSelectRestrictionsOneDay} checked={taSelectRestrictionsOneDay} onChange={(e) => setTASelectRestrictionsOneDay(e.target.checked)} />
+                    </div>
+                    
+                  </div>
+                <button onClick={()=> handleAutomaticSelect()}>Automatic Select</button>
               </div>
-    
               <div className="ds-dashboard-avaliable-ta-list">{createAvaliableTAItems()}</div>
             </div>) : null}
           </div>
