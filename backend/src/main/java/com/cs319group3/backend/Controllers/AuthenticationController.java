@@ -4,8 +4,6 @@ import com.cs319group3.backend.Components.JwtUtil;
 import com.cs319group3.backend.DTOs.ChangePasswordDTO;
 import com.cs319group3.backend.DTOs.LoginDTO;
 import com.cs319group3.backend.DTOs.TokenDTO;
-import com.cs319group3.backend.Entities.Login;
-import com.cs319group3.backend.Entities.Student;
 import com.cs319group3.backend.Entities.UserEntities.*;
 import com.cs319group3.backend.Entities.UserType;
 import com.cs319group3.backend.Repositories.UserRepo;
@@ -23,6 +21,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+/**
+ * Controller responsible for authentication-related operations,
+ * such as logging in and changing passwords.
+ */
 @RestController
 @RequestMapping("auth")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -36,31 +38,43 @@ public class AuthenticationController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
     @Autowired
     private UserRepo userRepo;
 
     @Autowired
     private UserTypeRepo userTypeRepo;
 
+    /**
+     * Allows the current user to change their password.
+     *
+     * @param changePasswordDTO contains old and new password information
+     * @return true if the password was changed successfully, false otherwise
+     */
     @PutMapping("changePassword")
     public boolean changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
         return authenticationService.changePassword(changePasswordDTO);
     }
 
+    /**
+     * Authenticates the user with email, password, and user type, then generates a JWT.
+     *
+     * @param loginRequest the user's login credentials and requested role
+     * @return a JWT token and user type upon successful login; otherwise, an error response
+     */
     @PostMapping("/login")
     public ResponseEntity<TokenDTO> login(@RequestBody LoginDTO loginRequest) {
         try {
-
             Optional<User> userReceived = userRepo.findByEmail(loginRequest.getEmail());
 
             if (userReceived.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(null);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
 
             User user = userReceived.get();
             int userTypeId = 0;
             String userTypeName = "";
+
             if (loginRequest.getUserTypeName() == null) {
                 if (user instanceof DepartmentSecretary) {
                     userTypeName = "department secretary";
@@ -71,29 +85,21 @@ public class AuthenticationController {
                 } else if (user instanceof DeansOffice) {
                     userTypeName = "deans office";
                 }
-            }
-            else {
+            } else {
                 userTypeName = "admin";
             }
 
-            // Create a combined username format for authentication
             String combinedUsername = loginRequest.getEmail() + "::" + userTypeName;
 
-            // Authenticate with Spring Security
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(combinedUsername, loginRequest.getPassword())
             );
 
-            // Get authenticated user details
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-            // Fetch additional user data from service
 
             UserType userTypeOptional = userTypeRepo.findByUserTypeName(userTypeName);
             userTypeId = userTypeOptional.getUserTypeId();
 
-
-            // Generate JWT token with user information
             String token = jwtUtil.generateToken(
                     combinedUsername,
                     loginRequest.getEmail(),
@@ -104,11 +110,9 @@ public class AuthenticationController {
             return ResponseEntity.ok(new TokenDTO(token, userTypeName));
 
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }
