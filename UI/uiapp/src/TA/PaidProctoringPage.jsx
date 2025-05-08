@@ -14,7 +14,12 @@ const PaidProctoringPage = () => {
 
   const fetchPaidProctorings = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/proctoringApplication/getAllApplicationsForTA?userId=3&applicationType=APPLICATION`);
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`http://localhost:8080/proctoringApplication/getAllApplicationsForTA?applicationType=APPLICATION`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       if(response.data){
         console.log("Paid Proctorings fetched successfully:", response.data);
         setPaidProctorings(response.data);
@@ -24,6 +29,12 @@ const PaidProctoringPage = () => {
       }
     } catch (error) {
       console.error("Error fetching paid proctorings:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -38,12 +49,22 @@ const PaidProctoringPage = () => {
       }
     } catch (error) {
       console.error("Error fetching paid proctoring requests applicants:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
   const handleEnroll = async (task) => {
     try {
-      const response = await axios.post(`http://localhost:8080/proctoringApplicationTARelation/create?applicationId=${task.applicationId}&taId=${3}`);
+      const token = localStorage.getItem("token");
+      const response = await axios.post(`http://localhost:8080/proctoringApplicationTARelation/create?applicationId=${task.applicationId}`,null,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }});
       if (response.data) {
         console.log("Enrolled in paid proctoring successfully");
         fetchPaidProctorings();
@@ -53,6 +74,12 @@ const PaidProctoringPage = () => {
       }
     } catch (error) {
       console.error("Error enrolling in paid proctoring:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 

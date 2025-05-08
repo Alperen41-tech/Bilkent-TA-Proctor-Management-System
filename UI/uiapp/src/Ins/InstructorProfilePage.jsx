@@ -99,7 +99,12 @@ const InstructorProfilePage = () => {
 
   const fetchInstructorCourses = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/course/getCoursesOfInstructor?instructorId=4");
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8080/course/getCoursesOfInstructor",{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       if(response.data) {
         setInstructorCourses(response.data);
         console.log("Instructor Courses:", response.data);

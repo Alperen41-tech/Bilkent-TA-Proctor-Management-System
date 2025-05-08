@@ -54,7 +54,12 @@ const INS_DashboardPage = () => {
 
   const fetchInstructorCourses = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/course/getCoursesOfInstructor?instructorId=4");
+      const token = localStorage.getItem("token")
+      const response = await axios.get("http://localhost:8080/course/getCoursesOfInstructor", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       if (response.data) {
         console.log("Fetched Courses:", response.data);
         setInstructorCourses(response.data);
@@ -68,7 +73,12 @@ const INS_DashboardPage = () => {
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/notification/get?id=4");
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8080/notification/get", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       if(response.data){
         setNotifications(response.data);
         console.log(notifications);
@@ -83,7 +93,12 @@ const INS_DashboardPage = () => {
 
   const fetchReceivedRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/request/getByReceiverId?receiverId=4"); // Adjust the URL as needed
+      const token = localStorage.getItem("token")
+      const response = await axios.get("http://localhost:8080/request/getByReceiverId", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }); // Adjust the URL as needed
       setReceivedRequests(response.data);
       console.log(receivedRequests);
     } catch (error) {
@@ -93,7 +108,12 @@ const INS_DashboardPage = () => {
 
   const fetchPendingRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/request/getBySenderId?senderId=4"); // Adjust the URL as needed
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8080/request/getBySenderId", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }); // Adjust the URL as needed
       setPendingRequests(response.data);
       console.log(receivedRequests);
     } catch (error) {

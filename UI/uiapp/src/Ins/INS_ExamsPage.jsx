@@ -51,8 +51,11 @@ const INS_ExamsPage = () => {
 
   const fetchProctoringTasks = async () => {
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.get("http://localhost:8080/classProctoringTARelation/getClassProctoringOfInstructor", {
-        params: { instructorId }
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       setProctoringTasks(response.data || []);
     } catch (error) {
@@ -62,8 +65,12 @@ const INS_ExamsPage = () => {
 
   const fetchInstructorCourses = async () => {
     try {
+      const token = localStorage.getItem("token")
       const response = await axios.get("http://localhost:8080/course/getCoursesOfInstructor", {
-        params: { instructorId }
+        params: { instructorId },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       setInstructorCourses(response.data || []);
     } catch (error) {
@@ -130,12 +137,15 @@ const INS_ExamsPage = () => {
   const handleDiscardTA = async () => {
     if (!selectedTA) return alert("No TA selected to discard.");
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.delete("http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring", {
         params: {
           classProctoringId: selectedTask.classProctoringTARelationDTO.classProctoringDTO.id,
           taId: selectedTA.userId,
-          removerId: instructorId,
         },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       if (response.data) {
         alert("TA discarded successfully.");

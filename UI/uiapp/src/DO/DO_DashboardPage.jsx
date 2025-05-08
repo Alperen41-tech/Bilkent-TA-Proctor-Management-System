@@ -37,8 +37,11 @@ const DO_Dashboard = () => {
 
   const fetchReceivedRequests = async () => {
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.get("http://localhost:8080/taFromDeanRequest/getUnapprovedInstructorAdditionalTARequests", {
-        params: { receiverId: 9 },
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
       });
       setReceivedRequests(response.data);
     } catch (error) {
@@ -48,8 +51,11 @@ const DO_Dashboard = () => {
 
   const fetchPendingRequests = async () => {
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.get("http://localhost:8080/proctoringApplication/getProctoringApplications", {
-        params: { deansOfficeId: 9 },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       setPendingRequests(response.data);
     } catch (error) {
@@ -59,8 +65,11 @@ const DO_Dashboard = () => {
 
   const fetchNotifications = async () => {
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.get("http://localhost:8080/notification/get", {
-        params: { id: 9 },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       setNotifications(response.data);
     } catch (error) {

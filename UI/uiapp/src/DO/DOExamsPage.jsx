@@ -103,9 +103,13 @@ console.log("One Day Restriction:", oneDayRestriction);
       const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
       const taId = selectedTAObj?.id || selectedTAObj?.userId;
       const senderId = 9; // Temporary hardcoded admin ID
-
+      
+      const token = localStorage.getItem("token");
       const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest", null, {
-        params: { classProctoringId, taId, senderId }
+        params: { classProctoringId, taId, senderId },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       if (response.data === true) {
@@ -129,8 +133,12 @@ console.log("One Day Restriction:", oneDayRestriction);
       const taId = selectedTAObj?.id || selectedTAObj?.userId;
       const senderId = 9;
 
+      const token = localStorage.getItem("token");
       const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/sendAuthStaffProctoringRequest", null, {
-        params: { classProctoringId, taId, senderId }
+        params: { classProctoringId, taId, senderId },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       if (response.data === true) {
@@ -320,9 +328,12 @@ console.log("One Day Restriction:", oneDayRestriction);
     }
 
     try {
+      const token = localStorage.getItem("token");
       const { data: success } = await axios.delete(
         "http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring",
-        { params: { taId, classProctoringId, removerId: 9 } }
+        { params: { taId, classProctoringId}, headers: {
+            Authorization: `Bearer ${token}`
+          }}
       );
 
       if (success) {

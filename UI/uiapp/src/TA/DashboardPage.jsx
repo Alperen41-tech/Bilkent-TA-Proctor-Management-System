@@ -58,11 +58,21 @@ const DashboardPage = () => {
 
   const fetchTasProctorings = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings?id=1"); // Adjust the URL as needed
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctorings", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }}); // Adjust the URL as needed
       setTasProctorings(response.data);
       console.log(tasProctorings);
     } catch (error) {
       console.error("Error fetching tasks:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -73,56 +83,109 @@ const DashboardPage = () => {
       console.log(taskType);
     } catch (error) {
       console.error("Error fetching task types:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
   const fetchTaWorkloadRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/taWorkloadRequest/getByTA?id=1");
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8080/taWorkloadRequest/getByTA",{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }});
       setTaWorkloadRequests(response.data);
       console.log(taWorkloadRequests);
     } catch (error) {
       console.error("Error fetching task types:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/notification/get?id=1");
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8080/notification/get", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setNotifications(response.data);
       console.log(notifications);
     } catch (error) {
       console.error("Error fetching task types:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
   const fetchReceivedRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/request/getByReceiverId?receiverId=1"); // Adjust the URL as needed
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8080/request/getByReceiverId",{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }); // Adjust the URL as needed
       setReceivedRequests(response.data);
       console.log(receivedRequests);
     } catch (error) {
       console.error("Error fetching received requests:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
   const fetchPendingRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/request/getBySenderId?senderId=1"); // Adjust the URL as needed
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8080/request/getBySenderId", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }); // Adjust the URL as needed
       setPendingRequests(response.data);
       console.log(receivedRequests);
     } catch (error) {
       console.error("Error fetching pending requests:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
   const postNewWorkloadEntry = async () => {
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.post("http://localhost:8080/taWorkloadRequest/create?id=1", {
         taskTypeName: newTaskTypeEntry.current.value,
         timeSpent: parseInt(newTimeSpendHoursEntry.current.value,10)*60 + parseInt(newTimeSpendMinutesEntry.current.value, 10),
         description: newDetailsEntry.current.value,
-      });
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }});
       if (!response.data) {
         alert("Could not create the new workload entry. Try again.");
       } else {
@@ -132,7 +195,12 @@ const DashboardPage = () => {
       }
     } catch (error) {
       console.error(error.response.data.message);
-      alert(error.response.data.message);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -153,7 +221,12 @@ const DashboardPage = () => {
       }
     } catch (error) {
       console.error("Error accepting request:", error);
-      alert("An error occurred while accepting the request. Please try again.");
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -169,7 +242,12 @@ const DashboardPage = () => {
       }
     } catch (error) {
       console.error("Error canceling request:", error);
-      alert("An error occurred while canceling the request. Please try again.");
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -186,13 +264,16 @@ const DashboardPage = () => {
   const handleLockedStatusChange = async (id) => {
     try {
       const proctoringToBeLocked = tasProctorings.find((duty) => duty.classProctoringDTO.id === id);
+      const token = localStorage.getItem("token");
       console.log(proctoringToBeLocked);
-      const responseLocked = await axios.put("http://localhost:8080/classProctoringTARelation/updateTAsClassProctorings?id=1", {
+      const responseLocked = await axios.put("http://localhost:8080/classProctoringTARelation/updateTAsClassProctorings", {
         classProctoringDTO: {
           id: proctoringToBeLocked.classProctoringDTO.id,
         },
         isOpenToSwap: !proctoringToBeLocked.isOpenToSwap,
-      });
+      }, {headers: {
+          Authorization: `Bearer ${token}`
+        }});
 
       if (!responseLocked.data) {
         alert("Could not locked the swap. Try again.");
@@ -200,7 +281,12 @@ const DashboardPage = () => {
       fetchTasProctorings();
     } catch (error) {
       console.error("There was an error with the login request:", error);
-      alert("An error occurred. Please try again.");
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   }
   

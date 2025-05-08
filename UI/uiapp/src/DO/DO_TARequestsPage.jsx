@@ -63,15 +63,17 @@ const DO_TARequestsPage = () => {
 
     try {
       console.log("Sending applications:", applications);
-
+      const token = localStorage.getItem("token");
       const response = await axios.post(
         "http://localhost:8080/proctoringApplication/createProctoringApplications",
         applications,
         {
           params: {
-            classProctoringId: selected?.classProctoringId,
-            deansOfficeId: 1, // Replace with real dean's office ID if needed
+            classProctoringId: selected?.classProctoringId, // Replace with real dean's office ID if needed
           },
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
       );
 
@@ -106,9 +108,12 @@ const DO_TARequestsPage = () => {
 
   const fetchTARequests = async () => {
     try {
+      const token = localStorage.getItem("token");
       const res = await axios.get(
         "http://localhost:8080/taFromDeanRequest/getApprovedInstructorAdditionalTARequests",
-        { params: { receiverId: 9 } }
+        { headers: {
+            Authorization: `Bearer ${token}`
+          } }
       );
       setTARequests(res.data || []);
     } catch (e) {

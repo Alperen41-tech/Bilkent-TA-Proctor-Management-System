@@ -39,8 +39,11 @@ const DOCreateExamPage = () => {
   // --- FETCHERS ---
   const fetchCreatedExams = async () => {
     try {
+      const token = localStorage.getItem("token");
       const { data } = await axios.get("http://localhost:8080/classProctoringTARelation/getClassProctoringOfCreator", {
-        params: { creatorId },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       setCreatedExams(data || []);
     } catch (error) {
@@ -107,9 +110,12 @@ const DOCreateExamPage = () => {
     if (!taId || !classProctoringId) return alert("Invalid TA or exam selection.");
 
     try {
+      const token = localStorage.getItem("token");
       const { data: success } = await axios.delete(
         "http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring",
-        { params: { taId, classProctoringId, removerId: creatorId } }
+        { params: { taId, classProctoringId}, headers: {
+            Authorization: `Bearer ${token}`
+          } }
       );
 
       if (success) {

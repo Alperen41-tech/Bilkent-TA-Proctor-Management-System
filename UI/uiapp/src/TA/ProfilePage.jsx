@@ -40,6 +40,12 @@ const ProfilePage = () => {
       }
     } catch (error) {
       console.error("Error changing password:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   
   };
@@ -47,10 +53,15 @@ const ProfilePage = () => {
 
   const handleSetUnavailability = async () => {
     try {
-      const response = await axios.post("http://localhost:8080/taLeaveRequest/create?id=2", {
+      const token = localStorage.getItem("token");
+      const response = await axios.post("http://localhost:8080/taLeaveRequest/create", {
         description: inputDetailsRef.current.value,
         leaveStartDate: inputStartDateRef.current.value + "T" + inputStartTimeRef.current.value + ":00",
         leaveEndDate: inputEndDateRef.current.value + "T" + inputEndTimeRef.current.value + ":00",
+      },{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       }
       );
 
@@ -64,21 +75,40 @@ const ProfilePage = () => {
       }
     } catch (error) {
       console.error("Error fetching tasks:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
 
   }; 
 
+  const fetchProfileInformation = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8080/ta/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      setTaProfileInfo(response.data);
+      console.log(taProfileInfo);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
+    }
+  };
 
   useEffect(() => {
-    const fetchProfileInformation = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/ta/profile?id=2");
-        setTaProfileInfo(response.data);
-        console.log(taProfileInfo);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
+    
     fetchProfileInformation();
   }, []);
 

@@ -28,7 +28,26 @@ const LoginPage = () => {
       });
 
       if (response.data) {
-        navigate("/ins-dashboard");
+        switch(response.data.userTypeName) {
+          case "admin":
+            navigate("/admin-database");
+            break;
+          case "ta":
+            navigate("/dashboard");
+            break;
+          case "instructor":
+            navigate("/ins-dashboard");
+            break;
+          case "deans office":
+            navigate("/do-dashboard");
+            break;
+          case "department secretary":
+            navigate("/ds-dashboard");
+            break;
+          default:
+            console.error("Unknown user type:", response.data.userTypeName);
+        }
+        console.log(response.data.token);
         localStorage.setItem("token", response.data.token);
       } else {
         // Handle unsuccessful login (e.g., show an error message)
@@ -36,7 +55,12 @@ const LoginPage = () => {
       }
     } catch (error) {
       console.error("There was an error with the login request:", error);
-      alert("An error occurred. Please try again.");
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 

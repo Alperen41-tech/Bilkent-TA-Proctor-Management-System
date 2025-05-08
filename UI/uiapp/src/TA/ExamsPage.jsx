@@ -76,11 +76,21 @@ const ExamsPage = () => {
   
   const fetchTasProctorings = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctoringsByDepartment?id=1");
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:8080/classProctoringTARelation/getTAsClassProctoringsByDepartment",{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }});
         setTasProctorings(response.data);
         console.log(tasProctorings);
       } catch (error) {
         console.error("Error fetching tasks:", error);
+        if (error.response.data.message) {
+          alert(error.response.data.message);
+        }
+        else{
+          alert("An error occurred. Please try again.");
+        }
       }
   };
   const fetchAvailableTAs = async () => {
@@ -88,11 +98,22 @@ const ExamsPage = () => {
       if (!lastSelectedTask.id) {
         return; // Avoid calling backend with invalid ID
       }
-      const response = await axios.get(`http://localhost:8080/swapRequest/getAvailableTAProfilesForClassProctoring?classProctoringId=${lastSelectedTask.id}&taId=3`);
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`http://localhost:8080/swapRequest/getAvailableTAProfilesForClassProctoring?classProctoringId=${lastSelectedTask.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setAvailableTAs(response.data);
       console.log(avaliableTAs);
     } catch (error) {
       console.error("Error fetching available TAs:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
