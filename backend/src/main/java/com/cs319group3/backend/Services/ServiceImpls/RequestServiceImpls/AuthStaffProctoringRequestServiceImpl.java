@@ -181,13 +181,6 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
                         .thenComparing(TAProfileDTO::getWorkload)
         );
         return availableTAs.subList(0, count);
-
-        /*
-        for(int i = 0 ; i < count ; i++){
-            System.out.println("Sending auth staff proctoring request: " + i);
-            sendAuthStaffProctoringRequest(classProctoringId, availableTAs.get(i).getUserId(), senderId, isApproved);
-        }
-        */
     }
 
     @Override

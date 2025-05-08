@@ -14,10 +14,17 @@ import org.springframework.web.bind.annotation.*;
 public class TALeaveRequestController {
 
     @Autowired
-    TALeaveRequestService taLeaveRequestService;
+    private TALeaveRequestService taLeaveRequestService;
+
     @Autowired
     private CurrentUserUtil currentUserUtil;
 
+    /**
+     * Creates a new leave request for the currently logged-in TA.
+     *
+     * @param taLeaveRequest the leave request data submitted by the TA
+     * @return true if the request was successfully created
+     */
     @PostMapping("create")
     public boolean createTALeaveRequest(@RequestBody RequestDTO taLeaveRequest) {
         int taId = currentUserUtil.getCurrentUserId();
