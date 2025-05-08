@@ -98,8 +98,8 @@ public class RequestMapper {
 
         taLeaveRequest.setReceiverUser(departmentSecretary.get());
 
-        taLeaveRequest.setLeaveStartDate(taLeaveRequest.getLeaveStartDate());
-        taLeaveRequest.setLeaveEndDate(taLeaveRequest.getLeaveEndDate());
+        taLeaveRequest.setLeaveStartDate(dto.getLeaveStartDate());
+        taLeaveRequest.setLeaveEndDate(dto.getLeaveEndDate());
 
         return taLeaveRequest;
     }
