@@ -105,6 +105,8 @@ public class TAServiceImpl implements TAService {
             boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId);
             boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
 
+            System.out.println("TA with id " + ta.getUserId() + ": " + unavailable + ", " + alreadyRequested + ", " + takesSameCourse);
+
             return unavailable || alreadyRequested || takesSameCourse;
         });
 
@@ -153,11 +155,9 @@ public class TAServiceImpl implements TAService {
 
         availableTAs.removeIf(ta -> {
             boolean unavailable = !taAvailabilityService.isTAAvailable(ta, cp);
-            System.out.println("1. ta with id "+ta.getUserId()+ "is" + unavailable);
             boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId);
-            System.out.println("2. ta with id "+ta.getUserId()+ "is" + alreadyRequested);
             boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
-            System.out.println("3. ta with id "+ta.getUserId()+ "is" + takesSameCourse);
+            System.out.println("TA with id " + ta.getUserId() + ": " + unavailable + ", " + alreadyRequested + ", " + takesSameCourse);
 
             return unavailable || alreadyRequested || takesSameCourse;
         });
