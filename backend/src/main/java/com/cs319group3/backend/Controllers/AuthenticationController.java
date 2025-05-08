@@ -3,8 +3,10 @@ package com.cs319group3.backend.Controllers;
 import com.cs319group3.backend.Components.JwtUtil;
 import com.cs319group3.backend.DTOs.ChangePasswordDTO;
 import com.cs319group3.backend.DTOs.LoginDTO;
+import com.cs319group3.backend.DTOs.TokenDTO;
 import com.cs319group3.backend.Entities.Login;
-import com.cs319group3.backend.Entities.UserEntities.User;
+import com.cs319group3.backend.Entities.Student;
+import com.cs319group3.backend.Entities.UserEntities.*;
 import com.cs319group3.backend.Entities.UserType;
 import com.cs319group3.backend.Repositories.UserRepo;
 import com.cs319group3.backend.Repositories.UserTypeRepo;
@@ -46,7 +48,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO loginRequest) {
+    public ResponseEntity<TokenDTO> login(@RequestBody LoginDTO loginRequest) {
         try {
             // Create a combined username format for authentication
             String combinedUsername = loginRequest.getEmail() + "::" + loginRequest.getUserTypeName();
@@ -62,20 +64,35 @@ public class AuthenticationController {
             // Fetch additional user data from service
             Optional<User> userReceived = userRepo.findByEmail(loginRequest.getEmail());
 
+
             if (userReceived.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("User not found with the provided email and user type");
+                        .body(null);
             }
 
             User user = userReceived.get();
             int userTypeId = 0;
-            for (Login userType : user.getLogins()) {
-                if (userType.getUserType().getUserTypeName().equals(loginRequest.getUserTypeName())){
-                    userTypeId = userType.getUserType().getUserTypeId();
-                    break;
+            String userTypeName = "";
+            if (!loginRequest.getUserTypeName().equals("admin")) {
+
+                if (user instanceof DepartmentSecretary) {
+                    userTypeName = "department secretary";
+                } else if (user instanceof TA) {
+                    userTypeName = "ta";
+                } else if (user instanceof Instructor) {
+                    userTypeName = "instructor";
+                } else if (user instanceof DeansOffice) {
+                    userTypeName = "deans office";
                 }
+
+
+            }
+            else {
+                userTypeName = "admin";
             }
 
+            UserType userTypeOptional = userTypeRepo.findByUserTypeName(userTypeName);
+            userTypeId = userTypeOptional.getUserTypeId();
 
 
             // Generate JWT token with user information
@@ -86,14 +103,14 @@ public class AuthenticationController {
                     userTypeId
             );
 
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok(new TokenDTO(token, userTypeName));
 
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid email or password");
+                    .body(null);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Authentication error: " + e.getMessage());
+                    .body(null);
         }
     }
 }
