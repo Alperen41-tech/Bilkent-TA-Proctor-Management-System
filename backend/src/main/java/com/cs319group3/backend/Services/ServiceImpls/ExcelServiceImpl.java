@@ -12,6 +12,7 @@ import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,6 +50,10 @@ public class ExcelServiceImpl implements ExcelService {
     private TimeIntervalRepo timeIntervalRepo;
     @Autowired
     private OfferedCourseScheduleRelationRepo offeredCourseScheduleRelationRepo;
+    @Autowired
+    private LoginRepo loginRepo;
+    @Autowired
+    private UserTypeRepo userTypeRepo;
 
 
     public byte[] generateExcelFromTemplate() throws IOException {
@@ -331,12 +336,14 @@ public class ExcelServiceImpl implements ExcelService {
             int classYear = (int) row.getCell(5).getNumericCellValue();
             String departmentCode = getStringCellValue(row.getCell(6));
             String taType = getStringCellValue(row.getCell(7));
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String password = passwordEncoder.encode(getStringCellValue(row.getCell(8)));
 
-            saveTA(bilkentId, name, surname, email, phoneNumber, classYear, departmentCode, taType);
+            saveTA(bilkentId, name, surname, email, phoneNumber, classYear, departmentCode, taType, password);
         }
     }
 
-    private void saveTA(String bilkentId, String name, String surname, String email, String phoneNumber, int classYear, String departmentCode, String taType){
+    private void saveTA(String bilkentId, String name, String surname, String email, String phoneNumber, int classYear, String departmentCode, String taType, String password){
 
         TA newTA = new TA();
 
@@ -359,7 +366,18 @@ public class ExcelServiceImpl implements ExcelService {
         setUserEssentials(newTA, bilkentId, name, surname, email, phoneNumber);
         newTA.setClassYear(classYear);
 
+        UserType userType = userTypeRepo.findByUserTypeName("ta");
+
         taRepo.save(newTA);
+        saveLogin(newTA, password, userType);
+    }
+
+    private void saveLogin(User user, String password, UserType type){
+        Login newLogin = new Login();
+        newLogin.setUser(user);
+        newLogin.setPassword(password);
+        newLogin.setUserType(type);
+        loginRepo.save(newLogin);
     }
 
 
@@ -375,14 +393,16 @@ public class ExcelServiceImpl implements ExcelService {
             String email = getStringCellValue(row.getCell(3));
             String phoneNumber = getStringCellValue(row.getCell(4));
             String departmentCode = getStringCellValue(row.getCell(5));
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String password = passwordEncoder.encode(getStringCellValue(row.getCell(6)));
 
-            saveInstructor(bilkentId, name, surname, email, phoneNumber, departmentCode);
+            saveInstructor(bilkentId, name, surname, email, phoneNumber, departmentCode, password);
         }
     }
 
 
 
-    private void saveInstructor(String bilkentId, String name, String surname, String email, String phoneNumber, String departmentCode) {
+    private void saveInstructor(String bilkentId, String name, String surname, String email, String phoneNumber, String departmentCode, String password) {
         Instructor newInstructor = new Instructor();
 
         Optional<Department> department = departmentRepo.findByDepartmentCode(departmentCode);
@@ -395,7 +415,10 @@ public class ExcelServiceImpl implements ExcelService {
 
         setUserEssentials(newInstructor, bilkentId, name, surname, email, phoneNumber);
 
+        UserType userType = userTypeRepo.findByUserTypeName("instructor");
+
         instructorRepo.save(newInstructor);
+        saveLogin(newInstructor, password, userType);
     }
 
     private void uploadCourses(Sheet courseSheet){
