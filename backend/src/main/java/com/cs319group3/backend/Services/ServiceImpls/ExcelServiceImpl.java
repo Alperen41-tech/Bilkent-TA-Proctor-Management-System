@@ -29,7 +29,7 @@ import java.util.Optional;
 @Service
 public class ExcelServiceImpl implements ExcelService {
 
-    private static final String TEMPLATE_PATH = "/excelResources/TARequirementsTemplate.xlsx";
+    private static final String TEMPLATE_PATH = "/excelResources/";
 
     @Autowired
     private CourseTAInstructorFormRepo courseTAInstructorFormRepo;
@@ -59,13 +59,15 @@ public class ExcelServiceImpl implements ExcelService {
     private UserTypeRepo userTypeRepo;
     @Autowired
     private CourseStudentRelationRepo courseStudentRelationRepo;
+    @Autowired
+    private ClassProctoringRepo classProctoringRepo;
 
 
     public byte[] generateExcelFromTemplate() throws IOException {
         // Load template from classpath (inside the .jar)
         List<CourseTAInstructorForm> forms = courseTAInstructorFormRepo.findAll();
 
-        try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH);
+        try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH + "TARequirementsTemplate.xlsx");
              Workbook wb = new XSSFWorkbook(templateStream);
              ByteArrayOutputStream outStream = new ByteArrayOutputStream()) {
 
@@ -94,6 +96,43 @@ public class ExcelServiceImpl implements ExcelService {
         row.createCell(8).setCellValue(form.getAvoidedTAs().replace("*", "\n"));
         row.createCell(9).setCellValue(form.getDescription());
     }
+
+    private void setRow(Row row, Student student){
+        row.createCell(0).setCellValue(student.getBilkentId());
+        row.createCell(1).setCellValue(student.getName());
+        row.createCell(2).setCellValue(student.getSurname());
+        row.createCell(3).setCellValue(student.getEmail());
+    }
+
+    @Override
+    public byte[] getStudentsOfClassProctoring(int classProctoringId) throws IOException {
+
+        Optional<ClassProctoring> classProctoringOptional = classProctoringRepo.findById(classProctoringId);
+        if (!classProctoringOptional.isPresent()) {
+            throw new RuntimeException("ClassProctoring with id" + classProctoringId +" not found");
+        }
+
+        Course offeredCourse = classProctoringOptional.get().getCourse();
+
+        List<CourseStudentRelation> relations = courseStudentRelationRepo.findByCourse_Course(offeredCourse);
+
+        try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH + "Students.xlsx");
+             Workbook wb = new XSSFWorkbook(templateStream);
+             ByteArrayOutputStream outStream = new ByteArrayOutputStream()) {
+
+            Sheet sheet = wb.getSheetAt(0);
+            int rowIndex = sheet.getLastRowNum() + 1;
+
+            for (CourseStudentRelation relation : relations) {
+                Row row = sheet.createRow(rowIndex++);
+                setRow(row, relation.getStudent());
+            }
+
+            wb.write(outStream);
+            return outStream.toByteArray();
+        }
+    }
+
 
     @Override
     public void processTAAssignmentExcel(MultipartFile file) throws IOException {
@@ -205,6 +244,7 @@ public class ExcelServiceImpl implements ExcelService {
         }
 
     }
+
 
     private void uploadOfferedCourseStudentRel(Sheet offeredCourseStudentRelSheet) {
         for (Row row : offeredCourseStudentRelSheet) {

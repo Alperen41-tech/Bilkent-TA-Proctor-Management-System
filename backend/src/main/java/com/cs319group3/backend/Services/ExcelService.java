@@ -11,4 +11,6 @@ public interface ExcelService {
     void processTAAssignmentExcel(MultipartFile file) throws IOException;
 
     void uploadAllData(MultipartFile file) throws IOException;
+
+    byte[] getStudentsOfClassProctoring(int classProctoringId) throws IOException;
 }

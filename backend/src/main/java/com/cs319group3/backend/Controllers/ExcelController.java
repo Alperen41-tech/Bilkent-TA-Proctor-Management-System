@@ -66,6 +66,27 @@ public class ExcelController {
         }
     }
 
+    @GetMapping("getStudentsOfClassProctoring")
+    public ResponseEntity<byte[]> getStudentsOfClassProctoring(@RequestParam(name = "classProctoringId") int classProctoringId) {
+        try {
+            byte[] excelData = excelService.getStudentsOfClassProctoring(classProctoringId);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+            headers.setContentDisposition(ContentDisposition
+                    .attachment()
+                    .filename("Students.xlsx")
+                    .build());
+            headers.setContentLength(excelData.length);
+
+            return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 
 
