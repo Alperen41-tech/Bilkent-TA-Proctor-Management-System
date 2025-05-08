@@ -6,6 +6,8 @@ import AdminDatabaseItem from "../Admin/AdminDatabaseItem";
 import TAItem from "../TAItem";
 import ManualAssignmentModal from "../ManualAssignmentModal";
 import axios from "axios";
+import AutomaticAssignmentModal from "../AutomaticAssignmentModal";
+
 
 // COMPONENT
 const DOCreateExamPage = () => {
@@ -35,6 +37,14 @@ const DOCreateExamPage = () => {
   const [sectionNo, setSectionNo] = useState(1);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const [showAutoModal, setShowAutoModal] = useState(false);
+  const [autoSuggestedTAs, setAutoSuggestedTAs] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [eligibilityRestriction, setEligibilityRestriction] = useState(false);
+  const [oneDayRestriction, setOneDayRestriction] = useState(false);
+
+
+
 
   // --- FETCHERS ---
   const fetchCreatedExams = async () => {
@@ -64,21 +74,29 @@ const DOCreateExamPage = () => {
 
   const fetchTAs = async (departmentCode, proctoringId) => {
     try {
-      const token = localStorage.getItem("token");
-      const url = departmentCode
-        ? "http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring"
-        : "http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoring";
+      let response;
 
-      const { data } = await axios.get(url, {
-        params: { facultyId, departmentCode, proctoringId, userId: creatorId },headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      setAllTAs(data || []);
-      setTAs(data || []);
+      if (!departmentCode || departmentCode === "") {
+        // Fetch all available TAs in faculty
+        const token = localStorage.getItem("token");
+        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByFacultyExceptProctoringWithRestriction', {
+          params: { facultyId: facultyId, proctoringId: proctoringId, eligibilityRestriction: eligibilityRestriction, oneDayRestriction: oneDayRestriction }, headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+      } else {
+        // Fetch available TAs in selected department
+        const token = localStorage.getItem("token");
+        response = await axios.get('http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoringWithRestriction', {
+          params: { departmentCode: departmentCode, proctoringId: proctoringId, eligibilityRestriction: eligibilityRestriction, oneDayRestriction: oneDayRestriction }, headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+      }
+      setAllTAs(response.data || []);
+      setTAs(response.data || []);
     } catch (error) {
-      console.error("Error fetching available TAs:", error);
+      console.error('Error fetching available TAs:', error);
     }
   };
 
@@ -106,6 +124,36 @@ const DOCreateExamPage = () => {
     setSelectedTAObj(ta);
   };
 
+
+  const refreshAfterAssignment = async () => {
+    await fetchCreatedExams();
+
+    try {
+      const token = localStorage.getItem("token");
+      const { data: updatedExams } = await axios.get(
+        "http://localhost:8080/classProctoringTARelation/getClassProctoringOfCreator",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setCreatedExams(updatedExams);
+      const updatedExam = updatedExams.find(
+        (exam) =>
+          exam.classProctoringTARelationDTO?.classProctoringDTO?.id ===
+          selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id
+      );
+      if (updatedExam) {
+        setSelectedExamItem(updatedExam);
+      }
+    } catch (error) {
+      console.error("Error refreshing assigned TAs:", error);
+    }
+  };
+
+
   const dismissTA = async () => {
     const taId = selectedTAObj?.userId ?? selectedTAObj?.id;
     const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
@@ -116,9 +164,11 @@ const DOCreateExamPage = () => {
       const token = localStorage.getItem("token");
       const { data: success } = await axios.delete(
         "http://localhost:8080/classProctoringTARelation/removeTAFromClassProctoring",
-        { params: { taId, classProctoringId}, headers: {
+        {
+          params: { taId, classProctoringId }, headers: {
             Authorization: `Bearer ${token}`
-          } }
+          }
+        }
       );
 
       if (success) {
@@ -134,9 +184,43 @@ const DOCreateExamPage = () => {
   };
 
 
-  const handleAutomaticAssign = () => {
-    alert("Automatic assignment logic goes here.");
+  const handleAutomaticAssign = async () => {
+    if (!selectedExamItem) {
+      alert("Please select an exam first.");
+      return;
+    }
+
+    const classProctoringId =
+      selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+
+    if (!classProctoringId) {
+      alert("Invalid exam data.");
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
+        {
+          params: {
+            classProctoringId,
+            departmentCode: "CS",
+            senderId: creatorId,
+            count: taCount,
+            eligibilityRestriction,
+            oneDayRestriction,
+          },
+        }
+      );
+
+      setAutoSuggestedTAs(response.data || []);
+      setShowAutoModal(true);
+    } catch (error) {
+      console.error("Error during automatic assignment:", error);
+      alert("Failed to get suggested TAs.");
+    }
   };
+
 
   const handleManualAssign = () => {
     if (!selectedExamItem || !selectedTAObj) return alert("Select an exam and TA first.");
@@ -150,25 +234,25 @@ const DOCreateExamPage = () => {
       selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id ||
       selectedExamItem?.classProctoringDTO?.id ||
       selectedExamItem?.id;
-  
+
     const taId = selectedTAObj?.userId || selectedTAObj?.id;
-  
+
     console.log("🔍 Force Assign Debug:", { cpId, taId, selectedExamItem });
-  
+
     if (!cpId || !taId) {
       alert("Missing required IDs for force assignment.");
       return;
     }
-  
+
     try {
-      const { data } = await axios.post(
-        "http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest",
-        null,
-        {
-          params: { classProctoringId: cpId, taId, senderId: creatorId },
+      const token = localStorage.getItem("token");
+      const { data } = await axios.post("http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest", null, {
+        params: { classProctoringId: cpId, taId },
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
-  
+      });
+
       if (data === true) {
         alert("TA forcefully assigned.");
         fetchCreatedExams();
@@ -182,22 +266,22 @@ const DOCreateExamPage = () => {
       alert("Error in force assignment.");
     }
   };
-  
+
   const handleSendRequest = async () => {
     const cpId =
       selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id ||
       selectedExamItem?.classProctoringDTO?.id ||
       selectedExamItem?.id;
-  
+
     const taId = selectedTAObj?.userId || selectedTAObj?.id;
-  
+
     console.log("📨 Send Request Debug:", { cpId, taId, selectedExamItem });
-  
+
     if (!cpId || !taId) {
       alert("Missing required IDs for request.");
       return;
     }
-  
+
     try {
       const { data } = await axios.post(
         "http://localhost:8080/authStaffProctoringRequestController/sendAuthStaffProctoringRequest",
@@ -206,7 +290,7 @@ const DOCreateExamPage = () => {
           params: { classProctoringId: cpId, taId, senderId: creatorId },
         }
       );
-  
+
       if (data === true) {
         alert("Request sent.");
         setShowManualModal(false);
@@ -218,16 +302,22 @@ const DOCreateExamPage = () => {
       alert("Error sending request.");
     }
   };
-  
+
 
   const handleExamSelect = (examItem, key) => {
     setSelectedExamItem(examItem);
     setSelectedExamKey(key);
     setSelectedTA(null);
     setSelectedTAObj(null);
+
     const proctoringId = examItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+    const courseCode = examItem?.classProctoringTARelationDTO?.classProctoringDTO?.courseCode;
+    const deptCode = courseCode?.split(" ")[0] || "";
+    setSelectedDepartment(deptCode);
+
     fetchTAs("", proctoringId);
   };
+
 
   const handleCreateExam = async () => {
     try {
@@ -276,7 +366,7 @@ const DOCreateExamPage = () => {
       />
     );
   };
-  
+
 
   const renderExamItems = () =>
     createdExams.map((exam) => {
@@ -296,10 +386,10 @@ const DOCreateExamPage = () => {
             Section: cp.section,
             examType: cp.proctoringName
           }}
-          
+
           isSelected={selectedExamKey === key}
           onSelect={() => handleExamSelect(exam, key)}
-          onDelete={() => {}}
+          onDelete={() => { }}
           inLog={true}
         />
       );
@@ -315,6 +405,15 @@ const DOCreateExamPage = () => {
         onSendRequest={handleSendRequest}
         onCancel={() => setShowManualModal(false)}
       />
+
+      <AutomaticAssignmentModal
+        isOpen={showAutoModal}
+        onClose={() => setShowAutoModal(false)}
+        suggestedTAs={autoSuggestedTAs}
+        selectedExamId={selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id}
+        refreshAfterAssignment={refreshAfterAssignment}
+      />
+
 
       {/* CONTENT LAYOUT */}
       <div className="do-create-exam-content">
@@ -388,6 +487,38 @@ const DOCreateExamPage = () => {
             <div className="choose-actions">
               <button onClick={handleAutomaticAssign}>Automatically Assign</button>
               <button onClick={handleManualAssign}>Manually Assign</button>
+
+              <div className="checkbox-options" style={{ marginTop: "1rem" }}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={eligibilityRestriction}
+                    onChange={(e) => setEligibilityRestriction(e.target.checked)}
+                  />
+                  Eligibility Restriction
+                </label>
+                <br />
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={oneDayRestriction}
+                    onChange={(e) => setOneDayRestriction(e.target.checked)}
+                  />
+                  One Day Restriction
+                </label>
+              </div>
+              <label>
+                Enter TA count:
+                <input
+                  type="number"
+                  min="1"
+                  value={taCount}
+                  onChange={(e) => setTaCount(parseInt(e.target.value))}
+                  style={{ marginLeft: "0.5rem", width: "60px" }}
+                />
+              </label>
+
+
             </div>
           </div>
         </div>

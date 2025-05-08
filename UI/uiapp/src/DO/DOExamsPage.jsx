@@ -8,11 +8,6 @@ import ManualAssignmentModal from "../ManualAssignmentModal";
 import AutomaticAssignmentModal from "../AutomaticAssignmentModal";
 
 
-
-
-
-
-
 const DOExamsPage = () => {
   const [taDepartmentFilter, setTaDepartmentFilter] = useState("");
 
@@ -29,7 +24,9 @@ const DOExamsPage = () => {
   const [eligibilityRestriction, setEligibilityRestriction] = useState(false);
   const [oneDayRestriction, setOneDayRestriction] = useState(false);
   const [autoSuggestedTAs, setAutoSuggestedTAs] = useState([]);
-  
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+
+
 
 
   // Dummy logic for "Automatic Assign"
@@ -52,13 +49,21 @@ const DOExamsPage = () => {
       return;
     }
 
+    const departmentCode = selectedDepartment;
+    if (!departmentCode) {
+      alert("No department code available. Please reselect the exam.");
+      return;
+    }
+
+
     try {
       const response = await axios.get(
         "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
         {
           params: {
             classProctoringId,
-            departmentCode: "CS",
+            departmentCode,
+
             senderId: 9,
             count: taCount,
             eligibilityRestriction,
@@ -213,7 +218,7 @@ const DOExamsPage = () => {
             type="exam"
             data={{
               id: proctoring.id,
-              course: proctoring.courseName,
+              course: proctoring.courseCode + " " + proctoring.courseName,
               date: new Date(proctoring.startDate).toLocaleDateString(),
               time: new Date(proctoring.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               endTime: new Date(proctoring.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -225,8 +230,13 @@ const DOExamsPage = () => {
               setSelectedExamKey(key);
               setSelectedExamItem(item);
               setTaDepartmentFilter("");
+
+              const departmentCode = proctoring.courseCode?.split(" ")[0] || "";
+              setSelectedDepartment(departmentCode);
+
               fetchTAs("", proctoring.id);
             }}
+
             isSelected={isSelected}
             inLog={true}
           />
