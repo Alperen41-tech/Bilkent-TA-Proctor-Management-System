@@ -145,6 +145,14 @@ public class RequestServiceImpl implements RequestService {
         Optional<Request> optionalRequest = requestRepo.findByRequestId(requestId);
         if (optionalRequest.isPresent()) {
             Request request = optionalRequest.get();
+            if (request instanceof TAWorkloadRequest) {
+                int workloadId = ((TAWorkloadRequest) request).getWorkloadId();
+                List<TAWorkloadRequest> reqs = taWorkloadRequestRepo.findByWorkloadId(workloadId);
+                for (TAWorkloadRequest req : reqs) {
+                    requestRepo.delete(req);
+                }
+                return true;
+            }
             requestRepo.delete(request);
             return true;
         }
