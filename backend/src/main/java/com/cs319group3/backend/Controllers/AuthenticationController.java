@@ -50,8 +50,34 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<TokenDTO> login(@RequestBody LoginDTO loginRequest) {
         try {
+
+            Optional<User> userReceived = userRepo.findByEmail(loginRequest.getEmail());
+
+            if (userReceived.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(null);
+            }
+
+            User user = userReceived.get();
+            int userTypeId = 0;
+            String userTypeName = "";
+            if (loginRequest.getUserTypeName() == null) {
+                if (user instanceof DepartmentSecretary) {
+                    userTypeName = "department secretary";
+                } else if (user instanceof TA) {
+                    userTypeName = "ta";
+                } else if (user instanceof Instructor) {
+                    userTypeName = "instructor";
+                } else if (user instanceof DeansOffice) {
+                    userTypeName = "deans office";
+                }
+            }
+            else {
+                userTypeName = "admin";
+            }
+
             // Create a combined username format for authentication
-            String combinedUsername = loginRequest.getEmail() + "::" + loginRequest.getUserTypeName();
+            String combinedUsername = loginRequest.getEmail() + "::" + userTypeName;
 
             // Authenticate with Spring Security
             Authentication authentication = authenticationManager.authenticate(
@@ -62,34 +88,6 @@ public class AuthenticationController {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
             // Fetch additional user data from service
-            Optional<User> userReceived = userRepo.findByEmail(loginRequest.getEmail());
-
-
-            if (userReceived.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(null);
-            }
-
-            User user = userReceived.get();
-            int userTypeId = 0;
-            String userTypeName = "";
-            if (!loginRequest.getUserTypeName().equals("admin")) {
-
-                if (user instanceof DepartmentSecretary) {
-                    userTypeName = "department secretary";
-                } else if (user instanceof TA) {
-                    userTypeName = "ta";
-                } else if (user instanceof Instructor) {
-                    userTypeName = "instructor";
-                } else if (user instanceof DeansOffice) {
-                    userTypeName = "deans office";
-                }
-
-
-            }
-            else {
-                userTypeName = "admin";
-            }
 
             UserType userTypeOptional = userTypeRepo.findByUserTypeName(userTypeName);
             userTypeId = userTypeOptional.getUserTypeId();
