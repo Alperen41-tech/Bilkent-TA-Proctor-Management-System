@@ -21,8 +21,9 @@ public class ProctoringApplicationController {
 
 
     @GetMapping("getProctoringApplications")
-    public List<ProctoringApplicationDTO> getProctoringApplications(@RequestParam int deansOfficeId) {
+    public List<ProctoringApplicationDTO> getProctoringApplications() {
         System.out.println("getProctoringApplications is called");
+        int deansOfficeId = currentUserUtil.getCurrentUserId();
         return proctoringApplicationService.getProctoringApplications(deansOfficeId);
     }
 
@@ -34,15 +35,16 @@ public class ProctoringApplicationController {
 
 
     @GetMapping("getAllApplicationsForTA")
-    public List<ProctoringApplicationDTO> getAllApplicationsForTA(@RequestParam("userId") int userId, @RequestParam("applicationType") ProctoringApplicationType applicationType) {
-        //int userId = currentUserUtil.getCurrentUserId();
+    public List<ProctoringApplicationDTO> getAllApplicationsForTA(@RequestParam("applicationType") ProctoringApplicationType applicationType) {
+        int userId = currentUserUtil.getCurrentUserId();
         return proctoringApplicationService.getAllApplicationsForTA(userId, applicationType);
     }
 
 
     @PostMapping("createProctoringApplications")
-    public boolean createProctoringApplication(@RequestParam int classProctoringId, @RequestBody List<ProctoringApplicationDTO> proctoringApplicationDTO, @RequestParam int deansOfficeId) {
+    public boolean createProctoringApplication(@RequestParam int classProctoringId, @RequestBody List<ProctoringApplicationDTO> proctoringApplicationDTO) {
         System.out.println("createProctoringApplication is called");
+        int deansOfficeId = currentUserUtil.getCurrentUserId();
         return proctoringApplicationService.createProctoringApplications(classProctoringId, proctoringApplicationDTO, deansOfficeId);
     }
 

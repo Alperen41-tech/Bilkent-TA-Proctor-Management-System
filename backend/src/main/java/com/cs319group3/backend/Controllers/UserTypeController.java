@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Controllers;
 
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.Entities.UserType;
 import com.cs319group3.backend.Services.UserTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ public class UserTypeController {
 
     @Autowired
     private UserTypeService userTypeService;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
     @PostMapping("createUserTypeEntity")
     public boolean createUserTypeEntity(@RequestParam String name) {
@@ -35,7 +38,8 @@ public class UserTypeController {
 
 
     @GetMapping("getUserTypeById")
-    public ResponseEntity<UserType> getUserTypeById(@RequestParam("id") int id) {
+    public ResponseEntity<UserType> getUserTypeById() {
+        int id = currentUserUtil.getCurrentUserId();
         return userTypeService.getUserById(id);
     }
 }

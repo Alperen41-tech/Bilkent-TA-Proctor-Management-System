@@ -2,6 +2,7 @@ package com.cs319group3.backend.Controllers.UserControllers;
 
 
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.CreateTADTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Services.TAService;
@@ -19,11 +20,20 @@ public class TAController {
 
     @Autowired
     private TAService taService;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
     @GetMapping("profile")
     public TAProfileDTO getTAProfile(){
         System.out.println("request received");
-        return taService.getTAProfileById();
+        int id = currentUserUtil.getCurrentUserId();
+        return taService.getTAProfileById(id);
+    }
+
+    @GetMapping("profileById")
+    public TAProfileDTO getTAProfile(@RequestParam int id){
+        System.out.println("request received");
+        return taService.getTAProfileById(id);
     }
 
     @PostMapping("createTA")
@@ -38,26 +48,30 @@ public class TAController {
     }
 
     @GetMapping("getAvailableTAsByDepartmentExceptProctoring")
-    public List<TAProfileDTO> getAllAvailableTAsByDepartment(@RequestParam String departmentCode,@RequestParam int proctoringId, @RequestParam int userId) {
+    public List<TAProfileDTO> getAllAvailableTAsByDepartment(@RequestParam String departmentCode,@RequestParam int proctoringId) {
+        int userId = currentUserUtil.getCurrentUserId();
         System.out.println("Getting available TA profiles by department except in proctoring " + proctoringId);
         return taService.getAllAvailableTAsByDepartmentCode(departmentCode, proctoringId, userId);
     }
 
     @GetMapping("getAvailableTAsByFacultyExceptProctoring")
-    public List<TAProfileDTO> getAllAvailableTAsByFaculty(@RequestParam int facultyId, @RequestParam int proctoringId, @RequestParam int userId) {
+    public List<TAProfileDTO> getAllAvailableTAsByFaculty(@RequestParam int facultyId, @RequestParam int proctoringId) {
+        int userId = currentUserUtil.getCurrentUserId();
         System.out.println("Getting available TA profiles by Faculty");
         return taService.getAllAvailableTAsByFacultyId(facultyId, proctoringId, userId);
     }
 
     @GetMapping("getAvailableTAsByDepartmentExceptProctoringWithRestriction")
-    public List<TAProfileDTO> getAllAvailableTAsByDepartment(@RequestParam String departmentCode,@RequestParam int proctoringId, @RequestParam int userId, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
+    public List<TAProfileDTO> getAllAvailableTAsByDepartment(@RequestParam String departmentCode,@RequestParam int proctoringId, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
         System.out.println("Getting available TA profiles by department except in proctoring " + proctoringId);
+        int userId = currentUserUtil.getCurrentUserId();
         return taService.getAllAvailableTAsByDepartmentCode(departmentCode, proctoringId, userId, eligibilityRestriction, oneDayRestriction);
     }
 
     @GetMapping("getAvailableTAsByFacultyExceptProctoringWithRestriction")
-    public List<TAProfileDTO> getAllAvailableTAsByFaculty(@RequestParam int facultyId, @RequestParam int proctoringId, @RequestParam int userId, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
+    public List<TAProfileDTO> getAllAvailableTAsByFaculty(@RequestParam int facultyId, @RequestParam int proctoringId, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
         System.out.println("Getting available TA profiles by Faculty");
+        int userId = currentUserUtil.getCurrentUserId();
         return taService.getAllAvailableTAsByFacultyId(facultyId, proctoringId, userId, eligibilityRestriction, oneDayRestriction);
     }
 }

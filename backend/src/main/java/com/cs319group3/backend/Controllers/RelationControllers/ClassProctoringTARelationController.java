@@ -55,14 +55,16 @@ public class ClassProctoringTARelationController {
     }
 
     @PutMapping("updateTAsClassProctorings")
-    public boolean updateTAsClassProctorings(@RequestBody ClassProctoringTARelationDTO classProctoringTARelationDTO, @RequestParam("id") int id ){
+    public boolean updateTAsClassProctorings(@RequestBody ClassProctoringTARelationDTO classProctoringTARelationDTO){
         System.out.println("request received");
+        int id = currentUserUtil.getCurrentUserId();
         return classProctoringTARelationService.updateClassProctoringDTO(classProctoringTARelationDTO, id);
     }
 
     @GetMapping("getDepartmentTAsClassProctorings")
-    public List<ClassProctoringAndTAsDTO> getDepartmentTAsClassProctorings(@RequestParam("id") int id){
+    public List<ClassProctoringAndTAsDTO> getDepartmentTAsClassProctorings(){
         System.out.println("request received");
+        int id = currentUserUtil.getCurrentUserId();
         return classProctoringAndTAs.getDepartmentTAsClassProctorings(id);
     }
 
@@ -79,8 +81,9 @@ public class ClassProctoringTARelationController {
     }
 
     @DeleteMapping("removeTAFromClassProctoring")
-    public boolean removeTAFromClassProctoring(@RequestParam int taId, @RequestParam int classProctoringId, @RequestParam int removerId){
+    public boolean removeTAFromClassProctoring(@RequestParam int taId, @RequestParam int classProctoringId){
         System.out.println("Remove ta from class proctoring");
+        int removerId = currentUserUtil.getCurrentUserId();
         return classProctoringTARelationService.removeTAFromClassProctoring(taId, classProctoringId, removerId);
     }
 
@@ -91,13 +94,15 @@ public class ClassProctoringTARelationController {
     }
 
     @GetMapping("getClassProctoringOfCreator")
-    public List<ClassProctoringAndTAsDTO> getClassProctoringOfCreator(@RequestParam int creatorId){
+    public List<ClassProctoringAndTAsDTO> getClassProctoringOfCreator(){
+        int creatorId = currentUserUtil.getCurrentUserId();
         System.out.println("getClassProctoringOfCreator called with creatorId = " + creatorId);
         return classProctoringAndTAs.getClassProctoringsOfCreator(creatorId);
     }
 
     @GetMapping("getClassProctoringOfInstructor")
-    public List<ClassProctoringAndTAsDTO> getClassProctoringOfInstructor(@RequestParam int instructorId){
+    public List<ClassProctoringAndTAsDTO> getClassProctoringOfInstructor(){
+        int instructorId = currentUserUtil.getCurrentUserId();
         return classProctoringAndTAs.getClassProctoringsOfInstructor(instructorId);
     }
 

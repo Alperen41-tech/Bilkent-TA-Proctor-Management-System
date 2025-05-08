@@ -1,6 +1,7 @@
 package com.cs319group3.backend.Controllers.RequestControllers;
 
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 
 import com.cs319group3.backend.DTOs.TAProfileDTO;
@@ -23,7 +24,8 @@ public class TASwapRequestController {
 
     @Autowired
     private TASwapRequestService swapRequestService;
-
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
 
 //    @GetMapping("getSentSwapRequests")
@@ -43,8 +45,9 @@ public class TASwapRequestController {
 
 
     @GetMapping("getAvailableTAProfilesForClassProctoring")
-    public List<TAProfileDTO> getAvailableTAProfilesForClassProctoring(@RequestParam(name = "classProctoringId") int classProctoringId, @RequestParam(name = "taId") int taId){
+    public List<TAProfileDTO> getAvailableTAProfilesForClassProctoring(@RequestParam(name = "classProctoringId") int classProctoringId){
         try {
+            int taId = currentUserUtil.getCurrentUserId();
             return swapRequestService.getAvailableTAProfilesForClassProctoring(classProctoringId, taId);
         }
         catch (Exception e){

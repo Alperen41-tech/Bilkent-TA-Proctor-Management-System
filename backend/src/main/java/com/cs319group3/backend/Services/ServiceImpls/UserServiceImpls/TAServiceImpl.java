@@ -38,8 +38,7 @@ public class TAServiceImpl implements TAService {
 
 
     @Override
-    public TAProfileDTO getTAProfileById() {
-        int id = currentUserUtil.getCurrentUserId();
+    public TAProfileDTO getTAProfileById(int id) {
         Optional<TA> optionalTA = taRepo.findByUserId(id);
 
         if (optionalTA.isEmpty()) {

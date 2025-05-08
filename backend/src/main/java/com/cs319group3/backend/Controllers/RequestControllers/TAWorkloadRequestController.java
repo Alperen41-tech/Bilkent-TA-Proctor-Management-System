@@ -21,7 +21,8 @@ public class TAWorkloadRequestController {
     private CurrentUserUtil currentUserUtil;
 
     @PostMapping("create")
-    public boolean createTAWorkloadRequest(@RequestBody RequestDTO taWorkloadRequestDTO, @RequestParam("id") int taId) {
+    public boolean createTAWorkloadRequest(@RequestBody RequestDTO taWorkloadRequestDTO) {
+        int taId = currentUserUtil.getCurrentUserId();
         return taWorkloadRequestService.createTAWorkloadRequest(taWorkloadRequestDTO, taId);
     }
 

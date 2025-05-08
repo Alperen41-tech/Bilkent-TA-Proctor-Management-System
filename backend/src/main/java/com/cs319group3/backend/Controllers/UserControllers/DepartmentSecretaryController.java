@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Controllers.UserControllers;
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.CreateDepartmentSecretaryDTO;
 import com.cs319group3.backend.DTOs.DepartmentSecretaryProfileDTO;
 import com.cs319group3.backend.Services.DepartmentSecretaryService;
@@ -15,10 +16,13 @@ public class DepartmentSecretaryController {
 
     @Autowired
     private DepartmentSecretaryService departmentSecretaryService;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
     @GetMapping("profile")
-    public DepartmentSecretaryProfileDTO getProfile(@RequestParam("id") int id) {
+    public DepartmentSecretaryProfileDTO getProfile() {
         System.out.println("request received");
+        int id = currentUserUtil.getCurrentUserId();
         return departmentSecretaryService.getDepartmentSecretaryProfileById(id);
     }
 

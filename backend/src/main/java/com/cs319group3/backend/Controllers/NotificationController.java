@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Controllers;
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.NotificationDTO;
 import com.cs319group3.backend.Services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,19 +17,24 @@ public class NotificationController {
 
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
     @GetMapping("get")
-    public List<NotificationDTO> getNotifications(@RequestParam("id") int userId) {
+    public List<NotificationDTO> getNotifications() {
+        int userId = currentUserUtil.getCurrentUserId();
         return notificationService.getNotifications(userId);
     }
 
     @PutMapping("setRead")
-    public boolean setNotificationsRead(@RequestParam("id") int userId) {
+    public boolean setNotificationsRead() {
+        int userId = currentUserUtil.getCurrentUserId();
         return notificationService.setNotificationsRead(userId);
     }
 
     @GetMapping("getUnreadCount")
-    public int getUnreadNotificationCount(@RequestParam("id") int userId) {
+    public int getUnreadNotificationCount() {
+        int userId = currentUserUtil.getCurrentUserId();
         return notificationService.getUnreadNotificationCount(userId);
     }
 }

@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Controllers.UserControllers;
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.CreateInstructorDTO;
 import com.cs319group3.backend.DTOs.InstructorProfileDTO;
 import com.cs319group3.backend.Services.InstructorService;
@@ -17,10 +18,13 @@ public class InstructorController {
 
     @Autowired
     private InstructorService instructorServiceImpl;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
     @GetMapping("profile")
-    public InstructorProfileDTO getInstructorProfile(@RequestParam("id") int id){
+    public InstructorProfileDTO getInstructorProfile(){
         System.out.println("request received");
+        int id = currentUserUtil.getCurrentUserId();
         return instructorServiceImpl.getInstructorProfileById(id);
     }
 

@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Controllers.UserControllers;
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.CreateDeansOfficeDTO;
 import com.cs319group3.backend.DTOs.DeansOfficeProfileDTO;
 import com.cs319group3.backend.Entities.UserEntities.DeansOffice;
@@ -16,10 +17,13 @@ public class DeansOfficeController {
 
     @Autowired
     private DeansOfficeService deansOfficeService;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
     @GetMapping("profile")
-    public DeansOfficeProfileDTO getProfile(@RequestParam("id") int id) {
+    public DeansOfficeProfileDTO getProfile() {
         System.out.println("request received");
+        int id = currentUserUtil.getCurrentUserId();
         return deansOfficeService.getDeansOfficeProfileById(id);
     }
 

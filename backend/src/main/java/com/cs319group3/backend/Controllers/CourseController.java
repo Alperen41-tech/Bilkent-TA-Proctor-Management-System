@@ -1,4 +1,5 @@
 package com.cs319group3.backend.Controllers;
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.CourseDTO;
 import com.cs319group3.backend.DTOs.OfferedCourseDTO;
 import com.cs319group3.backend.Services.CourseService;
@@ -13,6 +14,8 @@ import java.util.List;
 public class CourseController {
     @Autowired
     private CourseService courseService;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
     @GetMapping("getCoursesInDepartment")
     public List<CourseDTO> getCourses(@RequestParam int departmentId) {
@@ -21,7 +24,8 @@ public class CourseController {
     }
 
     @GetMapping("getCoursesOfInstructor")
-    public List<OfferedCourseDTO> getCoursesOfInstructor(@RequestParam int instructorId) {
+    public List<OfferedCourseDTO> getCoursesOfInstructor() {
+        int instructorId = currentUserUtil.getCurrentUserId();
         System.out.println("getCoursesOfInstructor");
         return courseService.getCoursesOfInstructor(instructorId);
     }
