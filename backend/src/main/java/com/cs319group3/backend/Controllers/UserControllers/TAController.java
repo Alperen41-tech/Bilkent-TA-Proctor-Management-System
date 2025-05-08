@@ -21,9 +21,9 @@ public class TAController {
     private TAService taService;
 
     @GetMapping("profile")
-    public TAProfileDTO getTAProfile(@RequestParam("id") int id){
+    public TAProfileDTO getTAProfile(){
         System.out.println("request received");
-        return taService.getTAProfileById(id);
+        return taService.getTAProfileById();
     }
 
     @PostMapping("createTA")

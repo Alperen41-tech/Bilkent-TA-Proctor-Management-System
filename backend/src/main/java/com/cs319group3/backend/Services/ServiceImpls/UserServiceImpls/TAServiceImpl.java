@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Services.ServiceImpls.UserServiceImpls;
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOMappers.LoginMapper;
 import com.cs319group3.backend.DTOs.*;
 import com.cs319group3.backend.DTOMappers.TAProfileMapper;
@@ -32,10 +33,13 @@ public class TAServiceImpl implements TAService {
 
     @Autowired
     private TAWorkloadRequestService taWorkloadRequestService;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
 
     @Override
-    public TAProfileDTO getTAProfileById(int id) {
+    public TAProfileDTO getTAProfileById() {
+        int id = currentUserUtil.getCurrentUserId();
         Optional<TA> optionalTA = taRepo.findByUserId(id);
 
         if (optionalTA.isEmpty()) {
