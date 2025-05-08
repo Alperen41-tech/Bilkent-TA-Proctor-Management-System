@@ -1,13 +1,16 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
+import com.cs319group3.backend.CompositeIDs.CourseStudentKey;
 import com.cs319group3.backend.CompositeIDs.OfferedCourseScheduleKey;
 import com.cs319group3.backend.Entities.*;
+import com.cs319group3.backend.Entities.RelationEntities.CourseStudentRelation;
 import com.cs319group3.backend.Entities.RelationEntities.OfferedCourseScheduleRelation;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.ExcelService;
+import org.apache.poi.sl.draw.geom.GuideIf;
 import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -54,6 +57,8 @@ public class ExcelServiceImpl implements ExcelService {
     private LoginRepo loginRepo;
     @Autowired
     private UserTypeRepo userTypeRepo;
+    @Autowired
+    private CourseStudentRelationRepo courseStudentRelationRepo;
 
 
     public byte[] generateExcelFromTemplate() throws IOException {
@@ -187,6 +192,7 @@ public class ExcelServiceImpl implements ExcelService {
             Sheet courseSheet = workbook.getSheetAt(3);
             Sheet offeredCoursesSheet = workbook.getSheetAt(4);
             Sheet scheduleSheet = workbook.getSheetAt(5);
+            Sheet offeredCourseStudentRelSheet = workbook.getSheetAt(6);
 
 
             uploadStudents(studentsSheet);
@@ -195,8 +201,58 @@ public class ExcelServiceImpl implements ExcelService {
             uploadCourses(courseSheet);
             uploadOfferedCourses(offeredCoursesSheet);
             uploadSchedule(scheduleSheet);
+            uploadOfferedCourseStudentRel(offeredCourseStudentRelSheet);
         }
 
+    }
+
+    private void uploadOfferedCourseStudentRel(Sheet offeredCourseStudentRelSheet) {
+        for (Row row : offeredCourseStudentRelSheet) {
+            if (row.getRowNum() < 1)
+                continue;
+
+            String departmentCode = getStringCellValue(row.getCell(0));
+            int courseCode = (int) row.getCell(1).getNumericCellValue();
+            int sectionNo = (int) row.getCell(2).getNumericCellValue();
+            String semester = getStringCellValue(row.getCell(3));
+            int term = (int) row.getCell(4).getNumericCellValue();
+            String studentId = getStringCellValue(row.getCell(5));
+
+            saveOfferedCourseStudentRel(departmentCode, courseCode, sectionNo, semester, term, studentId);
+        }
+    }
+
+    private void saveOfferedCourseStudentRel(String departmentCode, int courseCode, int sectionNo, String semester, int term, String studentId) {
+
+        Optional<Course> course = courseRepo.findByDepartment_DepartmentCodeAndCourseCode(departmentCode, courseCode);
+        if (!course.isPresent()) {
+            throw new RuntimeException("failed because course with code " + courseCode + " does not exist");
+        }
+
+        Optional<Semester> currSemester = semesterRepo.findByYearAndTerm(semester, term);
+        if (!currSemester.isPresent()) {
+            throw new RuntimeException("failed because semester " + semester + " does not exist");
+        }
+
+
+        Optional<OfferedCourse> offeredCourse = offeredCourseRepo.findByCourseAndSemesterAndSectionNo(course.get(), currSemester.get(), sectionNo);
+        if (!offeredCourse.isPresent()) {
+            throw new RuntimeException("failed because course " + courseCode + " does not exist");
+        }
+
+        Optional<Student> studentOptional = studentRepo.findByBilkentId(studentId);
+        if (!studentOptional.isPresent()) {
+            throw new RuntimeException("failed because student with id " + studentId + " does not exist");
+        }
+
+        CourseStudentKey key = new CourseStudentKey(offeredCourse.get().getOfferedCourseId(), studentOptional.get().getStudentId());
+
+        CourseStudentRelation courseStudentRelation = new CourseStudentRelation();
+        courseStudentRelation.setId(key);
+        courseStudentRelation.setCourse(offeredCourse.get());
+        courseStudentRelation.setStudent(studentOptional.get());
+
+        courseStudentRelationRepo.save(courseStudentRelation);
     }
 
     private void uploadSchedule(Sheet scheduleSheet) {
