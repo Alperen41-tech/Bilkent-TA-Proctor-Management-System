@@ -5,6 +5,7 @@ import com.cs319group3.backend.DTOMappers.CreateClassProctoringMapper;
 import com.cs319group3.backend.DTOs.ClassProctoringDTO;
 import com.cs319group3.backend.DTOs.CreateClassProctoringDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
+import com.cs319group3.backend.Entities.RequestEntities.AuthStaffProctoringRequest;
 import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Repositories.AuthStaffProctoringRequestRepo;
 import com.cs319group3.backend.Repositories.ClassProctoringRepo;
@@ -15,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ClassProctoringServiceImpl implements ClassProctoringService {
@@ -58,7 +61,18 @@ public class ClassProctoringServiceImpl implements ClassProctoringService {
 
     @Override
     public int numberOfRequestsSent(int classProctoringId) {
-        return authStaffProctoringRequestRepo.numberOfRequestsSent(classProctoringId);
+        List<AuthStaffProctoringRequest> requestList = authStaffProctoringRequestRepo.findByClassProctoringClassProctoringIdAndResponseDateIsNullAndApprovedFalse(classProctoringId);
+        Set<String> uniquePairs = new HashSet<>();
+
+        for (AuthStaffProctoringRequest request : requestList) {
+            int receiverId = request.getReceiverUser().getUserId();
+            int proctoringId = request.getClassProctoring().getClassProctoringId();
+
+            String key = receiverId + "-" + proctoringId;
+
+            uniquePairs.add(key);
+        }
+        return uniquePairs.size();
     }
 
     @Override

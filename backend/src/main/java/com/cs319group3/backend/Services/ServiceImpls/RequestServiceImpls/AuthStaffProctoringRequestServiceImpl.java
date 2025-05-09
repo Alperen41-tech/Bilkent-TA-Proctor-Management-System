@@ -203,7 +203,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
             System.out.println("There is no place left in classProctoring: " + classProctoringId);
             return false;
         }
-        return tasAssigned + totalUnapprovedRequests < taCount + 3;
+        return tasAssigned + totalUnapprovedRequests < taCount;
     }
 
     @Override
@@ -231,6 +231,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
 
             for (AuthStaffProctoringRequest request : unresponded) {
                 request.setResponseDate(LocalDateTime.now());
+                authStaffProctoringRequestRepo.save(request);
                 String description = " The request sent regarding to the class proctoring " +
                         request.getClassProctoring().getEventName() +
                         " is automatically rejected because capacity has been filled. ";
