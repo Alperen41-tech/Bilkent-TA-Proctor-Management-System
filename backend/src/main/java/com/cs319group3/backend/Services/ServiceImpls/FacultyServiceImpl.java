@@ -15,15 +15,17 @@ import java.util.List;
 public class FacultyServiceImpl implements FacultyService {
 
     @Autowired
-    FacultyRepo facultyRepo;
+    private FacultyRepo facultyRepo;
 
     @Override
     public List<FacultyDTO> getAllFaculty() {
         List<Faculty> facultyList = facultyRepo.findAll();
         List<FacultyDTO> facultyDTOList = new ArrayList<>();
+
         for (Faculty faculty : facultyList) {
             facultyDTOList.add(FacultyMapper.essentialMapper(faculty));
         }
+
         return facultyDTOList;
     }
 

@@ -11,26 +11,40 @@ import com.cs319group3.backend.Services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AdminServiceImpl implements AdminService {
 
     @Autowired
-    UserRepo userRepo;
+    private UserRepo userRepo;
 
     @Override
     public AdminProfileDTO getAdminProfile(int adminId) {
-        return AdminProfileMapper.toDTO(userRepo.findById(adminId).get());
+        Optional<User> user = userRepo.findById(adminId);
+        if(user.isPresent()) {
+            System.out.println("User of admin found");
+            return AdminProfileMapper.toDTO(userRepo.findById(adminId).get());
+        }
+        else{
+            System.out.println("User of admin not found");
+            return null;
+        }
     }
 
     @Autowired
-    UserTypeRepo userTypeRepo;
+    private UserTypeRepo userTypeRepo;
 
     @Autowired
-    LoginRepo loginRepo;
+    private LoginRepo loginRepo;
 
     @Override
     public boolean createAdmin(int userId, String password){
-        User user = userRepo.findById(userId).get();
+        Optional<User> optUser = userRepo.findById(userId);
+        if(optUser.isEmpty()) {
+            return false;
+        }
+        User user = optUser.get();
         Login login = new Login();
         login.setUserType(userTypeRepo.findByUserTypeName("admin"));
         login.setPassword(password);

@@ -33,35 +33,48 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Autowired
     private CourseTAInstructorFormRepo courseTAInstructorFormRepo;
+
     @Autowired
     private DepartmentRepo departmentRepo;
+
     @Autowired
     private CourseRepo courseRepo;
+
     @Autowired
     private TARepo taRepo;
+
     @Autowired
     private StudentRepo studentRepo;
+
     @Autowired
     private TATypeRepo taTypeRepo;
+
     @Autowired
     private InstructorRepo instructorRepo;
+
     @Autowired
     private SemesterRepo semesterRepo;
+
     @Autowired
     private OfferedCourseRepo offeredCourseRepo;
+
     @Autowired
     private TimeIntervalRepo timeIntervalRepo;
+
     @Autowired
     private OfferedCourseScheduleRelationRepo offeredCourseScheduleRelationRepo;
+
     @Autowired
     private LoginRepo loginRepo;
+
     @Autowired
     private UserTypeRepo userTypeRepo;
+
     @Autowired
     private CourseStudentRelationRepo courseStudentRelationRepo;
+
     @Autowired
     private ClassProctoringRepo classProctoringRepo;
-
 
     public byte[] generateExcelFromTemplate() throws IOException {
         // Load template from classpath (inside the .jar)

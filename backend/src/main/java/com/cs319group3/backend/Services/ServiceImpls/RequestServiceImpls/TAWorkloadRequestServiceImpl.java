@@ -2,15 +2,10 @@ package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
-import com.cs319group3.backend.Entities.Course;
-import com.cs319group3.backend.Entities.Log;
-import com.cs319group3.backend.Entities.OfferedCourse;
+import com.cs319group3.backend.Entities.*;
 import com.cs319group3.backend.Entities.RelationEntities.CourseInstructorRelation;
-import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
 import com.cs319group3.backend.Entities.RequestEntities.TAWorkloadRequest;
-import com.cs319group3.backend.Entities.TaskType;
 import com.cs319group3.backend.Entities.UserEntities.DepartmentSecretary;
-import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Enums.LogType;
@@ -20,8 +15,6 @@ import com.cs319group3.backend.Services.LogService;
 import com.cs319group3.backend.Services.NotificationService;
 import com.cs319group3.backend.Services.TAWorkloadRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,94 +23,80 @@ import java.util.*;
 import static com.cs319group3.backend.Enums.NotificationType.REQUEST;
 
 @Service
-public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
+public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService {
 
-    @Autowired
-    private TARepo taRepo;
+    @Autowired private TARepo taRepo;
 
-    @Autowired
-    private TaskTypeRepo taskTypeRepo;
+    @Autowired private TaskTypeRepo taskTypeRepo;
 
-    @Autowired
-    private TAWorkloadRequestRepo taWorkloadRequestRepo;
+    @Autowired private TAWorkloadRequestRepo taWorkloadRequestRepo;
 
-    @Autowired
-    private NotificationRepo notificationRepo;
+    @Autowired private RequestMapper requestMapper;
 
-    @Autowired
-    private RequestMapper requestMapper;
+    @Autowired private NotificationService notificationService;
 
-    @Autowired
-    private NotificationService notificationService;
-    @Autowired
-    private CourseRepo courseRepo;
-    @Autowired
-    private OfferedCourseRepo offeredCourseRepo;
-    @Autowired
-    private DepartmentSecretaryRepo departmentSecretaryRepo;
-    @Autowired
-    private LogRepo logRepo;
-    @Autowired
-    private LogService logService;
+    @Autowired private OfferedCourseRepo offeredCourseRepo;
+
+    @Autowired private DepartmentSecretaryRepo departmentSecretaryRepo;
+
+    @Autowired private LogService logService;
 
     @Override
     public boolean createTAWorkloadRequest(RequestDTO dto, int taId) {
-
-
         try {
             Integer workloadId = taWorkloadRequestRepo.getMaxWorkloadId();
-            if (workloadId == null) {
-                workloadId = 0;
-            }
+            if (workloadId == null) workloadId = 0;
             workloadId++;
             dto.setWorkloadId(workloadId);
             dto.setSenderId(taId);
 
             Optional<TA> taOptional = taRepo.findById(taId);
-            if (taOptional.isEmpty()) {
-                throw new RuntimeException("No such TA");
-            }
+            if (taOptional.isEmpty()) throw new RuntimeException("No such TA");
 
             if (!dto.getTaskTypeName().equals("Other")) {
-                Optional<TaskType> taskType = taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(dto.getTaskTypeName(), taOptional.get().getAssignedCourse().getCourseId());
-                if (taskType.isEmpty()) {
-                    throw new RuntimeException("No such task type");
-                }
-                if (dto.getTimeSpent() > taskType.get().getTimeLimit()) {
-                    throw new RuntimeException("Proctoring time limit is less than the given spent time");
-                }
+                Optional<TaskType> taskType = taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(
+                        dto.getTaskTypeName(),
+                        taOptional.get().getAssignedCourse().getCourseId()
+                );
+                if (taskType.isEmpty()) throw new RuntimeException("No such task type");
+                if (dto.getTimeSpent() > taskType.get().getTimeLimit())
+                    throw new RuntimeException("Proctoring time exceeds allowed time limit");
             }
-            List<OfferedCourse> offeredCourses = offeredCourseRepo.findByCourse_CourseId(taOptional.get().getAssignedCourse().getCourseId());
+
+            List<OfferedCourse> offeredCourses =
+                    offeredCourseRepo.findByCourse_CourseId(taOptional.get().getAssignedCourse().getCourseId());
+
             List<User> receivers = new ArrayList<>();
-            Set<User> users = new HashSet<>();
+            Set<User> uniqueUsers = new HashSet<>();
+
             for (OfferedCourse offeredCourse : offeredCourses) {
-                List<CourseInstructorRelation> relations = offeredCourse.getInstructors();
-                for (CourseInstructorRelation relation : relations) {
-                    if (!users.contains(relation.getInstructor())) {
-                        users.add(relation.getInstructor());
+                for (CourseInstructorRelation relation : offeredCourse.getInstructors()) {
+                    if (uniqueUsers.add(relation.getInstructor())) {
                         receivers.add(relation.getInstructor());
                     }
                 }
             }
-            Optional<DepartmentSecretary> depsec = departmentSecretaryRepo.findByDepartmentDepartmentId(taOptional.get().getDepartment().getDepartmentId());
-            if (depsec.isEmpty()) {
-                throw new RuntimeException("No such department secretary");
-            }
-            receivers.add(depsec.get());
 
+            Optional<DepartmentSecretary> depsec =
+                    departmentSecretaryRepo.findByDepartmentDepartmentId(
+                            taOptional.get().getDepartment().getDepartmentId()
+                    );
+            depsec.ifPresent(receivers::add);
 
             for (User receiver : receivers) {
                 TAWorkloadRequest workloadRequest = requestMapper.taWorkloadRequestToEntityMapper(dto, receiver);
                 taWorkloadRequestRepo.save(workloadRequest);
-                String logMessage = "User " + workloadRequest.getSenderUser().getUserId() + " sent a workload request (" +
-                        workloadRequest.getRequestId() + ") to user " + workloadRequest.getReceiverUser().getUserId() + ".";
+
+                String logMessage = "User " + workloadRequest.getSenderUser().getUserId()
+                        + " sent a workload request (" + workloadRequest.getRequestId()
+                        + ") to user " + workloadRequest.getReceiverUser().getUserId() + ".";
                 logService.createLog(logMessage, LogType.CREATE);
-                notificationService.createNotification(workloadRequest, NotificationType.REQUEST);
+                notificationService.createNotification(workloadRequest, REQUEST);
             }
 
             return true;
         } catch (Exception e) {
-            e.printStackTrace(); // for debugging, or better, log it properly
+            e.printStackTrace(); // Ideally use proper logging
             return false;
         }
     }
@@ -125,15 +104,16 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
     @Override
     public List<RequestDTO> getTAWorkloadRequestsByTA(int taId) {
         List<TAWorkloadRequest> requests = taWorkloadRequestRepo.findBySenderUser_UserId(taId);
-        List<TAWorkloadRequest> workloadRequests = new ArrayList<>();
-        Set<Integer> workloadIdSet = new HashSet<>();
-        for (TAWorkloadRequest taWorkloadRequest : requests) {
-            if (!workloadIdSet.contains(taWorkloadRequest.getWorkloadId())) {
-                workloadIdSet.add(taWorkloadRequest.getWorkloadId());
-                workloadRequests.add(taWorkloadRequest);
+        List<TAWorkloadRequest> uniqueRequests = new ArrayList<>();
+        Set<Integer> seenWorkloadIds = new HashSet<>();
+
+        for (TAWorkloadRequest req : requests) {
+            if (seenWorkloadIds.add(req.getWorkloadId())) {
+                uniqueRequests.add(req);
             }
         }
-        return requestMapper.taWorkloadRequestMapper(workloadRequests);
+
+        return requestMapper.taWorkloadRequestMapper(uniqueRequests);
     }
 
     @Override
@@ -145,13 +125,10 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService{
     @Override
     public int getTotalWorkload(int taId) {
         List<TAWorkloadRequest> requests = taWorkloadRequestRepo.findBySenderUser_UserId(taId);
-        int sum = 0;
-        for(TAWorkloadRequest request : requests) {
-            if (request != null && request.isApproved()) {
-                sum += request.getTimeSpent();
-            }
-        }
-        return sum;
+        return requests.stream()
+                .filter(Objects::nonNull)
+                .filter(TAWorkloadRequest::isApproved)
+                .mapToInt(TAWorkloadRequest::getTimeSpent)
+                .sum();
     }
-
 }

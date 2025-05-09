@@ -20,22 +20,14 @@ import static com.cs319group3.backend.Enums.NotificationType.REQUEST;
 public class TALeaveRequestServiceImpl implements TALeaveRequestService {
 
     @Autowired
-    private TARepo taRepo;
-
-    @Autowired
-    private DepartmentSecretaryRepo departmentSecretaryRepo;
-
-    @Autowired
     private TALeaveRequestRepo tALeaveRequestRepo;
-
-    @Autowired
-    private NotificationRepo notificationRepo;
 
     @Autowired
     private NotificationService notificationService;
 
     @Autowired
     private RequestMapper requestMapper;
+
     @Autowired
     private LogService logService;
 

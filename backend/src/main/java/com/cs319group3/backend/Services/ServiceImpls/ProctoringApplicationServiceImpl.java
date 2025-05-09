@@ -26,56 +26,61 @@ import java.util.Optional;
 
 @Service
 public class ProctoringApplicationServiceImpl implements ProctoringApplicationService {
+
+    @Autowired
+    private ClassProctoringRepo classProctoringRepo;
+
+    @Autowired
+    private RequestService requestService;
+
+    @Autowired
+    private NotificationService notificationService;
+
     @Autowired
     private ProctoringApplicationRepo proctoringApplicationRepo;
+
     @Autowired
     private DepartmentRepo departmentRepo;
+
     @Autowired
     private ProctoringApplicationMapper proctoringApplicationMapper;
+
     @Autowired
     private TARepo taRepo;
+
     @Autowired
     private ProctoringApplicationTARelationRepo proctoringApplicationTARelationRepo;
+
     @Autowired
-    LogService logService;
+    private LogService logService;
 
     @Override
-    public List<ProctoringApplicationDTO> getProctoringApplications(int deansOfficeId){
+    public List<ProctoringApplicationDTO> getProctoringApplications(int deansOfficeId) {
         List<ProctoringApplication> listPA = proctoringApplicationRepo.findByDeansOfficeId(deansOfficeId);
         List<ProctoringApplicationDTO> dtoPA = new ArrayList<>();
-        for(ProctoringApplication proctoringApplication:listPA){
+        for (ProctoringApplication proctoringApplication : listPA) {
             ProctoringApplicationDTO dto = proctoringApplicationMapper.toDTO(proctoringApplication);
-            //dto.setClassProctoringDTO(ClassProctoringMapper.essentialMapper(proctoringApplication.getClassProctoring()));
             dtoPA.add(dto);
         }
         return dtoPA;
     }
 
-    @Autowired
-    ClassProctoringRepo classProctoringRepo;
-
-    @Autowired
-    RequestService requestService;
-
-    @Autowired
-    NotificationService notificationService;
-
-    //IMPORTANT!!! Given dto must contain only the fields visibleDepartmentId and taCountLimit.
     @Override
     public boolean createProctoringApplication(int classProctoringId, ProctoringApplicationDTO dto, int deansOfficeId) {
-        System.out.println("Tekil: "+classProctoringId);
+        System.out.println("Tekil: " + classProctoringId);
+
         ProctoringApplication proctoringApplication = new ProctoringApplication();
 
         Optional<ClassProctoring> classProctoring = classProctoringRepo.findById(classProctoringId);
-        if(classProctoring.isEmpty()){
-            System.out.println("girme1: "+classProctoringId);
+        if (classProctoring.isEmpty()) {
+            System.out.println("girme1: " + classProctoringId);
             return false;
         }
         proctoringApplication.setClassProctoring(classProctoring.get());
 
         Optional<Department> department = departmentRepo.findById(dto.getVisibleDepartmentId());
-        if(department.isEmpty()){
-            System.out.println("girme2 "+dto.getVisibleDepartmentId());
+        if (department.isEmpty()) {
+            System.out.println("girme2 " + dto.getVisibleDepartmentId());
             return false;
         }
         proctoringApplication.setVisibleDepartment(department.get());
@@ -85,22 +90,23 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
 
         LocalDateTime cpTime = proctoringApplication.getClassProctoring().getStartDate();
         proctoringApplication.setFinishDate(cpTime.minusDays(3));
-
         proctoringApplication.setApplicantCountLimit(dto.getApplicantCountLimit());
+
         String logMessage = "User " + deansOfficeId + " created proctoring application " + proctoringApplication.getApplicationId() + ".";
         logService.createLog(logMessage, LogType.CREATE);
         proctoringApplicationRepo.save(proctoringApplication);
 
         Request request = requestService.createProctoringApplicationRequest(dto, deansOfficeId);
         notificationService.createNotification(request, NotificationType.APPROVAL);
+
         return true;
     }
 
     @Override
     public boolean createProctoringApplications(int classProctoringId, List<ProctoringApplicationDTO> dto, int deansOfficeId) {
         System.out.println("Çoğul");
-        for(ProctoringApplicationDTO proctoringApplicationDTO : dto){
-            if(!createProctoringApplication(classProctoringId, proctoringApplicationDTO, deansOfficeId)){
+        for (ProctoringApplicationDTO proctoringApplicationDTO : dto) {
+            if (!createProctoringApplication(classProctoringId, proctoringApplicationDTO, deansOfficeId)) {
                 return false;
             }
         }
@@ -116,45 +122,47 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
     @Override
     public boolean setApplicationType(int applicationId, ProctoringApplicationType type) {
         Optional<ProctoringApplication> proctoringApplication = proctoringApplicationRepo.findById(applicationId);
-        if(!proctoringApplication.isPresent()){
+        if (!proctoringApplication.isPresent()) {
             throw new RuntimeException("no such proctoring application found");
         }
 
-        ProctoringApplication proctoringApplicationReceieved = proctoringApplication.get();
+        ProctoringApplication proctoringApplicationReceived = proctoringApplication.get();
 
-        if (proctoringApplicationReceieved.getApplicationType() != ProctoringApplicationType.NOT_DEFINED){
+        if (proctoringApplicationReceived.getApplicationType() != ProctoringApplicationType.NOT_DEFINED) {
             throw new RuntimeException("already defined proctoring application type");
         }
 
-        proctoringApplicationReceieved.setApplicationType(type);
+        proctoringApplicationReceived.setApplicationType(type);
 
-        String logMessage = "Application type " + type + " set to " + proctoringApplicationReceieved.getApplicationId() + ".";
+        String logMessage = "Application type " + type + " set to " + proctoringApplicationReceived.getApplicationId() + ".";
         logService.createLog(logMessage, LogType.UPDATE);
-        proctoringApplicationRepo.save(proctoringApplicationReceieved);
+        proctoringApplicationRepo.save(proctoringApplicationReceived);
+
         return true;
     }
 
     @Override
     public List<ProctoringApplicationDTO> getAllApplicationsForTA(int userId, ProctoringApplicationType applicationType) {
         Optional<TA> ta = taRepo.findByUserId(userId);
-        if (!ta.isPresent())
+        if (!ta.isPresent()) {
             throw new RuntimeException("no such ta");
-
+        }
 
         TA taReceived = ta.get();
-        List<ProctoringApplication> allProctorings = proctoringApplicationRepo.findByVisibleDepartment_DepartmentIdNotAndApplicationType(taReceived.getDepartment().getDepartmentId(), applicationType);
+        List<ProctoringApplication> allProctorings =
+                proctoringApplicationRepo.findByVisibleDepartment_DepartmentIdNotAndApplicationType(
+                        taReceived.getDepartment().getDepartmentId(), applicationType
+                );
 
         List<ProctoringApplicationDTO> proctoringApplicationDTOs = proctoringApplicationMapper.toDTO(allProctorings);
 
-        for (ProctoringApplicationDTO proctoringApplicationDTO : proctoringApplicationDTOs) {
+        for (ProctoringApplicationDTO dto : proctoringApplicationDTOs) {
+            Optional<ProctoringApplicationTARelation> patr =
+                    proctoringApplicationTARelationRepo.findByTA_UserIdAndProctoringApplication_ApplicationId(
+                            taReceived.getUserId(), dto.getApplicationId()
+                    );
 
-            Optional<ProctoringApplicationTARelation> patr = proctoringApplicationTARelationRepo.findByTA_UserIdAndProctoringApplication_ApplicationId(taReceived.getUserId(), proctoringApplicationDTO.getApplicationId());
-            if (patr.isPresent()){
-                proctoringApplicationDTO.setIsAppliedByTA(true);
-            }
-            else {
-                proctoringApplicationDTO.setIsAppliedByTA(false);
-            }
+            dto.setIsAppliedByTA(patr.isPresent());
         }
 
         return proctoringApplicationDTOs;

@@ -2,9 +2,10 @@ package com.cs319group3.backend.Services.ServiceImpls.UserServiceImpls;
 
 import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOMappers.LoginMapper;
-import com.cs319group3.backend.DTOs.*;
 import com.cs319group3.backend.DTOMappers.TAProfileMapper;
-import com.cs319group3.backend.Entities.*;
+import com.cs319group3.backend.DTOs.*;
+import com.cs319group3.backend.Entities.ClassProctoring;
+import com.cs319group3.backend.Entities.Login;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.*;
@@ -31,72 +32,78 @@ public class TAServiceImpl implements TAService {
     @Autowired
     private ClassProctoringTARelationRepo classProctoringTARelationRepo;
 
-    @Autowired 
+    @Autowired
     private TAWorkloadRequestService taWorkloadRequestService;
+
     @Autowired
     private CurrentUserUtil currentUserUtil;
 
     @Autowired
-    TAProfileMapper taProfileMapper;
+    private TAProfileMapper taProfileMapper;
 
+    @Autowired
+    private LoginMapper loginMapper;
+
+    @Autowired
+    private ClassProctoringRepo classProctoringRepo;
+
+    @Autowired
+    private TAAvailabilityService taAvailabilityService;
+
+    @Autowired
+    private AuthStaffProctoringRequestService authStaffProctoringRequestService;
+
+    @Autowired
+    private CourseRepo courseRepo;
+
+    @Autowired
+    private StudentRepo studentRepo;
+
+    @Autowired
+    private TAAvailabilityService taaAvailabilityService;
 
     @Override
     public TAProfileDTO getTAProfileById(int id) {
         Optional<TA> optionalTA = taRepo.findByUserId(id);
-
         if (optionalTA.isEmpty()) {
             throw new RuntimeException("TA with ID " + id + " not found.");
         }
-
         return taProfileMapper.essentialMapper(optionalTA.get());
     }
-
-    @Autowired
-    LoginMapper loginMapper;
-
 
     @Override
     public boolean createNewTA(CreateTADTO dto) {
         TAProfileDTO profile = dto.getProfile();
         LoginDTO login = dto.getLogin();
 
-        // Check duplicate by bilkentId or email
         if (userRepo.findByBilkentId(profile.getBilkentId()).isPresent() ||
                 userRepo.findByEmail(profile.getEmail()).isPresent()) {
             System.out.println("Duplicate bilkent id or email");
-            return false; // Duplicate
+            return false;
         }
-
 
         TA ta = taProfileMapper.essentialEntityToTA(profile);
         Login loginEntity = loginMapper.essentialEntityToLogin(login, ta);
 
-        if(ta == null || loginEntity == null) {
-            System.out.println("Ta or login cannot be mapped: "+ (ta == null) +", "+(loginEntity == null));
+        if (ta == null || loginEntity == null) {
+            System.out.println("Ta or login cannot be mapped: " + (ta == null) + ", " + (loginEntity == null));
             return false;
         }
 
-        taRepo.save(ta); // saves both into user and ta tables
+        taRepo.save(ta);
         loginRepo.save(loginEntity);
-
         return true;
     }
-
-    @Autowired
-    ClassProctoringRepo classProctoringRepo;
-
-    @Autowired
-    TAAvailabilityService taAvailabilityService;
 
     @Override
     public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int classProctoringId, int userId) {
         Optional<ClassProctoring> cpOpt = classProctoringRepo.findById(classProctoringId);
-        if(cpOpt.isEmpty()) {
+        if (cpOpt.isEmpty()) {
             System.out.println("Cannot fetch available TAs because class proctoring not found.");
             return null;
         }
+
         ClassProctoring cp = cpOpt.get();
-        //Fetches all TAs in a department currently not in the given proctoring
         List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(departmentCode, classProctoringId);
         int courseId = cp.getCourse().getCourseId();
 
@@ -104,9 +111,7 @@ public class TAServiceImpl implements TAService {
             boolean unavailable = !taAvailabilityService.isTAAvailable(ta, cp);
             boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId);
             boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
-
             System.out.println("TA with id " + ta.getUserId() + ": " + unavailable + ", " + alreadyRequested + ", " + takesSameCourse);
-
             return unavailable || alreadyRequested || takesSameCourse;
         });
 
@@ -120,7 +125,8 @@ public class TAServiceImpl implements TAService {
     }
 
     @Override
-    public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int classProctoringId, int userId, boolean eligibilityRestriction, boolean oneDayRestriction) {
+    public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int classProctoringId, int userId,
+                                                                 boolean eligibilityRestriction, boolean oneDayRestriction) {
         ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(departmentCode, classProctoringId);
         int courseId = cp.getCourse().getCourseId();
@@ -131,7 +137,6 @@ public class TAServiceImpl implements TAService {
             boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
             boolean ineligible = eligibilityRestriction && !isTAEligible(ta.getUserId(), courseId);
             boolean failsOneDayRule = oneDayRestriction && !noProctoringInOneDay(ta.getUserId(), classProctoringId);
-
             return unavailable || alreadyRequested || takesSameCourse || ineligible || failsOneDayRule;
         });
 
@@ -143,9 +148,6 @@ public class TAServiceImpl implements TAService {
         }
         return availableTAProfiles;
     }
-
-    @Autowired
-    AuthStaffProctoringRequestService authStaffProctoringRequestService;
 
     @Override
     public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int classProctoringId, int userId) {
@@ -158,7 +160,6 @@ public class TAServiceImpl implements TAService {
             boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId);
             boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
             System.out.println("TA with id " + ta.getUserId() + ": " + unavailable + ", " + alreadyRequested + ", " + takesSameCourse);
-
             return unavailable || alreadyRequested || takesSameCourse;
         });
 
@@ -168,12 +169,12 @@ public class TAServiceImpl implements TAService {
             profile.setTAOfTheCourse(ta.getAssignedCourse().getCourseId() == courseId);
             availableTAProfiles.add(profile);
         }
-
         return availableTAProfiles;
     }
 
     @Override
-    public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int classProctoringId, int userId, boolean eligibilityRestriction, boolean oneDayRestriction) {
+    public List<TAProfileDTO> getAllAvailableTAsByFacultyId(int facultyId, int classProctoringId, int userId,
+                                                            boolean eligibilityRestriction, boolean oneDayRestriction) {
         ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByFaculty(facultyId, classProctoringId);
         int courseId = cp.getCourse().getCourseId();
@@ -184,7 +185,6 @@ public class TAServiceImpl implements TAService {
             boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
             boolean ineligible = eligibilityRestriction && !isTAEligible(ta.getUserId(), courseId);
             boolean failsOneDayRule = oneDayRestriction && !noProctoringInOneDay(ta.getUserId(), classProctoringId);
-
             return unavailable || alreadyRequested || takesSameCourse || ineligible || failsOneDayRule;
         });
 
@@ -194,7 +194,6 @@ public class TAServiceImpl implements TAService {
             profile.setTAOfTheCourse(ta.getAssignedCourse().getCourseId() == courseId);
             availableTAProfiles.add(profile);
         }
-
         return availableTAProfiles;
     }
 
@@ -210,54 +209,47 @@ public class TAServiceImpl implements TAService {
         return TAProfiles;
     }
 
-    @Autowired
-    CourseRepo courseRepo;
-
     @Override
     public boolean doesTakeCourse(int taId, int courseId) {
         List<Integer> listOfCourseIds = courseRepo.findAllCourseIdsByUserId(taId);
         return listOfCourseIds.contains(courseId);
     }
 
-    @Autowired
-    StudentRepo studentRepo;
-
     @Override
     public boolean isTAEligible(int taId, int courseId) {
         Optional<Integer> courseCode = courseRepo.findCourseCodeByCourseId(courseId);
-        if(courseCode.isEmpty()) {
+        if (courseCode.isEmpty()) {
             System.out.println("Course code cannot be found");
             return false;
         }
+
         int code = courseCode.get();
-        if(code / 100 > 4){
+        if (code / 100 > 4) {
             Optional<Integer> classYear = studentRepo.findClassById(taId);
-            if(classYear.isEmpty()) {
+            if (classYear.isEmpty()) {
                 System.out.println("Class year cannot be found");
                 return false;
             }
-
             return classYear.get() == 9;
         }
         return true;
     }
 
-    @Autowired
-    TAAvailabilityService taaAvailabilityService;
-
     @Override
     public boolean noProctoringInOneDay(int taId, int proctoringId) {
         Optional<ClassProctoring> cpOptional = classProctoringRepo.findByClassProctoringId(proctoringId);
-        if(cpOptional.isEmpty()) {
+        if (cpOptional.isEmpty()) {
             System.out.println("Class Proctoring not found");
             return false;
         }
+
         ClassProctoring classProctoring = cpOptional.get();
         LocalDateTime startTime = classProctoring.getStartDate().minusDays(1);
         LocalDateTime endTime = classProctoring.getEndDate().plusDays(1);
         Optional<TA> ta = taRepo.findById(taId);
-        if(ta.isEmpty()) {
-            System.out.println("Ta cannot be found");
+
+        if (ta.isEmpty()) {
+            System.out.println("TA cannot be found");
             return false;
         }
 

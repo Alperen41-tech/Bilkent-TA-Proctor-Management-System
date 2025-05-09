@@ -28,13 +28,7 @@ public class RequestServiceImpl implements RequestService {
     private TARepo taRepo;
 
     @Autowired
-    private TAWorkloadRequestService taWorkloadRequestService;
-
-    @Autowired
     private RequestRepo requestRepo;
-
-    @Autowired
-    private NotificationRepo notificationRepo;
 
     @Autowired
     private TASwapRequestRepo taswapRequestRepo;
@@ -62,10 +56,18 @@ public class RequestServiceImpl implements RequestService {
 
     @Autowired
     private AuthStaffProctoringRequestService authStaffProctoringRequestService;
+
     @Autowired
     private LogService logService;
+
     @Autowired
     private ClassProctoringTARelationService classProctoringTARelationService;
+
+    @Autowired
+    DepartmentSecretaryRepo departmentSecretaryRepo;
+
+    @Autowired
+    UserRepo userRepo;
 
 
     @Override
@@ -218,12 +220,6 @@ public class RequestServiceImpl implements RequestService {
         requests.addAll(requestMapper.authStaffTARequestMapper(authStaffProctoringRequests));
         return requests;
     }
-
-    @Autowired
-    DepartmentSecretaryRepo departmentSecretaryRepo;
-
-    @Autowired
-    UserRepo userRepo;
 
     @Override
     public Request createProctoringApplicationRequest(ProctoringApplicationDTO paDTO, int deansOfficeId){

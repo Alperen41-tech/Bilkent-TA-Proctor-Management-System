@@ -46,6 +46,4 @@ public class LogServiceImpl implements LogService {
         }
         return dtos;
     }
-
-
 }

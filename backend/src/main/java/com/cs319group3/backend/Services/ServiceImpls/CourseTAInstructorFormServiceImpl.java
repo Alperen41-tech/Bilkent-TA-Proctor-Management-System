@@ -21,29 +21,29 @@ public class CourseTAInstructorFormServiceImpl implements CourseTAInstructorForm
 
     @Autowired
     private CourseTAInstructorFormMapper courseTAInstructorFormMapper;
+
     @Autowired
     private CourseRepo courseRepo;
+
     @Autowired
     private InstructorRepo instructorRepo;
+
     @Autowired
     private CourseTAInstructorFormRepo courseTAInstructorFormRepo;
 
     @Override
     public ResponseEntity<Boolean> createForm(CourseTAInstructorFormDTO form) {
-
-        try{
+        try {
             Optional<Instructor> instructor = instructorRepo.findByUserId(form.getInstructorId());
-
-            if (!instructor.isPresent())
+            if (instructor.isEmpty())
                 throw new RuntimeException("instructor not found");
 
             Optional<Course> course = courseRepo.findByCourseId(form.getCourseId());
-
-            if (!course.isPresent())
+            if (course.isEmpty())
                 throw new RuntimeException("course not found");
 
-            Optional<CourseTAInstructorForm> sampleExist = courseTAInstructorFormRepo.findByCourse_CourseId(course.get().getCourseId());
-
+            Optional<CourseTAInstructorForm> sampleExist =
+                    courseTAInstructorFormRepo.findByCourse_CourseId(course.get().getCourseId());
             if (sampleExist.isPresent())
                 throw new RuntimeException("course ta request is already sent");
 
@@ -53,8 +53,7 @@ public class CourseTAInstructorFormServiceImpl implements CourseTAInstructorForm
 
             courseTAInstructorFormRepo.save(newForm);
             return new ResponseEntity<>(true, HttpStatus.CREATED);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }

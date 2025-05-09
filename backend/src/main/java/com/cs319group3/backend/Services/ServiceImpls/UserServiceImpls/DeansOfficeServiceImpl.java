@@ -5,6 +5,7 @@ import com.cs319group3.backend.DTOMappers.LoginMapper;
 import com.cs319group3.backend.DTOs.CreateDeansOfficeDTO;
 import com.cs319group3.backend.DTOs.DeansOfficeProfileDTO;
 import com.cs319group3.backend.DTOs.LoginDTO;
+import com.cs319group3.backend.Entities.Faculty;
 import com.cs319group3.backend.Entities.Login;
 import com.cs319group3.backend.Entities.UserEntities.DeansOffice;
 import com.cs319group3.backend.Repositories.DeansOfficeRepo;
@@ -22,8 +23,18 @@ public class DeansOfficeServiceImpl implements DeansOfficeService {
 
     @Autowired
     private DeansOfficeRepo deansOfficeRepo;
+
     @Autowired
     private LoginMapper loginMapper;
+
+    @Autowired
+    private UserRepo userRepo;
+
+    @Autowired
+    private LoginRepo loginRepo;
+
+    @Autowired
+    private FacultyRepo facultyRepo;
 
     @Override
     public DeansOfficeProfileDTO getDeansOfficeProfileById(int id) {
@@ -32,34 +43,29 @@ public class DeansOfficeServiceImpl implements DeansOfficeService {
             throw new RuntimeException("DeansOffice with ID " + id + " not found.");
         }
         DeansOffice deansOfficeEntity = deansOffice.get();
-
         return DeansOfficeProfileMapper.essentialMapper(deansOfficeEntity);
     }
 
-    @Autowired
-    UserRepo userRepo;
-
-    @Autowired
-    LoginRepo loginRepo;
-
-    @Autowired
-    FacultyRepo facultyRepo;
-
     @Override
-    public boolean createDeansOffice(CreateDeansOfficeDTO cdoDTO){
+    public boolean createDeansOffice(CreateDeansOfficeDTO cdoDTO) {
         DeansOfficeProfileDTO profile = cdoDTO.getProfile();
         LoginDTO login = cdoDTO.getLogin();
 
         if (userRepo.findByBilkentId(profile.getBilkentId()).isPresent() ||
                 userRepo.findByEmail(profile.getEmail()).isPresent()) {
-            return false; // Duplicate
+            return false;
         }
 
         DeansOffice deansOffice = DeansOfficeProfileMapper.toEntity(profile);
-        deansOffice.setFaculty(facultyRepo.findByFacultyId(profile.getFacultyId()).get());
+        Optional<Faculty> facultyOpt = facultyRepo.findById(profile.getFacultyId());
+        if(facultyOpt.isEmpty()) {
+            System.out.println("Faculty not found");
+            return false;
+        }
+        deansOffice.setFaculty(facultyOpt.get());
         Login loginEntity = loginMapper.essentialEntityToLogin(login, deansOffice);
 
-        if(loginEntity == null){
+        if (loginEntity == null) {
             return false;
         }
 

@@ -1,19 +1,13 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import com.cs319group3.backend.CompositeIDs.ClassProctoringTAKey;
-import com.cs319group3.backend.DTOMappers.ClassProctoringMapper;
 import com.cs319group3.backend.DTOMappers.ClassProctoringTARelationMapper;
-import com.cs319group3.backend.DTOs.ClassProctoringDTO;
 import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
-
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
-
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Enums.LogType;
-import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.ClassProctoringTARelationService;
 import com.cs319group3.backend.Services.LogService;
@@ -21,10 +15,8 @@ import com.cs319group3.backend.Services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.cs319group3.backend.Enums.NotificationType.DISMISS;
 
@@ -39,101 +31,93 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
 
     @Autowired
     private ClassProctoringRepo classProctoringRepo;
-    @Autowired
-    private NotificationRepo notificationRepo;
 
     @Autowired
     private LogService logService;
 
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private UserRepo userRepo;
 
     @Override
-    public List<ClassProctoringTARelationDTO> getTAsClassProctoringDTOs(int taId) throws Exception{
-
+    public List<ClassProctoringTARelationDTO> getTAsClassProctoringDTOs(int taId) throws Exception {
         Optional<TA> ta = taRepo.findByUserId(taId);
         if (!ta.isPresent()) {
             throw new Exception("No such ta");
         }
-
         List<ClassProctoringTARelation> relations = classProctoringTARelationRepo.findById_TAId(taId);
         return ClassProctoringTARelationMapper.essentialMapper(relations);
     }
 
     @Override
-    public List<ClassProctoringTARelationDTO> getTAsClassProctoringsByDepartment(int taId) throws Exception{
-
+    public List<ClassProctoringTARelationDTO> getTAsClassProctoringsByDepartment(int taId) throws Exception {
         Optional<TA> ta = taRepo.findByUserId(taId);
         if (!ta.isPresent()) {
             throw new Exception("No such ta");
         }
-
         List<ClassProctoringTARelation> relations = classProctoringTARelationRepo
-                .findByClassProctoring_Course_Department_DepartmentIdAndTA_UserId(ta.get().getDepartment().getDepartmentId(), taId);
-
+                .findByClassProctoring_Course_Department_DepartmentIdAndTA_UserId(
+                        ta.get().getDepartment().getDepartmentId(), taId);
         return ClassProctoringTARelationMapper.essentialMapper(relations);
-
-
     }
 
     @Override
     public boolean updateClassProctoringDTO(ClassProctoringTARelationDTO dto, int userId) {
-        // Step 1: Find the existing entity
-
         int classId = dto.getClassProctoringDTO().getId();
-        Optional<ClassProctoringTARelation> optionalRelation = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classId, userId);
+        Optional<ClassProctoringTARelation> optionalRelation =
+                classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classId, userId);
 
         if (optionalRelation.isEmpty()) {
             throw new RuntimeException("No ClassProctoringTARelation found with id " + classId);
         }
 
         ClassProctoringTARelation relation = optionalRelation.get();
-
-        // Step 2: Update fields
         relation.setOpenToSwap(dto.getIsOpenToSwap());
-        // If you want to update more fields later, add them here
-        // e.g., relation.setIsConfirmed(dto.isConfirmed());
-
-        // Step 3: Save the updated entity
         classProctoringTARelationRepo.save(relation);
         return true;
     }
 
-    @Autowired
-    NotificationService notificationService;
-
-    @Autowired
-    UserRepo userRepo;
-
     @Override
     public boolean removeTAFromClassProctoring(int taId, int classProctoringId, int removerId) {
-        Optional<ClassProctoringTARelation> classProctoringTARelation = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classProctoringId, taId);
-        if (classProctoringTARelation.isPresent()) {
+        Optional<ClassProctoringTARelation> relation =
+                classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classProctoringId, taId);
+
+        if (relation.isPresent()) {
             Optional<User> remover = userRepo.findByUserId(removerId);
-            if(remover.isEmpty()) {
+            if (remover.isEmpty()) {
                 throw new RuntimeException("Could not find the remover of this ta-proctoring: " + removerId);
             }
-            classProctoringTARelationRepo.delete(classProctoringTARelation.get());
-            String description = "You are dismissed by "+remover.get().getName()+ " from the class proctoring.";
+            classProctoringTARelationRepo.delete(relation.get());
+            String description = "You are dismissed by " + remover.get().getName() + " from the class proctoring.";
             notificationService.createNotificationWithoutRequest(DISMISS, remover.get(), description);
             return true;
         }
+
         return false;
     }
 
     @Override
     public boolean createClassProctoringTARelation(int taId, int classProctoringId) {
         System.out.println("Creating ClassProctoringTARelation for taId: " + taId + " classProctoringId: " + classProctoringId);
+
         int count = classProctoringTARelationRepo.countByClassProctoringId(classProctoringId);
         int taLimit = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
-        if(count >= taLimit) {
+
+        if (count >= taLimit) {
             System.out.println("Class proctoring is full");
             return false;
         }
-        Optional<ClassProctoringTARelation> classProctoringTARelation = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classProctoringId, taId);
-        if (classProctoringTARelation.isPresent()) {
+
+        Optional<ClassProctoringTARelation> existing =
+                classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classProctoringId, taId);
+
+        if (existing.isPresent()) {
             System.out.println("No such ClassProctoringTARelation found");
             return false;
         }
-        // Fetch needed IDs first (cheap queries)
+
         Integer classProctoringDepartmentId = classProctoringRepo.findDepartmentIdByClassProctoringId(classProctoringId);
         Integer taDepartmentId = taRepo.findDepartmentIdByUserId(taId);
 
@@ -142,7 +126,6 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
             return false;
         }
 
-        // Fetch full TA and ClassProctoring entities (now safe to assume they exist)
         Optional<TA> taOpt = taRepo.findByUserId(taId);
         Optional<ClassProctoring> cpOpt = classProctoringRepo.findById(classProctoringId);
 
@@ -165,6 +148,4 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
 
         return true;
     }
-
-
 }

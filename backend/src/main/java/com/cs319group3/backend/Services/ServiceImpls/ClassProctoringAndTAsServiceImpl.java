@@ -19,23 +19,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsService {
-    @Autowired
-    private TARepo taRepo;
 
     @Autowired
     private ClassProctoringTARelationRepo classProctoringTARelationRepo;
+
     @Autowired
     private DepartmentRepo departmentRepo;
-    @Autowired
-    private CourseRepo courseRepo;
+
     @Autowired
     private ClassProctoringRepo classProctoringRepo;
-    @Autowired
-    private InstructorRepo instructorRepo;
+
     @Autowired
     private TAProfileMapper taProfileMapper;
 
@@ -44,8 +40,6 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
         return classProctoringToClassProctoringAndTAs(classProctoringRepo.findProctoringsByTAId(userId));
     }
 
-    @Autowired
-    DeansOfficeRepo deansOfficeRepo;
     @Override
     public List<ClassProctoringAndTAsDTO> getDepartmentClassProctoringsByCode(String departmentCode) {
         return classProctoringToClassProctoringAndTAs(classProctoringRepo.findAllByDepartmentCode(departmentCode));
@@ -53,49 +47,36 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
 
     @Override
     public List<ClassProctoringAndTAsDTO> getDepartmentClassProctoringsById(int departmentId) {
-        // Fetch all proctorings in the department
         List<ClassProctoring> proctorings = classProctoringRepo.findByCourse_Department_DepartmentIdAndIsCompleteFalse(departmentId);
-
         return classProctoringToClassProctoringAndTAs(proctorings);
     }
 
     @Override
     public List<ClassProctoringAndTAsDTO> getFacultyClassProctorings(int facultyId) {
         List<Integer> departmentIds = departmentRepo.findDepartmentIdsByFacultyId(facultyId);
-
         List<ClassProctoringAndTAsDTO> results = new ArrayList<>();
         for (int departmentId : departmentIds) {
-            // Fetch all relations in the department
             results.addAll(getDepartmentClassProctoringsById(departmentId));
         }
-
         return results;
     }
-
-    @Autowired
-    TAService taService;
 
     @Override
     public List<ClassProctoringAndTAsDTO> getClassProctoringsOfCreator(int creatorId) {
         List<ClassProctoring> proctorings = classProctoringRepo.findByCreatorUserId(creatorId);
-
         return classProctoringToClassProctoringAndTAs(proctorings);
     }
 
-
-
     @Override
-    public List<ClassProctoringAndTAsDTO> getClassProctoringsOfInstructor(int instructorId){
+    public List<ClassProctoringAndTAsDTO> getClassProctoringsOfInstructor(int instructorId) {
         return classProctoringToClassProctoringAndTAs(classProctoringRepo.findClassProctoringsByInstructorId(instructorId));
     }
 
     @Override
-    public List<ClassProctoringAndTAsDTO> classProctoringToClassProctoringAndTAs(List<ClassProctoring> proctorings){
+    public List<ClassProctoringAndTAsDTO> classProctoringToClassProctoringAndTAs(List<ClassProctoring> proctorings) {
         List<ClassProctoringAndTAsDTO> results = new ArrayList<>();
         for (ClassProctoring proctoring : proctorings) {
             List<TAProfileDTO> taList = new ArrayList<>();
-
-            //Find all rows with the class proctoring id of the proctoring and put the TA into the taList
             List<ClassProctoringTARelation> relations =
                     classProctoringTARelationRepo.findByClassProctoring_ClassProctoringId(proctoring.getClassProctoringId());
 
@@ -114,8 +95,6 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
             dto.setTaProfileDTOList(taList);
             results.add(dto);
         }
-
         return results;
     }
-
 }

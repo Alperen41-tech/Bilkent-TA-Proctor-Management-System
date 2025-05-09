@@ -10,72 +10,76 @@ import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.*;
-import com.cs319group3.backend.Services.ServiceImpls.UserServiceImpls.TAServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctoringRequestService {
 
     @Autowired
-    AuthStaffProctoringRequestRepo authStaffProctoringRequestRepo;
-
-    // Checks among the unapproved requests
-    @Override
-    public boolean isRequestAlreadySent(int senderId, int receiverId, int classProctoringId){
-        List<AuthStaffProctoringRequest> request = authStaffProctoringRequestRepo.findBySenderUserUserIdAndReceiverUserUserIdAndClassProctoringClassProctoringIdAndApprovedFalseAndResponseDateIsNull(senderId, receiverId, classProctoringId);
-        return !request.isEmpty();
-    }
+    private AuthStaffProctoringRequestRepo authStaffProctoringRequestRepo;
 
     @Autowired
-    UserRepo userRepo;
+    private UserRepo userRepo;
 
     @Autowired
-    ClassProctoringRepo classProctoringRepo;
+    private ClassProctoringRepo classProctoringRepo;
 
     @Autowired
-    NotificationService notificationService;
+    private NotificationService notificationService;
 
     @Autowired
-    ClassProctoringTARelationRepo classProctoringTARelationRepo;
+    private ClassProctoringTARelationRepo classProctoringTARelationRepo;
 
     @Autowired
-    TARepo taRepo;
+    private TARepo taRepo;
 
     @Autowired
-    ClassProctoringRepo classProcRepo;
+    private ClassProctoringRepo classProcRepo;
 
     @Autowired
-    TAAvailabilityService taAvailabilityService;
+    private TAAvailabilityService taAvailabilityService;
 
     @Autowired
-    ClassProctoringTARelationService classProctoringTARelationService;
+    private ClassProctoringTARelationService classProctoringTARelationService;
 
     @Autowired
     private ProctoringApplicationTARelationService proctoringApplicationTARelationService;
 
+    @Autowired
+    private ClassProctoringService classProctoringService;
+
+    @Autowired
+    @Lazy
+    private TAService taService;
+
+    @Override
+    public boolean isRequestAlreadySent(int senderId, int receiverId, int classProctoringId) {
+        List<AuthStaffProctoringRequest> request =
+                authStaffProctoringRequestRepo.findBySenderUserUserIdAndReceiverUserUserIdAndClassProctoringClassProctoringIdAndApprovedFalseAndResponseDateIsNull(
+                        senderId, receiverId, classProctoringId);
+        return !request.isEmpty();
+    }
+
     @Override
     public boolean sendAuthStaffProctoringRequest(int classProctoringId, int taId, int senderId, boolean isApproved) {
-        if(isApproved && !canForcedRequestBeSent(classProctoringId)) {
+        if (isApproved && !canForcedRequestBeSent(classProctoringId)) {
             System.out.println("Proctoring is full");
             return false;
         }
 
-        if(!isApproved && !canUnforcedRequestBeSent(classProctoringId)) {
+        if (!isApproved && !canUnforcedRequestBeSent(classProctoringId)) {
             System.out.println("Too many requests");
             return false;
         }
 
-        Optional<ClassProctoringTARelation> cptr = classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classProctoringId, taId);
+        Optional<ClassProctoringTARelation> cptr =
+                classProctoringTARelationRepo.findById_ClassProctoringIdAndId_TAId(classProctoringId, taId);
         Optional<TA> taOpt = taRepo.findByUserId(taId);
         Optional<ClassProctoring> cpOptional = classProcRepo.findById(classProctoringId);
 
@@ -95,11 +99,11 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
             System.out.println("TA not available");
             return false;
         }
-
-        if(isRequestAlreadySent(senderId, taId, classProctoringId) ) {
+        if (isRequestAlreadySent(senderId, taId, classProctoringId)) {
             System.out.println("An unapproved request is already sent");
             return false;
         }
+
         AuthStaffProctoringRequest request = new AuthStaffProctoringRequest();
 
         Optional<User> sender = userRepo.findById(senderId);
@@ -126,8 +130,8 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
             request.setSentDate(LocalDateTime.now());
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            if(!isApproved) {
-                System.out.println("Biz burdaaayıııız");
+
+            if (!isApproved) {
                 String unapprovedDescription = "You are requested for proctoring duty of the event \"" +
                         cp.getEventName() + "\" starts at " + cp.getStartDate().format(formatter) +
                         " and ends at " + cp.getEndDate().format(formatter) + ".";
@@ -135,9 +139,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
                 authStaffProctoringRequestRepo.save(request);
                 notificationService.createNotification(request, NotificationType.REQUEST, unapprovedDescription);
                 System.out.println(unapprovedDescription);
-            }
-            else{
-                System.out.println("Enektarlar koltuğun altinda galig");
+            } else {
                 authStaffProctoringRequestRepo.save(request);
                 String approvedDescription = "You are assigned for proctoring duty of the event " +
                         cp.getEventName() + " starts at " + cp.getStartDate().format(formatter) +
@@ -146,33 +148,29 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
                 System.out.println(approvedDescription);
                 classProctoringTARelationService.createClassProctoringTARelation(taId, classProctoringId);
             }
-        }
-        else {
+        } else {
             System.out.println("Given proctoring is not found");
             return false;
         }
+
         return true;
     }
 
     @Override
-    public boolean sendAuthStaffProctoringRequests(List<TAProfileDTO> dtoList, int classProctoringId, int senderId, boolean isApproved){
-        for(TAProfileDTO dto : dtoList) {
+    public boolean sendAuthStaffProctoringRequests(List<TAProfileDTO> dtoList, int classProctoringId, int senderId, boolean isApproved) {
+        for (TAProfileDTO dto : dtoList) {
             boolean sent = sendAuthStaffProctoringRequest(classProctoringId, dto.getUserId(), senderId, isApproved);
             proctoringApplicationTARelationService.deleteProctoringApplicationTARelation(classProctoringId, dto);
-
             System.out.println("Request is sent? " + sent);
         }
         return true;
     }
 
-    @Autowired
-    @Lazy
-    TAService taService;
-
     @Override
-    public List<TAProfileDTO> sendAuthStaffProctoringRequestAutomaticallyInDepartment( int classProctoringId, String departmentCode, int senderId, int count, boolean eligibilityRestriction, boolean oneDayRestriction){
-        List<TAProfileDTO> availableTAs = taService.getAllAvailableTAsByDepartmentCode(departmentCode, classProctoringId, senderId, eligibilityRestriction, oneDayRestriction);
-        if(availableTAs.size() < count) {
+    public List<TAProfileDTO> sendAuthStaffProctoringRequestAutomaticallyInDepartment(int classProctoringId, String departmentCode, int senderId, int count, boolean eligibilityRestriction, boolean oneDayRestriction) {
+        List<TAProfileDTO> availableTAs =
+                taService.getAllAvailableTAsByDepartmentCode(departmentCode, classProctoringId, senderId, eligibilityRestriction, oneDayRestriction);
+        if (availableTAs.size() < count) {
             throw new RuntimeException("There are not enough available tas");
         }
         availableTAs.sort(
@@ -183,9 +181,10 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
     }
 
     @Override
-    public List<TAProfileDTO> sendAuthStaffProctoringRequestAutomaticallyInFaculty( int classProctoringId, int facultyId, int senderId, int count, boolean eligibilityRestriction, boolean oneDayRestriction){
-        List<TAProfileDTO> availableTAs = taService.getAllAvailableTAsByFacultyId(facultyId, classProctoringId, senderId, eligibilityRestriction, oneDayRestriction);
-        if(availableTAs.size() < count) {
+    public List<TAProfileDTO> sendAuthStaffProctoringRequestAutomaticallyInFaculty(int classProctoringId, int facultyId, int senderId, int count, boolean eligibilityRestriction, boolean oneDayRestriction) {
+        List<TAProfileDTO> availableTAs =
+                taService.getAllAvailableTAsByFacultyId(facultyId, classProctoringId, senderId, eligibilityRestriction, oneDayRestriction);
+        if (availableTAs.size() < count) {
             throw new RuntimeException("There are not enough available tas");
         }
         availableTAs.sort(
@@ -195,31 +194,25 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
         return availableTAs.subList(0, count);
     }
 
-    @Autowired
-    ClassProctoringService classProctoringService;
-
-    //Redundant Repo Call
     @Override
     public boolean canUnforcedRequestBeSent(int classProctoringId) {
         int tasAssigned = classProctoringService.numberOfTAsAssigned(classProctoringId);
         int totalUnapprovedRequests = classProctoringService.numberOfRequestsSent(classProctoringId);
         int taCount = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
-        if(tasAssigned >= taCount){
-            System.out.println("There is no place left in classProctoring: "+classProctoringId);
+        if (tasAssigned >= taCount) {
+            System.out.println("There is no place left in classProctoring: " + classProctoringId);
             return false;
         }
         return tasAssigned + totalUnapprovedRequests < taCount + 3;
     }
 
-    //Redundant repo call
     @Override
-    public boolean canForcedRequestBeSent(int classProctoringId){
+    public boolean canForcedRequestBeSent(int classProctoringId) {
         int tasAssigned = classProctoringService.numberOfTAsAssigned(classProctoringId);
         int taCount = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
         return tasAssigned < taCount;
     }
 
-    //Redundant repo call
     @Override
     public boolean canRequestBeAccepted(int classProctoringId) {
         int tasAssigned = classProctoringService.numberOfTAsAssigned(classProctoringId);
@@ -227,20 +220,23 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
         return tasAssigned < taCount;
     }
 
-    //redundant repo call
     @Override
     public void rejectRequestsIfNeeded(int classProctoringId) {
         int taCount = classProctoringRepo.findCountByClassProctoringId(classProctoringId);
         int assignedTAs = classProctoringService.numberOfTAsAssigned(classProctoringId);
-        if(assignedTAs >= taCount){
-            List<AuthStaffProctoringRequest> unresponded = authStaffProctoringRequestRepo.findByClassProctoringClassProctoringIdAndResponseDateIsNullAndApprovedFalse(classProctoringId);
-            for(AuthStaffProctoringRequest request : unresponded){
+
+        if (assignedTAs >= taCount) {
+            List<AuthStaffProctoringRequest> unresponded =
+                    authStaffProctoringRequestRepo.findByClassProctoringClassProctoringIdAndResponseDateIsNullAndApprovedFalse(classProctoringId);
+
+            for (AuthStaffProctoringRequest request : unresponded) {
                 request.setResponseDate(LocalDateTime.now());
-                String description = " The request sent regarding to the class proctoring " + request.getClassProctoring().getEventName() + " is automatically rejected because capacity has been filled. ";
+                String description = " The request sent regarding to the class proctoring " +
+                        request.getClassProctoring().getEventName() +
+                        " is automatically rejected because capacity has been filled. ";
                 System.out.println(description);
                 notificationService.createNotification(request, NotificationType.APPROVAL, description);
             }
         }
     }
-
 }

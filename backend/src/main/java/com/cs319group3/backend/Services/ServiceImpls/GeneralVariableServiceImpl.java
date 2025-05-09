@@ -9,44 +9,42 @@ import com.cs319group3.backend.Services.GeneralVariableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-
 
 @Service
 public class GeneralVariableServiceImpl implements GeneralVariableService {
+
     @Autowired
     private GeneralVariableRepo generalVariableRepo;
+
     @Autowired
     private SemesterRepo semesterRepo;
 
     @Override
     public boolean changeSemester(String semester) {
         Optional<GeneralVariable> generalVariables = generalVariableRepo.findByGeneralVariableId(1);
-        GeneralVariable generalVariable;
-        generalVariable = generalVariables.orElseGet(GeneralVariable::new);
+        GeneralVariable generalVariable = generalVariables.orElseGet(GeneralVariable::new);
+
         Semester sm = new Semester();
         String[] parts = semester.split(" ");
         sm.setYear(parts[0]);
-        int term;
+
         if (parts[1].equalsIgnoreCase("fall")) {
             sm.setTerm(1);
-        }
-        else if (parts[1].equalsIgnoreCase("spring")) {
+        } else if (parts[1].equalsIgnoreCase("spring")) {
             sm.setTerm(2);
-        }
-        else {
+        } else {
             throw new RuntimeException("Wrong term input");
         }
-        generalVariable.setSemester(sm);
+
         Optional<Semester> smstr = semesterRepo.findByYearAndTerm(parts[0], sm.getTerm());
         if (smstr.isEmpty()) {
             semesterRepo.save(sm);
             generalVariable.setSemester(sm);
-        }
-        else {
+        } else {
             generalVariable.setSemester(smstr.get());
         }
+
         generalVariableRepo.save(generalVariable);
         return true;
     }
@@ -54,8 +52,8 @@ public class GeneralVariableServiceImpl implements GeneralVariableService {
     @Override
     public boolean changeProctoringCap(int proctoringCap) {
         Optional<GeneralVariable> generalVariables = generalVariableRepo.findByGeneralVariableId(1);
-        GeneralVariable generalVariable;
-        generalVariable = generalVariables.orElseGet(GeneralVariable::new);
+        GeneralVariable generalVariable = generalVariables.orElseGet(GeneralVariable::new);
+
         generalVariable.setTaProctoringCapTime(proctoringCap);
         generalVariableRepo.save(generalVariable);
         return true;
@@ -64,16 +62,20 @@ public class GeneralVariableServiceImpl implements GeneralVariableService {
     @Override
     public GeneralVariableDTO getGeneralVariable() {
         Optional<GeneralVariable> generalVariables = generalVariableRepo.findByGeneralVariableId(1);
-        GeneralVariable generalVariable;
-        generalVariable = generalVariables.orElseGet(GeneralVariable::new);
+        GeneralVariable generalVariable = generalVariables.orElseGet(GeneralVariable::new);
+
         GeneralVariableDTO generalVariableDTO = new GeneralVariableDTO();
         String semester = generalVariable.getSemester().getYear();
-        if (generalVariable.getSemester().getTerm() == 1)
-            semester = semester + " Fall";
-        else if (generalVariable.getSemester().getTerm() == 2)
-            semester = semester + " Spring";
+
+        if (generalVariable.getSemester().getTerm() == 1) {
+            semester += " Fall";
+        } else if (generalVariable.getSemester().getTerm() == 2) {
+            semester += " Spring";
+        }
+
         generalVariableDTO.setSemester(semester);
         generalVariableDTO.setProctoringCap(generalVariable.getTaProctoringCapTime());
+
         return generalVariableDTO;
     }
 }

@@ -23,28 +23,28 @@ public class DepartmentSecretaryServiceImpl implements DepartmentSecretaryServic
     @Autowired
     private DepartmentSecretaryRepo departmentSecretaryRepo;
 
+    @Autowired
+    private UserRepo userRepo;
+
+    @Autowired
+    private LoginMapper loginMapper;
+
+    @Autowired
+    private DepartmentRepo departmentRepo;
+
+    @Autowired
+    private LoginRepo loginRepo;
+
     @Override
-    public DepartmentSecretaryProfileDTO getDepartmentSecretaryProfileById(int id){
+    public DepartmentSecretaryProfileDTO getDepartmentSecretaryProfileById(int id) {
         Optional<DepartmentSecretary> departmentSecretary = departmentSecretaryRepo.findByUserId(id);
 
-        if(departmentSecretary.isEmpty()){
+        if (departmentSecretary.isEmpty()) {
             throw new RuntimeException("Department Secretary with ID " + id + " not found.");
         }
 
         return DepartmentSecretaryProfileMapper.essentialMapper(departmentSecretary.get());
     }
-
-    @Autowired
-    UserRepo userRepo;
-
-    @Autowired
-    LoginMapper loginMapper;
-
-    @Autowired
-    DepartmentRepo departmentRepo;
-
-    @Autowired
-    LoginRepo loginRepo;
 
     @Override
     public boolean createDepartmentSecretary(CreateDepartmentSecretaryDTO cdsDTO) {
@@ -53,13 +53,13 @@ public class DepartmentSecretaryServiceImpl implements DepartmentSecretaryServic
 
         if (userRepo.findByBilkentId(profile.getBilkentId()).isPresent() ||
                 userRepo.findByEmail(profile.getEmail()).isPresent()) {
-            return false; // Duplicate
+            return false;
         }
 
         DepartmentSecretary departmentSecretary = DepartmentSecretaryProfileMapper.toEntity(profile);
         Login loginEntity = loginMapper.essentialEntityToLogin(login, departmentSecretary);
 
-        if(loginEntity == null) {
+        if (loginEntity == null) {
             return false;
         }
 

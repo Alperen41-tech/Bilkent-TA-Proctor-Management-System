@@ -1,6 +1,5 @@
 package com.cs319group3.backend.Services.ServiceImpls.RelationServiceImpls;
 
-
 import com.cs319group3.backend.DTOMappers.TAProfileMapper;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
@@ -35,29 +34,26 @@ public class ProctoringApplicationTARelationServiceImpl implements ProctoringApp
 
     @Autowired
     private TAProfileMapper taProfileMapper;
+
     @Autowired
     private ClassProctoringRepo classProctoringRepo;
 
     @Override
     public ResponseEntity<Boolean> createProctoringApplicationTARelation(int proctoringApplicationId, int taId) {
-
         Optional<ProctoringApplicationTARelation> taRelation = proctoringApplicationTARelationRepo.findByTA_UserIdAndProctoringApplication_ApplicationId(taId, proctoringApplicationId);
-
-        if (taRelation.isPresent()){
+        if (taRelation.isPresent()) {
             throw new RuntimeException("already applied");
         }
 
-
         Optional<ProctoringApplication> proctoringApplication = proctoringApplicationRepo.findById(proctoringApplicationId);
-        if (!proctoringApplication.isPresent()){
+        if (proctoringApplication.isEmpty()) {
             throw new RuntimeException("proctoring application not found");
         }
 
         Optional<TA> ta = taRepo.findById(taId);
-        if (!ta.isPresent()){
+        if (ta.isEmpty()) {
             throw new RuntimeException("ta not found");
         }
-
 
         ProctoringApplicationTARelation newApplication = new ProctoringApplicationTARelation();
         newApplication.setProctoringApplication(proctoringApplication.get());
@@ -65,20 +61,14 @@ public class ProctoringApplicationTARelationServiceImpl implements ProctoringApp
         newApplication.setApprovedBySecretary(false);
 
         proctoringApplicationTARelationRepo.save(newApplication);
-
         return new ResponseEntity<>(true, HttpStatus.CREATED);
     }
 
     @Override
     public List<TAProfileDTO> getAllApplicants(int applicationId) {
-
         List<ProctoringApplicationTARelation> relations = proctoringApplicationTARelationRepo.findByProctoringApplication_ApplicationIdAndIsApprovedBySecretaryFalse(applicationId);
         List<TAProfileDTO> profiles = new ArrayList<>();
-
-        relations.forEach(rel -> {
-            profiles.add(taProfileMapper.essentialMapper(rel.getTA()));
-        });
-
+        relations.forEach(rel -> profiles.add(taProfileMapper.essentialMapper(rel.getTA())));
         return profiles;
     }
 
@@ -90,27 +80,18 @@ public class ProctoringApplicationTARelationServiceImpl implements ProctoringApp
 
     @Override
     public boolean deleteProctoringApplicationTARelation(int clasProctoringId, TAProfileDTO applicant) {
-
         Optional<ClassProctoring> classProctoringOptional = classProctoringRepo.findById(clasProctoringId);
-        if (!classProctoringOptional.isPresent()){
+        if (classProctoringOptional.isEmpty()) {
             throw new RuntimeException("classProctoring not found");
         }
 
         Optional<TA> taOptional = taRepo.findById(applicant.getUserId());
-        if (!taOptional.isPresent()){
+        if (taOptional.isEmpty()) {
             throw new RuntimeException("ta not found");
         }
 
-
-
         Optional<ProctoringApplicationTARelation> relation = proctoringApplicationTARelationRepo.findByProctoringApplication_ClassProctoringAndTA(classProctoringOptional.get(), taOptional.get());
-
-        if (relation.isPresent()){
-            proctoringApplicationTARelationRepo.delete(relation.get());
-        }
-
+        relation.ifPresent(proctoringApplicationTARelationRepo::delete);
         return true;
     }
-
-
 }

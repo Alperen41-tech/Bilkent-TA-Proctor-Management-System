@@ -2,7 +2,6 @@ package com.cs319group3.backend.Services.ServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.NotificationMapper;
 import com.cs319group3.backend.DTOs.NotificationDTO;
-import com.cs319group3.backend.DTOs.ProctoringApplicationDTO;
 import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
 import com.cs319group3.backend.Entities.UserEntities.User;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.cs319group3.backend.Enums.NotificationType.REQUEST;
-
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
@@ -28,7 +25,7 @@ public class NotificationServiceImpl implements NotificationService {
         List<Notification> notifications = notificationRepo.findByReceiver_UserId(userId);
         List<NotificationDTO> notificationDTOs = new ArrayList<>();
         for (Notification notification : notifications) {
-            String message = "test"; //to be implemented according to frontend
+            String message = "test";
             NotificationDTO dto = NotificationMapper.essentialMapper(notification, message);
             notificationDTOs.add(dto);
         }
@@ -38,7 +35,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public boolean setNotificationsRead(int userId) {
         List<Notification> notifications = notificationRepo.findByReceiver_UserId(userId);
-        for(Notification notification : notifications) {
+        for (Notification notification : notifications) {
             if (!notification.isRead()) {
                 notification.setRead(true);
                 notificationRepo.save(notification);
@@ -65,12 +62,12 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setRequest(request);
         notification.setNotificationType(type);
         notification.setRead(false);
-        if (type == NotificationType.APPROVAL)
+        if (type == NotificationType.APPROVAL) {
             notification.setReceiver(request.getSenderUser());
-        else
+        } else {
             notification.setReceiver(request.getReceiverUser());
+        }
         notificationRepo.save(notification);
-
         return notification;
     }
 
@@ -80,12 +77,12 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setRequest(request);
         notification.setNotificationType(type);
         notification.setRead(false);
-        if (type == NotificationType.APPROVAL)
+        if (type == NotificationType.APPROVAL) {
             notification.setReceiver(request.getSenderUser());
-        else
+        } else {
             notification.setReceiver(request.getReceiverUser());
+        }
         notificationRepo.save(notification);
-
         return notification;
     }
 

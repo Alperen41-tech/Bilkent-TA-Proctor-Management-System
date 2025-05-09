@@ -1,56 +1,44 @@
 package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 
-
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
 import com.cs319group3.backend.DTOMappers.TAProfileMapper;
-import com.cs319group3.backend.DTOs.DateIntervalDTO;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
-import com.cs319group3.backend.DTOs.TimeIntervalDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.Department;
-import com.cs319group3.backend.Entities.Log;
-import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
-import com.cs319group3.backend.Entities.RequestEntities.Request;
 import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.*;
-import com.cs319group3.backend.Services.ServiceImpls.LogServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-
-
 
 @Service
 public class TASwapRequestServiceImpl implements TASwapRequestService {
 
     @Autowired
     private TASwapRequestRepo taswapRequestRepo;
-    @Autowired
-    private ClassProctoringTARelationRepo classProctoringTARelationRepo;
-    @Autowired
-    private TARepo taRepo;
-    @Autowired
-    private ClassProctoringRepo classProctoringRepo;
-    @Autowired
-    private TimeIntervalService timeIntervalService;
-    @Autowired
-    private RequestMapper requestMapper;
 
     @Autowired
-    private NotificationRepo notificationRepo;
+    private ClassProctoringTARelationRepo classProctoringTARelationRepo;
+
+    @Autowired
+    private TARepo taRepo;
+
+    @Autowired
+    private ClassProctoringRepo classProctoringRepo;
+
+    @Autowired
+    private RequestMapper requestMapper;
 
     @Autowired
     private NotificationService notificationService;
@@ -58,20 +46,26 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
     @Autowired
     private LogService logService;
 
+    @Autowired
+    private TAService taService;
+
+    @Autowired
+    private TAProfileMapper taProfileMapper;
+
+    @Autowired
+    private TAAvailabilityService taAvailabilityService;
 
     @Override
     public ResponseEntity<List<RequestDTO>> getTASwapRequestsByReceiver(int TAId) {
-
         List<TASwapRequest> swapRequests = taswapRequestRepo.findByReceiverUser_UserId(TAId);
-        return new ResponseEntity<>(requestMapper.taSwapRequestMapper(swapRequests),HttpStatus.OK);
+        return new ResponseEntity<>(requestMapper.taSwapRequestMapper(swapRequests), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<List<RequestDTO>> getTASwapRequestsBySender(int TAId) {
         List<TASwapRequest> swapRequests = taswapRequestRepo.findBySenderUser_UserId(TAId);
-        return new ResponseEntity<>(requestMapper.taSwapRequestMapper(swapRequests),HttpStatus.OK);
+        return new ResponseEntity<>(requestMapper.taSwapRequestMapper(swapRequests), HttpStatus.OK);
     }
-
 
     @Override
     public ResponseEntity<Boolean> createSwapRequest(RequestDTO swapRequestReceived) {
@@ -82,116 +76,95 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
                     swapRequest.getRequestId() + ") to user " + swapRequest.getReceiverUser().getUserId() + ".";
             logService.createLog(logMessage, LogType.CREATE);
             notificationService.createNotification(swapRequest, NotificationType.REQUEST);
-
             return ResponseEntity.ok(true);
         } catch (Exception e) {
-            e.printStackTrace(); // for debugging, or better, log it properly
+            e.printStackTrace(); // Consider replacing with proper logger
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
         }
     }
 
     @Override
-    public ResponseEntity<Boolean> acceptSwapRequest(int requestId) throws Exception{
+    public ResponseEntity<Boolean> acceptSwapRequest(int requestId) throws Exception {
         Optional<TASwapRequest> swapRequest = taswapRequestRepo.findById(requestId);
-
-        if (!swapRequest.isPresent()) {
-            throw new Exception("request with id" + requestId + " could not be found");
+        if (swapRequest.isEmpty()) {
+            throw new Exception("request with id " + requestId + " could not be found");
         }
-
-        if (swapRequest.get().isApproved()){
-            throw new Exception("request with id" + requestId + " is already approved");
+        if (swapRequest.get().isApproved()) {
+            throw new Exception("request with id " + requestId + " is already approved");
         }
 
         TASwapRequest swapRequestReceived = swapRequest.get();
-
         try {
             setClassProctorings(swapRequestReceived);
             swapRequestReceived.setApproved(true);
             swapRequestReceived.setResponseDate(LocalDateTime.now());
             taswapRequestRepo.save(swapRequestReceived);
             return new ResponseEntity<>(true, HttpStatus.OK);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
-            return new ResponseEntity<>(false,HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
     }
 
-    @Autowired
-    TAService taService;
-
-    @Autowired
-    TAProfileMapper taProfileMapper;
-
-    @Autowired
-    TAAvailabilityService taAvailabilityService;
-
     @Override
     public List<TAProfileDTO> getAvailableTAProfilesForClassProctoring(int classProctoringId, int taId) throws Exception {
-
         Optional<ClassProctoring> classProctoring = classProctoringRepo.findById(classProctoringId);
-
-        if (!classProctoring.isPresent()) {
-            throw new Exception("classProctoring with id" + classProctoringId + " could not be found");
+        if (classProctoring.isEmpty()) {
+            throw new Exception("classProctoring with id " + classProctoringId + " could not be found");
         }
 
         ClassProctoring classProctoringReceived = classProctoring.get();
-        Department currDep =  classProctoringReceived.getCourse().getDepartment();
-
+        Department currDep = classProctoringReceived.getCourse().getDepartment();
         List<TA> departmentAvailableTAs = taRepo.findAvailableTAsByDepartment(currDep.getDepartmentCode(), classProctoringId);
 
-        departmentAvailableTAs.removeIf(ta -> !taAvailabilityService.isTAAvailable(ta, classProctoringReceived)
-                                                || isRequestAlreadySent(taId, ta, classProctoringReceived));
+        departmentAvailableTAs.removeIf(ta ->
+                !taAvailabilityService.isTAAvailable(ta, classProctoringReceived)
+                        || isRequestAlreadySent(taId, ta, classProctoringReceived));
 
         return taProfileMapper.essentialMapper(departmentAvailableTAs);
     }
 
     @Override
-    public boolean isRequestAlreadySent(int senderId, TA receiver, ClassProctoring ctr){
-
+    public boolean isRequestAlreadySent(int senderId, TA receiver, ClassProctoring ctr) {
         Optional<TASwapRequest> taSwapRequest = taswapRequestRepo
-                .findBySenderUser_UserIdAndReceiverUser_UserIdAndClassProctoring_ClassProctoringId(senderId, receiver.getUserId(), ctr.getClassProctoringId());
+                .findBySenderUser_UserIdAndReceiverUser_UserIdAndClassProctoring_ClassProctoringId(
+                        senderId, receiver.getUserId(), ctr.getClassProctoringId());
 
-        if (taSwapRequest.isPresent()) {
-            return true;
-        }
-
-        return false;
+        return taSwapRequest.isPresent();
     }
 
-    private void setClassProctorings(TASwapRequest swapRequest) throws Exception{
-
+    private void setClassProctorings(TASwapRequest swapRequest) throws Exception {
         Optional<ClassProctoringTARelation> relation = classProctoringTARelationRepo
-                .findById_ClassProctoringIdAndId_TAId(swapRequest.getClassProctoring().getClassProctoringId(), swapRequest.getSenderUser().getUserId());
+                .findById_ClassProctoringIdAndId_TAId(
+                        swapRequest.getClassProctoring().getClassProctoringId(),
+                        swapRequest.getSenderUser().getUserId());
 
-        if (!relation.isPresent()) {
-            throw new Exception("TA sent a request to the classProctoring that doesn't have connection with class proctoring");
+        if (relation.isEmpty()) {
+            throw new Exception("TA sent a request to a classProctoring not connected to them");
         }
-
-        if (relation.get().isComplete()){
+        if (relation.get().isComplete()) {
             throw new Exception("ClassProctoring is already completed");
         }
 
         Optional<TA> newTA = taRepo.findByUserId(swapRequest.getReceiverUser().getUserId());
-
-        if (!newTA.isPresent()) {
-            throw new Exception("Receiver ta is not present");
+        if (newTA.isEmpty()) {
+            throw new Exception("Receiver TA not found");
         }
 
         Optional<ClassProctoringTARelation> relation2 = classProctoringTARelationRepo
-                .findById_ClassProctoringIdAndId_TAId(swapRequest.getClassProctoring().getClassProctoringId(), swapRequest.getReceiverUser().getUserId());
+                .findById_ClassProctoringIdAndId_TAId(
+                        swapRequest.getClassProctoring().getClassProctoringId(),
+                        swapRequest.getReceiverUser().getUserId());
 
         if (relation2.isPresent()) {
-            throw new Exception("Receiver ta is already on the class proctoring, cannot perform swap");
+            throw new Exception("Receiver TA is already assigned to this class proctoring");
         }
 
         TA newTAReceived = newTA.get();
         ClassProctoringTARelation classProctoringRel = relation.get();
+
         classProctoringTARelationRepo.delete(classProctoringRel);
         classProctoringRel.setTA(newTAReceived);
         classProctoringTARelationRepo.save(classProctoringRel);
     }
-
-
 }
-
