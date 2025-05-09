@@ -7,6 +7,8 @@ import TaskItem from "../TaskItem";
 import axios from "axios";
 import ManualAssignmentModal from "../ManualAssignmentModal";
 import AutomaticAssignmentModal from "../AutomaticAssignmentModal";
+import InstructorAdditionalTAModal from "../InstructorAdditionalTAModal";
+
 
 
 const INS_ExamsPage = () => {
@@ -48,6 +50,9 @@ const INS_ExamsPage = () => {
   const [oneDayRestriction, setOneDayRestriction] = useState(false);
   const [showAutoModal, setShowAutoModal] = useState(false);
   const [autoSuggestedTAs, setAutoSuggestedTAs] = useState([]);
+  const [showInstructorTAModal, setShowInstructorTAModal] = useState(false);
+
+
 
 
 
@@ -243,7 +248,7 @@ const INS_ExamsPage = () => {
     }
   };
 
-  const handleRequestAdditionalTAs = async () => {
+const handleRequestAdditionalTAs = async (taCountInput, description) => {
   const classProctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
   if (!classProctoringId) {
     alert("Please select a task first.");
@@ -252,15 +257,19 @@ const INS_ExamsPage = () => {
 
   try {
     const token = localStorage.getItem("token");
+
+    const requestPayload = {
+      taCountNeeded: taCountInput,
+      classProctoringId,
+      description,
+      requestType: "instructorAdditionalTARequest",
+      isComplete: false
+    };
+
     const response = await axios.post(
-      "http://localhost:8080/authStaffProctoringRequestController/requestAdditionalTAs",
-      null,
+      "http://localhost:8080/taFromDeanRequest/createInstructorAdditionalTARequest",
+      requestPayload,
       {
-        params: {
-          classProctoringId,
-          requestedCount: taCount,
-          senderId: instructorId,
-        },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -268,15 +277,20 @@ const INS_ExamsPage = () => {
     );
 
     if (response.data === true) {
-      alert("Additional TA request sent successfully.");
+      alert("Instructor TA request sent successfully.");
     } else {
-      alert("Failed to send additional TA request.");
+      alert("Failed to send instructor TA request.");
     }
+
+    setShowInstructorTAModal(false);
   } catch (error) {
-    console.error("Error requesting additional TAs:", error);
-    alert("An error occurred while requesting additional TAs.");
+    console.error("Error creating instructor TA request:", error);
+    alert("An error occurred while submitting the request.");
   }
 };
+
+
+
 
 
 
@@ -446,7 +460,9 @@ const INS_ExamsPage = () => {
           <div className="ins-exam-assign-actions">
             <button onClick={handleAutomaticAssign}>Automatic Assign</button>
             <button onClick={() => setShowManualModal(true)}>Manual Assign</button>
-            <button onClick={handleRequestAdditionalTAs}>Request Additional TAs</button>
+            <button onClick={() => setShowInstructorTAModal(true)}>Request Additional TAs</button>
+
+
 
             <br />
             <div className="ins-exam-restriction-checkboxes" style={{ marginTop: "1rem" }}>
@@ -496,6 +512,13 @@ const INS_ExamsPage = () => {
             selectedExamId={selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.id}
             refreshAfterAssignment={fetchProctoringTasks}
           />
+          <InstructorAdditionalTAModal
+            isOpen={showInstructorTAModal}
+            onCancel={() => setShowInstructorTAModal(false)}
+            onConfirm={handleRequestAdditionalTAs}
+          />
+
+
 
         </div>
       </div>
