@@ -243,36 +243,43 @@ const INS_ExamsPage = () => {
     }
   };
 
+  const handleRequestAdditionalTAs = async () => {
+  const classProctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+  if (!classProctoringId) {
+    alert("Please select a task first.");
+    return;
+  }
 
-  const confirmManualAssign = async () => {
-    const classProctoringId = selectedTask.classProctoringTARelationDTO.classProctoringDTO.id;
-    const taId = selectedTA.userId;
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest", null, {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.post(
+      "http://localhost:8080/authStaffProctoringRequestController/requestAdditionalTAs",
+      null,
+      {
         params: {
           classProctoringId,
-          taId,
+          requestedCount: taCount,
+          senderId: instructorId,
         },
-
         headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      if (response.data === true) {
-        alert("TA manually assigned.");
-        setSelectedTA(null);
-        fetchProctoringTasks();
-      } else {
-        alert("Assignment failed.");
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } catch (error) {
-      console.error("Manual assignment error:", error);
-      alert("Error occurred.");
-    } finally {
-      setShowManualModal(false);
+    );
+
+    if (response.data === true) {
+      alert("Additional TA request sent successfully.");
+    } else {
+      alert("Failed to send additional TA request.");
     }
-  };
+  } catch (error) {
+    console.error("Error requesting additional TAs:", error);
+    alert("An error occurred while requesting additional TAs.");
+  }
+};
+
+
+
 
   const handleTaskClick = (task) => {
     setSelectedTask(task);
@@ -439,6 +446,7 @@ const INS_ExamsPage = () => {
           <div className="ins-exam-assign-actions">
             <button onClick={handleAutomaticAssign}>Automatic Assign</button>
             <button onClick={() => setShowManualModal(true)}>Manual Assign</button>
+            <button onClick={handleRequestAdditionalTAs}>Request Additional TAs</button>
 
             <br />
             <div className="ins-exam-restriction-checkboxes" style={{ marginTop: "1rem" }}>

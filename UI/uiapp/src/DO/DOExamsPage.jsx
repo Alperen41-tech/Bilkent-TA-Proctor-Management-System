@@ -292,6 +292,8 @@ const DOExamsPage = () => {
           params: { departmentCode: departmentCode },
         });
       }
+
+      console.log("🧪 Exams API Response:", response.data);
       setExamItems(response.data || []);
     } catch (error) {
       console.error('Error fetching exams:', error);
@@ -432,7 +434,7 @@ const DOExamsPage = () => {
           <div className="search-filter">
             <input
               type="text"
-              placeholder="Name: ex. CS 202, E 400"
+              placeholder="Name: ex. CS 202, IE 400"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
