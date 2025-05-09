@@ -41,40 +41,6 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
     @Autowired
     private ClassProctoringRepo classProctoringRepo;
 
-
-    /*public List<TimeIntervalDTO> getTATimeIntervalsByHour(LocalDateTime startDateTime, LocalDateTime endDateTime, int taId) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateIntervalDTO dateIntervalDTO = new DateIntervalDTO();
-        dateIntervalDTO.setStartDate(startDateTime.format(dtf));
-        dateIntervalDTO.setEndDate(endDateTime.format(dtf));
-
-        List<TimeIntervalDTO> timeIntervals = getTAScheduleById(dateIntervalDTO, taId); // not considering the time interval
-
-        // Assuming time format in TimeIntervalDTO is "HH:mm"
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
-        // Extract just the time portion from the start and end DateTimes
-        LocalTime filterStartTime = startDateTime.toLocalTime();
-        LocalTime filterEndTime = endDateTime.toLocalTime();
-
-        return timeIntervals.stream()
-                .filter(interval -> {
-                    // Parse the interval start and end times
-                    LocalTime intervalStartTime = LocalTime.parse(interval.getStartTime(), timeFormatter);
-                    LocalTime intervalEndTime = LocalTime.parse(interval.getEndTime(), timeFormatter);
-
-                    // Check if the intervals overlap
-                    // Two intervals overlap if:
-                    // 1. Start of one is before the end of the other AND
-                    // 2. End of one is after the start of the other
-                    return filterStartTime.isBefore(intervalEndTime) &&
-                            filterEndTime.isAfter(intervalStartTime);
-                })
-                .collect(Collectors.toList());
-    }*/
-
-
-
     @Override
     public List<TimeIntervalDTO> getTAScheduleById(DateIntervalDTO dateIntervalDTO, int id) {
         Optional<TA> optionalTA = taRepository.findByUserId(id);
@@ -189,9 +155,9 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
             for (OfferedCourseScheduleRelation offeredCourseScheduleRelation : courseSchedule) {
                 TimeInterval timeInterval = offeredCourseScheduleRelation.getTimeInterval();
                 boolean isOverlap = false;
-                for (TimeIntervalDTO timeIntervalDTO : schedule ) {
-                    LocalTime absenceStart = LocalTime.of(Integer.parseInt(timeIntervalDTO.getStartTime().substring(0,2)), Integer.parseInt(timeIntervalDTO.getStartTime().substring(3)));
-                    LocalTime absenceEnd = LocalTime.of(Integer.parseInt(timeIntervalDTO.getEndTime().substring(0,2)), Integer.parseInt(timeIntervalDTO.getEndTime().substring(3)));
+                for (TimeIntervalDTO timeIntervalDTO : schedule) {
+                    LocalTime absenceStart = LocalTime.of(Integer.parseInt(timeIntervalDTO.getStartTime().substring(0, 2)), Integer.parseInt(timeIntervalDTO.getStartTime().substring(3)));
+                    LocalTime absenceEnd = LocalTime.of(Integer.parseInt(timeIntervalDTO.getEndTime().substring(0, 2)), Integer.parseInt(timeIntervalDTO.getEndTime().substring(3)));
                     if (timeInterval.getDay().equalsIgnoreCase(timeIntervalDTO.getDayOfWeek())) {
                         if (absenceStart.isBefore(timeInterval.getStartTime()) && absenceEnd.isAfter(timeInterval.getEndTime())) {
                             isOverlap = true;
@@ -233,8 +199,8 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
         }
     }
 
-    private void addInstructorProctorings(List<CourseInstructorRelation> courses, LocalDateTime fromDate, LocalDateTime toDate, List<TimeIntervalDTO> schedule){
-        for(CourseInstructorRelation course : courses) {
+    private void addInstructorProctorings(List<CourseInstructorRelation> courses, LocalDateTime fromDate, LocalDateTime toDate, List<TimeIntervalDTO> schedule) {
+        for (CourseInstructorRelation course : courses) {
             int courseId = course.getCourse().getCourse().getCourseId();
             List<ClassProctoring> proctorings = classProctoringRepo.findByCourse_CourseId(courseId);
             addClassProctorings(proctorings, fromDate, toDate, schedule, false);
@@ -267,4 +233,35 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
             }
         }
     }
+
+    /*public List<TimeIntervalDTO> getTATimeIntervalsByHour(LocalDateTime startDateTime, LocalDateTime endDateTime, int taId) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateIntervalDTO dateIntervalDTO = new DateIntervalDTO();
+        dateIntervalDTO.setStartDate(startDateTime.format(dtf));
+        dateIntervalDTO.setEndDate(endDateTime.format(dtf));
+
+        List<TimeIntervalDTO> timeIntervals = getTAScheduleById(dateIntervalDTO, taId); // not considering the time interval
+
+        // Assuming time format in TimeIntervalDTO is "HH:mm"
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        // Extract just the time portion from the start and end DateTimes
+        LocalTime filterStartTime = startDateTime.toLocalTime();
+        LocalTime filterEndTime = endDateTime.toLocalTime();
+
+        return timeIntervals.stream()
+                .filter(interval -> {
+                    // Parse the interval start and end times
+                    LocalTime intervalStartTime = LocalTime.parse(interval.getStartTime(), timeFormatter);
+                    LocalTime intervalEndTime = LocalTime.parse(interval.getEndTime(), timeFormatter);
+
+                    // Check if the intervals overlap
+                    // Two intervals overlap if:
+                    // 1. Start of one is before the end of the other AND
+                    // 2. End of one is after the start of the other
+                    return filterStartTime.isBefore(intervalEndTime) &&
+                            filterEndTime.isAfter(intervalStartTime);
+                })
+                .collect(Collectors.toList());
+    }*/
 }

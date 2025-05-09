@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-
 @Service
 public class UserTypeServiceImpl implements UserTypeService {
 
@@ -20,7 +19,6 @@ public class UserTypeServiceImpl implements UserTypeService {
 
     @Autowired
     private UserTypeRepo userTypeRepo;
-
 
     @Override
     public ResponseEntity<String> createUserType(UserType userType) {
@@ -39,7 +37,6 @@ public class UserTypeServiceImpl implements UserTypeService {
     @Override
     public ResponseEntity<UserType> getUserById(int id) {
         Optional<UserType> type = userTypeDAO.findById(id);
-
 
         if (type.isPresent()) {
             return new ResponseEntity<>(type.get(), HttpStatus.OK);
