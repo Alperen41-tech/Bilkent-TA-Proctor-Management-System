@@ -21,10 +21,9 @@ public class AuthStaffProctoringRequestController {
 
     @Autowired
     private AuthStaffProctoringRequestService authStaffProctoringRequestService;
+
     @Autowired
     private CurrentUserUtil currentUserUtil;
-    @Autowired
-    private ClassProctoringTARelationService classProctoringTARelation;
 
     /**
      * Sends a non-forced authorization staff proctoring request to a TA.
@@ -94,9 +93,9 @@ public class AuthStaffProctoringRequestController {
      * @return true if all requests were sent successfully
      */
     @PostMapping("unforcedAssign")
-    public boolean unforcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId) {
+    public boolean unforcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId, @RequestParam int senderId) {
         System.out.println("Force assign request sent.");
-        int senderId = currentUserUtil.getCurrentUserId();
+        //int senderId = currentUserUtil.getCurrentUserId();
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequests(dtoList, classProctoringId, senderId, false);
     }
 

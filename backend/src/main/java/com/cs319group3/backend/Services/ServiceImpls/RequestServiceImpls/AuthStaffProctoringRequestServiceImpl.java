@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static java.lang.Math.min;
+
 @Service
 public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctoringRequestService {
 
@@ -171,13 +173,13 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
         List<TAProfileDTO> availableTAs =
                 taService.getAllAvailableTAsByDepartmentCode(departmentCode, classProctoringId, senderId, eligibilityRestriction, oneDayRestriction);
         if (availableTAs.size() < count) {
-            throw new RuntimeException("There are not enough available tas");
+            System.out.println("There are not enough available tas");
         }
         availableTAs.sort(
                 Comparator.comparing(TAProfileDTO::isTAOfTheCourse, Comparator.reverseOrder())
                         .thenComparing(TAProfileDTO::getWorkload)
         );
-        return availableTAs.subList(0, count);
+        return availableTAs.subList(0, min(count, availableTAs.size()));
     }
 
     @Override
@@ -185,13 +187,13 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
         List<TAProfileDTO> availableTAs =
                 taService.getAllAvailableTAsByFacultyId(facultyId, classProctoringId, senderId, eligibilityRestriction, oneDayRestriction);
         if (availableTAs.size() < count) {
-            throw new RuntimeException("There are not enough available tas");
+            System.out.println("There are not enough available tas");
         }
         availableTAs.sort(
                 Comparator.comparing(TAProfileDTO::isTAOfTheCourse, Comparator.reverseOrder())
                         .thenComparing(TAProfileDTO::getWorkload)
         );
-        return availableTAs.subList(0, count);
+        return availableTAs.subList(0, min(count, availableTAs.size()));
     }
 
     @Override

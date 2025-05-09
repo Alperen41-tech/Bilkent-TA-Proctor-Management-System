@@ -19,9 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private CurrentUserUtil currentUserUtil;
 
     /**
