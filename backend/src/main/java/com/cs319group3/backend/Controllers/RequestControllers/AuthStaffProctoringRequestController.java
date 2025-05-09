@@ -93,9 +93,9 @@ public class AuthStaffProctoringRequestController {
      * @return true if all requests were sent successfully
      */
     @PostMapping("unforcedAssign")
-    public boolean unforcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId, @RequestParam int senderId) {
+    public boolean unforcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId) {
         System.out.println("Force assign request sent.");
-        //int senderId = currentUserUtil.getCurrentUserId();
+        int senderId = currentUserUtil.getCurrentUserId();
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequests(dtoList, classProctoringId, senderId, false);
     }
 

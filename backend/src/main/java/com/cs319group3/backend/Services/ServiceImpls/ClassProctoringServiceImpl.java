@@ -38,6 +38,9 @@ public class ClassProctoringServiceImpl implements ClassProctoringService {
     @Autowired
     private ClassProctoringTARelationRepo classProctoringTARelationRepo;
 
+    @Autowired
+    private ClassProctoringMapper classProctoringMapper;
+
     @Override
     public List<ClassProctoringDTO> getClassProctoringList() {
         return List.of();
@@ -86,7 +89,7 @@ public class ClassProctoringServiceImpl implements ClassProctoringService {
         List<ClassProctoringDTO> classProctoringDTOList = new ArrayList<>();
 
         for (ClassProctoring classProctoring : classProctoringList) {
-            classProctoringDTOList.add(ClassProctoringMapper.essentialMapper(classProctoring));
+            classProctoringDTOList.add(classProctoringMapper.essentialMapper(classProctoring));
         }
 
         return classProctoringDTOList;

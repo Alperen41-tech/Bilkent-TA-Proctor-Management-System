@@ -15,12 +15,11 @@ public interface AuthStaffProctoringRequestService {
     /**
      * Checks if a request from the sender to the receiver for the given class proctoring already exists.
      *
-     * @param senderId the ID of the sender
      * @param receiverId the ID of the TA (receiver)
      * @param classProctoringId the ID of the class proctoring session
      * @return true if a request has already been sent
      */
-    boolean isRequestAlreadySent(int senderId, int receiverId, int classProctoringId);
+    boolean isRequestAlreadySent(int receiverId, int classProctoringId);
 
     /**
      * Sends a proctoring request to a TA.

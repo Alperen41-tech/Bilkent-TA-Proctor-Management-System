@@ -109,7 +109,7 @@ public class TAServiceImpl implements TAService {
 
         availableTAs.removeIf(ta -> {
             boolean unavailable = !taAvailabilityService.isTAAvailable(ta, cp);
-            boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId);
+            boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(ta.getUserId(), classProctoringId);
             boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
             System.out.println("TA with id " + ta.getUserId() + ": " + unavailable + ", " + alreadyRequested + ", " + takesSameCourse);
             return unavailable || alreadyRequested || takesSameCourse;
@@ -133,7 +133,7 @@ public class TAServiceImpl implements TAService {
 
         availableTAs.removeIf(ta -> {
             boolean unavailable = !taAvailabilityService.isTAAvailable(ta, cp);
-            boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId);
+            boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(ta.getUserId(), classProctoringId);
             boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
             boolean ineligible = eligibilityRestriction && !isTAEligible(ta.getUserId(), courseId);
             boolean failsOneDayRule = oneDayRestriction && !noProctoringInOneDay(ta.getUserId(), classProctoringId);
@@ -157,7 +157,7 @@ public class TAServiceImpl implements TAService {
 
         availableTAs.removeIf(ta -> {
             boolean unavailable = !taAvailabilityService.isTAAvailable(ta, cp);
-            boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId);
+            boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(ta.getUserId(), classProctoringId);
             boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
             System.out.println("TA with id " + ta.getUserId() + ": " + unavailable + ", " + alreadyRequested + ", " + takesSameCourse);
             return unavailable || alreadyRequested || takesSameCourse;
@@ -181,7 +181,7 @@ public class TAServiceImpl implements TAService {
 
         availableTAs.removeIf(ta -> {
             boolean unavailable = !taAvailabilityService.isTAAvailable(ta, cp);
-            boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(userId, ta.getUserId(), classProctoringId);
+            boolean alreadyRequested = authStaffProctoringRequestService.isRequestAlreadySent(ta.getUserId(), classProctoringId);
             boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
             boolean ineligible = eligibilityRestriction && !isTAEligible(ta.getUserId(), courseId);
             boolean failsOneDayRule = oneDayRestriction && !noProctoringInOneDay(ta.getUserId(), classProctoringId);

@@ -69,6 +69,11 @@ public class RequestServiceImpl implements RequestService {
     @Autowired
     UserRepo userRepo;
 
+    @Autowired
+    TAAvailabilityService taAvailabilityService;
+
+    @Autowired
+    ClassProctoringRepo classProctoringRepo;
 
     @Override
     public boolean respondToRequest(int requestId, boolean response) {
@@ -99,12 +104,19 @@ public class RequestServiceImpl implements RequestService {
                         request.setApproved(false);
                         request.setResponseDate(LocalDateTime.now());
                         requestRepo.save(request);
-                        System.out.println("Request automatically rejected due to full proctoring");
+                        System.out.println("Request is automatically rejected due to full proctoring");
+                        return false;
+                    }
+                    else if(!taAvailabilityService.isTAAvailable((TA) req.getReceiverUser(), req.getClassProctoring())){
+                        request.setApproved(false);
+                        request.setResponseDate(LocalDateTime.now());
+                        requestRepo.save(request);
+                        System.out.println("Request is automatically rejected due to unavailability of the user");
                         return false;
                     }
                     else{
                         classProctoringTARelationService.createClassProctoringTARelation(req.getReceiverUser().getUserId(), req.getClassProctoring().getClassProctoringId());
-                        Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());
+                        Optional<TA> ta = taRepo.findById(request.getReceiverUser().getUserId());
                         if (ta.isEmpty()) {
                             throw new RuntimeException("No such TA");
                         }

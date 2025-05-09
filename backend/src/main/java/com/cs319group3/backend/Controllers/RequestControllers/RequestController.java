@@ -17,6 +17,7 @@ public class RequestController {
 
     @Autowired
     private RequestService requestService;
+
     @Autowired
     private CurrentUserUtil currentUserUtil;
 

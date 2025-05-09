@@ -28,4 +28,7 @@ public class ClassProctoringDTO {
     private String classrooms;
     private int TACount;
     private String departmentCode;
+
+    private int numberOfAssignedTAs;
+    private int numberOfPendingRequests;
 }

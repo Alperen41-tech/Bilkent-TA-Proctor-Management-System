@@ -61,10 +61,10 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
     private TAService taService;
 
     @Override
-    public boolean isRequestAlreadySent(int senderId, int receiverId, int classProctoringId) {
+    public boolean isRequestAlreadySent(int receiverId, int classProctoringId) {
         List<AuthStaffProctoringRequest> request =
-                authStaffProctoringRequestRepo.findBySenderUserUserIdAndReceiverUserUserIdAndClassProctoringClassProctoringIdAndApprovedFalseAndResponseDateIsNull(
-                        senderId, receiverId, classProctoringId);
+                authStaffProctoringRequestRepo.findByReceiverUserUserIdAndClassProctoringClassProctoringIdAndApprovedFalseAndResponseDateIsNull(
+                        receiverId, classProctoringId);
         return !request.isEmpty();
     }
 
@@ -101,7 +101,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
             System.out.println("TA not available");
             return false;
         }
-        if (isRequestAlreadySent(senderId, taId, classProctoringId)) {
+        if (isRequestAlreadySent(taId, classProctoringId)) {
             System.out.println("An unapproved request is already sent");
             return false;
         }

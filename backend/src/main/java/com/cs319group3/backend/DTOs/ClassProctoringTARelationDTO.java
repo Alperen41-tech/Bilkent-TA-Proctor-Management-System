@@ -8,8 +8,6 @@ import lombok.*;
 @Setter
 public class ClassProctoringTARelationDTO {
 
-
-
     private ClassProctoringDTO classProctoringDTO;
     private int TAId;
 

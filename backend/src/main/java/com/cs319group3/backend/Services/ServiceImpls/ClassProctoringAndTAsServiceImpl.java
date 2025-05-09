@@ -35,6 +35,9 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
     @Autowired
     private TAProfileMapper taProfileMapper;
 
+    @Autowired
+    private ClassProctoringMapper classProctoringMapper;
+
     @Override
     public List<ClassProctoringAndTAsDTO> getDepartmentTAsClassProctorings(int userId) {
         return classProctoringToClassProctoringAndTAs(classProctoringRepo.findProctoringsByTAId(userId));
@@ -90,7 +93,7 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
 
             ClassProctoringAndTAsDTO dto = new ClassProctoringAndTAsDTO();
             ClassProctoringTARelationDTO taDTO = new ClassProctoringTARelationDTO();
-            taDTO.setClassProctoringDTO(ClassProctoringMapper.essentialMapper(proctoring));
+            taDTO.setClassProctoringDTO(classProctoringMapper.essentialMapper(proctoring));
             dto.setClassProctoringTARelationDTO(taDTO);
             dto.setTaProfileDTOList(taList);
             results.add(dto);

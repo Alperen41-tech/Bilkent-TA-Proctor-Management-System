@@ -13,6 +13,7 @@ public interface AuthStaffProctoringRequestRepo extends JpaRepository<AuthStaffP
     List<AuthStaffProctoringRequest> findByReceiverUser_UserId(int userId);
     List<AuthStaffProctoringRequest> findBySenderUser_UserId(int userId);
     List<AuthStaffProctoringRequest> findBySenderUserUserIdAndReceiverUserUserIdAndClassProctoringClassProctoringIdAndApprovedFalseAndResponseDateIsNull(int senderId, int taId, int classProctoringId);
+    List<AuthStaffProctoringRequest> findByReceiverUserUserIdAndClassProctoringClassProctoringIdAndApprovedFalseAndResponseDateIsNull(int taId, int classProctoringId);
 
     List<AuthStaffProctoringRequest> findByClassProctoringClassProctoringIdAndResponseDateIsNullAndApprovedFalse(
             int classProctoringId

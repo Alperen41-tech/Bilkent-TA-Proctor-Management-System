@@ -16,8 +16,8 @@ public class ProctoringApplicationMapper {
     @Autowired
     private ProctoringApplicationTARelationService proctoringApplicationTARelationService;
 
-
-
+    @Autowired
+    private ClassProctoringMapper classProctoringMapper;
 
     public ProctoringApplicationDTO toDTO(ProctoringApplication proctoringApplication) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -29,7 +29,7 @@ public class ProctoringApplicationMapper {
         proctoringApplicationDTO.setApplicationType(proctoringApplication.getApplicationType());
         proctoringApplicationDTO.setVisibleDepartmentId(proctoringApplication.getVisibleDepartment().getDepartmentId());
         proctoringApplicationDTO.setComplete(proctoringApplication.isComplete());
-        proctoringApplicationDTO.setClassProctoringDTO(ClassProctoringMapper.essentialMapper(proctoringApplication.getClassProctoring()));
+        proctoringApplicationDTO.setClassProctoringDTO(classProctoringMapper.essentialMapper(proctoringApplication.getClassProctoring()));
         proctoringApplicationDTO.setDepartmentCode(proctoringApplication.getClassProctoring().getCourse().getDepartment().getDepartmentCode());
 
         String courseFullName = proctoringApplication.getClassProctoring().getCourse().getCourseFullCode();

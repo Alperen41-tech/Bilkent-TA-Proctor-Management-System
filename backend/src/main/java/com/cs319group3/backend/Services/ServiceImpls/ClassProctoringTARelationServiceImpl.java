@@ -41,26 +41,29 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private ClassProctoringTARelationMapper classProctoringTARelationMapper;
+
     @Override
     public List<ClassProctoringTARelationDTO> getTAsClassProctoringDTOs(int taId) throws Exception {
         Optional<TA> ta = taRepo.findByUserId(taId);
-        if (!ta.isPresent()) {
+        if (ta.isEmpty()) {
             throw new Exception("No such ta");
         }
         List<ClassProctoringTARelation> relations = classProctoringTARelationRepo.findById_TAId(taId);
-        return ClassProctoringTARelationMapper.essentialMapper(relations);
+        return classProctoringTARelationMapper.essentialMapper(relations);
     }
 
     @Override
     public List<ClassProctoringTARelationDTO> getTAsClassProctoringsByDepartment(int taId) throws Exception {
         Optional<TA> ta = taRepo.findByUserId(taId);
-        if (!ta.isPresent()) {
+        if (ta.isEmpty()) {
             throw new Exception("No such ta");
         }
         List<ClassProctoringTARelation> relations = classProctoringTARelationRepo
                 .findByClassProctoring_Course_Department_DepartmentIdAndTA_UserId(
                         ta.get().getDepartment().getDepartmentId(), taId);
-        return ClassProctoringTARelationMapper.essentialMapper(relations);
+        return classProctoringTARelationMapper.essentialMapper(relations);
     }
 
     @Override

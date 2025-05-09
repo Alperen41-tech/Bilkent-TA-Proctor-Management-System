@@ -8,6 +8,8 @@ import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.ClassProctoringClassroom;
 import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
+import com.cs319group3.backend.Repositories.AuthStaffProctoringRequestRepo;
+import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
 import com.cs319group3.backend.Repositories.CourseRepo;
 import com.cs319group3.backend.Repositories.InstructorRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +25,13 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class ClassProctoringMapper {
 
+    @Autowired
+    ClassProctoringTARelationRepo classProctoringTARelationRepo;
 
-    public static ClassProctoringDTO essentialMapper(ClassProctoring classProctoring) {
+    @Autowired
+    private AuthStaffProctoringRequestRepo authStaffProctoringRequestRepo;
+
+    public ClassProctoringDTO essentialMapper(ClassProctoring classProctoring) {
 
         ClassProctoringDTO classProctoringDTO = new ClassProctoringDTO();
 
@@ -49,6 +56,10 @@ public class ClassProctoringMapper {
         }
 
         classProctoringDTO.setClassrooms(strBuffer.toString());
+
+        classProctoringDTO.setTACount(classProctoring.getTACount());
+        classProctoringDTO.setNumberOfAssignedTAs(classProctoringTARelationRepo.countAssignedTAs(classProctoring.getClassProctoringId()));
+        classProctoringDTO.setNumberOfPendingRequests(authStaffProctoringRequestRepo.findByClassProctoringClassProctoringIdAndResponseDateIsNullAndApprovedFalse(classProctoring.getClassProctoringId()).size());
 
         return classProctoringDTO;
     }
