@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller responsible for managing proctoring applications submitted by TAs
+ * and reviewed by Dean's Office or department staff.
+ */
 @RestController
 @RequestMapping("proctoringApplication")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -16,10 +20,15 @@ public class ProctoringApplicationController {
 
     @Autowired
     private ProctoringApplicationService proctoringApplicationService;
+
     @Autowired
     private CurrentUserUtil currentUserUtil;
 
-
+    /**
+     * Retrieves proctoring applications submitted to the currently logged-in Dean's Office user.
+     *
+     * @return a list of ProctoringApplicationDTOs
+     */
     @GetMapping("getProctoringApplications")
     public List<ProctoringApplicationDTO> getProctoringApplications() {
         System.out.println("getProctoringApplications is called");
@@ -27,20 +36,37 @@ public class ProctoringApplicationController {
         return proctoringApplicationService.getProctoringApplications(deansOfficeId);
     }
 
-
+    /**
+     * Retrieves all proctoring applications within a specific department.
+     *
+     * @param departmentId the department ID
+     * @return a list of ProctoringApplicationDTOs
+     */
     @GetMapping("getAllApplicationsByDepartment")
     public List<ProctoringApplicationDTO> getAllApplicationsByDepartment(@RequestParam("departmentId") int departmentId) {
         return proctoringApplicationService.getAllApplicationsByDepartment(departmentId);
     }
 
-
+    /**
+     * Retrieves all proctoring applications available for the currently logged-in TA
+     * filtered by a specific application type.
+     *
+     * @param applicationType the type of application to filter
+     * @return a list of ProctoringApplicationDTOs
+     */
     @GetMapping("getAllApplicationsForTA")
     public List<ProctoringApplicationDTO> getAllApplicationsForTA(@RequestParam("applicationType") ProctoringApplicationType applicationType) {
         int userId = currentUserUtil.getCurrentUserId();
         return proctoringApplicationService.getAllApplicationsForTA(userId, applicationType);
     }
 
-
+    /**
+     * Creates multiple proctoring applications associated with a specific class proctoring.
+     *
+     * @param classProctoringId the ID of the class proctoring
+     * @param proctoringApplicationDTO the list of applications to create
+     * @return true if creation is successful
+     */
     @PostMapping("createProctoringApplications")
     public boolean createProctoringApplication(@RequestParam int classProctoringId, @RequestBody List<ProctoringApplicationDTO> proctoringApplicationDTO) {
         System.out.println("createProctoringApplication is called");
@@ -48,11 +74,15 @@ public class ProctoringApplicationController {
         return proctoringApplicationService.createProctoringApplications(classProctoringId, proctoringApplicationDTO, deansOfficeId);
     }
 
-
+    /**
+     * Updates the type of a specific proctoring application.
+     *
+     * @param applicationId the application ID
+     * @param type the new application type
+     * @return true if update is successful
+     */
     @PutMapping("setApplicationType")
     public boolean setApplicationType (@RequestParam("applicationId") int applicationId, @RequestParam("applicationType") ProctoringApplicationType type) {
         return proctoringApplicationService.setApplicationType(applicationId, type);
     }
-
-
 }

@@ -7,20 +7,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Controller responsible for retrieving log records based on date intervals.
+ */
 @RestController
 @RequestMapping("log")
-@ComponentScan(basePackages = {"com.cs319group3.backend.Controllers"})
 @CrossOrigin(origins = "http://localhost:3000")
 public class LogController {
 
     @Autowired
-    LogService logService;
+    private LogService logService;
 
+    /**
+     * Retrieves logs within the specified date interval.
+     *
+     * @param dateIntervalDTO the start and end date to filter logs
+     * @return a list of LogDTOs within the specified interval
+     */
     @PostMapping("getByDate")
-    List<LogDTO> getLogs(@RequestBody DateIntervalDTO dateIntervalDTO) {
+    public List<LogDTO> getLogs(@RequestBody DateIntervalDTO dateIntervalDTO) {
         return logService.getLogs(dateIntervalDTO);
     }
 }

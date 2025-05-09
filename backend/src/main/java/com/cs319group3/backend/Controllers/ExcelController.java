@@ -1,14 +1,15 @@
 package com.cs319group3.backend.Controllers;
 
 import com.cs319group3.backend.Services.ExcelService;
-import org.apache.coyote.Response;
-import org.etsi.uri.x01903.v13.ResponderIDType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * Controller responsible for exporting and importing Excel files
+ * for TA assignment and data management.
+ */
 @RestController
 @RequestMapping("excel")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -17,6 +18,11 @@ public class ExcelController {
     @Autowired
     private ExcelService excelService;
 
+    /**
+     * Generates and downloads the TA Requirements Excel file.
+     *
+     * @return a ResponseEntity containing the Excel file bytes and headers
+     */
     @GetMapping("/getRequirementsExcel")
     public ResponseEntity<byte[]> getRequirementsExcel() {
         try {
@@ -38,31 +44,37 @@ public class ExcelController {
         }
     }
 
-
+    /**
+     * Processes the TA assignment Excel file uploaded by the user.
+     *
+     * @param file the uploaded Excel file
+     * @return ResponseEntity indicating success or failure
+     */
     @PostMapping("processTAAssignmentExcel")
     public ResponseEntity<Boolean> processTAAssignmentExcel(@RequestParam(name = "file") MultipartFile file) {
-        try{
-
+        try {
             excelService.processTAAssignmentExcel(file);
-
             return new ResponseEntity<>(true, HttpStatus.OK);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-
+    /**
+     * Uploads and processes the full dataset from the Excel file.
+     *
+     * @param file the uploaded Excel file
+     * @return ResponseEntity indicating success or failure
+     */
     @PostMapping("uploadAllData")
     public ResponseEntity<Boolean> uploadAllData(@RequestParam(name = "file") MultipartFile file) {
         try {
             excelService.uploadAllData(file);
             return new ResponseEntity<>(true, HttpStatus.OK);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

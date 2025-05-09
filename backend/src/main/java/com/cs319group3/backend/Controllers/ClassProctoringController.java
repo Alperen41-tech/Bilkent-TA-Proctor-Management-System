@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller responsible for handling operations related to class proctoring events,
+ * including creation and listing of all class proctorings.
+ */
 @RestController
 @RequestMapping("classProctoring")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -16,12 +20,23 @@ public class ClassProctoringController {
     @Autowired
     private ClassProctoringService classProctoringService;
 
+    /**
+     * Creates a new class proctoring entry.
+     *
+     * @param dto the DTO containing class proctoring details
+     * @return true if creation is successful
+     */
     @PostMapping("createClassProctoring")
     public boolean createClassProctoring(@RequestBody CreateClassProctoringDTO dto) {
         System.out.println("Creating class proctoring");
         return classProctoringService.createClassProctoring(dto);
     }
 
+    /**
+     * Retrieves all class proctoring records in the system.
+     *
+     * @return a list of ClassProctoringDTOs
+     */
     @GetMapping("getAllClassProctorings")
     public List<ClassProctoringDTO> getAllClassProctoring() {
         return classProctoringService.getAllClassProctoring();
