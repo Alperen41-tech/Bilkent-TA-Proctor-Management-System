@@ -384,7 +384,9 @@ const DOCreateExamPage = () => {
             endTime: new Date(cp.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             location: cp.classrooms,
             Section: cp.section,
-            examType: cp.proctoringName
+            examType: cp.proctoringName,
+            tacount: cp.numberOfAssignedTAs + " / " + cp.tacount
+
           }}
 
           isSelected={selectedExamKey === key}

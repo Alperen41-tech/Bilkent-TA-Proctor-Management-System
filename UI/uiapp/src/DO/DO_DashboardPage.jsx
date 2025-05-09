@@ -24,7 +24,7 @@ const DO_Dashboard = () => {
         params: { id: requestId, response: answer },
       });
       if (response.data) {
-        alert("Request accepted successfully.");
+        alert("Request is processed successfully.");
         fetchReceivedRequests();
       } else {
         alert("Failed to accept the request. Please try again.");

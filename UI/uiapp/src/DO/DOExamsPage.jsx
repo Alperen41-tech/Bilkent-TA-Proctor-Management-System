@@ -224,6 +224,7 @@ const DOExamsPage = () => {
               location: proctoring.classrooms,
               Section: proctoring.section,
               examType: proctoring.proctoringName,
+              tacount: proctoring.numberOfAssignedTAs + " / " + proctoring.tacount
             }}
             onSelect={() => {
               setSelectedExamKey(key);
@@ -484,6 +485,8 @@ const DOExamsPage = () => {
               <p><strong>End Time:</strong> {new Date(selectedExamItem.classProctoringTARelationDTO?.classProctoringDTO?.endDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
               <p><strong>Location:</strong> {selectedExamItem.classProctoringTARelationDTO?.classProctoringDTO?.classrooms}</p>
               <p><strong>Section:</strong> {selectedExamItem.classProctoringTARelationDTO?.classProctoringDTO?.section}</p>
+              <p><strong>TA Count:</strong> {selectedExamItem.classProctoringTARelationDTO.classProctoringDTO.numberOfAssignedTAs + " / " + selectedExamItem.classProctoringTARelationDTO.classProctoringDTO.tacount}</p>
+              <p><strong>Pending TA Requests:</strong> {selectedExamItem.classProctoringTARelationDTO.classProctoringDTO.numberOfPendingRequests}</p>
             </div>
           )}
 
