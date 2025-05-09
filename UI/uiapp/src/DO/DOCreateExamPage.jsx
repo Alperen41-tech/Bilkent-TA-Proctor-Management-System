@@ -198,6 +198,13 @@ const DOCreateExamPage = () => {
       return;
     }
 
+
+    if (!isAutoAssignmentWithinLimit()) {
+         alert(`No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.`);
+
+      return;
+    }
+
     try {
       const response = await axios.get(
         "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
@@ -226,6 +233,11 @@ const DOCreateExamPage = () => {
     if (!selectedExamItem || !selectedTAObj) return alert("Select an exam and TA first.");
     const alreadyAssigned = selectedExamItem.taProfileDTOList?.some((ta) => ta.email === selectedTAObj.email);
     if (alreadyAssigned) return alert("This TA is already assigned.");
+
+    if (!hasAvailableTASlots()) {
+      alert("No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.");
+      return;
+    }
     setShowManualModal(true);
   };
 
@@ -365,6 +377,30 @@ const DOCreateExamPage = () => {
         inInstructor={true}
       />
     );
+  };
+
+  const hasAvailableTASlots = () => {
+    const examInfo = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO;
+
+    if (!examInfo) return false;
+
+    const assigned = examInfo.numberOfAssignedTAs || 0;
+    const pending = examInfo.numberOfPendingRequests || 0;
+    const max = examInfo.tacount || 0;
+
+    return assigned + pending < max;
+  };
+
+  const isAutoAssignmentWithinLimit = () => {
+    const examInfo = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO;
+
+    if (!examInfo) return false;
+
+    const assigned = examInfo.numberOfAssignedTAs || 0;
+    const pending = examInfo.numberOfPendingRequests || 0;
+    const max = examInfo.tacount || 0;
+
+    return assigned + pending + taCount <= max;
   };
 
 

@@ -29,61 +29,80 @@ const DOExamsPage = () => {
 
 
 
-  // Dummy logic for "Automatic Assign"
-  const handleAutomaticAssign = async () => {
+const handleAutomaticAssign = async () => {
+  if (!selectedExamItem) {
+    alert("Please select an exam first.");
+    return;
+  }
 
-    console.log("📤 Automatic Assign triggered");
-    console.log("Selected Exam ID:", selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id);
-    console.log("TA Count:", taCount);
-    console.log("Eligibility Restriction:", eligibilityRestriction);
-    console.log("One Day Restriction:", oneDayRestriction);
+  const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+  if (!classProctoringId) {
+    alert("Invalid exam data.");
+    return;
+  }
 
-    if (!selectedExamItem) {
-      alert("Please select an exam first.");
-      return;
-    }
+  const departmentCode = selectedDepartment;
+  if (!departmentCode) {
+    alert("No department code available. Please reselect the exam.");
+    return;
+  }
 
-    const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
-    if (!classProctoringId) {
-      alert("Invalid exam data.");
-      return;
-    }
+  if (!isAutoAssignmentWithinLimit()) {
 
-    const departmentCode = selectedDepartment;
-    if (!departmentCode) {
-      alert("No department code available. Please reselect the exam.");
-      return;
-    }
+    alert(`No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.`);
+    return;
+  }
+
+  try {
+    const response = await axios.get(
+      "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
+      {
+        params: {
+          classProctoringId,
+          departmentCode,
+          senderId: 9,
+          count: taCount,
+          eligibilityRestriction,
+          oneDayRestriction,
+        },
+      }
+    );
+
+    setAutoSuggestedTAs(response.data || []);
+    setShowAutoModal(true);
+  } catch (error) {
+    console.error("Error during automatic assignment:", error);
+    alert("Failed to get suggested TAs.");
+  }
+};
 
 
-    try {
-      const response = await axios.get(
-        "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
-        {
-          params: {
-            classProctoringId,
-            departmentCode,
+  const hasAvailableTASlots = () => {
+    const examInfo = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO;
 
-            senderId: 9,
-            count: taCount,
-            eligibilityRestriction,
-            oneDayRestriction,
-          },
-        }
-      );
+    if (!examInfo) return false;
 
-      setAutoSuggestedTAs(response.data || []);
-      setShowAutoModal(true);
-    } catch (error) {
-      console.error("Error during automatic assignment:", error);
-      alert("Failed to get suggested TAs.");
-    }
+    const assigned = examInfo.numberOfAssignedTAs || 0;
+    const pending = examInfo.numberOfPendingRequests || 0;
+    const max = examInfo.tacount || 0;
+
+    return assigned + pending < max;
   };
 
+  const isAutoAssignmentWithinLimit = () => {
+  const examInfo = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO;
+
+  if (!examInfo) return false;
+
+  const assigned = examInfo.numberOfAssignedTAs || 0;
+  const pending = examInfo.numberOfPendingRequests || 0;
+  const max = examInfo.tacount || 0;
+
+  return assigned + pending + taCount <= max;
+};
 
 
 
-  // Dummy logic for "Manually Assign"
   const handleManualAssign = () => {
     if (!selectedTAObj || !selectedExamItem) {
       alert("Please select both an exam and a TA before assigning.");
@@ -99,6 +118,11 @@ const DOExamsPage = () => {
       alert("This TA is already assigned. Please choose from the available TAs below.");
       return;
     }
+
+      if (!hasAvailableTASlots()) {
+    alert("No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.");
+    return;
+  }
 
     setShowManualModal(true);
   };
