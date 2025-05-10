@@ -221,7 +221,7 @@ const handleAutomaticAssign = async () => {
         params: {
           classProctoringId,
           departmentCode,
-          senderId: creatorId,
+          senderId: creatorId,  ////token olarak alıyor
           count: taCount,
           eligibilityRestriction,
           oneDayRestriction,
@@ -316,7 +316,7 @@ const handleAutomaticAssign = async () => {
         "http://localhost:8080/authStaffProctoringRequestController/sendAuthStaffProctoringRequest",
         null,
         {
-          params: { classProctoringId: cpId, taId, senderId: creatorId },
+          params: { classProctoringId: cpId, taId, senderId: creatorId }, ///token alıyor
         }
       );
 
@@ -359,6 +359,8 @@ const handleAutomaticAssign = async () => {
 
   const handleCreateExam = async () => {
     try {
+
+      
       const payload = {
         courseId: selectedCourseId,
         startDate: `${examDate} ${startTime}:00`,

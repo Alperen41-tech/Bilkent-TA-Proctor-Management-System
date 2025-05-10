@@ -6,6 +6,8 @@ import TAItem from "../TAItem";
 import axios from "axios";
 import ManualAssignmentModal from "../ManualAssignmentModal";
 import AutomaticAssignmentModal from "../AutomaticAssignmentModal";
+import OtherFacultyTAModal from "../OtherFacultyTAModal";
+
 
 
 const DOExamsPage = () => {
@@ -25,6 +27,8 @@ const DOExamsPage = () => {
   const [oneDayRestriction, setOneDayRestriction] = useState(false);
   const [autoSuggestedTAs, setAutoSuggestedTAs] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [showOtherFacultyModal, setShowOtherFacultyModal] = useState(false);
+
 
 
 
@@ -466,6 +470,18 @@ const DOExamsPage = () => {
       />
 
 
+      <OtherFacultyTAModal
+        isOpen={showOtherFacultyModal}
+        onClose={() => setShowOtherFacultyModal(false)}
+        classProctoringId={selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id}
+        onSuccess={() => {
+          fetchExams();
+          fetchTAs();
+        }}
+      />
+
+
+
 
 
 
@@ -601,6 +617,11 @@ const DOExamsPage = () => {
               <button className="assign-button" onClick={handleManualAssign}>
                 Manually Assign
               </button>
+              <button className="assign-button" onClick={() => setShowOtherFacultyModal(true)}>
+                Outside Faculty TA
+              </button>
+
+
 
               <div className="checkbox-options" style={{ marginTop: "1rem" }}>
                 <label>
