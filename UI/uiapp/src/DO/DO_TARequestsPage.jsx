@@ -23,10 +23,9 @@ const DO_TARequestsPage = () => {
   }, []);
 
   useEffect(() => {
-    const selected = taRequests.find((r) => r.requestId === selectedRequestId);
-    console.log("Selected request:", selected);
+    if (!selectedRequestId || taRequests.length === 0) return;
 
-    // Try these options in order — fallback if one is missing
+    const selected = taRequests.find((r) => r.requestId === selectedRequestId);
     const departmentId =
       selected?.senderDepartmentId ||
       selected?.sender?.departmentId ||
@@ -38,6 +37,8 @@ const DO_TARequestsPage = () => {
       console.warn("No valid departmentId found for selected request.");
     }
   }, [selectedRequestId, taRequests]);
+
+
 
   /**
    * Submits selected TA counts to other departments for the selected request.
@@ -109,16 +110,19 @@ const DO_TARequestsPage = () => {
           },
         }
       );
-      setDepartments(res.data || []);
-      console.log("Filtered departments:", res.data); // DEBUG
+      const filtered = res.data.filter(
+        (d) => d.departmentId !== excludeDepartmentId
+      );
+      setDepartments(filtered);
 
       const initial = {};
-      res.data.forEach((d) => (initial[d.departmentCode] = 0));
+      filtered.forEach((d) => (initial[d.departmentCode] = 0));
       setTACounts(initial);
     } catch (e) {
       console.error(e);
     }
   };
+
   /**
    * Fetches all approved TA requests that can be managed by the Dean’s Office.
    */
@@ -191,7 +195,10 @@ const DO_TARequestsPage = () => {
             {selected ? (
               <ul className="do-TA-details">
                 <li>
-                  <strong>Department:</strong> {selected.courseCode}
+                  <strong>Course Code:</strong> {selected.courseCode}
+                </li>
+                <li>
+                  <strong>Course Name:</strong> {selected.courseName}
                 </li>
                 <li>
                   <strong>Proctoring Title:</strong>{" "}
