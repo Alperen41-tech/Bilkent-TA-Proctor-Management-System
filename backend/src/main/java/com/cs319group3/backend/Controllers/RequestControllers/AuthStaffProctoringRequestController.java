@@ -93,7 +93,7 @@ public class AuthStaffProctoringRequestController {
      * @return true if all requests were sent successfully
      */
     @PostMapping("unforcedAssign")
-    public boolean unforcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId) {
+    public int unforcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId) {
         System.out.println("Force assign request sent.");
         int senderId = currentUserUtil.getCurrentUserId();
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequests(dtoList, classProctoringId, senderId, false);
@@ -107,7 +107,7 @@ public class AuthStaffProctoringRequestController {
      * @return true if all requests were sent successfully
      */
     @PostMapping("forcedAssign")
-    public boolean forcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId) {
+    public int forcedAssign(@RequestBody List<TAProfileDTO> dtoList, @RequestParam int classProctoringId) {
         System.out.println("Force assign request sent.");
         int senderId = currentUserUtil.getCurrentUserId();
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequests(dtoList, classProctoringId, senderId, true);

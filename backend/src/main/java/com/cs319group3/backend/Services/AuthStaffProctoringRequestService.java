@@ -41,7 +41,7 @@ public interface AuthStaffProctoringRequestService {
      * @param isApproved true if these are forced requests
      * @return true if all requests were successfully sent
      */
-    boolean sendAuthStaffProctoringRequests(List<TAProfileDTO> dtoList, int classProctoringId, int senderId, boolean isApproved);
+    int sendAuthStaffProctoringRequests(List<TAProfileDTO> dtoList, int classProctoringId, int senderId, boolean isApproved);
 
     /**
      * Checks if an unforced request can be sent for the given class proctoring.
