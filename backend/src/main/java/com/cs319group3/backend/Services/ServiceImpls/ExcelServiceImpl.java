@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
+import com.cs319group3.backend.CompositeIDs.ClassProctoringClassroomKey;
 import com.cs319group3.backend.CompositeIDs.CourseStudentKey;
 import com.cs319group3.backend.CompositeIDs.OfferedCourseScheduleKey;
 import com.cs319group3.backend.Entities.*;
@@ -111,11 +112,12 @@ public class ExcelServiceImpl implements ExcelService {
         row.createCell(9).setCellValue(form.getDescription());
     }
 
-    private void setRow(Row row, Student student){
+    private void setRow(Row row, Student student, String classroom){
         row.createCell(0).setCellValue(student.getBilkentId());
         row.createCell(1).setCellValue(student.getName());
         row.createCell(2).setCellValue(student.getSurname());
         row.createCell(3).setCellValue(student.getEmail());
+        row.createCell(4).setCellValue(classroom);
     }
 
     @Override
@@ -125,6 +127,16 @@ public class ExcelServiceImpl implements ExcelService {
         if (!classProctoringOptional.isPresent()) {
             throw new RuntimeException("ClassProctoring with id" + classProctoringId +" not found");
         }
+
+        List<ClassProctoringClassroom> classrooms = classProctoringOptional.get().getClassrooms();
+
+        List<String> classroomNames = new ArrayList<>();
+
+        for (ClassProctoringClassroom classroom : classrooms) {
+            ClassProctoringClassroomKey key = classroom.getId();
+            classroomNames.add(key.getClassroom());
+        }
+
 
         Course offeredCourse = classProctoringOptional.get().getCourse();
 
@@ -139,6 +151,10 @@ public class ExcelServiceImpl implements ExcelService {
             relations = courseStudentRelationRepo.findByCourse_CourseAndCourse_SectionNo(offeredCourse, sectionNo);
         }
 
+        int classroomCount = classrooms.size();
+        int studentCount = relations.size();
+        int classroomSize = (int) Math.ceil(studentCount / classroomCount);
+
 
         try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH + "Students.xlsx");
              Workbook wb = new XSSFWorkbook(templateStream);
@@ -146,10 +162,17 @@ public class ExcelServiceImpl implements ExcelService {
 
             Sheet sheet = wb.getSheetAt(0);
             int rowIndex = sheet.getLastRowNum() + 1;
+            int classRoomPtr = 0;
 
-            for (CourseStudentRelation relation : relations) {
+            for (int i = 1; i <= relations.size(); i++) {
                 Row row = sheet.createRow(rowIndex++);
-                setRow(row, relation.getStudent());
+
+                if (i % classroomSize == 0){
+                    classRoomPtr++;
+                }
+                String classroom = classroomNames.get(Math.min(classRoomPtr, classroomCount - 1));
+
+                setRow(row, relations.get(i - 1).getStudent(), classroom);
             }
 
             wb.write(outStream);
