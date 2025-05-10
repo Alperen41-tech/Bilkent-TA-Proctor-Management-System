@@ -32,4 +32,11 @@ public interface AuthenticationService {
      * @return boolean according to success of getting new password;
      */
     boolean forgetPassword(String userMail, String userType);
+
+    /**
+     * a service method to et the new password after forgetting the password
+     * @param newPassword
+     * @return
+     */
+    boolean setAfterForgetPassword(String token, String newPassword);
 }

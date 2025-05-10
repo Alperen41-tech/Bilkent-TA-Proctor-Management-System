@@ -9,8 +9,7 @@ import com.cs319group3.backend.Repositories.UserRepo;
 import com.cs319group3.backend.Services.AuthenticationService;
 import com.cs319group3.backend.Services.EmailService;
 import com.cs319group3.backend.Services.LogService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -125,12 +124,12 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
-        String resetLink = "https://localhost:3000/forgot-password?token=" + resetToken;
+        String resetLink = "http://localhost:3000/forgot-password?token=" + resetToken;
 
         // Send the email (use your email service here)
         String subject = "Password Reset Request for Bilkent TA Management Proctoring System";
         String body = "Hi " + user.getName() + ",\n\n"
-                + "Please click the following link to reset your password. This link is valid for 30 minutes:\n"
+                + "Please click the following link to reset your password. This link is valid for 30 minutes:\n\n"
                 + resetLink + "\n\n"
                 + "If you did not request a password reset, please ignore this email.";
 
@@ -138,4 +137,60 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
 
         return true;
     }
+
+    @Override
+    public boolean setAfterForgetPassword(String token, String newPassword) {
+        try {
+            // Decode and validate the JWT token
+            byte[] secretKey = Base64.getDecoder().decode(jwtResetSecret);
+
+            // Parse the token to extract claims
+            Claims claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            // Extract user information from token
+            String userEmail = claims.getSubject();
+            String userType = claims.get("userType", String.class);
+
+            // Find the user
+            Optional<User> userOptional = userRepo.findByEmail(userEmail);
+            if (!userOptional.isPresent()) {
+                throw new RuntimeException("User not found");
+            }
+
+            // Find the login based on email and userType
+            Optional<Login> loginOptional;
+            if (userType != null && !userType.isEmpty()) {
+                loginOptional = loginRepo.findByUser_EmailAndUserType_UserTypeName(userEmail, userType);
+            } else {
+                loginOptional = loginRepo.findByUserEmail(userEmail);
+            }
+
+            if (!loginOptional.isPresent()) {
+                throw new RuntimeException("Login not found");
+            }
+
+            // Update the password
+            Login login = loginOptional.get();
+
+            // Encrypt the new password (assuming you have a password encoder)
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String encodedPassword = passwordEncoder.encode(newPassword);
+            login.setPassword(encodedPassword);
+
+            // Save the updated login
+            loginRepo.save(login);
+
+            return true;
+        } catch (ExpiredJwtException e) {
+            throw new RuntimeException("Password reset link has expired");
+        } catch (JwtException e) {
+            throw new RuntimeException("Invalid password reset token");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to reset password: " + e.getMessage());
+        }
+    }
+
 }

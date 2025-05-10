@@ -70,6 +70,11 @@ public class AuthenticationController {
         return authenticationService.forgetPassword(userMail, userTypeName);
     }
 
+    @GetMapping("setAfterForgetPassword")
+    public boolean setAfterForgetPassword(@RequestParam("token") String token, @RequestParam("newPassword") String newPassword){
+        return authenticationService.setAfterForgetPassword(token, newPassword);
+    }
+
     /**
      * Authenticates the user with email, password, and user type, then generates a JWT.
      *
