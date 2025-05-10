@@ -4,9 +4,11 @@ import com.cs319group3.backend.DTOMappers.TaskTypeMapper;
 import com.cs319group3.backend.DTOs.TaskTypeDTO;
 import com.cs319group3.backend.Entities.RequestEntities.TAWorkloadRequest;
 import com.cs319group3.backend.Entities.TaskType;
+import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Repositories.CourseRepo;
 import com.cs319group3.backend.Repositories.TAWorkloadRequestRepo;
 import com.cs319group3.backend.Repositories.TaskTypeRepo;
+import com.cs319group3.backend.Services.LogService;
 import com.cs319group3.backend.Services.TaskTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class TaskTypeServiceImpl implements TaskTypeService {
 
     @Autowired
     private TAWorkloadRequestRepo taWorkloadRequestRepo;
+    private LogService logService;
 
     @Override
     public boolean createTaskType(TaskTypeDTO dto, int courseId) {
@@ -34,6 +37,8 @@ public class TaskTypeServiceImpl implements TaskTypeService {
         TaskType taskType = TaskTypeMapper.essentialMapper(dto);
         taskType.setCourse(courseRepo.findByCourseId(courseId).get());
         taskTypeRepo.save(taskType);
+        String logMessage = "Task type " + taskType.getTaskTypeId() + " created.";
+        logService.createLog(logMessage, LogType.CREATE);
         return true;
     }
 
