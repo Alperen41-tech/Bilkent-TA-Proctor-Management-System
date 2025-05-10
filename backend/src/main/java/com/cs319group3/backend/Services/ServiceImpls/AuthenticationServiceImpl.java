@@ -97,7 +97,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
             throw new RuntimeException("User email not found");
         }
 
-        if (userType == null){
+        if (userType.isEmpty()){
             User user = userOptional.get();
             if (user instanceof TA){
                 userType = "ta";

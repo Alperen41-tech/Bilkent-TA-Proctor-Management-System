@@ -79,7 +79,7 @@ const LoginPage = () => {
         alert("An error occurred. Please try again.");
       }
     }
-  }
+  };
 
   return (
       <div className="login-container">
