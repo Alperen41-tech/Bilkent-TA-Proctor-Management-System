@@ -98,9 +98,10 @@ const fetchReceivedRequests = async () => {
       classProctoringEventName: classProctoringDTO.proctoringName,
       classProctoringStartDate: classProctoringDTO.startDate,
       classProctoringEndDate: classProctoringDTO.endDate,
+      courseCode: classProctoringDTO.courseName,
       taCountNeeded: applicantCountLimit,
       isComplete,
-      senderName: classProctoringDTO.courseName + " coordinator"
+      senderName: "You have sent this"
 ,
       status: null,
       responseDateTime: null,
