@@ -12,8 +12,6 @@ import InstructorAdditionalTAModal from "../InstructorAdditionalTAModal";
 
 
 const INS_ExamsPage = () => {
-  const instructorId = 4;
-
   const [selectedTask, setSelectedTask] = useState({
     classProctoringTARelationDTO: {
       classProctoringDTO: {
@@ -71,34 +69,34 @@ const INS_ExamsPage = () => {
   };
 
   const handlePrintClassroomInfo = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await axios.get(
-      `http://localhost:8080/excel/getStudentsOfClassProctoring?classProctoringId=${selectedTask.classProctoringTARelationDTO.classProctoringDTO.id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: "blob", // Excel dosyası için önemli!
-      }
-    );
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `http://localhost:8080/excel/getStudentsOfClassProctoring?classProctoringId=${selectedTask.classProctoringTARelationDTO.classProctoringDTO.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: "blob", // Excel dosyası için önemli!
+        }
+      );
 
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "classroom_info.xlsx");
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  } catch (error) {
-    console.error("Error printing classroom info:", error);
-    if (error.response?.data?.message) {
-      alert(error.response.data.message);
-    } else {
-      alert("An error occurred. Please try again.");
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "classroom_info.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error printing classroom info:", error);
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("An error occurred. Please try again.");
+      }
     }
-  }
-};
+  };
 
   const fetchProctoringTasks = async () => {
     try {
@@ -120,7 +118,6 @@ const INS_ExamsPage = () => {
     try {
       const token = localStorage.getItem("token")
       const response = await axios.get("http://localhost:8080/course/getCoursesOfInstructor", {
-        params: { instructorId },
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -161,17 +158,31 @@ const INS_ExamsPage = () => {
       alert("Please fill all required fields.");
       return;
     }
+
     try {
-      const response = await axios.post("http://localhost:8080/classProctoring/createClassProctoring", {
-        courseId: selectedOfferedCourse.course.id,
-        startDate: `${examDate} ${startTime}:00`,
-        endDate: `${examDate} ${endTime}:00`,
-        classrooms: classrooms.split(",").map((c) => c.trim()),
-        taCount,
-        sectionNo,
-        eventName,
-        creatorId: instructorId,
-      });
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("No authentication token found.");
+        return;
+      }
+
+      const response = await axios.post(
+        "http://localhost:8080/classProctoring/createClassProctoring",
+        {
+          courseId: selectedOfferedCourse.course.id,
+          startDate: `${examDate} ${startTime}:00`,
+          endDate: `${examDate} ${endTime}:00`,
+          classrooms: classrooms.split(",").map((c) => c.trim()),
+          taCount,
+          sectionNo,
+          eventName,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.data === true) {
         alert("Exam created successfully!");
@@ -192,6 +203,7 @@ const INS_ExamsPage = () => {
       alert("An error occurred: " + (error?.response?.data?.message || error.message));
     }
   };
+
 
   const handleDiscardTA = async () => {
     if (!selectedTA) return alert("No TA selected to discard.");
@@ -246,7 +258,7 @@ const INS_ExamsPage = () => {
         "http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest",
         null,
         {
-          params: { classProctoringId, taId, senderId: instructorId },
+          params: { classProctoringId, taId},
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -298,7 +310,7 @@ const INS_ExamsPage = () => {
         "http://localhost:8080/authStaffProctoringRequestController/sendAuthStaffProctoringRequest",
         null,
         {
-          params: { classProctoringId, taId, senderId: instructorId },
+          params: { classProctoringId, taId},
           headers: {
             Authorization: `Bearer ${token}`
           },
@@ -406,7 +418,6 @@ const INS_ExamsPage = () => {
           params: {
             classProctoringId,
             departmentCode,
-            senderId: instructorId,
             count: taCount,
             eligibilityRestriction,
             oneDayRestriction,
@@ -444,7 +455,7 @@ const INS_ExamsPage = () => {
       <div className="ins-exam-grid-container">
         <div className="ins-exam-card ins-exam-assignments">
           <h3>Your Assignments with Proctors</h3>
-          {selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? <button className="ins-exam-page-print-classroom-button" onClick={()=> handlePrintClassroomInfo()}>Print Classroom Info</button> : null}
+          {selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? <button className="ins-exam-page-print-classroom-button" onClick={() => handlePrintClassroomInfo()}>Print Classroom Info</button> : null}
           <div className="ins-exam-page-task-row">
             {proctoringTasks.map((task) =>
               createTaskItem(
@@ -516,7 +527,7 @@ const INS_ExamsPage = () => {
         </div>
 
         <div className="ins-exam-card ins-exam-ta-list">
-          <h3>Available TAs • {selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests >= 0 ? (selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests) + "TA Slots Remaining": "Reached enough number of ta." : "Please select a proctoring"}</h3>
+          <h3>Available TAs • {selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests >= 0 ? (selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests) + "TA Slots Remaining" : "Reached enough number of ta." : "Please select a proctoring"}</h3>
           <div className="ins-exam-filters">
             <input
               type="text"
@@ -543,8 +554,8 @@ const INS_ExamsPage = () => {
 
           <div className="ins-exam-assign-actions">
             <button onClick={handleAutomaticAssign}>Automatic Assign</button>
-            <button onClick={() => {hasAvailableTASlots() ? setShowManualModal(true) : ( !selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? alert("Select a proctoring task first") : alert("Not enough TA slots!"))}}>Manual Assign</button>
-            <button onClick={() => {hasAvailableTASlots() ? setShowInstructorTAModal(true) : ( !selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? alert("Select a proctoring task first") : alert("Not enough TA slots!"))}}>Request Additional TAs</button>
+            <button onClick={() => { hasAvailableTASlots() ? setShowManualModal(true) : (!selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? alert("Select a proctoring task first") : alert("Not enough TA slots!")) }}>Manual Assign</button>
+            <button onClick={() => { hasAvailableTASlots() ? setShowInstructorTAModal(true) : (!selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? alert("Select a proctoring task first") : alert("Not enough TA slots!")) }}>Request Additional TAs</button>
 
             <br />
             <div className="ins-exam-restriction-checkboxes" style={{ marginTop: "1rem" }}>
@@ -571,7 +582,7 @@ const INS_ExamsPage = () => {
                 <input
                   type="number"
                   min={selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests >= 1 ? 1 : 0}
-                  max={selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests >= 0 ? selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests : 0} 
+                  max={selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests >= 0 ? selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests : 0}
                   value={taCount}
                   onChange={(e) => setTaCount(Number(e.target.value))}
                   style={{ width: "60px", marginLeft: "0.5rem" }}
@@ -593,22 +604,24 @@ const INS_ExamsPage = () => {
             onClose={() => setShowAutoModal(false)}
             suggestedTAs={autoSuggestedTAs}
             selectedExamId={selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.id}
-            refreshAfterAssignment={()=> {fetchProctoringTasks(); setSelectedTA(null);
-        fetchProctoringTasks();
-        setSelectedTask({
-          classProctoringTARelationDTO: {
-            classProctoringDTO: {
-              id: null,
-              courseName: "",
-              proctoringName: "",
-              startDate: "",
-              endDate: "",
-              classrooms: "",
-            },
-          },
-          taProfileDTOList: [],
-        });
-        setAvailableTAs([]);}}
+            refreshAfterAssignment={() => {
+              fetchProctoringTasks(); setSelectedTA(null);
+              fetchProctoringTasks();
+              setSelectedTask({
+                classProctoringTARelationDTO: {
+                  classProctoringDTO: {
+                    id: null,
+                    courseName: "",
+                    proctoringName: "",
+                    startDate: "",
+                    endDate: "",
+                    classrooms: "",
+                  },
+                },
+                taProfileDTOList: [],
+              });
+              setAvailableTAs([]);
+            }}
           />
           <InstructorAdditionalTAModal
             isOpen={showInstructorTAModal}
