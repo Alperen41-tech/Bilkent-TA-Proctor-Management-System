@@ -5,7 +5,9 @@ import com.cs319group3.backend.DTOMappers.LoginMapper;
 import com.cs319group3.backend.DTOMappers.TAProfileMapper;
 import com.cs319group3.backend.DTOs.*;
 import com.cs319group3.backend.Entities.ClassProctoring;
+import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.Login;
+import com.cs319group3.backend.Entities.UserEntities.DepartmentSecretary;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.*;
@@ -61,6 +63,8 @@ public class TAServiceImpl implements TAService {
 
     @Autowired
     private TAAvailabilityService taaAvailabilityService;
+    @Autowired
+    private DepartmentSecretaryRepo departmentSecretaryRepo;
 
     @Override
     public TAProfileDTO getTAProfileById(int id) {
@@ -96,7 +100,7 @@ public class TAServiceImpl implements TAService {
     }
 
     @Override
-    public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int classProctoringId, int userId) {
+    public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(int classProctoringId, int userId) {
         Optional<ClassProctoring> cpOpt = classProctoringRepo.findById(classProctoringId);
         if (cpOpt.isEmpty()) {
             System.out.println("Cannot fetch available TAs because class proctoring not found.");
@@ -104,7 +108,11 @@ public class TAServiceImpl implements TAService {
         }
 
         ClassProctoring cp = cpOpt.get();
-        List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(departmentCode, classProctoringId);
+        Optional<DepartmentSecretary> ds = departmentSecretaryRepo.findById(userId);
+        if(ds.isEmpty()){
+            throw new RuntimeException("Could not find Department Secretary.");
+        }
+        List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(ds.get().getDepartment().getDepartmentCode(), classProctoringId);
         int courseId = cp.getCourse().getCourseId();
 
         availableTAs.removeIf(ta -> {

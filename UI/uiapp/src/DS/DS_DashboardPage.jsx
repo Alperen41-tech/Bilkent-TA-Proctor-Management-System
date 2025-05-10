@@ -246,7 +246,6 @@ const DS_DashboardPage = () => {
       console.log("Selected PPR:", selectedPPR);
       const response = await axios.get("http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring", {
         params: {
-          departmentCode: selectedPPR.departmentName === "Computer Engineering" ? "CS" : "IE",
           proctoringId: selectedPPR.classProctoringDTO.id,
         },
         headers: {
