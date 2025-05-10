@@ -35,7 +35,8 @@ public class TASwapRequestController {
      */
     @PostMapping("createSwapRequest")
     public ResponseEntity<Boolean> createSwapRequest(@RequestBody RequestDTO requestDTO) throws Exception {
-        return taSwapRequestService.createSwapRequest(requestDTO);
+        int senderUserId = currentUserUtil.getCurrentUserId();
+        return taSwapRequestService.createSwapRequest(requestDTO, senderUserId);
     }
 
     /**

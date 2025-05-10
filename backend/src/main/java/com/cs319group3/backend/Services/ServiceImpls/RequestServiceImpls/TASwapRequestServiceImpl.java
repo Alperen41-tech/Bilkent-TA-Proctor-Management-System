@@ -70,7 +70,8 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
     }
 
     @Override
-    public ResponseEntity<Boolean> createSwapRequest(RequestDTO swapRequestReceived) throws Exception {
+    public ResponseEntity<Boolean> createSwapRequest(RequestDTO swapRequestReceived, int senderUserId) throws Exception {
+        swapRequestReceived.setSenderId(senderUserId);
         TASwapRequest swapRequest = requestMapper.taSwapRequestToEntityMapper(swapRequestReceived);
         taswapRequestRepo.save(swapRequest);
         String logMessage = "User " + swapRequest.getSenderUser().getUserId() + " sent a swap request (" +
