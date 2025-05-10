@@ -17,5 +17,5 @@ public interface TASwapRequestRepo extends JpaRepository<TASwapRequest, Integer>
 
     Optional<TASwapRequest> findBySenderUser_UserIdAndReceiverUser_UserIdAndClassProctoring_ClassProctoringId(int senderId, int receiverId, int classProctoringId);
 
-    Optional<TASwapRequest> findBySenderUser_UserIdAndClassProctoring_ClassProctoringId(int senderId, int classProctoringId);
+    List<TASwapRequest> findBySenderUser_UserIdAndClassProctoring_ClassProctoringId(int senderId, int classProctoringId);
 }

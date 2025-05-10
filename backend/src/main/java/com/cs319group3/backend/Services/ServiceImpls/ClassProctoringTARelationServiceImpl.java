@@ -74,10 +74,21 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
 
         for (ClassProctoringTARelationDTO relation : classProctoringTARelationDTOs) {
 
-            Optional<TASwapRequest> req = taswapRequestRepo.findBySenderUser_UserIdAndClassProctoring_ClassProctoringId(taId, relation.getClassProctoringDTO().getId());
-            if (req.isEmpty() || (!req.get().isApproved() && req.get().getResponseDate() != null)) {
+            List<TASwapRequest> req = taswapRequestRepo.findBySenderUser_UserIdAndClassProctoring_ClassProctoringId(taId, relation.getClassProctoringDTO().getId());
+            if (req.isEmpty()) {
                 relation.setSwapRequestable(true);
             }
+
+            for (TASwapRequest swapRequest : req) {
+                if (!swapRequest.isApproved() && swapRequest.getResponseDate() != null){
+                    relation.setSwapRequestable(true);
+                }
+                else{
+                    relation.setSwapRequestable(false);
+                    break;
+                }
+            }
+
         }
 
         return classProctoringTARelationDTOs;
