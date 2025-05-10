@@ -3,6 +3,7 @@ package com.cs319group3.backend.Services.ServiceImpls;
 import com.cs319group3.backend.CompositeIDs.ClassProctoringTAKey;
 import com.cs319group3.backend.DTOMappers.ClassProctoringTARelationMapper;
 import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
+import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.UserEntities.TA;
@@ -68,6 +69,28 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
     }
 
     @Override
+    public boolean assignTAFromOtherFaculty(TAProfileDTO dto, int classProctoringId) {
+        Optional<TA> optionalTA = taRepo.findByBilkentId(dto.getBilkentId());
+        if (optionalTA.isPresent() && !optionalTA.get().getEmail().equals(dto.getEmail())) {
+            throw new RuntimeException("TA with bilkentId" + dto.getBilkentId() + "exists with a different email");
+        }
+
+        TA ta;
+        if (!optionalTA.isPresent()) {
+            ta = new TA();
+            ta.setBilkentId(dto.getBilkentId());
+            ta.setEmail(dto.getEmail());
+            ta.setName(dto.getName());
+            ta.setSurname(dto.getSurname());
+            taRepo.save(ta);
+        }
+        else
+            ta = optionalTA.get();
+
+        return createClassProctoringTARelation(ta.getUserId(), classProctoringId);
+    }
+
+    @Override
     public boolean updateClassProctoringDTO(ClassProctoringTARelationDTO dto, int userId) {
         int classId = dto.getClassProctoringDTO().getId();
         Optional<ClassProctoringTARelation> optionalRelation =
@@ -129,10 +152,11 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
         Integer classProctoringDepartmentId = classProctoringRepo.findDepartmentIdByClassProctoringId(classProctoringId);
         Integer taDepartmentId = taRepo.findDepartmentIdByUserId(taId);
 
-        if (classProctoringDepartmentId == null || taDepartmentId == null) {
-            System.out.println("No department found");
-            return false;
-        }
+        boolean isPaid;
+        if (taDepartmentId == null)
+            isPaid = true;
+        else
+            isPaid = !taDepartmentId.equals(classProctoringDepartmentId);
 
         Optional<TA> taOpt = taRepo.findByUserId(taId);
         Optional<ClassProctoring> cpOpt = classProctoringRepo.findById(classProctoringId);
@@ -147,7 +171,7 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
         relation.setComplete(false);
         relation.setTA(taOpt.get());
         relation.setClassProctoring(cpOpt.get());
-        relation.setPaid(!taDepartmentId.equals(classProctoringDepartmentId));
+        relation.setPaid(isPaid);
         relation.setId(new ClassProctoringTAKey(classProctoringId, taId));
 
         String logMessage = "TA " + taId + " is assigned to class proctoring " + classProctoringId + ".";

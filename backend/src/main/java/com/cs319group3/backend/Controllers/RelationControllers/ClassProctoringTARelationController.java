@@ -3,6 +3,7 @@ package com.cs319group3.backend.Controllers.RelationControllers;
 import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.ClassProctoringAndTAsDTO;
 import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
+import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Services.ClassProctoringAndTAsService;
 import com.cs319group3.backend.Services.ClassProctoringTARelationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,6 +147,11 @@ public class ClassProctoringTARelationController {
     public List<ClassProctoringAndTAsDTO> getClassProctoringOfInstructor() {
         int instructorId = currentUserUtil.getCurrentUserId();
         return classProctoringAndTAs.getClassProctoringsOfInstructor(instructorId);
+    }
+
+    @PostMapping("assignTAFromOtherFaculty")
+    public boolean assignTAFromOtherFaculty(@RequestBody TAProfileDTO taProfileDTO, @RequestParam int classProctoringId) {
+        return classProctoringTARelationService.assignTAFromOtherFaculty(taProfileDTO, classProctoringId);
     }
 
 }

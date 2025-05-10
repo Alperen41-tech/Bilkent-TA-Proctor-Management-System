@@ -43,5 +43,6 @@ public interface TARepo extends JpaRepository<TA, Integer> {
 
     Optional<TA> findByBilkentId(String bilkentId);
 
+    Optional<TA> findByEmail(String email);
 
 }

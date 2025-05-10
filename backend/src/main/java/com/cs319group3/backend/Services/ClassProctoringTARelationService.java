@@ -2,6 +2,7 @@ package com.cs319group3.backend.Services;
 
 import com.cs319group3.backend.DTOs.ClassProctoringDTO;
 import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
+import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 
 import java.util.List;
@@ -53,4 +54,6 @@ public interface ClassProctoringTARelationService {
      * @throws Exception if an error occurs while fetching data
      */
     List<ClassProctoringTARelationDTO> getTAsClassProctoringsByDepartment(int taId) throws Exception;
+
+    boolean assignTAFromOtherFaculty(TAProfileDTO dto, int classProctoringId);
 }

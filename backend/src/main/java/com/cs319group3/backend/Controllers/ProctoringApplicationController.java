@@ -39,7 +39,6 @@ public class ProctoringApplicationController {
     /**
      * Retrieves all proctoring applications within a specific department.
      *
-     * @param departmentId the department ID
      * @return a list of ProctoringApplicationDTOs
      */
     @GetMapping("getAllApplicationsByDepartment")
