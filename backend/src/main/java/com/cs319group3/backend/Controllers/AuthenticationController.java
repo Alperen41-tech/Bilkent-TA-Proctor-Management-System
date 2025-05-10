@@ -5,11 +5,15 @@ import com.cs319group3.backend.Components.JwtUtil;
 import com.cs319group3.backend.DTOs.ChangePasswordDTO;
 import com.cs319group3.backend.DTOs.LoginDTO;
 import com.cs319group3.backend.DTOs.TokenDTO;
+import com.cs319group3.backend.Entities.Log;
 import com.cs319group3.backend.Entities.UserEntities.*;
 import com.cs319group3.backend.Entities.UserType;
+import com.cs319group3.backend.Enums.LogType;
+import com.cs319group3.backend.Repositories.LogRepo;
 import com.cs319group3.backend.Repositories.UserRepo;
 import com.cs319group3.backend.Repositories.UserTypeRepo;
 import com.cs319group3.backend.Services.AuthenticationService;
+import com.cs319group3.backend.Services.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +51,9 @@ public class AuthenticationController {
     private UserTypeRepo userTypeRepo;
     @Autowired
     private CurrentUserUtil currentUserUtil;
+    @Autowired
+    private LogService logService;
+    private LogRepo logRepo;
 
     /**
      * Allows the current user to change their password.
@@ -126,6 +133,8 @@ public class AuthenticationController {
                     userTypeId
             );
 
+            String logMessage = "User " + user.getUserId() + " logged in.";
+            logService.createLog(logMessage, LogType.LOGIN);
             return ResponseEntity.ok(new TokenDTO(token, userTypeName));
 
         } catch (BadCredentialsException e) {
@@ -133,5 +142,12 @@ public class AuthenticationController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @GetMapping("logout")
+    public void logout() {
+        int userId = currentUserUtil.getCurrentUserId();
+        String logMessage = "User " + userId + " logged out.";
+        logService.createLog(logMessage, LogType.LOGIN);
     }
 }
