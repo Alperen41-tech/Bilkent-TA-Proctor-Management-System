@@ -484,7 +484,7 @@ const INS_DashboardPage = () => {
               <p><strong>Course Code:</strong> {selectedRespondedWorkloadRequest.courseCode}</p>
               <p><strong>Task Title:</strong> {selectedRespondedWorkloadRequest.taskTypeName}</p>
               <p><strong>Date:</strong> {selectedRespondedWorkloadRequest.sentDateTime.split("T")[0]}</p>
-              <p><strong>Duration:</strong> {selectedRespondedWorkloadRequest.timeSpent} hours</p>
+              <p><strong>Duration:</strong> {selectedRespondedWorkloadRequest.timeSpent ? (selectedRespondedWorkloadRequest.timeSpent/60): null} hours {selectedRespondedWorkloadRequest.timeSpent ? (selectedRespondedWorkloadRequest.timeSpent%60): null} minutes</p>
               <p><strong>Comment:</strong> {selectedRespondedWorkloadRequest.description}</p>
               <p><strong>Status:</strong> {selectedRespondedWorkloadRequest.status}</p>
               <p><strong>Sender Name:</strong> {selectedRespondedWorkloadRequest.senderName}</p>
