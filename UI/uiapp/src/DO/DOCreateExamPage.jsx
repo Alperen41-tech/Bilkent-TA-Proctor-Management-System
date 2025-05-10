@@ -173,8 +173,14 @@ const DOCreateExamPage = () => {
 
       if (success) {
         alert("TA dismissed.");
+        fetchDepartments();
         fetchCreatedExams();
-        setSelectedTA(null);
+        fetchTAs();
+        setSelectedExamKey(null);
+        setSelectedExamItem(null);
+        setTAs([]);
+        setAllTAs([]);
+        setTaDepartmentFilter("");
         setSelectedTAObj(null);
       }
     } catch (error) {
@@ -184,49 +190,53 @@ const DOCreateExamPage = () => {
   };
 
 
-  const handleAutomaticAssign = async () => {
-    if (!selectedExamItem) {
-      alert("Please select an exam first.");
-      return;
-    }
+const handleAutomaticAssign = async () => {
+  if (!selectedExamItem) {
+    alert("Please select an exam first.");
+    return;
+  }
 
-    const classProctoringId =
-      selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+  const classProctoringId =
+    selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
 
-    if (!classProctoringId) {
-      alert("Invalid exam data.");
-      return;
-    }
+  const courseCode =
+    selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.courseCode || "";
 
+  const departmentCode = courseCode.split(" ")[0];
 
-    if (!isAutoAssignmentWithinLimit()) {
-         alert(`No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.`);
+  if (!classProctoringId || !departmentCode) {
+    alert("Invalid exam data.");
+    return;
+  }
 
-      return;
-    }
+  if (!isAutoAssignmentWithinLimit()) {
+    alert(`No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.`);
+    return;
+  }
 
-    try {
-      const response = await axios.get(
-        "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
-        {
-          params: {
-            classProctoringId,
-            departmentCode: "CS",
-            senderId: creatorId,
-            count: taCount,
-            eligibilityRestriction,
-            oneDayRestriction,
-          },
-        }
-      );
+  try {
+    const response = await axios.get(
+      "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
+      {
+        params: {
+          classProctoringId,
+          departmentCode,
+          senderId: creatorId,
+          count: taCount,
+          eligibilityRestriction,
+          oneDayRestriction,
+        },
+      }
+    );
 
-      setAutoSuggestedTAs(response.data || []);
-      setShowAutoModal(true);
-    } catch (error) {
-      console.error("Error during automatic assignment:", error);
-      alert("Failed to get suggested TAs.");
-    }
-  };
+    setAutoSuggestedTAs(response.data || []);
+    setShowAutoModal(true);
+  } catch (error) {
+    console.error("Error during automatic assignment:", error);
+    alert("Failed to get suggested TAs.");
+  }
+};
+
 
 
   const handleManualAssign = () => {
@@ -267,8 +277,15 @@ const DOCreateExamPage = () => {
 
       if (data === true) {
         alert("TA forcefully assigned.");
+        fetchDepartments();
         fetchCreatedExams();
-        fetchTAs(taDepartmentFilter, cpId);
+        fetchTAs();
+        setSelectedExamKey(null);
+        setSelectedExamItem(null);
+        setTAs([]);
+        setAllTAs([]);
+        setTaDepartmentFilter("");
+        setSelectedTAObj(null);
         setShowManualModal(false);
       } else {
         alert("Force assignment failed.");
@@ -305,6 +322,15 @@ const DOCreateExamPage = () => {
 
       if (data === true) {
         alert("Request sent.");
+        fetchDepartments();
+        fetchCreatedExams();
+        fetchTAs();
+        setSelectedExamKey(null);
+        setSelectedExamItem(null);
+        setTAs([]);
+        setAllTAs([]);
+        setTaDepartmentFilter("");
+        setSelectedTAObj(null);
         setShowManualModal(false);
       } else {
         alert("Failed to send request.");
