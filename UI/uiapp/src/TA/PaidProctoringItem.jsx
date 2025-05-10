@@ -1,6 +1,16 @@
 import React from "react";
 import "./PaidProctoringItem.css";
+/**
+ * PaidProctoringItem component
+ * Renders a clickable card for a paid proctoring duty, showing date, time, course, and enrollment status.
+ * Allows TAs to select or apply for proctoring events.
+ */
 
+
+/**
+ * parseSentDate
+ * Converts start and end date strings into formatted date and time objects.
+ */
 function parseSentDate(startDateString, endDateString) {
   if (!startDateString || typeof startDateString !== 'string' || !startDateString.includes('T')) {
     return { date: "—", time: "—" };
@@ -42,7 +52,10 @@ function parseSentDate(startDateString, endDateString) {
     }
   };
 }
-
+/**
+ * PaidProctoringItem
+ * Displays an individual proctoring task card with enrollment details and interaction options.
+ */
 const PaidProctoringItem = ({ task, isSelected, isEnrolled, onSelect, onEnroll }) => {
   const { date, time } = parseSentDate(task.classProctoringDTO.startDate, task.classProctoringDTO.endDate);
   

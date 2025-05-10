@@ -4,6 +4,12 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import axios from "axios";
 
+
+/**
+ * ProfilePage Component
+ * Displays TA profile information and provides options to change password
+ * and set unavailability periods through modals.
+ */
 const ProfilePage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = React.useState(false);
   const [showUnavailabilityModal, setShowUnavailabilityModal] = React.useState(false);
@@ -20,6 +26,9 @@ const ProfilePage = () => {
   const newPasswordRef = useRef();
   const confirmNewPasswordRef = useRef();
   //-----------------------------------------------------------
+    /**
+   * Handles changing the TA's password by calling the backend API.
+   */
   const handleChangePassword = async () => {
     try {
       console.log("Email:", taProfileInfo.email);
@@ -50,7 +59,9 @@ const ProfilePage = () => {
   
   };
 
-
+  /**
+   * Sends a new leave request based on the form inputs.
+   */
   const handleSetUnavailability = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -91,6 +102,9 @@ const ProfilePage = () => {
 
   }; 
 
+    /**
+   * Fetches the TA's profile information from the backend.
+   */
   const fetchProfileInformation = async () => {
     try {
       const token = localStorage.getItem("token");

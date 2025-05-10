@@ -7,11 +7,20 @@ import TAItem from "../TAItem";
 import axios from "axios";
 import { set } from "date-fns";
 
+
+/**
+ * PaidProctoringPage Component
+ * Allows TAs to view a list of available paid proctoring opportunities, apply for them,
+ * and view the list of TAs who have applied for each.
+ */
 const PaidProctoringPage = () => {
   const [paidProctorings, setPaidProctorings] = useState([]);
   const [appliedTAs, setAppliedTAs] = useState([]);
   const [selectedPaidProctoring, setSelectedPaidProctoring] = useState(null);
 
+    /**
+   * Fetches the list of all paid proctoring opportunities available to the TA.
+   */
   const fetchPaidProctorings = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -38,6 +47,9 @@ const PaidProctoringPage = () => {
     }
   };
 
+    /**
+   * Fetches the TAs who have applied for the currently selected proctoring.
+   */
   const fetchAppliedStudents = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/proctoringApplicationTARelation/getApplicantsForApplication?applicationId=${selectedPaidProctoring.applicationId}`); // Adjust the URL as needed
@@ -58,6 +70,10 @@ const PaidProctoringPage = () => {
     }
   };
 
+
+    /**
+   * Submits a proctoring application for the given task.
+   */
   const handleEnroll = async (task) => {
     try {
       const token = localStorage.getItem("token");
@@ -83,6 +99,9 @@ const PaidProctoringPage = () => {
     }
   };
 
+    /**
+   * Renders a TAItem for each applied TA.
+   */
   const createTAItem = (ta) => {
     return (
       <TAItem

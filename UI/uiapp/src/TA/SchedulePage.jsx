@@ -5,6 +5,11 @@ import "./SchedulePage.css";
 import { format, addWeeks, subWeeks, startOfWeek, addDays } from "date-fns";
 import axios from "axios";
 
+/**
+ * SchedulePage Component
+ * Displays a weekly calendar grid showing the TA's scheduled events 
+ * (lectures, proctorings, exams, leaves) fetched from the backend.
+ */
 const SchedulePage = () => {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const [currentStartDate, setCurrentStartDate] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
@@ -21,18 +26,26 @@ const SchedulePage = () => {
     "6:00 pm", "7:00 pm", "8:00 pm", "9:00 pm", "10:00 pm"
   ];
 
+    /**
+   * Shifts the view to the next week and triggers a schedule refresh.
+   */
   const handleNextWeek = () => {
     setCurrentStartDate(prev => addWeeks(prev, 1));
     setCurrentEndDate(prev => addWeeks(prev, 1));
     fetchScheduleInformation();
   };
-
+  /**
+   * Shifts the view to the previous week and triggers a schedule refresh.
+   */
   const handlePrevWeek = () => {
     setCurrentStartDate(prev => subWeeks(prev, 1));
     setCurrentEndDate(prev => subWeeks(prev, 1));
     fetchScheduleInformation();
   };
 
+    /**
+   * Fetches the TA's schedule from the backend for the current week.
+   */
   const fetchScheduleInformation = async () => {
     const requestId = ++latestRequest.current;
     try {
@@ -57,16 +70,26 @@ const SchedulePage = () => {
     }
   };
 
+    /**
+   * Measures a single cell's height to scale event blocks proportionally.
+   */
   useEffect(() => {
     fetchScheduleInformation();
   }, [currentStartDate, currentEndDate]);
 
+    /**
+   * Triggers the schedule fetch on initial render and when dates change.
+   */
   useEffect(() => {
     if (cellRef.current) {
       setCellHeight(cellRef.current.offsetHeight);
     }
   }, [taScheduleTimes]);
 
+
+    /**
+   * Builds a lookup object for quick access to events by day/hour keys.
+   */
   const buildScheduleLookup = () => {
     const lookup = {};
     taScheduleTimes.forEach(event => {

@@ -4,7 +4,11 @@ import Navbar from "./Navbar";
 import TaskItem from "../TaskItem";
 import TAItem from "../TAItem";
 import axios, { all } from "axios";
-
+/**
+ * ExamsPage component
+ * Allows TAs to view their proctoring tasks and request swaps with other TAs.
+ * Users can select a task and an available TA, then send a swap request.
+ */
 const ExamsPage = () => {
   const [lastSelectedTask, setLastSelectedTask] = useState({});
   const [selectedTA, setSelectedTA] = useState({}); 
@@ -18,7 +22,9 @@ const ExamsPage = () => {
     console.log("Task ID:", id); 
     return <TaskItem key={id} task={task} onClick={onClickHandler} isSelected={isSelected} swapRequestable={swapRequestable} isAboutSwap={isAboutSwap}/>;
   };
-  
+  /**
+   * Renders a TAItem for available TAs list.
+   */
   const createTAItem = (ta, onClickHandler) => {
     const isSelected = selectedTA === ta;
   
@@ -78,7 +84,9 @@ const ExamsPage = () => {
 
   }, [selectedTA]);
 
-  
+    /**
+   * Fetches the TA's proctoring assignments.
+   */
   const fetchTasProctorings = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -99,6 +107,10 @@ const ExamsPage = () => {
         }
       }
   };
+
+    /**
+   * Fetches available TAs for a given proctoring assignment.
+   */
   const fetchAvailableTAs = async () => {
     try {
       if (!lastSelectedTask.id) {
