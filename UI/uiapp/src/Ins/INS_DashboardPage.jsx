@@ -136,7 +136,7 @@ const INS_DashboardPage = () => {
       }
       );
       if (response.data) {
-        alert("Request accepted successfully.");
+        alert("Request answered successfully.");
         fetchReceivedRequests(); 
         fetchPendingRequests(); 
       } else {

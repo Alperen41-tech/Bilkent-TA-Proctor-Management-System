@@ -252,7 +252,7 @@ const DashboardPage = () => {
       }
       );
       if (response.data) {
-        alert("Request accepted successfully.");
+        alert("Request answered successfully.");
         fetchReceivedRequests(); // Refresh the received requests after accepting
       } else {
         alert("Failed to accept the request. Please try again.");

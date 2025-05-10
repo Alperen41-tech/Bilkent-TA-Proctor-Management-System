@@ -289,7 +289,11 @@ const DS_DashboardPage = () => {
       }
       );
       if (response.data) {
-        alert("Request accepted successfully.");
+        if (answer) {
+          alert("Request accepted successfully.");
+        } else {
+          alert("Request rejected successfully.");
+        }
         fetchReceivedRequests(); 
         fetchPendingRequests(); 
       } else {

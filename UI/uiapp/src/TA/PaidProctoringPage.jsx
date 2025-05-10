@@ -20,9 +20,9 @@ const PaidProctoringPage = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      if(response.data){
-        console.log("Paid Proctorings fetched successfully:", response.data);
-        setPaidProctorings(response.data);
+      if(response && response?.data){
+        console.log("Paid Proctorings fetched successfully:", response?.data);
+        setPaidProctorings(response?.data);
       }
       else{
         console.log("No paid proctorings found.");
@@ -124,7 +124,9 @@ const PaidProctoringPage = () => {
                   isSelected={selectedPaidProctoring === task}
                   isEnrolled={task.isAppliedByTA}
                   onSelect={()=> setSelectedPaidProctoring(task)}
-                  onEnroll={() => handleEnroll(task)}
+                  onEnroll={() => {setSelectedPaidProctoring(task); 
+                    if(selectedPaidProctoring && selectedPaidProctoring.applicationId === task.applicationId){
+                      handleEnroll(task);}}}
                 />
               ))}
             </div>
