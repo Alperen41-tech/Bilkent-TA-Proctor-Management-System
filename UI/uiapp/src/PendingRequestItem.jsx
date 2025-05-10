@@ -61,7 +61,7 @@ const PendingRequestItem = ({requestType, sentDateTime, isApproved, responseDate
       case 'InstructorAdditionalTARequest':
         return (
           <>
-            <div className="pending-request-item-time-row">Additional TA Request:</div>
+            <div className="pending-request-item-time-row">Proctoring Application for Additional TA Request:</div>
             <div className="pending-request-item-info-row">Course: {courseCode}</div>
             <div className="pending-request-item-info-row">Proctoring Event: {classProctoringEventName}</div>
             <div className="pending-request-item-info-row">TA Count Needed: {taCountNeeded}</div>

@@ -35,19 +35,21 @@ const DO_Dashboard = () => {
     }
   };
 
-  const fetchReceivedRequests = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:8080/taFromDeanRequest/getUnapprovedInstructorAdditionalTARequests", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-      });
-      const sortedReceivedRequests = response.data.sort((a, b) => new Date(b.sentDateTime) - new Date(a.sentDateTime));
-    } catch (error) {
-      console.error("Error fetching received requests:", error);
-    }
-  };
+const fetchReceivedRequests = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.get("http://localhost:8080/taFromDeanRequest/getUnapprovedInstructorAdditionalTARequests", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    });
+    const sortedReceivedRequests = response.data.sort((a, b) => new Date(b.sentDateTime) - new Date(a.sentDateTime));
+    setReceivedRequests(sortedReceivedRequests);
+  } catch (error) {
+    console.error("Error fetching received requests:", error);
+  }
+};
+
 
   const fetchPendingRequests = async () => {
     try {
@@ -98,7 +100,7 @@ const DO_Dashboard = () => {
       classProctoringEndDate: classProctoringDTO.endDate,
       taCountNeeded: applicantCountLimit,
       isComplete,
-      senderName: classProctoringDTO.courseName + " coordinator" //request.visibleDepartmentId,
+      senderName: classProctoringDTO.courseName + " coordinator"
 ,
       status: null,
       responseDateTime: null,
