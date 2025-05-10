@@ -11,7 +11,7 @@ const LoginPage = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [isAdmin, setIsAdmin] = React.useState(false);
-
+  const [forgotPasswordMail, setIsForgotPasswordMail] = React.useState(false);
   
   const handleLogin = async () => {
     try {
@@ -62,6 +62,25 @@ const LoginPage = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/auth/forgetPassword?userMail=${forgotPasswordMail}&userTypeName=${isAdmin ? "admin" : ""}`);
+      if (response.data) {
+        alert("Password reset link sent to your email.");
+      } else {
+        alert("Failed to send password reset link. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error sending password reset link:", error);
+      if (error.response.data.message) {
+        alert(error.response.data.message);
+      }
+      else{
+        alert("An error occurred. Please try again.");
+      }
+    }
+  }
+
   return (
       <div className="login-container">
         <div className="logo-section">
@@ -94,8 +113,6 @@ const LoginPage = () => {
                   onChange={(e) => setIsAdmin(e.target.checked)}
                 />
                 <label htmlFor="isAdmin">Is admin?</label>
-
-                
               </div>
               <div className="forgot-password">
                 <a href="#" onClick={() => setShowForgotPasswordModal(true)}>Forgot password?</a>
@@ -109,10 +126,21 @@ const LoginPage = () => {
               <div className="modal">
                 <h3>Reset Password</h3>
                 <label>Email</label>
-                <input type="email" placeholder="Enter your email" />
+                <input type="email" placeholder="Enter your email" onChange={(e) => {setIsForgotPasswordMail(e.target.value)}}/>
+                <div className="is-admin-checkbox">
+                  <input
+                    type="checkbox"
+                    id="isAdmin"
+                    name="isAdmin"
+                    checked={isAdmin}
+                    onChange={(e) => setIsAdmin(e.target.checked)}
+                  />
+                  <label htmlFor="isAdmin">Is admin?</label>
+                </div>
                 <div className="modal-buttons">
+                  
                   <button className="cancel-button" onClick ={() => setShowForgotPasswordModal(false)}>Cancel</button>
-                  <button className="apply-button" onClick={() => setShowForgotPasswordModal(false)}>Send New Password</button>
+                  <button className="apply-button" onClick={() => {setShowForgotPasswordModal(false); handleForgotPassword();} }>Change Password</button>
                 </div>
               </div>
             </div>

@@ -13,7 +13,7 @@ const ForgotPasswordPage = () => {
 
   const handleChangePassword = async () => {
     try {
-      const response = await axios.put(`http://localhost:8080/auth/setAfterForgetPassword?token=${token}&newPassword=${newPasswordRef.current.value}`);
+      const response = await axios.get(`http://localhost:8080/auth/setAfterForgetPassword?token=${token}&newPassword=${newPasswordRef.current.value}`);
       if (response.data) {
         alert("Password changed successfully.");
       } else {
