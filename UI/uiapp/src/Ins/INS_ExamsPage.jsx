@@ -248,46 +248,46 @@ const INS_ExamsPage = () => {
     }
   };
 
-const handleRequestAdditionalTAs = async (taCountInput, description) => {
-  const classProctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
-  if (!classProctoringId) {
-    alert("Please select a task first.");
-    return;
-  }
-
-  try {
-    const token = localStorage.getItem("token");
-
-    const requestPayload = {
-      taCountNeeded: taCountInput,
-      classProctoringId,
-      description,
-      requestType: "instructorAdditionalTARequest",
-      isComplete: false
-    };
-
-    const response = await axios.post(
-      "http://localhost:8080/taFromDeanRequest/createInstructorAdditionalTARequest",
-      requestPayload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (response.data === true) {
-      alert("Instructor TA request sent successfully.");
-    } else {
-      alert("Failed to send instructor TA request.");
+  const handleRequestAdditionalTAs = async (taCountInput, description) => {
+    const classProctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+    if (!classProctoringId) {
+      alert("Please select a task first.");
+      return;
     }
 
-    setShowInstructorTAModal(false);
-  } catch (error) {
-    console.error("Error creating instructor TA request:", error);
-    alert("An error occurred while submitting the request.");
-  }
-};
+    try {
+      const token = localStorage.getItem("token");
+
+      const requestPayload = {
+        taCountNeeded: taCountInput,
+        classProctoringId,
+        description,
+        requestType: "instructorAdditionalTARequest",
+        isComplete: false
+      };
+
+      const response = await axios.post(
+        "http://localhost:8080/taFromDeanRequest/createInstructorAdditionalTARequest",
+        requestPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data === true) {
+        alert("Instructor TA request sent successfully.");
+      } else {
+        alert("Failed to send instructor TA request.");
+      }
+
+      setShowInstructorTAModal(false);
+    } catch (error) {
+      console.error("Error creating instructor TA request:", error);
+      alert("An error occurred while submitting the request.");
+    }
+  };
 
 
 
@@ -381,6 +381,13 @@ const handleRequestAdditionalTAs = async (taCountInput, description) => {
 
         <div className="ins-exam-card ins-exam-assigned-tas">
           <h3>TAs Assigned for this Task</h3>
+
+          <p style={{ fontSize: "0.9rem", marginBottom: "0.9rem",marginTop: "0.1rem",  color: "#444" }}>
+            Assigned TAs: {selectedTask.taProfileDTOList.length} / {selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount ?? "?"}
+            &emsp;|&emsp;
+            Pending Requests: {selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests ?? 0}
+          </p>
+
           <div className="ins-exams-ta-list-header">
             <span>Name</span><span>Email</span><span>Department</span><span>Bilkent ID</span><span>Workload</span>
           </div>
