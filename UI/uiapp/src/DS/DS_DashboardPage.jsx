@@ -244,7 +244,7 @@ const DS_DashboardPage = () => {
     try {
       const token = localStorage.getItem("token");
       console.log("Selected PPR:", selectedPPR);
-      const response = await axios.get("http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring", {
+      const response = await axios.get("http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoringSecretary", {
         params: {
           proctoringId: selectedPPR.classProctoringDTO.id,
         },

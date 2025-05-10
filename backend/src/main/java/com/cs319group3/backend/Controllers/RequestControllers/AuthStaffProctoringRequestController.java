@@ -35,6 +35,7 @@ public class AuthStaffProctoringRequestController {
     @PostMapping("sendAuthStaffProctoringRequest")
     public boolean sendAuthStaffProctoringRequest(@RequestParam int classProctoringId, @RequestParam int taId) {
         int senderId = currentUserUtil.getCurrentUserId();
+        System.out.println("Auth staff proctoring request is sesesesent.");
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequest(classProctoringId, taId, senderId, false);
     }
 

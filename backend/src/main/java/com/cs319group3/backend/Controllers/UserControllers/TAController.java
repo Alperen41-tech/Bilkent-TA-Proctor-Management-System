@@ -3,6 +3,8 @@ package com.cs319group3.backend.Controllers.UserControllers;
 import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.CreateTADTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
+import com.cs319group3.backend.Repositories.ClassProctoringRepo;
+import com.cs319group3.backend.Repositories.DepartmentSecretaryRepo;
 import com.cs319group3.backend.Services.TAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -25,6 +27,12 @@ public class TAController {
 
     @Autowired
     private CurrentUserUtil currentUserUtil;
+
+    @Autowired
+    private DepartmentSecretaryRepo departmentSecretaryRepo;
+
+    @Autowired
+    private ClassProctoringRepo classProctoringRepo;
 
     /**
      * Retrieves the profile of the currently logged-in TA.
@@ -82,7 +90,16 @@ public class TAController {
     public List<TAProfileDTO> getAllAvailableTAsByDepartment(@RequestParam int proctoringId) {
         int userId = currentUserUtil.getCurrentUserId();
         System.out.println("Getting available TA profiles by department except in proctoring " + proctoringId);
-        return taService.getAllAvailableTAsByDepartmentCode(proctoringId, userId);
+        String departmentCode = classProctoringRepo.findByClassProctoringId(proctoringId).get().getCourse().getDepartment().getDepartmentCode();
+        return taService.getAllAvailableTAsByDepartmentCode(departmentCode,proctoringId, userId);
+    }
+
+    @GetMapping("getAvailableTAsByDepartmentExceptProctoringSecretary")
+    public List<TAProfileDTO> getAllAvailableTAsByDepartmentForSecretary(@RequestParam int proctoringId) {
+        int userId = currentUserUtil.getCurrentUserId();
+        System.out.println("Getting available TA profiles by department except in proctoring " + proctoringId);
+        String departmentCode = departmentSecretaryRepo.findByUserId(userId).get().getDepartment().getDepartmentCode();
+        return taService.getAllAvailableTAsByDepartmentCode(departmentCode, proctoringId, userId);
     }
 
     /**

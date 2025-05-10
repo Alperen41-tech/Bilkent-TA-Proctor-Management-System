@@ -100,7 +100,7 @@ public class TAServiceImpl implements TAService {
     }
 
     @Override
-    public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(int classProctoringId, int userId) {
+    public List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int classProctoringId, int userId) {
         Optional<ClassProctoring> cpOpt = classProctoringRepo.findById(classProctoringId);
         if (cpOpt.isEmpty()) {
             System.out.println("Cannot fetch available TAs because class proctoring not found.");
@@ -108,11 +108,7 @@ public class TAServiceImpl implements TAService {
         }
 
         ClassProctoring cp = cpOpt.get();
-        Optional<DepartmentSecretary> ds = departmentSecretaryRepo.findById(userId);
-        if(ds.isEmpty()){
-            throw new RuntimeException("Could not find Department Secretary.");
-        }
-        List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(ds.get().getDepartment().getDepartmentCode(), classProctoringId);
+        List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(departmentCode, classProctoringId);
         int courseId = cp.getCourse().getCourseId();
 
         availableTAs.removeIf(ta -> {
