@@ -81,7 +81,8 @@ const ExamsPage = () => {
           headers: {
             Authorization: `Bearer ${token}`
           }});
-        setTasProctorings(response.data);
+        const sortedTasProctorings = response.data.sort((a, b) => new Date(b.classProctoringDTO.startDate) - new Date(a.classProctoringDTO.startDate));
+        setTasProctorings(sortedTasProctorings);
         console.log(tasProctorings);
       } catch (error) {
         console.error("Error fetching tasks:", error);

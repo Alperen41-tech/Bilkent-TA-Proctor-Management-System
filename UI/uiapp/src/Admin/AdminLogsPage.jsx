@@ -26,7 +26,8 @@ const AdminLogsPage = () => {
         endDate: endDateRef.current.value ? endDateRef.current.value + " 23:59:59" : new Date().toISOString().split("T")[0] + " 23:59:59",
       }); 
       if(response.data) {
-        setLogs(response.data);
+        const sortedLogs = response.data.sort((a, b) => new Date(b.logDate) - new Date(a.logDate));
+        setLogs(sortedLogs);
         console.log("Logs fetched successfully:", response.data);
       }
       else {

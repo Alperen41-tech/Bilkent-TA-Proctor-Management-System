@@ -96,7 +96,9 @@ const INS_ExamsPage = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      setProctoringTasks(response.data || []);
+      const sortedTasks = response.data.sort((a, b) => new Date(b.classProctoringTARelationDTO.classProctoringDTO.startDate) - new Date(a.classProctoringTARelationDTO.classProctoringDTO.startDate));
+      setProctoringTasks(sortedTasks || []);
+      //setProctoringTasks(response.data || []);
     } catch (error) {
       console.error("Error fetching proctoring tasks:", error);
     }

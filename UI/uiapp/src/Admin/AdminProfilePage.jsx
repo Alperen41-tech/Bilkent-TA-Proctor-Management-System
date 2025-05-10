@@ -68,8 +68,6 @@ const AdminProfilePage = () => {
           <p><strong>Surname</strong><br />{adminProfileInfo.surname}</p>
           <p><strong>Email</strong><br />{adminProfileInfo.email}</p>
           <p><strong>ID</strong><br />{adminProfileInfo.bilkentId}</p>
-          <p><strong>Role</strong><br />{adminProfileInfo.role}</p>
-          <p><strong>Faculty</strong><br />{adminProfileInfo.faculty}</p>
         </div>
 
         {/* Manage Account Section */}

@@ -94,7 +94,8 @@ const DashboardPage = () => {
         headers: {
           Authorization: `Bearer ${token}`
         }}); // Adjust the URL as needed
-      setTasProctorings(response.data);
+      const sortedProctorings = response.data.sort((a, b) => new Date(b.classProctoringDTO.startDate) - new Date(a.classProctoringDTO.startDate));
+      setTasProctorings(sortedProctorings);
       console.log(tasProctorings);
     } catch (error) {
       console.error("Error fetching tasks:", error);
