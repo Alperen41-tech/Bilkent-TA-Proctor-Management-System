@@ -333,38 +333,38 @@ const INS_ExamsPage = () => {
     return <TaskItem key={id} task={task} onClick={onClickHandler} isSelected={isSelected} />;
   };
 
-const handleAutomaticAssign = async () => {
-  const classProctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
-  const departmentCode = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.departmentCode;
-  if (!classProctoringId || !departmentCode) {
-    alert("Please select a valid task with a department.");
-    return;
-  }
+  const handleAutomaticAssign = async () => {
+    const classProctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+    const departmentCode = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.departmentCode;
+    if (!classProctoringId || !departmentCode) {
+      alert("Please select a valid task with a department.");
+      return;
+    }
 
-  try {
-    const token = localStorage.getItem("token");
-    const { data } = await axios.get(
-      "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
-      {
-        params: {
-          classProctoringId,
-          departmentCode,
-          senderId: instructorId,
-          count: taCount,
-          eligibilityRestriction,
-          oneDayRestriction,
-        },
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    try {
+      const token = localStorage.getItem("token");
+      const { data } = await axios.get(
+        "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
+        {
+          params: {
+            classProctoringId,
+            departmentCode,
+            senderId: instructorId,
+            count: taCount,
+            eligibilityRestriction,
+            oneDayRestriction,
+          },
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-    setAutoSuggestedTAs(data || []);
-    setShowAutoModal(true);
-  } catch (error) {
-    console.error("Auto assign error:", error);
-    alert("Failed to get suggested TAs.");
-  }
-};
+      setAutoSuggestedTAs(data || []);
+      setShowAutoModal(true);
+    } catch (error) {
+      console.error("Auto assign error:", error);
+      alert("Failed to get suggested TAs.");
+    }
+  };
 
 
 
@@ -463,31 +463,27 @@ const handleAutomaticAssign = async () => {
           <div className="ins-exam-filters">
             <input
               type="text"
-              placeholder="🔍 Search by name"
+              placeholder="Search"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
+              style={{ padding: "8px 12px", fontSize: "1rem", width: "100%", maxWidth: "300px", borderRadius: "6px", border: "1px solid #ccc" }}
             />
-            <select value={sortName} onChange={(e) => setSortName(e.target.value)}>
-              <option value="">Sort by Name</option>
-              <option value="asc">A → Z</option>
-              <option value="desc">Z → A</option>
-            </select>
-            <select value={sortWorkload} onChange={(e) => setSortWorkload(e.target.value)}>
-              <option value="">Sort by Workload</option>
-              <option value="low">Low to High</option>
-              <option value="high">High to Low</option>
-            </select>
-          </div>
-          <div className="ins-exams-ta-list-header">
-            <span>Name</span><span>Email</span><span>Department</span><span>Bilkent ID</span><span>Workload</span>
+
           </div>
           <div className="ins-exam-ta-list-items">
             {availableTAs.length > 0 ? (
-              availableTAs.map((ta) => createTAItem(ta, () => handleTAClick(ta)))
+              availableTAs
+                .filter((ta) =>
+                  ta.name.toLowerCase().includes(searchText.toLowerCase()) ||
+                  ta.surname.toLowerCase().includes(searchText.toLowerCase()) ||
+                  ta.email.toLowerCase().includes(searchText.toLowerCase())
+                )
+                .map((ta) => createTAItem(ta, () => handleTAClick(ta)))
             ) : (
               <div>No available TAs</div>
             )}
           </div>
+
           <div className="ins-exam-assign-actions">
             <button onClick={handleAutomaticAssign}>Automatic Assign</button>
             <button onClick={() => setShowManualModal(true)}>Manual Assign</button>

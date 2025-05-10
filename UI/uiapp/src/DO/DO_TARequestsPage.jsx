@@ -133,9 +133,6 @@ const DO_TARequestsPage = () => {
             <div className="do-TA-list">
               {taRequests.map((req) => {
                 const dateObj = new Date(req.classProctoringStartDate);
-                const month = dateObj.toLocaleString("default", { month: "short" });
-                const day = dateObj.getDate();
-                const wd = dateObj.toLocaleString("default", { weekday: "short" });
                 const time = dateObj.toTimeString().slice(0, 5);
 
                 return (
@@ -146,7 +143,12 @@ const DO_TARequestsPage = () => {
                     onClick={() => setSelectedRequestId(req.requestId)}
                   >
                     <span className="do-TA-li-date">
-                      {`${month} ${day} (${wd})`}
+                      {dateObj.toLocaleDateString("en-US", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
                     </span>
 
                     <span className="do-TA-li-course">
@@ -163,8 +165,6 @@ const DO_TARequestsPage = () => {
                       {req.taCountNeeded} TAs
                     </span>
                   </button>
-
-
                 );
               })}
             </div>
@@ -183,7 +183,13 @@ const DO_TARequestsPage = () => {
                 </li>
                 <li>
                   <strong>Date:</strong>{" "}
-                  {new Date(selected.classProctoringStartDate).toLocaleDateString()}
+                  {new Date(selected.classProctoringStartDate).toLocaleDateString("en-US", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+
                 </li>
                 <li>
                   <strong>Start Time:</strong>{" "}

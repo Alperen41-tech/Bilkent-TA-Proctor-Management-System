@@ -199,11 +199,6 @@ const DO_Dashboard = () => {
               </div>
             ))}
           </div>
-
-          <div className="ta-dashboard-stats-box">
-            <div className="ta-dashboard-stat">Request From Others: {receivedRequests.length}</div>
-            <div className="ta-dashboard-stat">Your Requests: {pendingRequests.length}</div>
-          </div>
         </div>
       </div>
     </div>
