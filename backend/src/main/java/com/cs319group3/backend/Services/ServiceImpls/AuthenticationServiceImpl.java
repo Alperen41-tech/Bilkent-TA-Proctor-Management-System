@@ -162,7 +162,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
 
             // Find the login based on email and userType
             Optional<Login> loginOptional;
-            if (userType != null && !userType.isEmpty()) {
+            if (userType != null) {
                 loginOptional = loginRepo.findByUser_EmailAndUserType_UserTypeName(userEmail, userType);
             } else {
                 loginOptional = loginRepo.findByUser_Email(userEmail);
