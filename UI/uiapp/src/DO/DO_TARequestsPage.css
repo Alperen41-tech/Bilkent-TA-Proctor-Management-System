@@ -46,17 +46,20 @@
 }
 
 .do-TA-list-item {
-  all: unset; /* reset button */
+  all: unset;
   background: #f0f0f0;
   border-radius: 8px;
   padding: 12px 14px;
   cursor: pointer;
-  display: grid;
-  grid-template-columns: 110px 60px 1fr; /* date · time · course */
-  gap: 8px;
+  display: flex;
+  flex-wrap: wrap; /* allow wrapping on smaller screens */
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   font-size: 14px;
   transition: background 0.2s;
 }
+
 .do-TA-list-item:hover {
   background: #e6e6e6;
 }
@@ -115,3 +118,11 @@
   font-size: 1.05rem;
   padding: 12px;
 }
+
+.do-TA-li-ta-count {
+  font-size: 0.85rem;
+  color: inherit;
+  font-weight: 500;
+}
+
+

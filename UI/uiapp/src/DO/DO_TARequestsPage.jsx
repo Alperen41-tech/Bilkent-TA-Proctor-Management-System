@@ -111,9 +111,11 @@ const DO_TARequestsPage = () => {
       const token = localStorage.getItem("token");
       const res = await axios.get(
         "http://localhost:8080/taFromDeanRequest/getApprovedInstructorAdditionalTARequests",
-        { headers: {
+        {
+          headers: {
             Authorization: `Bearer ${token}`
-          } }
+          }
+        }
       );
       setTARequests(res.data || []);
     } catch (e) {
@@ -151,13 +153,17 @@ const DO_TARequestsPage = () => {
                       {req.classProctoringEventName}
                     </span>
 
-                    <span className="do-TA-li-time">{time} </span>
-
+                    <span className="do-TA-li-time">{time}</span>
 
                     <span className="do-TA-li-status">
                       {req.isApproved ? "Approved" : "Pending"}
                     </span>
+
+                    <span className="do-TA-li-ta-count">
+                      {req.taCountNeeded} TAs
+                    </span>
                   </button>
+
 
                 );
               })}
@@ -168,9 +174,9 @@ const DO_TARequestsPage = () => {
             <h3 className="do-TA-card-title">Details</h3>
             {selected ? (
               <ul className="do-TA-details">
-
-
-
+                <li>
+                  <strong>Department:</strong> {selected.courseCode}
+                </li>
                 <li>
                   <strong>Proctoring Title:</strong>{" "}
                   {selected.classProctoringEventName}
@@ -195,6 +201,10 @@ const DO_TARequestsPage = () => {
 
                 <li>
                   <strong>Sender:</strong> {selected.senderName} ({selected.senderEmail})
+                </li>
+
+                <li>
+                  <strong>TA Count:</strong> {selected.taCountNeeded}
                 </li>
               </ul>
             ) : (

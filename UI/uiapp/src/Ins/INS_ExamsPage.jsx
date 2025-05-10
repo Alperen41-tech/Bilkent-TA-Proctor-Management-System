@@ -93,18 +93,21 @@ const INS_ExamsPage = () => {
 
   const fetchAvailableTAs = async () => {
     const proctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+    const departmentCode = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.departmentCode;
+
     if (!proctoringId) return;
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get("http://localhost:8080/ta/getAvailableTAsByDepartmentExceptProctoring", {
         params: {
-          departmentCode: "CS",
+          departmentCode,
           proctoringId,
         },
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+
       const assignedEmails = new Set(selectedTask.taProfileDTOList.map((ta) => ta.email));
       const filtered = (response.data || []).filter((ta) => !assignedEmails.has(ta.email));
       setAvailableTAs(filtered);
@@ -310,39 +313,39 @@ const INS_ExamsPage = () => {
     return <TaskItem key={id} task={task} onClick={onClickHandler} isSelected={isSelected} />;
   };
 
-  const handleAutomaticAssign = async () => {
-    const classProctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
-    if (!classProctoringId) {
-      alert("Please select a task first.");
-      return;
-    }
+const handleAutomaticAssign = async () => {
+  const classProctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+  const departmentCode = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.departmentCode;
+  if (!classProctoringId || !departmentCode) {
+    alert("Please select a valid task with a department.");
+    return;
+  }
 
-    try {
-      const token = localStorage.getItem("token");
-      const { data } = await axios.get(
-        "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
-        {
-          params: {
-            classProctoringId,
-            departmentCode: "CS", // You can make this dynamic later
-            senderId: instructorId,
-            count: taCount,
-            eligibilityRestriction,
-            oneDayRestriction,
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  try {
+    const token = localStorage.getItem("token");
+    const { data } = await axios.get(
+      "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
+      {
+        params: {
+          classProctoringId,
+          departmentCode,
+          senderId: instructorId,
+          count: taCount,
+          eligibilityRestriction,
+          oneDayRestriction,
+        },
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
 
-      setAutoSuggestedTAs(data || []);
-      setShowAutoModal(true);
-    } catch (error) {
-      console.error("Auto assign error:", error);
-      alert("Failed to get suggested TAs.");
-    }
-  };
+    setAutoSuggestedTAs(data || []);
+    setShowAutoModal(true);
+  } catch (error) {
+    console.error("Auto assign error:", error);
+    alert("Failed to get suggested TAs.");
+  }
+};
+
 
 
   const createTAItem = (ta, onClickHandler) => {
@@ -382,7 +385,7 @@ const INS_ExamsPage = () => {
         <div className="ins-exam-card ins-exam-assigned-tas">
           <h3>TAs Assigned for this Task</h3>
 
-          <p style={{ fontSize: "0.9rem", marginBottom: "0.9rem",marginTop: "0.1rem",  color: "#444" }}>
+          <p style={{ fontSize: "0.9rem", marginBottom: "0.9rem", marginTop: "0.1rem", color: "#444" }}>
             Assigned TAs: {selectedTask.taProfileDTOList.length} / {selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount ?? "?"}
             &emsp;|&emsp;
             Pending Requests: {selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests ?? 0}
