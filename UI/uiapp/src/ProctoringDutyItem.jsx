@@ -1,6 +1,15 @@
 import React from "react";
 import './ProctoringDutyItem.css';
 
+/**
+ * ProctoringDutyItem Component
+ * Displays a single proctoring duty for a TA, including swap lock status and selection styling.
+ * Allows toggling swap availability and selecting the duty.
+ */
+
+/**
+ * Renders a duty item for a TA's proctoring assignment.
+ */
 const ProctoringDutyItem = ({ duty, isSelected, onSelect, onLockedStatusChange }) => {
   const isLocked = !duty.isOpenToSwap;
   console.log("Duty item props:", duty.isOpenToSwap);

@@ -4,6 +4,13 @@ import "./ViewTAProfile.css";
 import { format, addWeeks, subWeeks, startOfWeek, addDays } from "date-fns";
 import axios from "axios";
 
+/**
+ * ViewTAProfile Component
+ * Displays detailed information and weekly schedule of a specific TA (by ID).
+ * Used by instructors to review TA workload, assignments, and availability.
+ */
+
+
 const ViewTAProfile = ({ taId = 2 }) => {
   const [profile, setProfile] = useState({});
   const [currentStartDate, setCurrentStartDate] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
@@ -12,6 +19,10 @@ const ViewTAProfile = ({ taId = 2 }) => {
   const [cellHeight, setCellHeight] = useState(0);
   const cellRef = useRef(null);
 
+
+    /**
+   * Fetches TA's scheduled events (lectures, proctorings, etc.) for a given week.
+   */
   const fetchScheduleInformation = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -27,6 +38,9 @@ const ViewTAProfile = ({ taId = 2 }) => {
     }
   };
 
+    /**
+   * Fetches basic profile info (name, email, ID, etc.) for selected TA.
+   */
   useEffect(() => {
         fetchScheduleInformation();
       }, [currentStartDate, currentEndDate]);

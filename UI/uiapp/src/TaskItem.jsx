@@ -1,8 +1,13 @@
 import React from "react";
 import "./TaskItem.css";
 
+/**
+ * TaskItem Component
+ * Renders a single proctoring or workload task with details such as course, date, and time.
+ * Allows conditional click handling based on `isAboutSwap` and `swapRequestable` flags.
+ */
+
 const TaskItem = ({ task, onClick, isSelected, swapRequestable, isAboutSwap }) => {
-  // For example, assume `task` has: { id, name, date, timeInterval, classroom }
   const handleClick = () => {
     if (onClick) {
       onClick(task);

@@ -3,6 +3,13 @@ import React, { useState } from "react";
 import "./OtherFacultyTAModal.css"; // optional for styling
 import axios from "axios";
 
+
+/**
+ * OtherFacultyTAModal Component
+ * A modal form used by instructors or admins to manually assign a TA from outside their faculty.
+ * Inputs include name, surname, email, and Bilkent ID.
+ * Upon submission, it sends a POST request to assign the TA to a specific class proctoring.
+ */
 const OtherFacultyTAModal = ({ isOpen, onClose, classProctoringId, onSuccess }) => {
 const [form, setForm] = useState({
   name: "",
@@ -11,12 +18,18 @@ const [form, setForm] = useState({
   bilkentId: "",
 });
 
-
+  /**
+   * Updates the form state when input values change.
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
-
+  
+  /**
+   * Sends a request to assign a TA from outside the department.
+   * If successful, triggers UI refresh and closes modal.
+   */
   const handleAssign = async () => {
     try {
       const token = localStorage.getItem("token");

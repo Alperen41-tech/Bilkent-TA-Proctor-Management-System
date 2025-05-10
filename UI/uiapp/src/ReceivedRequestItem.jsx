@@ -1,6 +1,14 @@
 import React from "react";
 import "./ReceivedRequestItem.css";
+/**
+ * ReceivedRequestItem Component
+ * Renders a single received request card for various request types like proctoring, workload, swap, etc.
+ * Displays metadata such as sender, type, and status with action buttons for accept/reject.
+ */
 
+/**
+ * Parses a date string in ISO format to extract formatted components for display.
+ */
 function parseSentDate(sentDateString) {
   if (!sentDateString || typeof sentDateString !== 'string' || !sentDateString.includes('T')) {
     return { date: "—", time: "—" };
@@ -41,9 +49,16 @@ function parseSentDate(sentDateString) {
   };
 }
 
+/**
+ * Component to render details and actions for a received request.
+ */
 const ReceivedRequestItem = ({requestType, sentDateTime, isApproved, responseDateTime, description, senderName, receiverName, receiverEmail, senderEmail, status, classProctoringEventName, classProctoringStartDate, classProctoringEndDate, taCountNeeded, isComplete, isUrgent, leaveStartDate, leaveEndDate, taskTypeName, timeSpent, courseCode, onAccept, onReject, isSelected}) => {
   const { date, time } = parseSentDate(sentDateTime);
 
+
+    /**
+   * Renders context-specific information depending on request type.
+   */
   const renderDetails = () => {
     switch (requestType) {
       case 'AuthStaffProctoringRequest':

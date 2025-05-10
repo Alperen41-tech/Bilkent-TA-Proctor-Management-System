@@ -1,6 +1,16 @@
 import React from "react";
 import "./PendingRequestItem.css";
 
+/**
+ * PendingRequestItem Component
+ * Represents a visual card for a pending request, rendering different details depending on the request type.
+ * Supports cancelation and selection highlighting.
+ */
+
+
+/**
+ * Parses a datetime string (e.g., "2024-05-10T14:30:00") into a formatted object for display.
+ */
 function parseSentDate(sentDateString) {
   if (!sentDateString || typeof sentDateString !== 'string' || !sentDateString.includes('T')) {
     return { date: "—", time: "—" };
@@ -41,9 +51,16 @@ function parseSentDate(sentDateString) {
   };
 }
 
+/**
+ * Main functional component rendering a pending request.
+ */
 const PendingRequestItem = ({requestType, sentDateTime, isApproved, responseDateTime, description, senderName, receiverName, receiverEmail, senderEmail, status, classProctoringEventName, classProctoringStartDate, classProctoringEndDate, taCountNeeded, isComplete, isUrgent, leaveStartDate, leaveEndDate, taskTypeName, timeSpent, courseCode, onCancel, isSelected}) => {
   const { date, time } = parseSentDate(sentDateTime);
 
+
+    /**
+   * Dynamically renders different details depending on the request type.
+   */
   const renderDetails = () => {
     switch (requestType) {
       case 'AuthStaffProctoringRequest':

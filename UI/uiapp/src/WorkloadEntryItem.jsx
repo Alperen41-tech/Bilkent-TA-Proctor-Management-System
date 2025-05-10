@@ -1,6 +1,15 @@
 import React from "react";
 import './WorkloadEntryItem.css'; // Make sure to import your CSS file
 
+
+/**
+ * WorkloadEntryItem Component
+ * Displays a summarized view of a TA workload request including task type, course, date, duration, comment, and status.
+ */
+
+/**
+ * Returns a color code depending on the workload request status.
+ */
 const getStatusColor = (status) => {
   switch (status) {
     case "REJECTED":
