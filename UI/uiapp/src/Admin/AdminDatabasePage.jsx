@@ -123,7 +123,7 @@ const AdminDatabasePage = () => {
       console.error("Error fetching data for", type, error);
     }
   };
-  
+
 
   const handleTypeChange = async (e) => {
     const type = e.target.value;
@@ -692,7 +692,7 @@ const AdminDatabasePage = () => {
                 ))}
               </select>
 
-              <label>Coordinator ID</label>
+              <label>Bilkent Id</label>
               <input ref={newCourseCoordinatorIdRef} type="number" placeholder="e.g., 1023" required />
 
               <input
@@ -711,16 +711,16 @@ const AdminDatabasePage = () => {
             >
 
               <label>TA Name</label>
-              <input ref={newTaNameRef} type="text" required />
+              <input ref={newTaNameRef} type="text" required placeholder="e.g., Ahmet" />
 
               <label>Surname</label>
-              <input ref={newTaSurnameRef} type="text" required />
+              <input ref={newTaSurnameRef} type="text" required placeholder="e.g., Yılmaz" />
 
               <label>Email</label>
-              <input ref={newTaEmailRef} type="email" required />
+              <input ref={newTaEmailRef} type="email" required placeholder="e.g., ahmet@bilkent.edu.tr" />
 
               <label>Bilkent ID</label>
-              <input ref={newTaIdRef} type="text" required />
+              <input ref={newTaIdRef} type="text" required placeholder="e.g., 123456" />
 
               <label>Department</label>
               <select
@@ -762,12 +762,21 @@ const AdminDatabasePage = () => {
               </select>
 
               <label>Phone Number</label>
-              <input ref={newTaPhoneNumRef} type="text" required />
+              <input
+                ref={newTaPhoneNumRef}
+                type="tel"
+                required
+                placeholder="e.g., +90-555-123-45-67"
+                pattern="^\+90-\d{3}-\d{3}-\d{2}-\d{2}$"
+                title="Format: +90-555-123-45-67"
+              />
+
 
               <label>Class Year</label>
-              <input ref={newTaClassYearRef} type="number" min={1} max={6} required />
+              <input ref={newTaClassYearRef} type="number" min={1} max={6} required placeholder="e.g., 3" />
+
               <label>Password</label>
-              <input ref={newTaPasswordRef} type="password" required />
+              <input ref={newTaPasswordRef} type="password" required placeholder="Set login password" />
 
               <input type="submit" value="Create TA" className="admin-database-create-type-button" />
             </form>
@@ -878,7 +887,15 @@ const AdminDatabasePage = () => {
               </select>
 
               <label>Phone Number</label>
-              <input ref={newInstructorPhoneRef} type="text" required placeholder="e.g., +90-555-123-45-67" />
+              <input
+                ref={newInstructorPhoneRef}
+                type="tel"
+                required
+                placeholder="e.g., +90-555-123-45-67"
+                pattern="^\+90-\d{3}-\d{3}-\d{2}-\d{2}$"
+                title="Format: +90-555-123-45-67"
+              />
+
 
               <label>Course</label>
               <select
