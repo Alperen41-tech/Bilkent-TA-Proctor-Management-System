@@ -45,10 +45,12 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
     @Override
     public List<RequestDTO> getUnapprovedInstructorAdditionalTARequests(int receiverId) {
         List<InstructorAdditionalTARequest> list = instructorAdditionalTARequestRepo.findByReceiverIdAndIsApprovedFalseAndResponseDateNull(receiverId);
+        System.out.println("Here is the size of the list: " + list.size());
         List<RequestDTO> dtos = new ArrayList<>();
         for (InstructorAdditionalTARequest request : list) {
             dtos.add(requestMapper.instructorAdditionalTARequestMapper(request));
         }
+        System.out.println("Here is the size of the new list: " + dtos.size());
         return dtos;
     }
 
@@ -63,8 +65,8 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
 
         DeansOffice deansOffice = instructor.get().getDepartment().getFaculty().getDeansOffice();
 
+        requestDTO.setReceiverId(deansOffice.getUserId());
         InstructorAdditionalTARequest request = requestMapper.instructorAdditionalTARequestToEntityMapper(requestDTO);
-        request.setReceiverUser(deansOffice);
 
         instructorAdditionalTARequestRepo.save(request);
         notificationService.createNotification(request, NotificationType.REQUEST);

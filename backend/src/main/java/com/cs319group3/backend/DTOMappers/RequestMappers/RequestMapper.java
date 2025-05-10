@@ -25,16 +25,19 @@ import java.util.Optional;
 @Component
 public class RequestMapper {
 
-
     @Autowired
     private UserRepo userRepo;
+
     @Autowired
     private ClassProctoringRepo classProctoringRepo;
+
     @Autowired
     private DepartmentSecretaryRepo departmentSecretaryRepo;
 
     @Autowired
     private TaskTypeRepo taskTypeRepo;
+    @Autowired
+    private DeansOfficeRepo deansOfficeRepo;
 
     public void essentialToEntityMapper(Request finalRequest, RequestDTO dto) throws Exception{
 
@@ -51,7 +54,7 @@ public class RequestMapper {
         finalRequest.setSenderUser(senderUser.get());
 
         if (!receiverUser.isPresent()) {
-            throw new RuntimeException("Receiver user cannot be found in database");
+            throw new RuntimeException("Receiver user cannot be found in database: " + dto.getReceiverId());
         }
         else{
             finalRequest.setReceiverUser(receiverUser.get());
@@ -86,6 +89,7 @@ public class RequestMapper {
         instructorAdditionalTARequest.setTaCount(dto.getTaCountNeeded());
         instructorAdditionalTARequest.setSentToSecretary(false);
         instructorAdditionalTARequest.setClassProctoring(classProctoring.get());
+        instructorAdditionalTARequest.setReceiverUser(classProctoring.get().getCourse().getDepartment().getFaculty().getDeansOffice());
 
         return instructorAdditionalTARequest;
     }

@@ -9,18 +9,23 @@ import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserType;
 import com.cs319group3.backend.Repositories.UserTypeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LoginMapper {
 
     @Autowired
-    UserTypeRepo userTypeRepo;
+    private UserTypeRepo userTypeRepo;
+
+    @Autowired
+    private PasswordEncoder encoder;
 
     public Login essentialEntityToLogin(LoginDTO dto, TA ta) {
         Login login = new Login();
         login.setUser(ta);
-        login.setPassword(dto.getPassword());
+        login.setPassword(encoder.encode(dto.getPassword()));
 
         UserType userType = userTypeRepo.findByUserTypeName("ta");
         login.setUserType(userType);
@@ -30,7 +35,7 @@ public class LoginMapper {
     public Login essentialEntityToLogin(LoginDTO dto, Instructor instructor) {
         Login login = new Login();
         login.setUser(instructor);
-        login.setPassword(dto.getPassword());
+        login.setPassword(encoder.encode(dto.getPassword()));
         login.setUserType(userTypeRepo.findByUserTypeName("instructor"));
         return login;
     }
@@ -38,7 +43,7 @@ public class LoginMapper {
     public Login essentialEntityToLogin(LoginDTO dto, DepartmentSecretary departmentSecretary) {
         Login login = new Login();
         login.setUser(departmentSecretary);
-        login.setPassword(dto.getPassword());
+        login.setPassword(encoder.encode(dto.getPassword()));
         login.setUserType(userTypeRepo.findByUserTypeName("department secretary"));
         return login;
     }
@@ -46,7 +51,7 @@ public class LoginMapper {
     public Login essentialEntityToLogin(LoginDTO dto, DeansOffice deansOffice) {
         Login login = new Login();
         login.setUser(deansOffice);
-        login.setPassword(dto.getPassword());
+        login.setPassword(encoder.encode(dto.getPassword()));
         login.setUserType(userTypeRepo.findByUserTypeName("deans office"));
         return login;
     }

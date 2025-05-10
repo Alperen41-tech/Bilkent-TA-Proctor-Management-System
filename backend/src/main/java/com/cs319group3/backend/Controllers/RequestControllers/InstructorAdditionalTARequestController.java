@@ -41,7 +41,9 @@ public class InstructorAdditionalTARequestController {
     public List<RequestDTO> getUnapprovedInstructorAdditionalTARequests() {
         System.out.println("Fetching Instructor Additional TA Requests for dean");
         int receiverId = currentUserUtil.getCurrentUserId();
-        return instructorAdditionalTARequestService.getUnapprovedInstructorAdditionalTARequests(receiverId);
+        List<RequestDTO> list = instructorAdditionalTARequestService.getUnapprovedInstructorAdditionalTARequests(receiverId);
+        System.out.println("The final size: " + list.size());
+        return list;
     }
 
     /**
