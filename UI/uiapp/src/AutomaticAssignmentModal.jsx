@@ -64,8 +64,8 @@ const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs, selectedExamI
         },
       });
 
-      if (response.data === true) {
-        alert(" TAs successfully assigned.");
+      if (response.data) {
+        alert(response.data + " TAs successfully assigned.");
         if (refreshAfterAssignment) {
           refreshAfterAssignment(); 
         }

@@ -334,7 +334,7 @@ const INS_ExamsPage = () => {
         }
       );
 
-      if (response.data === true) {
+      if (response.data) {
         alert("Request sent to TA.");
         setShowManualModal(false);
         setSelectedTA(null);
@@ -544,7 +544,7 @@ const INS_ExamsPage = () => {
         </div>
 
         <div className="ins-exam-card ins-exam-ta-list">
-          <h3>Available TAs • {selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests >= 0 ? (selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests) + "TA Slots Remaining" : "Reached enough number of ta." : "Please select a proctoring"}</h3>
+          <h3>Available TAs • {selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests >= 0 ? (selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests) + " TA Slots Remaining" : "Reached enough number of ta." : "Please select a proctoring"}</h3>
           <div className="ins-exam-filters">
             <input
               type="text"

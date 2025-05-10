@@ -37,7 +37,7 @@ const DS_DashboardPage = () => {
   const [isManualAssignment, setIsManualAssignment] = useState(false);
   const [selectedPPR, setSelectedPPR] = useState(null);
 
-  const [taSelectRestrictionsCount, setTASelectRestrictionsCount] = useState(1);
+  const [taSelectRestrictionsCount, setTASelectRestrictionsCount] = useState(0);
   const [taSelectRestrictionsEligibility, setTASelectRestrictionsEligibility] = useState(false);
   const [taSelectRestrictionsOneDay, setTASelectRestrictionsOneDay] = useState(false);
 
@@ -58,7 +58,7 @@ const DS_DashboardPage = () => {
  * Toggles TA selection in multi-select state by ID
  */
   const handleASC = (id) => {
-    if (selectedAppliedStudentsId && !selectedAppliedStudentsId.includes(id)) {
+    if (selectedAppliedStudentsId && !selectedAppliedStudentsId.includes(id) && selectedAppliedStudentsId.length < selectedPPR.applicantCountLimit) {
       setSelectedAppliedStudentsId((prev) => [...prev, id]);
     }
     else {
@@ -577,7 +577,7 @@ const DS_DashboardPage = () => {
                   <div className="ds-ta-select-restrictions">
                     <div className="ds-ta-select-restrictions-inputs">
                       <label htmlFor="taSelectRestrictionsCount">TA Select Restrictions Count</label>
-                      <input type="number" min={1} id="taSelectRestrictionsCount" name="taSelectRestrictionsCount" value={taSelectRestrictionsCount} onChange={(e) => setTASelectRestrictionsCount(e.target.value)} />
+                      <input type="number" min={0} max={selectedPPR.applicantCountLimit} id="taSelectRestrictionsCount" name="taSelectRestrictionsCount" value={taSelectRestrictionsCount} onChange={(e) => setTASelectRestrictionsCount(e.target.value)} />
                     </div>
                     <div className="ds-ta-select-restrictions-inputs">
                       <label htmlFor="taSelectRestrictionsEligibility">TA Select Restrictions Eligibility</label>
