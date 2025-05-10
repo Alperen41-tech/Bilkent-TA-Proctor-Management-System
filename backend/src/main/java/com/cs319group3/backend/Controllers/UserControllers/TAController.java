@@ -75,15 +75,14 @@ public class TAController {
     /**
      * Retrieves available TAs from the same department, excluding the given proctoring.
      *
-     * @param departmentCode department code to filter
      * @param proctoringId proctoring to exclude
      * @return list of TAProfileDTOs
      */
     @GetMapping("getAvailableTAsByDepartmentExceptProctoring")
-    public List<TAProfileDTO> getAllAvailableTAsByDepartment(@RequestParam String departmentCode, @RequestParam int proctoringId) {
+    public List<TAProfileDTO> getAllAvailableTAsByDepartment(@RequestParam int proctoringId) {
         int userId = currentUserUtil.getCurrentUserId();
         System.out.println("Getting available TA profiles by department except in proctoring " + proctoringId);
-        return taService.getAllAvailableTAsByDepartmentCode(departmentCode, proctoringId, userId);
+        return taService.getAllAvailableTAsByDepartmentCode(proctoringId, userId);
     }
 
     /**

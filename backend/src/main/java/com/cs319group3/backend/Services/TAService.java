@@ -32,12 +32,11 @@ public interface TAService {
     /**
      * Returns a list of available TAs in the specified department who are not already assigned to a given proctoring.
      *
-     * @param departmentCode the department code
      * @param proctoringId the class proctoring ID
      * @param userId the ID of the user making the request (e.g. Dean's Office or Instructor)
      * @return a list of TA profiles
      */
-    List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(String departmentCode, int proctoringId, int userId);
+    List<TAProfileDTO> getAllAvailableTAsByDepartmentCode(int proctoringId, int userId);
 
     /**
      * Returns a list of available TAs in the specified faculty who are not already assigned to a given proctoring.

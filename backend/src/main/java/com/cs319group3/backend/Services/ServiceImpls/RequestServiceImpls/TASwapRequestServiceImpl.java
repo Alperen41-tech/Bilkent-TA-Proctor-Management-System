@@ -167,5 +167,7 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         classProctoringTARelationRepo.delete(classProctoringRel);
         classProctoringRel.setTA(newTAReceived);
         classProctoringTARelationRepo.save(classProctoringRel);
+        String logMessage = "TA " + swapRequest.getSenderUser().getUserId() + " swapped with TA " +
+                newTAReceived.getUserId() + " in class proctoring " + classProctoringRel.getId() + ".";
     }
 }

@@ -199,6 +199,8 @@ public class RequestServiceImpl implements RequestService {
                 return true;
             }
             requestRepo.delete(request);
+            String logMessage = "User " + optionalRequest.get().getSenderUser() + " canceled request " + requestId + ".";
+            logService.createLog(logMessage, LogType.DELETE);
             return true;
         }
 

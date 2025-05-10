@@ -5,9 +5,15 @@ import NavbarDS from "./NavbarDS";
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 
+
+/**
+ * DSProfilePage component
+ * Displays Department Secretary profile info and provides functionality to change password.
+ */
+
 const DSProfilePage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = React.useState(false);
-  const [dsProfileInfo, setDsProfileInfo] = useState({courses: []});
+  const [dsProfileInfo, setDsProfileInfo] = useState({ courses: [] });
 
 
   // Refs for the input fields
@@ -15,6 +21,12 @@ const DSProfilePage = () => {
   const newPasswordRef = useRef();
   const confirmNewPasswordRef = useRef();
   //-----------------------------------------------------------
+
+  /**
+ * Sends request to backend to change the DS’s password.
+ * Validates current and new password input before submission.
+ */
+
   const handleChangePassword = async () => {
     try {
       console.log("Email:", dsProfileInfo.email);
@@ -36,14 +48,15 @@ const DSProfilePage = () => {
     } catch (error) {
       console.error("Error changing password:", error);
     }
-  
+
   };
 
+  // On mount: fetch DS profile info from backend and store in state
   useEffect(() => {
     const fetchProfileInformation = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:8080/departmentSecretary/profile",{
+        const response = await axios.get("http://localhost:8080/departmentSecretary/profile", {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -89,7 +102,7 @@ const DSProfilePage = () => {
           <div className="modal">
             <h3>Change Password</h3>
             <label>Old Password</label>
-            <input ref={oldPasswordRef} type="password" placeholder="Enter your old password"/>
+            <input ref={oldPasswordRef} type="password" placeholder="Enter your old password" />
             <label>New Password</label>
             <input ref={newPasswordRef} type="password" placeholder="At least 8 characters long" />
             <label>Confirm New Password</label>
@@ -97,15 +110,15 @@ const DSProfilePage = () => {
             <div className="modal-buttons">
               <button className="cancel-button" onClick={() => setShowChangePasswordModal(false)}>Cancel</button>
               <button className="apply-button" onClick={() => {
-                if(!oldPasswordRef.current.value || !newPasswordRef.current.value || !confirmNewPasswordRef.current.value) {
+                if (!oldPasswordRef.current.value || !newPasswordRef.current.value || !confirmNewPasswordRef.current.value) {
                   alert("Please fill in all fields.");
                   return;
                 }
-                if(newPasswordRef.current.value !== confirmNewPasswordRef.current.value) {
+                if (newPasswordRef.current.value !== confirmNewPasswordRef.current.value) {
                   alert("New password and confirmation do not match.");
                   return;
                 }
-                if(newPasswordRef.current.value.length < 8) {
+                if (newPasswordRef.current.value.length < 8) {
                   alert("New password must be at least 8 characters long.");
                   return;
                 }

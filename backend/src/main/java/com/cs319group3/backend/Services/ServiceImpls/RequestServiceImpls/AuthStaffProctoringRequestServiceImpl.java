@@ -7,9 +7,11 @@ import com.cs319group3.backend.Entities.RelationEntities.ProctoringApplicationTA
 import com.cs319group3.backend.Entities.RequestEntities.AuthStaffProctoringRequest;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
+import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.*;
+import com.cs319group3.backend.Services.ServiceImpls.LogServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -60,6 +62,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
     @Autowired
     @Lazy
     private TAService taService;
+    private LogService logService;
 
     @Override
     public boolean isRequestAlreadySent(int receiverId, int classProctoringId) {
@@ -140,6 +143,9 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
                         " and ends at " + cp.getEndDate().format(formatter) + ".";
                 request.setDescription(unapprovedDescription);
                 authStaffProctoringRequestRepo.save(request);
+                String logMessage = "User " + request.getSenderUser().getUserId() + " sent a proctoring request (" + request.getRequestId() +
+                        ") to user " + request.getReceiverUser().getUserId() + ".";
+                logService.createLog(logMessage, LogType.CREATE);
                 notificationService.createNotification(request, NotificationType.REQUEST, unapprovedDescription);
                 System.out.println(unapprovedDescription);
             } else {

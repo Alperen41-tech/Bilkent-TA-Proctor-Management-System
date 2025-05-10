@@ -143,6 +143,8 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
                 throw new RuntimeException("Could not find the remover of this ta-proctoring: " + removerId);
             }
             classProctoringTARelationRepo.delete(relation.get());
+            String logMessage = "TA " + taId + " is dismissed from class proctoring " + classProctoringId + ".";
+            logService.createLog(logMessage, LogType.DELETE);
             String description = "You are dismissed by " + remover.get().getName() + " from the class proctoring.";
             long minutes = ChronoUnit.MINUTES.between(relation.get().getClassProctoring().getStartDate(), relation.get().getClassProctoring().getEndDate());
             TA ta = relation.get().getTA();

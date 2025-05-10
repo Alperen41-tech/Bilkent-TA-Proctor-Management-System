@@ -1,6 +1,14 @@
 import React from "react";
 import "./DS_SelectPaidProctoringTAItem.css";
 
+
+/**
+ * Parses and formats the given start and end datetime strings into display-friendly date and time.
+ * Returns an object with:
+ * - date: { month, day, weekday }
+ * - time: { start, end }
+ */
+
 function parseSentDate(startDateString, endDateString) {
   if (!startDateString || typeof startDateString !== 'string' || !startDateString.includes('T')) {
     return { date: "—", time: "—" };
@@ -42,6 +50,12 @@ function parseSentDate(startDateString, endDateString) {
     }
   };
 }
+/**
+ * DS_SelectPaidProctoringTAItem component
+ * Renders a paid proctoring request card allowing the DS to choose
+ * between manual or application-based TA assignment workflows.
+ *
+ */
 
 const DS_SelectPaidProctoringTAItem = ({paidProctoring ,isSelected, onSelect, isForcedAssignment, isAppliedAssignment, onForcedAssignment, onAppliedAssignment}) => {
   const { date, time } = parseSentDate(paidProctoring.classProctoringDTO.startDate, paidProctoring.classProctoringDTO.endDate);

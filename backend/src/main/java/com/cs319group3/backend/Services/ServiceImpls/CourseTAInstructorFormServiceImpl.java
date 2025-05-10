@@ -5,10 +5,12 @@ import com.cs319group3.backend.DTOs.CourseTAInstructorFormDTO;
 import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.CourseTAInstructorForm;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
+import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Repositories.CourseRepo;
 import com.cs319group3.backend.Repositories.CourseTAInstructorFormRepo;
 import com.cs319group3.backend.Repositories.InstructorRepo;
 import com.cs319group3.backend.Services.CourseTAInstructorFormService;
+import com.cs319group3.backend.Services.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,7 @@ public class CourseTAInstructorFormServiceImpl implements CourseTAInstructorForm
 
     @Autowired
     private CourseTAInstructorFormRepo courseTAInstructorFormRepo;
+    private LogService logService;
 
     @Override
     public ResponseEntity<Boolean> createForm(CourseTAInstructorFormDTO form) {
@@ -51,6 +54,8 @@ public class CourseTAInstructorFormServiceImpl implements CourseTAInstructorForm
         newForm.setCourse(course.get());
 
         courseTAInstructorFormRepo.save(newForm);
+        String logMessage = "Instructor " + instructor.get().getUserId() + " filled the TA request form.";
+        logService.createLog(logMessage, LogType.CREATE);
         return new ResponseEntity<>(true, HttpStatus.CREATED);
     }
 }
