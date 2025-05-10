@@ -3,11 +3,17 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ForgotPasswordPage.css";
 import axios from "axios";
+import { useSearchParams } from 'react-router-dom';
 
+const ForgotPasswordPage = () => {
+    const newPasswordRef = useRef();
+    const confirmNewPasswordRef = useRef();
+    const [searchParams] = useSearchParams();
+    const token = searchParams.get("token");
 
-const handleChangePassword = async () => {
+  const handleChangePassword = async () => {
     try {
-      const response = await axios.put("http://localhost:8080/auth/changePassword");
+      const response = await axios.put(`http://localhost:8080/auth/setAfterForgetPassword?token=${token}&newPassword=${newPasswordRef.current.value}`);
       if (response.data) {
         alert("Password changed successfully.");
       } else {
@@ -23,10 +29,6 @@ const handleChangePassword = async () => {
       }
     }
   };
-
-const ForgotPasswordPage = () => {
-    const newPasswordRef = useRef();
-    const confirmNewPasswordRef = useRef();
 
   return (
       <div className="login-container">
