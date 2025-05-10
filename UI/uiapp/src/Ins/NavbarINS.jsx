@@ -2,23 +2,24 @@ import React from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import "./NavbarINS.css";
 import LogoutModal from "../LogoutModal";
+/**
+ * NavbarINS component
+ * Provides the navigation bar UI for instructors with links to dashboard, schedule, exams, profile, and logout.
+ */
 
 const NavbarINS = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-
+// Opens the logout confirmation modal
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-
+// Handles logout and navigates to login page
   const handleLogout = () => {
     setIsModalOpen(false);
     navigate("/");
   };
 
-
-
-  //CHANGED ALL TO ins-tas FOR NOW!!!!!!!!!!!!!!!!!!!!!
   return (
     <>
       <header className="navbar">

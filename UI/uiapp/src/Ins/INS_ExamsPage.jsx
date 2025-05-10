@@ -9,6 +9,14 @@ import ManualAssignmentModal from "../ManualAssignmentModal";
 import AutomaticAssignmentModal from "../AutomaticAssignmentModal";
 import InstructorAdditionalTAModal from "../InstructorAdditionalTAModal";
 
+/**
+ * INS_ExamsPage
+ * This page allows instructors to:
+ * - View and manage their proctoring tasks
+ * - Assign or remove TAs manually or automatically
+ * - Create new exams
+ * - Request additional TA support
+ */
 
 
 const INS_ExamsPage = () => {
@@ -97,6 +105,9 @@ const INS_ExamsPage = () => {
       }
     }
   };
+/**
+ * Fetches instructor's assigned exams and updates state
+ */
 
   const fetchProctoringTasks = async () => {
     try {
@@ -113,6 +124,9 @@ const INS_ExamsPage = () => {
       console.error("Error fetching proctoring tasks:", error);
     }
   };
+/**
+ * Fetches courses assigned to the instructor for exam creation
+ */
 
   const fetchInstructorCourses = async () => {
     try {
@@ -127,6 +141,9 @@ const INS_ExamsPage = () => {
       console.error("Error fetching instructor courses:", error);
     }
   };
+/**
+ * Fetches available TAs for the selected proctoring task
+ */
 
   const fetchAvailableTAs = async () => {
     const proctoringId = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO?.id;

@@ -3,12 +3,16 @@ import React, { use } from "react";
 import "./InstructorProfilePage.css"; // Reusing the same CSS
 import Navbar from "./NavbarINS";
 import axios from "axios";
-import { useState, useEffect, useRef} from "react";
+import { useState, useEffect, useRef } from "react";
 import { min } from "date-fns";
+/**
+ * InstructorProfilePage component
+ * Displays instructor profile details and enables password changes and TA request form submission.
+ */
 
 const InstructorProfilePage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
-  const [insProfileInfo, setInsProfileInfo] = useState({courses: []});
+  const [insProfileInfo, setInsProfileInfo] = useState({ courses: [] });
   const [showFormModal, setShowFormModal] = useState(false);
   const [instructorCourses, setInstructorCourses] = useState([]);
 
@@ -27,6 +31,10 @@ const InstructorProfilePage = () => {
   const instructorIdRef = useRef();
   const courseIdRef = useRef();
   //-----------------------------------------------------------
+  /**
+ * handleCreateForm
+ * Sends a TA request form to the backend using instructor's preferences.
+ */
 
   const handleCreateForm = async () => {
     try {
@@ -40,7 +48,7 @@ const InstructorProfilePage = () => {
       console.log("Preferred Graders:", preferredGradersRef.current.value);
       console.log("Unwanted TAs:", unwantedTAsRef.current.value);
 
-      const response = await axios.post("http://localhost:8080/courseTAInstructorForm/create",{
+      const response = await axios.post("http://localhost:8080/courseTAInstructorForm/create", {
         instructorId: 4,
         courseId: courseIdRef.current.value,
         minTALoad: minTALoadRef.current.value,
@@ -62,7 +70,11 @@ const InstructorProfilePage = () => {
       console.error("Error creating TA request form:", error);
     }
   };
-        
+  /**
+ * handleChangePassword
+ * Allows instructor to change their password by providing old and new values.
+ */
+
   const handleChangePassword = async () => {
     try {
       console.log("Email:", insProfileInfo.email);
@@ -84,8 +96,12 @@ const InstructorProfilePage = () => {
     } catch (error) {
       console.error("Error changing password:", error);
     }
-  
+
   };
+  /**
+   * fetchProfileInformation
+   * Fetches the profile data of the currently logged-in instructor.
+   */
 
   const fetchProfileInformation = async () => {
     try {
@@ -102,15 +118,20 @@ const InstructorProfilePage = () => {
     }
   };
 
+  /**
+ * fetchInstructorCourses
+ * Retrieves the list of courses assigned to the instructor for populating form options.
+ */
+
   const fetchInstructorCourses = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:8080/course/getCoursesOfInstructor",{
+      const response = await axios.get("http://localhost:8080/course/getCoursesOfInstructor", {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      if(response.data) {
+      if (response.data) {
         setInstructorCourses(response.data);
         console.log("Instructor Courses:", response.data);
       }
@@ -131,7 +152,7 @@ const InstructorProfilePage = () => {
     console.log(insProfileInfo);
     console.log(instructorCourses);
   }
-  , [insProfileInfo,instructorCourses]);
+    , [insProfileInfo, instructorCourses]);
 
 
   return (
@@ -174,7 +195,7 @@ const InstructorProfilePage = () => {
           <div className="modal">
             <h3>Change Password</h3>
             <label>Old Password</label>
-            <input ref={oldPasswordRef} type="password" placeholder="Enter your old password"/>
+            <input ref={oldPasswordRef} type="password" placeholder="Enter your old password" />
             <label>New Password</label>
             <input ref={newPasswordRef} type="password" placeholder="At least 8 characters long" />
             <label>Confirm New Password</label>
@@ -182,15 +203,15 @@ const InstructorProfilePage = () => {
             <div className="modal-buttons">
               <button className="cancel-button" onClick={() => setShowChangePasswordModal(false)}>Cancel</button>
               <button className="apply-button" onClick={() => {
-                if(!oldPasswordRef.current.value || !newPasswordRef.current.value || !confirmNewPasswordRef.current.value) {
+                if (!oldPasswordRef.current.value || !newPasswordRef.current.value || !confirmNewPasswordRef.current.value) {
                   alert("Please fill in all fields.");
                   return;
                 }
-                if(newPasswordRef.current.value !== confirmNewPasswordRef.current.value) {
+                if (newPasswordRef.current.value !== confirmNewPasswordRef.current.value) {
                   alert("New password and confirmation do not match.");
                   return;
                 }
-                if(newPasswordRef.current.value.length < 8) {
+                if (newPasswordRef.current.value.length < 8) {
                   alert("New password must be at least 8 characters long.");
                   return;
                 }
@@ -200,101 +221,102 @@ const InstructorProfilePage = () => {
           </div>
         </div>
       )}
-  
-  {showFormModal && (
-  <div className="ins-profile-form-modal-overlay">
-    <form className="ins-profile-form-modal" onSubmit={(e) => {
-      e.preventDefault();
-      handleCreateForm();}}>
-      <h3>Create TA Assignment Form</h3>
-      
-      <label>Course ID</label>
-      <select ref={courseIdRef} required defaultValue="">
-        <option value="" disabled>Select a course</option>
-        {instructorCourses.map((course) => (
-          <option key={course.course.id} value={course.course.id}>
-            {course.course.name} - {course.course.courseCode}
-          </option>
-        ))}
-      </select>
-      {/* Integer Fields */}
-      <label>Min TA Load</label>
-      <input
-        type="number"
-        placeholder="Minimum TA load"
-        ref={minTALoadRef}
-        min={0}
-        required
-      />
 
-      <label>Max TA Load</label>
-      <input
-        type="number"
-        placeholder="Maximum TA load"
-        ref={maxTALoadRef}
-        min={0}
-        required
-      />
+      {showFormModal && (
+        <div className="ins-profile-form-modal-overlay">
+          <form className="ins-profile-form-modal" onSubmit={(e) => {
+            e.preventDefault();
+            handleCreateForm();
+          }}>
+            <h3>Create TA Assignment Form</h3>
 
-      <label>Number of Graders</label>
-      <input
-        type="number"
-        placeholder="Number of graders"
-        ref={numberOfGraderRef}
-        min={0}
-        required
-      />
+            <label>Course ID</label>
+            <select ref={courseIdRef} required defaultValue="">
+              <option value="" disabled>Select a course</option>
+              {instructorCourses.map((course) => (
+                <option key={course.course.id} value={course.course.id}>
+                  {course.course.name} - {course.course.courseCode}
+                </option>
+              ))}
+            </select>
+            {/* Integer Fields */}
+            <label>Min TA Load</label>
+            <input
+              type="number"
+              placeholder="Minimum TA load"
+              ref={minTALoadRef}
+              min={0}
+              required
+            />
 
-      {/* String Fields */}
-      <label>Must-Have TAs</label>
-      <input
-        type="text"
-        placeholder="Comma-separated TA names"
-        ref={mustHaveTAsRef}
-        pattern="^([^,]+)(,[^,]+)*$"
-        title="Separate TA names with a single comma (,), e.g., Ali Vural,Demir Kara"
-      />
+            <label>Max TA Load</label>
+            <input
+              type="number"
+              placeholder="Maximum TA load"
+              ref={maxTALoadRef}
+              min={0}
+              required
+            />
 
-      <label>Description</label>
-      <input
-        type="text"
-        placeholder="Reason for must-have TAs"
-        ref={descriptionRef}
-      />
+            <label>Number of Graders</label>
+            <input
+              type="number"
+              placeholder="Number of graders"
+              ref={numberOfGraderRef}
+              min={0}
+              required
+            />
 
-      <label>Preferred TAs</label>
-      <input
-        type="text"
-        placeholder="Comma-separated preferred TA names (in order)"
-        ref={preferredTAsRef}
-        pattern="^([^,]+)(,[^,]+)*$"
-        title="Separate TA names with a single comma (,), e.g., Ali Vural,Demir Kara"
-      />
+            {/* String Fields */}
+            <label>Must-Have TAs</label>
+            <input
+              type="text"
+              placeholder="Comma-separated TA names"
+              ref={mustHaveTAsRef}
+              pattern="^([^,]+)(,[^,]+)*$"
+              title="Separate TA names with a single comma (,), e.g., Ali Vural,Demir Kara"
+            />
 
-      <label>Preferred Graders</label>
-      <input
-        type="text"
-        placeholder="Comma-separated grader names (in order)"
-        ref={preferredGradersRef}
-        pattern="^([^,]+)(,[^,]+)*$"
-        title="Separate grader names with a single comma (,), e.g., Ali Vural,Demir Kara"
-      />
+            <label>Description</label>
+            <input
+              type="text"
+              placeholder="Reason for must-have TAs"
+              ref={descriptionRef}
+            />
 
-      <label>Unwanted TAs</label>
-      <input
-        type="text"
-        placeholder="Comma-separated unwanted TA names"
-        ref={unwantedTAsRef}
-        pattern="^([^,]+)(,[^,]+)*$"
-        title="Separate TA names with a single comma (,), e.g., Ali Vural,Demir Kara"
-      />
-      <div className="modal-buttons">
-        <button className="cancel-button" onClick={() => setShowFormModal(false)}>Cancel</button>
-        <button className="apply-button" type="submit">Apply</button>
-      </div>
-    </form>
-  </div>
-)}
+            <label>Preferred TAs</label>
+            <input
+              type="text"
+              placeholder="Comma-separated preferred TA names (in order)"
+              ref={preferredTAsRef}
+              pattern="^([^,]+)(,[^,]+)*$"
+              title="Separate TA names with a single comma (,), e.g., Ali Vural,Demir Kara"
+            />
+
+            <label>Preferred Graders</label>
+            <input
+              type="text"
+              placeholder="Comma-separated grader names (in order)"
+              ref={preferredGradersRef}
+              pattern="^([^,]+)(,[^,]+)*$"
+              title="Separate grader names with a single comma (,), e.g., Ali Vural,Demir Kara"
+            />
+
+            <label>Unwanted TAs</label>
+            <input
+              type="text"
+              placeholder="Comma-separated unwanted TA names"
+              ref={unwantedTAsRef}
+              pattern="^([^,]+)(,[^,]+)*$"
+              title="Separate TA names with a single comma (,), e.g., Ali Vural,Demir Kara"
+            />
+            <div className="modal-buttons">
+              <button className="cancel-button" onClick={() => setShowFormModal(false)}>Cancel</button>
+              <button className="apply-button" type="submit">Apply</button>
+            </div>
+          </form>
+        </div>
+      )}
 
     </div>
   );

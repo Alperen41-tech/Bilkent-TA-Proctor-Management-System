@@ -7,6 +7,11 @@ import WorkloadEntryItem from "../WorkloadEntryItem";
 import NotificationItem from "../NotificationItem";
 import axios from "axios";
 
+/**
+ * INS_DashboardPage component
+ * Main dashboard for Instructors to manage tasks, requests, and workload types.
+ */
+
 const INS_DashboardPage = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -20,12 +25,17 @@ const INS_DashboardPage = () => {
   const [selectedCreateTaskCourse, setSelectedCreateTaskCourse] = useState({});
   const [selectedDeleteTaskCourse, setSelectedDeleteTaskCourse] = useState({});
 
-// Refs for form inputs
+  // Refs for form inputs
   const newTaskTypeNameRef = useRef();
   const newTaskLimitRef = useRef();
   const selectedForDeleteTaskType = useRef();
-//---------------------------------------------
+  //---------------------------------------------
 
+
+  /**
+ * handleTabClick
+ * Switches between 'pending', 'received', and 'tasks' tabs. Fetches relevant requests.
+ */
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setSelectedRequest(null);
@@ -33,26 +43,40 @@ const INS_DashboardPage = () => {
     fetchPendingRequests();
   };
 
-
+  /**
+   * createPendingRequest
+   * Renders each pending request in the list.
+   */
   const createPendingRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <PendingRequestItem {...request} onCancel={() => cancelPendingRequest(request.requestId)} isSelected={selectedRequest === request}/>
+        <PendingRequestItem {...request} onCancel={() => cancelPendingRequest(request.requestId)} isSelected={selectedRequest === request} />
       </div>
     );
   };
-
+  /**
+   * createReceivedRequest
+   * Renders each received request in the list.
+   */
   const createReceivedRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <ReceivedRequestItem {...request} onAccept={()=>handleRequestResponse(request.requestId, true)} onReject={()=>handleRequestResponse(request.requestId, false)} isSelected={selectedRequest === request}/>
+        <ReceivedRequestItem {...request} onAccept={() => handleRequestResponse(request.requestId, true)} onReject={() => handleRequestResponse(request.requestId, false)} isSelected={selectedRequest === request} />
       </div>
     );
   };
-
+  /**
+   * createWorkloadEntry
+   * Renders a past workload request as an entry item.
+   */
   const createWorkloadEntry = (courseCode, taskTitle, date, duration, comment, status, onSelect) => {
-    return <div onClick={() => {setShowRespondedWorkloadDetails(true);onSelect();}}> <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status} /> </div>;
+    return <div onClick={() => { setShowRespondedWorkloadDetails(true); onSelect(); }}> <WorkloadEntryItem courseCode={courseCode} taskTitle={taskTitle} date={date} duration={duration} comment={comment} status={status} /> </div>;
   }
+
+
+  /**
+ * Fetches courses for the logged-in instructor.
+ */
 
   const fetchInstructorCourses = async () => {
     try {
@@ -72,6 +96,9 @@ const INS_DashboardPage = () => {
       console.error("There was an error with fetching courses:", error);
     }
   };
+  /**
+   * Loads notifications related to task assignments or request updates.
+   */
 
   const fetchNotifications = async () => {
     try {
@@ -81,7 +108,7 @@ const INS_DashboardPage = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      if(response.data){
+      if (response.data) {
         const sortedNotifications = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
         setNotifications(sortedNotifications);
         console.log(notifications);
@@ -93,6 +120,11 @@ const INS_DashboardPage = () => {
       console.error("Error fetching notifications:", error);
     }
   };
+
+
+  /**
+ * Loads all requests where the instructor is the receiver.
+ */
 
   const fetchReceivedRequests = async () => {
     try {
@@ -110,6 +142,10 @@ const INS_DashboardPage = () => {
     }
   };
 
+  /**
+ * Loads all requests sent by the instructor.
+ */
+
   const fetchPendingRequests = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -125,10 +161,13 @@ const INS_DashboardPage = () => {
       console.error("Error fetching pending requests:", error);
     }
   };
+  /**
+   * Accepts or rejects a received request and updates state accordingly.
+   */
 
   const handleRequestResponse = async (requestId, answer) => {
     try {
-      const response = await axios.put(`http://localhost:8080/request/respond`,null, {
+      const response = await axios.put(`http://localhost:8080/request/respond`, null, {
         params: {
           id: requestId,
           response: answer,
@@ -137,8 +176,8 @@ const INS_DashboardPage = () => {
       );
       if (response.data) {
         alert("Request answered successfully.");
-        fetchReceivedRequests(); 
-        fetchPendingRequests(); 
+        fetchReceivedRequests();
+        fetchPendingRequests();
       } else {
         alert("Failed to accept the request. Please try again.");
       }
@@ -147,18 +186,21 @@ const INS_DashboardPage = () => {
       alert("An error occurred while accepting the request. Please try again.");
     }
   };
+  /**
+   * Sends a new task type creation request for the selected course.
+   */
 
   const postTaskType = async (taskTypeName, taskLimit) => {
     try {
       const response = await axios.post(`http://localhost:8080/taskType/createTaskType?courseId=${selectedCreateTaskCourse.course.id}`, {
         courseName: selectedCreateTaskCourse.course.name,
         taskTypeName: taskTypeName,
-        taskLimit: parseInt(taskLimit,10),       
+        taskLimit: parseInt(taskLimit, 10),
       });
 
       if (!response.data) {
         alert("Could not created the Task Type. Try again.");
-      } 
+      }
       else {
         alert("Task Type created successfully!");
         console.log("Task Type created successfully:", response.data);
@@ -168,18 +210,21 @@ const INS_DashboardPage = () => {
       alert("An error occurred. Please try again.");
     }
   };
-  
+  /**
+   * Deletes an existing task type from the selected course.
+   */
+
   const deleteTaskType = async (taskTypeName) => {
     try {
       const response = await axios.delete("http://localhost:8080/taskType/deleteTaskType?", {
-           params: {
-            courseId: selectedDeleteTaskCourse.course.id,
-            taskTypeName: taskTypeName,
-           }
+        params: {
+          courseId: selectedDeleteTaskCourse.course.id,
+          taskTypeName: taskTypeName,
+        }
       });
       if (!response.data) {
         alert("Could not delete the Task Type. Try again.");
-      } 
+      }
       else {
         alert("Task Type deleted successfully!");
         console.log("Task Type deleted successfully:", response.data);
@@ -189,13 +234,16 @@ const INS_DashboardPage = () => {
       alert(error.response.data.message);
     }
   };
+  /**
+   * Loads task type names for a selected course, to populate deletion dropdown.
+   */
 
   const fetchTaskTypes = async () => {
     if (!selectedDeleteTaskCourse || !selectedDeleteTaskCourse.course) {
       console.warn("No valid course selected for fetching task types.");
       return;
     }
-  
+
     try {
       const response = await axios.get(
         `http://localhost:8080/taskType/getTaskTypeNames?courseId=${selectedDeleteTaskCourse.course.id}`
@@ -211,8 +259,11 @@ const INS_DashboardPage = () => {
       alert("An error occurred. Please try again.");
     }
   };
-  
 
+  /**
+   * cancelPendingRequest
+   * Cancels a pending request previously sent by the instructor.
+   */
   const cancelPendingRequest = async (requestId) => {
     try {
       const response = await axios.delete(`http://localhost:8080/request/deleteRequest?id=${requestId}`);
@@ -228,7 +279,7 @@ const INS_DashboardPage = () => {
       alert("An error occurred while canceling the request. Please try again.");
     }
   };
-
+  // On mount: fetch initial data for dashboard display
   useEffect(() => {
     fetchReceivedRequests();
     fetchPendingRequests();
@@ -241,7 +292,7 @@ const INS_DashboardPage = () => {
       fetchTaskTypes();
     }
   }
-  , [selectedDeleteTaskCourse]);
+    , [selectedDeleteTaskCourse]);
 
   return (
     <div className="dashboard-page">
@@ -266,12 +317,12 @@ const INS_DashboardPage = () => {
               )}
               {activeTab === "received" && (
                 <div>
-                  {receivedRequests.filter((enr, index) => {return enr.status === null}).map((req, index) => createReceivedRequest(req, index))}
+                  {receivedRequests.filter((enr, index) => { return enr.status === null }).map((req, index) => createReceivedRequest(req, index))}
                 </div>
               )}
               {activeTab === "tasks" && (
-                <div >{receivedRequests.filter((rq,index) =>{
-                  if (rq.requestType !== "TAWorkloadRequest") return false;                  
+                <div >{receivedRequests.filter((rq, index) => {
+                  if (rq.requestType !== "TAWorkloadRequest") return false;
                   return rq.status === "APPROVED" || rq.status === "REJECTED";
                 }).map((ent, idx) =>
                   createWorkloadEntry(
@@ -282,7 +333,7 @@ const INS_DashboardPage = () => {
                     ent.description,
                     ent.status,
                     () => setSelectedRespondedWorkloadRequest(ent)  // Set the selected request for details
-                  ) 
+                  )
                 )}
                 </div>
               )}
@@ -294,39 +345,39 @@ const INS_DashboardPage = () => {
               <div className="details-panel">
                 <h3>Details</h3>
                 {selectedRequest ? (
-                <div>
-                  <p><strong>Name:</strong> {selectedRequest.senderName || "—"}</p>
-                  <p><strong>Email:</strong> {selectedRequest.senderEmail || "—"}</p>
+                  <div>
+                    <p><strong>Name:</strong> {selectedRequest.senderName || "—"}</p>
+                    <p><strong>Email:</strong> {selectedRequest.senderEmail || "—"}</p>
 
-                  {selectedRequest.sentDateTime && (() => {
-                    const [ date, time ] = selectedRequest.sentDateTime.split("T");
-                    return (
+                    {selectedRequest.sentDateTime && (() => {
+                      const [date, time] = selectedRequest.sentDateTime.split("T");
+                      return (
+                        <>
+                          <p><strong>Sent Date:</strong> {date}</p>
+                          <p><strong>Sent Time:</strong> {time}</p>
+                        </>
+                      );
+                    })()}
+
+                    {selectedRequest.requestType === 'AuthStaffProctoringRequest' ||
+                      selectedRequest.requestType === 'TASwapRequest' ? (
                       <>
-                        <p><strong>Sent Date:</strong> {date}</p>
-                        <p><strong>Sent Time:</strong> {time}</p>
+                        <p><strong>Event:</strong> {selectedRequest.classProctoringEventName}</p>
+                        <p><strong>Event Start Date:</strong> {selectedRequest.classProctoringStartDate ? selectedRequest.classProctoringStartDate.split("T")[0] : "—"}</p>
+                        <p><strong>Event End Date:</strong> {selectedRequest.classProctoringEndDate ? selectedRequest.classProctoringEndDate.split("T")[0] : "—"}</p>
                       </>
-                    );
-                  })()}
+                    ) : null}
 
-                  {selectedRequest.requestType === 'AuthStaffProctoringRequest' ||
-                  selectedRequest.requestType === 'TASwapRequest' ? (
-                    <>
-                      <p><strong>Event:</strong> {selectedRequest.classProctoringEventName}</p>
-                      <p><strong>Event Start Date:</strong> {selectedRequest.classProctoringStartDate ? selectedRequest.classProctoringStartDate.split("T")[0] : "—"}</p>
-                      <p><strong>Event End Date:</strong> {selectedRequest.classProctoringEndDate ? selectedRequest.classProctoringEndDate.split("T")[0] : "—"}</p>
-                    </>
-                  ) : null}
+                    {selectedRequest.requestType === 'TAWorkloadRequest' ? (
+                      <p><strong>Task:</strong> {selectedRequest.taskTypeName}</p>
+                    ) : null}
 
-                  {selectedRequest.requestType === 'TAWorkloadRequest' ? (
-                    <p><strong>Task:</strong> {selectedRequest.taskTypeName}</p>
-                  ) : null}
-
-                  <p><strong>Comment:</strong> {selectedRequest.description || "—"}</p>
-                  <p><strong>Status:</strong> {selectedRequest.status || "—"}</p>
-                </div>
-                  ) : (
-                    <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
-                  )}
+                    <p><strong>Comment:</strong> {selectedRequest.description || "—"}</p>
+                    <p><strong>Status:</strong> {selectedRequest.status || "—"}</p>
+                  </div>
+                ) : (
+                  <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
+                )}
 
 
               </div>
@@ -336,21 +387,23 @@ const INS_DashboardPage = () => {
                   <h3>Create Task Type</h3>
                   <form onSubmit={(e) => {
                     e.preventDefault();
-                    if(selectedCreateTaskCourse === "Select Course"){
+                    if (selectedCreateTaskCourse === "Select Course") {
                       alert("Please select a course.");
                       return;
                     }
-                    postTaskType(newTaskTypeNameRef.current.value, newTaskLimitRef.current.value); 
+                    postTaskType(newTaskTypeNameRef.current.value, newTaskLimitRef.current.value);
                   }}>
                     <label>Select Course</label>
                     <select required onChange={(e) => {
-                      if(e.target.value === "Select Course"){
+                      if (e.target.value === "Select Course") {
                         setSelectedCreateTaskCourse({});
                       }
                       else {
                         const obj = instructorCourses.find((course) => course.course.id.toString() === e.target.value);
-                        setSelectedCreateTaskCourse(obj);}}
-                      }>
+                        setSelectedCreateTaskCourse(obj);
+                      }
+                    }
+                    }>
                       <option value="Select Course">Select Course</option>
                       {instructorCourses.map((course, index) => (
                         <option key={index} value={course.course.id}>{course.course.name}</option>
@@ -369,26 +422,27 @@ const INS_DashboardPage = () => {
                   <h3>Delete Task Type</h3>
                   <form onSubmit={(e) => {
                     e.preventDefault();
-                    if(selectedDeleteTaskCourse === "Select Course"){
+                    if (selectedDeleteTaskCourse === "Select Course") {
                       alert("Please select a course.");
                       return;
                     }
-                    deleteTaskType(selectedForDeleteTaskType.current.value); e.preventDefault();}}>
+                    deleteTaskType(selectedForDeleteTaskType.current.value); e.preventDefault();
+                  }}>
                     <label>Select Course</label>
-                      <select required onChange={(e) => {
-                        if(e.target.value === "Select Course"){
-                          setSelectedDeleteTaskCourse({});
-                        }
-                        else {
-                          const obj = instructorCourses.find((course) => course.course.id.toString() === e.target.value);
-                          setSelectedDeleteTaskCourse(obj);
-                        }
-                       }}>
-                        <option value="Select Course">Select Course</option>
-                        {instructorCourses.map((course, index) => (
-                          <option key={index} value={course.course.id}>{course.course.name}</option>
-                        ))}
-                      </select>
+                    <select required onChange={(e) => {
+                      if (e.target.value === "Select Course") {
+                        setSelectedDeleteTaskCourse({});
+                      }
+                      else {
+                        const obj = instructorCourses.find((course) => course.course.id.toString() === e.target.value);
+                        setSelectedDeleteTaskCourse(obj);
+                      }
+                    }}>
+                      <option value="Select Course">Select Course</option>
+                      {instructorCourses.map((course, index) => (
+                        <option key={index} value={course.course.id}>{course.course.name}</option>
+                      ))}
+                    </select>
                     <label>Select Task Type</label>
                     <select ref={selectedForDeleteTaskType}>
                       <option value="task1">Select Task Type to Delete</option>
@@ -422,24 +476,24 @@ const INS_DashboardPage = () => {
         </div>
       </div>
       {showRespondedWorkloadDetails && (
-      <div className="modal-overlay">
-        <div className="modal">
-          <h3>Workload Request Details</h3>
-          <div className="modal-content">
-            <p><strong>Course Code:</strong> {selectedRespondedWorkloadRequest.courseCode}</p>
-            <p><strong>Task Title:</strong> {selectedRespondedWorkloadRequest.taskTypeName}</p>
-            <p><strong>Date:</strong> {selectedRespondedWorkloadRequest.sentDateTime.split("T")[0]}</p>
-            <p><strong>Duration:</strong> {selectedRespondedWorkloadRequest.timeSpent} hours</p>
-            <p><strong>Comment:</strong> {selectedRespondedWorkloadRequest.description}</p>
-            <p><strong>Status:</strong> {selectedRespondedWorkloadRequest.status}</p>
-            <p><strong>Sender Name:</strong> {selectedRespondedWorkloadRequest.senderName}</p>
-          </div>
-          <div className="modal-buttons">
-            <button className="cancel-button" onClick={() => setShowRespondedWorkloadDetails(false)}>Return</button>
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Workload Request Details</h3>
+            <div className="modal-content">
+              <p><strong>Course Code:</strong> {selectedRespondedWorkloadRequest.courseCode}</p>
+              <p><strong>Task Title:</strong> {selectedRespondedWorkloadRequest.taskTypeName}</p>
+              <p><strong>Date:</strong> {selectedRespondedWorkloadRequest.sentDateTime.split("T")[0]}</p>
+              <p><strong>Duration:</strong> {selectedRespondedWorkloadRequest.timeSpent} hours</p>
+              <p><strong>Comment:</strong> {selectedRespondedWorkloadRequest.description}</p>
+              <p><strong>Status:</strong> {selectedRespondedWorkloadRequest.status}</p>
+              <p><strong>Sender Name:</strong> {selectedRespondedWorkloadRequest.senderName}</p>
+            </div>
+            <div className="modal-buttons">
+              <button className="cancel-button" onClick={() => setShowRespondedWorkloadDetails(false)}>Return</button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
     </div>
   );
 };

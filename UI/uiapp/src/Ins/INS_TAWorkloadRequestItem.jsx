@@ -1,44 +1,51 @@
 import React from "react";
 import "./INS_TAWorkloadRequestItem.css";
+/**
+ * INS_TAWorkloadRequestItem component
+ * Displays a single TA workload request in a card format for instructors to approve or reject.
+ */
 
-const INS_TAWorkloadRequestItem = ({taskTypeName, timeSpent, courseCode, description, sentDate, status, taName, taMail, onAccept, onReject }) => {
-    function parseSentDate(sentDateString) {
-        const [datePart, timePart] = sentDateString.split('T');
-        const [year, monthNum, day] = datePart.split('-'); 
-        const [hour, minute, second] = timePart.split(':');
-      
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      
-        const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        
-        // Create a date object ONLY to find the weekday (you can't guess weekday without date)
-        const tempDate = new Date(`${year}-${monthNum}-${day}`);
-        const weekday = weekdays[tempDate.getDay()];
-      
-        const month = months[parseInt(monthNum, 10) - 1];
-      
-        // Format time as AM/PM
-        const hourInt = parseInt(hour, 10);
-        const ampm = hourInt >= 12 ? 'PM' : 'AM';
-        const adjustedHour = hourInt % 12 || 12;
-      
-        const start = `${adjustedHour}:${minute}${ampm}`;
-      
-        return {
-          date: {
-            month,
-            day,
-            weekday,
-          },
-          time: {
-            start,
-          }
-        };
-    }
-    const { date, time } = parseSentDate(sentDate);
-    
-    return (
+const INS_TAWorkloadRequestItem = ({ taskTypeName, timeSpent, courseCode, description, sentDate, status, taName, taMail, onAccept, onReject }) => {
+  /**
+ * Parses a sent date string and returns a formatted date object with day, month, weekday, and time.
+ */
+  function parseSentDate(sentDateString) {
+    const [datePart, timePart] = sentDateString.split('T');
+    const [year, monthNum, day] = datePart.split('-');
+    const [hour, minute, second] = timePart.split(':');
+
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    // Create a date object ONLY to find the weekday (you can't guess weekday without date)
+    const tempDate = new Date(`${year}-${monthNum}-${day}`);
+    const weekday = weekdays[tempDate.getDay()];
+
+    const month = months[parseInt(monthNum, 10) - 1];
+
+    // Format time as AM/PM
+    const hourInt = parseInt(hour, 10);
+    const ampm = hourInt >= 12 ? 'PM' : 'AM';
+    const adjustedHour = hourInt % 12 || 12;
+
+    const start = `${adjustedHour}:${minute}${ampm}`;
+
+    return {
+      date: {
+        month,
+        day,
+        weekday,
+      },
+      time: {
+        start,
+      }
+    };
+  }
+  const { date, time } = parseSentDate(sentDate);
+
+  return (
 
 
 
@@ -51,7 +58,7 @@ const INS_TAWorkloadRequestItem = ({taskTypeName, timeSpent, courseCode, descrip
 
       <div className="ins-ta-workload-item-details">
         <div className="ins-ta-workload-item-time-row">{time.start}</div>
-        <div className="ins-ta-workload-item-info-row">{taskTypeName} • {Math.floor(parseInt(timeSpent, 10) / 60)} Hours {parseInt(timeSpent,10)%60} Min</div>
+        <div className="ins-ta-workload-item-info-row">{taskTypeName} • {Math.floor(parseInt(timeSpent, 10) / 60)} Hours {parseInt(timeSpent, 10) % 60} Min</div>
         <div className="ins-ta-workload-item-info-row">Sender: {taName}</div>
         <div className="ins-ta-workload-item-info-row ins-ta-workload-item-email">{taMail}</div>
       </div>
