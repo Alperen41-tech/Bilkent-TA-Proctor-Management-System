@@ -74,27 +74,23 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
 
     @Override
     public boolean createProctoringApplication(int classProctoringId, ProctoringApplicationDTO dto, int deansOfficeId) {
-        System.out.println("Tekil: " + classProctoringId);
 
         ProctoringApplication proctoringApplication = new ProctoringApplication();
 
         Optional<ClassProctoring> classProctoring = classProctoringRepo.findById(classProctoringId);
         if (classProctoring.isEmpty()) {
-            System.out.println("girme1: " + classProctoringId);
             return false;
         }
         proctoringApplication.setClassProctoring(classProctoring.get());
 
         Optional<Department> department = departmentRepo.findById(dto.getVisibleDepartmentId());
         if (department.isEmpty()) {
-            System.out.println("girme2 " + dto.getVisibleDepartmentId());
             return false;
         }
         proctoringApplication.setVisibleDepartment(department.get());
 
         proctoringApplication.setComplete(false);
         proctoringApplication.setApplicationType(ProctoringApplicationType.NOT_DEFINED);
-
         LocalDateTime cpTime = proctoringApplication.getClassProctoring().getStartDate();
         proctoringApplication.setFinishDate(cpTime.minusDays(3));
         proctoringApplication.setApplicantCountLimit(dto.getApplicantCountLimit());
@@ -105,13 +101,14 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
 
         Request request = requestService.createProctoringApplicationRequest(dto, deansOfficeId);
         notificationService.createNotification(request, NotificationType.APPROVAL);
-
         return true;
     }
 
     @Override
     public boolean createProctoringApplications(int requestId, int classProctoringId, List<ProctoringApplicationDTO> dto, int deansOfficeId) {
+        System.out.println("Break point 1");
         Optional<InstructorAdditionalTARequest> iatr = instructorAdditionalTARequestRepo.findByRequestId(requestId);
+        System.out.println("Break point 2");
         if(iatr.isEmpty()) {
             throw new RuntimeException("No such request found");
         }

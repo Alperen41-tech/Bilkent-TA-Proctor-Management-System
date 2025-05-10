@@ -40,5 +40,5 @@ public interface ProctoringApplicationTARelationService {
      * @param applicant          the TAProfileDTO of the applicant to remove
      * @return true if the deletion is successful
      */
-    boolean deleteProctoringApplicationTARelation(int classProctoringId, TAProfileDTO applicant);
+    boolean approveProctoringApplicationTARelation(int classProctoringId, TAProfileDTO applicant);
 }

@@ -166,7 +166,12 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
     public boolean sendAuthStaffProctoringRequests(List<TAProfileDTO> dtoList, int classProctoringId, int senderId, boolean isApproved) {
         for (TAProfileDTO dto : dtoList) {
             boolean sent = sendAuthStaffProctoringRequest(classProctoringId, dto.getUserId(), senderId, isApproved);
-            proctoringApplicationTARelationService.deleteProctoringApplicationTARelation(classProctoringId, dto);
+            if(sent){
+                proctoringApplicationTARelationService.approveProctoringApplicationTARelation(classProctoringId, dto);
+            }
+            else{
+
+            }
             System.out.println("Request is sent? " + sent);
         }
         return true;

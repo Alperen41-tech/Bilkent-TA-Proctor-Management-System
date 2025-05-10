@@ -79,7 +79,7 @@ public class ProctoringApplicationTARelationServiceImpl implements ProctoringApp
     }
 
     @Override
-    public boolean deleteProctoringApplicationTARelation(int clasProctoringId, TAProfileDTO applicant) {
+    public boolean approveProctoringApplicationTARelation(int clasProctoringId, TAProfileDTO applicant) {
         Optional<ClassProctoring> classProctoringOptional = classProctoringRepo.findById(clasProctoringId);
         if (classProctoringOptional.isEmpty()) {
             throw new RuntimeException("classProctoring not found");
@@ -91,7 +91,11 @@ public class ProctoringApplicationTARelationServiceImpl implements ProctoringApp
         }
 
         Optional<ProctoringApplicationTARelation> relation = proctoringApplicationTARelationRepo.findByProctoringApplication_ClassProctoringAndTA(classProctoringOptional.get(), taOptional.get());
-        relation.ifPresent(proctoringApplicationTARelationRepo::delete);
+        if(relation.isPresent()) {
+            ProctoringApplicationTARelation relationEntity = relation.get();
+            relationEntity.setApprovedBySecretary(true);
+            proctoringApplicationTARelationRepo.save(relationEntity);
+        }
         return true;
     }
 }

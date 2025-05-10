@@ -40,6 +40,7 @@ public class ProctoringApplicationTARelationController {
      */
     @GetMapping("getApplicantsForApplication")
     public List<TAProfileDTO> getApplicants(@RequestParam("applicationId") int applicationId) {
+        System.out.println("Getting applicants for application");
         return proctoringApplicationTARelationService.getAllApplicants(applicationId);
     }
 
