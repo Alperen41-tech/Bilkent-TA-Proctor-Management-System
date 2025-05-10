@@ -18,9 +18,10 @@ public interface ClassProctoringService {
      * Creates a new class proctoring session using the provided DTO.
      *
      * @param dto the class proctoring creation data
+     * @param userId current user ıd
      * @return true if the creation is successful, false otherwise
      */
-    boolean createClassProctoring(CreateClassProctoringDTO dto);
+    boolean createClassProctoring(CreateClassProctoringDTO dto, int userId);
 
     /**
      * Returns the number of unapproved requests sent for a specific class proctoring.

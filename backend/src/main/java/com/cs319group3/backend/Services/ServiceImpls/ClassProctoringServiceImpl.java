@@ -47,7 +47,8 @@ public class ClassProctoringServiceImpl implements ClassProctoringService {
     }
 
     @Override
-    public boolean createClassProctoring(CreateClassProctoringDTO dto) {
+    public boolean createClassProctoring(CreateClassProctoringDTO dto, int userId) {
+        dto.setCreatorId(userId);
         ClassProctoring classProctoring = createClassProctoringMapper.essentialEntityTo(dto);
         if (classProctoring == null) {
             return false;

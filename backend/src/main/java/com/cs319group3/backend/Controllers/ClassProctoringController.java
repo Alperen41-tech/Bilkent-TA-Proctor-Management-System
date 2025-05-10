@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Controllers;
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.ClassProctoringDTO;
 import com.cs319group3.backend.DTOs.CreateClassProctoringDTO;
 import com.cs319group3.backend.Services.ClassProctoringService;
@@ -19,6 +20,8 @@ public class ClassProctoringController {
 
     @Autowired
     private ClassProctoringService classProctoringService;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
     /**
      * Creates a new class proctoring entry.
@@ -28,8 +31,8 @@ public class ClassProctoringController {
      */
     @PostMapping("createClassProctoring")
     public boolean createClassProctoring(@RequestBody CreateClassProctoringDTO dto) {
-        System.out.println("Creating class proctoring");
-        return classProctoringService.createClassProctoring(dto);
+        int userId = currentUserUtil.getCurrentUserId();
+        return classProctoringService.createClassProctoring(dto, userId);
     }
 
     /**
