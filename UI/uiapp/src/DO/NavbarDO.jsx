@@ -3,6 +3,10 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import "./NavbarDO.css";
 import LogoutModal from "../LogoutModal";
 
+/**
+ * NavbarDO component
+ * Displays the top navigation bar for Dean’s Office users with route links and logout functionality.
+ */
 const NavbarDO = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -11,6 +15,11 @@ const NavbarDO = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+
+  /**
+ * Navigates back to login/home and closes modal.
+ * Intended to trigger logout flow.
+ */
   const handleLogout = () => {
     setIsModalOpen(false);
     navigate("/");

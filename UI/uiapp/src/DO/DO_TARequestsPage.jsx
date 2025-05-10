@@ -3,6 +3,11 @@ import NavbarDO from "./NavbarDO";
 import "./DO_TARequestsPage.css";
 import axios from "axios";
 
+
+/**
+ * DO_TARequestsPage component
+ * Allows the Dean’s Office to review approved TA requests and distribute TA counts to other departments.
+ */
 const DO_TARequestsPage = () => {
   const [selectedRequestId, setSelectedRequestId] = useState(null);
   const [departments, setDepartments] = useState([]);
@@ -34,7 +39,10 @@ const DO_TARequestsPage = () => {
     }
   }, [selectedRequestId, taRequests]);
 
-
+  /**
+   * Submits selected TA counts to other departments for the selected request.
+   * Validates input and sends data to backend for processing.
+   */
   const handleSendToDepartments = async () => {
     if (!selectedRequestId) {
       alert("Please select a request first.");
@@ -86,6 +94,10 @@ const DO_TARequestsPage = () => {
     }
   };
 
+  /**
+   * Fetches all departments in the faculty, excluding the one provided.
+   * Initializes TA counts to 0 for each department.
+   */
 
   const fetchDepartmentsExcluding = async (excludeDepartmentId) => {
     try {
@@ -107,7 +119,9 @@ const DO_TARequestsPage = () => {
       console.error(e);
     }
   };
-
+  /**
+   * Fetches all approved TA requests that can be managed by the Dean’s Office.
+   */
   const fetchTARequests = async () => {
     try {
       const token = localStorage.getItem("token");

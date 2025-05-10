@@ -6,6 +6,13 @@ import NotificationItem from "../NotificationItem";
 import "./DO_DashboardPage.css";
 import axios from "axios";
 
+
+/**
+ * DO_Dashboard component
+ * Main dashboard for Department Officer to manage TA requests and notifications.
+ * Displays tabs for pending and received requests and includes request details and global notifications.
+ */
+
 const DO_Dashboard = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -13,13 +20,19 @@ const DO_Dashboard = () => {
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
 
+
+  /**
+ * Handles switching between tabs and reloads data accordingly.
+ */
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setSelectedRequest(null);
     fetchReceivedRequests();
     fetchPendingRequests();
   };
-
+/**
+ * Sends approval or rejection response to a request.
+ */
   const handleRequestResponse = async (requestId, answer) => {
     try {
       const response = await axios.put("http://localhost:8080/request/respond", null, {
@@ -36,7 +49,10 @@ const DO_Dashboard = () => {
       alert("An error occurred while accepting the request. Please try again.");
     }
   };
-
+/**
+ * Fetches instructor-submitted TA requests requiring DO approval.
+ * Sorts by newest first.
+ */
 const fetchReceivedRequests = async () => {
   try {
     const token = localStorage.getItem("token");
@@ -52,7 +68,10 @@ const fetchReceivedRequests = async () => {
   }
 };
 
-
+/**
+ * Fetches TA application requests sent by this DO.
+ * Sorted by event start date descending.
+ */
   const fetchPendingRequests = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -68,6 +87,9 @@ const fetchReceivedRequests = async () => {
     }
   };
 
+/**
+ * Fetches global notifications relevant to this DO.
+ */
   const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -84,11 +106,17 @@ const fetchReceivedRequests = async () => {
     }
   };
 
+  // On mount: Load all notifications, received requests, and pending requests
   useEffect(() => {
     fetchNotifications();
     fetchReceivedRequests();
     fetchPendingRequests();
   }, []);
+
+
+  /**
+ * Prepares and renders a single PendingRequestItem based on the provided request data.
+ */
 
   const createPendingRequest = (request) => {
     const { applicationId, classProctoringDTO, applicantCountLimit, isVisibleForTAs, isComplete, finishDate } = request;
@@ -118,6 +146,9 @@ const fetchReceivedRequests = async () => {
     );
   };
 
+/**
+ * Renders a ReceivedRequestItem and attaches accept/reject handlers.
+ */
   const createReceivedRequest = (request, index) => (
     <div key={index} onClick={() => setSelectedRequest(request)}>
       <ReceivedRequestItem
@@ -164,6 +195,7 @@ const fetchReceivedRequests = async () => {
                   <p><strong>Visible to TAs:</strong> {selectedRequest.isVisibleForTAs ? "Yes" : "No"}</p>
                   <p><strong>Completed:</strong> {selectedRequest.isComplete ? "Yes" : "No"}</p>
                 </div>
+                
               ) : activeTab === "pending" ? (
                 <p className="ta-dashboard-placeholder">[ Click a pending request to see its details ]</p>
               ) : selectedRequest ? (

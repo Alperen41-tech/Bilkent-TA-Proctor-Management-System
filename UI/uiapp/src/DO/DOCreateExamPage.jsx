@@ -8,7 +8,10 @@ import ManualAssignmentModal from "../ManualAssignmentModal";
 import axios from "axios";
 import AutomaticAssignmentModal from "../AutomaticAssignmentModal";
 
-
+/**
+ * DOCreateExamPage component
+ * Allows Dean’s Office to create exams, view assigned TAs, and manage TA assignments manually or automatically.
+ */
 // COMPONENT
 const DOCreateExamPage = () => {
   const facultyId = 1;
@@ -47,6 +50,11 @@ const DOCreateExamPage = () => {
 
 
   // --- FETCHERS ---
+
+  /**
+ * Fetches exams created by the logged-in DO from the backend.
+ */
+
   const fetchCreatedExams = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -61,6 +69,10 @@ const DOCreateExamPage = () => {
     }
   };
 
+  /**
+   * Fetches all departments under the DO’s faculty.
+   */
+
   const fetchDepartments = async () => {
     try {
       const { data } = await axios.get("http://localhost:8080/department/getAllDepartmentsInFaculty", {
@@ -71,6 +83,11 @@ const DOCreateExamPage = () => {
       console.error("Error fetching departments:", error);
     }
   };
+
+  /**
+   * Fetches available TAs from a specific department or the whole faculty,
+   * depending on whether a departmentCode is provided.
+   */
 
   const fetchTAs = async (departmentCode, proctoringId) => {
     try {
@@ -101,6 +118,8 @@ const DOCreateExamPage = () => {
   };
 
   // --- EFFECTS ---
+
+  // On mount: Fetch exams and departments
   useEffect(() => {
     fetchCreatedExams();
     fetchDepartments();
@@ -118,13 +137,21 @@ const DOCreateExamPage = () => {
   }, [selectedDepartmentId]);
 
   // --- TA ACTIONS ---
+
+  /**
+ * Handles selection of a TA from the UI.
+ * Sets selected TA key and object for further actions.
+ */
+
   const handleTAClick = (ta) => {
     const key = `${ta.name}-${ta.surname}-${ta.email}`;
     setSelectedTA(key);
     setSelectedTAObj(ta);
   };
 
-
+  /**
+   * Refreshes exam list and selected exam state after an assignment action is completed.
+   */
   const refreshAfterAssignment = async () => {
     await fetchCreatedExams();
 
@@ -153,7 +180,9 @@ const DOCreateExamPage = () => {
     }
   };
 
-
+  /**
+   * Removes an assigned TA from a selected exam.
+   */
   const dismissTA = async () => {
     const taId = selectedTAObj?.userId ?? selectedTAObj?.id;
     const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
@@ -189,55 +218,61 @@ const DOCreateExamPage = () => {
     }
   };
 
+  /**
+   * Handles automatic TA assignment for a selected exam by requesting backend suggestions.
+   */
 
-const handleAutomaticAssign = async () => {
-  if (!selectedExamItem) {
-    alert("Please select an exam first.");
-    return;
-  }
+  const handleAutomaticAssign = async () => {
+    if (!selectedExamItem) {
+      alert("Please select an exam first.");
+      return;
+    }
 
-  const classProctoringId =
-    selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+    const classProctoringId =
+      selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
 
-  const courseCode =
-    selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.courseCode || "";
+    const courseCode =
+      selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.courseCode || "";
 
-  const departmentCode = courseCode.split(" ")[0];
+    const departmentCode = courseCode.split(" ")[0];
 
-  if (!classProctoringId || !departmentCode) {
-    alert("Invalid exam data.");
-    return;
-  }
+    if (!classProctoringId || !departmentCode) {
+      alert("Invalid exam data.");
+      return;
+    }
 
-  if (!isAutoAssignmentWithinLimit()) {
-    alert(`No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.`);
-    return;
-  }
+    if (!isAutoAssignmentWithinLimit()) {
+      alert(`No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.`);
+      return;
+    }
 
-  try {
-    const response = await axios.get(
-      "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
-      {
-        params: {
-          classProctoringId,
-          departmentCode,
-          senderId: creatorId,  ////token olarak alıyor
-          count: taCount,
-          eligibilityRestriction,
-          oneDayRestriction,
-        },
-      }
-    );
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
+        {
+          params: {
+            classProctoringId,
+            departmentCode,
+            senderId: creatorId,  ////token olarak alıyor
+            count: taCount,
+            eligibilityRestriction,
+            oneDayRestriction,
+          },
+        }
+      );
 
-    setAutoSuggestedTAs(response.data || []);
-    setShowAutoModal(true);
-  } catch (error) {
-    console.error("Error during automatic assignment:", error);
-    alert("Failed to get suggested TAs.");
-  }
-};
+      setAutoSuggestedTAs(response.data || []);
+      setShowAutoModal(true);
+    } catch (error) {
+      console.error("Error during automatic assignment:", error);
+      alert("Failed to get suggested TAs.");
+    }
+  };
 
 
+  /**
+   * Triggers manual assignment modal after checking availability and duplication.
+   */
 
   const handleManualAssign = () => {
     if (!selectedExamItem || !selectedTAObj) return alert("Select an exam and TA first.");
@@ -250,6 +285,9 @@ const handleAutomaticAssign = async () => {
     }
     setShowManualModal(true);
   };
+  /**
+   * Forcefully assigns the selected TA to the selected exam without request confirmation.
+   */
 
   const handleForceAssign = async () => {
     const cpId =
@@ -295,6 +333,9 @@ const handleAutomaticAssign = async () => {
       alert("Error in force assignment.");
     }
   };
+  /**
+   * Sends an assignment request to a TA for a selected exam.
+   */
 
   const handleSendRequest = async () => {
     const cpId =
@@ -341,6 +382,9 @@ const handleAutomaticAssign = async () => {
     }
   };
 
+  /**
+   * Sets selected exam and loads available TAs for assignment.
+   */
 
   const handleExamSelect = (examItem, key) => {
     setSelectedExamItem(examItem);
@@ -356,11 +400,14 @@ const handleAutomaticAssign = async () => {
     fetchTAs("", proctoringId);
   };
 
+  /**
+   * Submits a new exam creation form to the backend.
+   */
 
   const handleCreateExam = async () => {
     try {
 
-      
+
       const payload = {
         courseId: selectedCourseId,
         startDate: `${examDate} ${startTime}:00`,
@@ -393,6 +440,9 @@ const handleAutomaticAssign = async () => {
       alert("Error occurred.");
     }
   };
+  /**
+   * Creates a TAItem component for display in TA selection lists.
+   */
 
   const createTAItem = (ta, onClick, selectedKey) => {
     const key = `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`;
@@ -406,6 +456,9 @@ const handleAutomaticAssign = async () => {
       />
     );
   };
+  /**
+   * Checks if the selected exam still has unfilled TA slots.
+   */
 
   const hasAvailableTASlots = () => {
     const examInfo = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO;
@@ -418,6 +471,9 @@ const handleAutomaticAssign = async () => {
 
     return assigned + pending < max;
   };
+  /**
+   * Checks if additional TAs can be assigned automatically without exceeding the required count.
+   */
 
   const isAutoAssignmentWithinLimit = () => {
     const examInfo = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO;
@@ -431,6 +487,9 @@ const handleAutomaticAssign = async () => {
     return assigned + pending + taCount <= max;
   };
 
+  /**
+   * Renders the list of created exams using AdminDatabaseItem.
+   */
 
   const renderExamItems = () =>
     createdExams.map((exam) => {

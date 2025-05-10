@@ -8,16 +8,21 @@ import ManualAssignmentModal from "../ManualAssignmentModal";
 import AutomaticAssignmentModal from "../AutomaticAssignmentModal";
 import OtherFacultyTAModal from "../OtherFacultyTAModal";
 
-
-
+/**
+ * DOExamsPage component
+ * Allows Dean’s Office to view all exams, assign TAs (manually or automatically),
+ * filter by department, and manage TA visibility and restrictions.
+ */
 const DOExamsPage = () => {
   const [taDepartmentFilter, setTaDepartmentFilter] = useState("");
 
   // Example exam data
+  // Currently selected TA's unique key (used for visual selection)
   const [selectedTA, setSelectedTA] = useState(null);
   const [selectedTAObj, setSelectedTAObj] = useState(null);
   const [selectedExamKey, setSelectedExamKey] = useState(null);
   // For the search bar
+  // Search filter for course name, section, or location
   const [searchQuery, setSearchQuery] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("");
 
@@ -32,6 +37,9 @@ const DOExamsPage = () => {
 
 
 
+  /**
+   * Requests the backend for automatic TA assignment suggestions based on department and restrictions.
+   */
 
   const handleAutomaticAssign = async () => {
     if (!selectedExamItem) {
@@ -80,6 +88,9 @@ const DOExamsPage = () => {
     }
   };
 
+  /**
+   * Validates selection and opens modal for manual assignment to an exam.
+   */
 
   const hasAvailableTASlots = () => {
     const examInfo = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO;
@@ -131,6 +142,9 @@ const DOExamsPage = () => {
     setShowManualModal(true);
   };
 
+  /**
+   * Forcefully assigns a TA to the selected exam, bypassing confirmation.
+   */
 
   const handleForceAssign = async () => {
     try {
@@ -167,6 +181,9 @@ const DOExamsPage = () => {
     }
   };
 
+  /**
+   * Sends a TA assignment request to the selected TA for the selected exam.
+   */
 
   const handleSendRequest = async () => {
     try {
@@ -205,6 +222,7 @@ const DOExamsPage = () => {
   };
 
 
+  // Selects a TA from the assigned list
 
   const handleTAClick = (ta) => {
     const key = `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`;
@@ -212,6 +230,7 @@ const DOExamsPage = () => {
     setSelectedTAObj(ta); // Store full TA object
   };
 
+  // Selects a TA from the available list for assignment
 
   const handleAvailableTAClick = (ta) => {
     const key = `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`;
@@ -290,8 +309,10 @@ const DOExamsPage = () => {
       });
   };
 
-
-
+  /**
+   * Fetches available TAs, filtered by department and proctoring ID.
+   * Applies eligibility and one-day restrictions.
+   */
   const fetchTAs = async (departmentCode, proctoringId) => {
     try {
       let response;
@@ -320,10 +341,10 @@ const DOExamsPage = () => {
     }
   };
 
-
-
-
-
+  /**
+   * Fetches exams for the DO’s faculty or a specific department.
+   * If no departmentCode is given, all faculty exams are returned.
+   */
 
   const fetchExams = async (departmentCode) => {
     try {
@@ -356,9 +377,9 @@ const DOExamsPage = () => {
     fetchDepartments();
   }, []);
 
-
-
-
+  /**
+   * Fetches all departments under the current faculty.
+   */
 
   const fetchDepartments = async () => {
     try {
@@ -374,6 +395,9 @@ const DOExamsPage = () => {
     }
   };
 
+  /**
+   * Dismisses a TA from the selected exam and updates all related views.
+   */
 
   const dismissTA = async () => {
     console.log("▶️ dismissTA called with:", { selectedTAObj, selectedExamItem });
@@ -422,14 +446,10 @@ const DOExamsPage = () => {
       alert("An error occurred. Please try again.");
     }
   };
-
-
-
-
-
-
-
-
+  
+  /**
+   * Creates a TAItem component with selection highlighting and click handler.
+   */
   const createTAItem = (ta, onClickHandler, selectedTAKey) => {
     const key = `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`;
     const isSelected = selectedTAKey === key;
