@@ -101,7 +101,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
             loginOptional = loginRepo.findByUser_EmailAndUserType_UserTypeName(userMail, userType);
         }
         else {
-            loginOptional = loginRepo.findByUserEmail(userMail);
+            loginOptional = loginRepo.findByUser_Email(userMail);
         }
 
         if (!loginOptional.isPresent()){
@@ -165,7 +165,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
             if (userType != null && !userType.isEmpty()) {
                 loginOptional = loginRepo.findByUser_EmailAndUserType_UserTypeName(userEmail, userType);
             } else {
-                loginOptional = loginRepo.findByUserEmail(userEmail);
+                loginOptional = loginRepo.findByUser_Email(userEmail);
             }
 
             if (!loginOptional.isPresent()) {
