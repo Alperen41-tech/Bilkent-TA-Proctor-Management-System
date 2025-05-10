@@ -321,6 +321,12 @@ const DS_DashboardPage = () => {
     }
   };
 
+  const isFinished = () => {
+    const currentDate = new Date();
+    const selectedPPRApplicationFinishDate = new Date(selectedPPR.finishDate);
+    return currentDate > selectedPPRApplicationFinishDate;
+  };
+
   const createPendingRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
@@ -624,7 +630,7 @@ const DS_DashboardPage = () => {
                 )}
               </div>
               <div className="buttons">
-                <button onClick={()=> handleForceAssignment()}>Force Assignment</button>
+                {isAppliedAssignment ? (isFinished() ? <button onClick={()=> handleForceAssignment()}>Force Assignment</button> : null) : <button onClick={()=> handleForceAssignment()}>Force Assignment</button>}
                 {isManualAssignment ? <button onClick={()=> handleOfferAssignment()}>Offer Assignment</button>: null}
               </div>
             </div>

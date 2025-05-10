@@ -56,10 +56,11 @@ const DS_SelectPaidProctoringTAItem = ({paidProctoring ,isSelected, onSelect, is
       <div className="ds-select-paid-proctoring-ta-item-details">
         <div className="ds-select-paid-proctoring-ta-item-time-row">{time.start} - {time.end}</div>
         <div className="ds-select-paid-proctoring-ta-item-info-row">{paidProctoring.classProctoringDTO.courseName}</div>
-        <div className="ds-select-paid-proctoring-ta-item-info-row">{paidProctoring.applicantCount}/{paidProctoring.applicantCountLimit} TAs Applied</div>
+        {isAppliedAssignment ? <div className="ds-select-paid-proctoring-ta-item-info-row">{paidProctoring.applicantCount}/{paidProctoring.applicantCountLimit} TAs Applied </div> : <div className="ds-select-paid-proctoring-ta-item-info-row">{paidProctoring.applicantCountLimit} TAs needed</div>}
+
       </div>
       <div className="ds-select-paid-proctoring-ta-item-buttons">
-        {(!isForcedAssignment && !isAppliedAssignment) ? <div className="ds-select-paid-proctoring-ta-item-button"><button className="ds-select-paid-proctoring-ta-item-applied-button" onClick={()=>onAppliedAssignment()}>Applied Assignment</button><button className="ds-select-paid-proctoring-ta-item-manual-select-button" onClick={()=>onForcedAssignment()}>Manual Assignment</button></div> : isForcedAssignment ? <div className="ds-select-paid-proctoring-ta-item-info-row">Manual Assignment Selected</div> : <div className="ds-select-paid-proctoring-ta-item-info-row">Applied Assignment Selected</div>}
+        {(!isForcedAssignment && !isAppliedAssignment) ? <div className="ds-select-paid-proctoring-ta-item-button"><button className="ds-select-paid-proctoring-ta-item-applied-button" onClick={()=>onAppliedAssignment()}>Applied Assignment</button><button className="ds-select-paid-proctoring-ta-item-manual-select-button" onClick={()=>onForcedAssignment()}>Manual Assignment</button></div> : isForcedAssignment ? <div className="ds-select-paid-proctoring-ta-item-info-row">Manual Assignment Selected</div> : <div className="ds-select-paid-proctoring-ta-item-info-row">Applied Assignment Selected <div>Last application date: {paidProctoring.finishDate.substring(0,16)}</div></div>}
       </div>
     </div>
   );
