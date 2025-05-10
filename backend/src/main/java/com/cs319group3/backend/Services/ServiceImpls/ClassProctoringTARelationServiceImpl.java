@@ -6,6 +6,7 @@ import com.cs319group3.backend.DTOs.ClassProctoringTARelationDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
+import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Enums.LogType;
@@ -46,6 +47,9 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
     @Autowired
     private ClassProctoringTARelationMapper classProctoringTARelationMapper;
 
+    @Autowired
+    private TASwapRequestRepo taswapRequestRepo;
+
     @Override
     public List<ClassProctoringTARelationDTO> getTAsClassProctoringDTOs(int taId) throws Exception {
         Optional<TA> ta = taRepo.findByUserId(taId);
@@ -65,7 +69,18 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
         List<ClassProctoringTARelation> relations = classProctoringTARelationRepo
                 .findByClassProctoring_Course_Department_DepartmentIdAndTA_UserId(
                         ta.get().getDepartment().getDepartmentId(), taId);
-        return classProctoringTARelationMapper.essentialMapper(relations);
+
+        List<ClassProctoringTARelationDTO> classProctoringTARelationDTOs = classProctoringTARelationMapper.essentialMapper(relations);
+
+        for (ClassProctoringTARelationDTO relation : classProctoringTARelationDTOs) {
+
+            Optional<TASwapRequest> req = taswapRequestRepo.findBySenderUser_UserIdAndClassProctoring_ClassProctoringId(taId, relation.getClassProctoringDTO().getId());
+            if (req.isEmpty()) {
+                relation.setSwapRequestable(true);
+            }
+        }
+
+        return classProctoringTARelationDTOs;
     }
 
     @Override

@@ -14,5 +14,6 @@ public class ClassProctoringTARelationDTO {
     private boolean isPaid;
     private boolean isComplete;
     private Boolean isOpenToSwap;
+    private boolean isSwapRequestable;
 
 }
