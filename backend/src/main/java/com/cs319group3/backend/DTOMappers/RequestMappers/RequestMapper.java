@@ -224,6 +224,9 @@ public class RequestMapper {
 
         requestDTO.setTaCountNeeded(request.getTaCount());
         requestDTO.setIsComplete(request.isSentToSecretary());
+        requestDTO.setDepartmentName(request.getClassProctoring().getCourse().getDepartment().getDepartmentName());
+        requestDTO.setCourseName(request.getClassProctoring().getCourse().getCourseName());
+        requestDTO.setCourseCode(request.getClassProctoring().getCourse().getCourseFullCode());
 
         int senderUserId = request.getSenderUser().getUserId();
         Integer departmentId = instructorRepo.getDepartmentId(senderUserId);

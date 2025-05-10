@@ -40,6 +40,9 @@ public class RequestDTO {
     private int taCountNeeded;
     private Boolean isComplete;
     private int departmentId;
+    private String departmentName;
+    private String courseName;
+    private String courseCode;
 
     // taLeaveRequest
 
