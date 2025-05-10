@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -127,7 +128,17 @@ public class ExcelServiceImpl implements ExcelService {
 
         Course offeredCourse = classProctoringOptional.get().getCourse();
 
-        List<CourseStudentRelation> relations = courseStudentRelationRepo.findByCourse_Course(offeredCourse);
+        int sectionNo = classProctoringOptional.get().getSectionNo();
+
+        List<CourseStudentRelation> relations = new ArrayList<>();
+
+        if (sectionNo == 0){
+            relations = courseStudentRelationRepo.findByCourse_Course(offeredCourse);
+        }
+        else {
+            relations = courseStudentRelationRepo.findByCourse_CourseAndCourse_SectionNo(offeredCourse, sectionNo);
+        }
+
 
         try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH + "Students.xlsx");
              Workbook wb = new XSSFWorkbook(templateStream);
