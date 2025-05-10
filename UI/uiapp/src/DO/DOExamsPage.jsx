@@ -29,52 +29,52 @@ const DOExamsPage = () => {
 
 
 
-const handleAutomaticAssign = async () => {
-  if (!selectedExamItem) {
-    alert("Please select an exam first.");
-    return;
-  }
+  const handleAutomaticAssign = async () => {
+    if (!selectedExamItem) {
+      alert("Please select an exam first.");
+      return;
+    }
 
-  const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
-  if (!classProctoringId) {
-    alert("Invalid exam data.");
-    return;
-  }
+    const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
+    if (!classProctoringId) {
+      alert("Invalid exam data.");
+      return;
+    }
 
-  const departmentCode = selectedDepartment;
-  if (!departmentCode) {
-    alert("No department code available. Please reselect the exam.");
-    return;
-  }
+    const departmentCode = selectedDepartment;
+    if (!departmentCode) {
+      alert("No department code available. Please reselect the exam.");
+      return;
+    }
 
-  if (!isAutoAssignmentWithinLimit()) {
+    if (!isAutoAssignmentWithinLimit()) {
 
-    alert(`No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.`);
-    return;
-  }
+      alert(`No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.`);
+      return;
+    }
 
-  try {
-    const response = await axios.get(
-      "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
-      {
-        params: {
-          classProctoringId,
-          departmentCode,
-          senderId: 9,
-          count: taCount,
-          eligibilityRestriction,
-          oneDayRestriction,
-        },
-      }
-    );
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
+        {
+          params: {
+            classProctoringId,
+            departmentCode,
+            senderId: 9,
+            count: taCount,
+            eligibilityRestriction,
+            oneDayRestriction,
+          },
+        }
+      );
 
-    setAutoSuggestedTAs(response.data || []);
-    setShowAutoModal(true);
-  } catch (error) {
-    console.error("Error during automatic assignment:", error);
-    alert("Failed to get suggested TAs.");
-  }
-};
+      setAutoSuggestedTAs(response.data || []);
+      setShowAutoModal(true);
+    } catch (error) {
+      console.error("Error during automatic assignment:", error);
+      alert("Failed to get suggested TAs.");
+    }
+  };
 
 
   const hasAvailableTASlots = () => {
@@ -90,16 +90,16 @@ const handleAutomaticAssign = async () => {
   };
 
   const isAutoAssignmentWithinLimit = () => {
-  const examInfo = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO;
+    const examInfo = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO;
 
-  if (!examInfo) return false;
+    if (!examInfo) return false;
 
-  const assigned = examInfo.numberOfAssignedTAs || 0;
-  const pending = examInfo.numberOfPendingRequests || 0;
-  const max = examInfo.tacount || 0;
+    const assigned = examInfo.numberOfAssignedTAs || 0;
+    const pending = examInfo.numberOfPendingRequests || 0;
+    const max = examInfo.tacount || 0;
 
-  return assigned + pending + taCount <= max;
-};
+    return assigned + pending + taCount <= max;
+  };
 
 
 
@@ -119,10 +119,10 @@ const handleAutomaticAssign = async () => {
       return;
     }
 
-      if (!hasAvailableTASlots()) {
-    alert("No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.");
-    return;
-  }
+    if (!hasAvailableTASlots()) {
+      alert("No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.");
+      return;
+    }
 
     setShowManualModal(true);
   };
@@ -132,7 +132,7 @@ const handleAutomaticAssign = async () => {
     try {
       const classProctoringId = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
       const taId = selectedTAObj?.id || selectedTAObj?.userId;
-
+      const departmentCode = selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.departmentCode;
       const token = localStorage.getItem("token");
       const response = await axios.post("http://localhost:8080/authStaffProctoringRequestController/forceAuthStaffProctoringRequest", null, {
         params: { classProctoringId, taId },
@@ -143,8 +143,16 @@ const handleAutomaticAssign = async () => {
 
       if (response.data === true) {
         alert("TA forcefully assigned.");
-        fetchTAs();
+        fetchDepartments();
         fetchExams();
+        fetchTAs();
+        setSelectedExamKey(null);
+        setSelectedExamItem(null);
+        setTAs([]);
+        setAllTAs([]);
+        setTaDepartmentFilter("");
+        setSelectedTAObj(null);
+
         setShowManualModal(false);
       } else {
         alert("Force assignment failed.");
@@ -172,6 +180,16 @@ const handleAutomaticAssign = async () => {
 
       if (response.data === true) {
         alert("Request sent to TA.");
+
+        fetchDepartments();
+        fetchExams();
+        fetchTAs();
+        setSelectedExamKey(null);
+        setSelectedExamItem(null);
+        setTAs([]);
+        setAllTAs([]);
+        setTaDepartmentFilter("");
+        setSelectedTAObj(null);
         setShowManualModal(false);
       } else {
         alert("Failed to send request.");
@@ -383,10 +401,9 @@ const handleAutomaticAssign = async () => {
 
       if (success) {
         alert("TA dismissed successfully.");
-
-        fetchTAs();
+        fetchDepartments();
         fetchExams();
-        // remove that TA from the assigned-list in state
+        fetchTAs();
         setSelectedExamKey(null);
         setSelectedExamItem(null);
         setTAs([]);
@@ -531,7 +548,7 @@ const handleAutomaticAssign = async () => {
                 ))
 
               ) : (
-                <div>No TAs assigned</div>
+                <div>No TAs available</div>
               )}
 
               <button className="dismissTA-button" onClick={dismissTA}>
