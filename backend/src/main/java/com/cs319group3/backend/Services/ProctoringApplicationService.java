@@ -33,7 +33,7 @@ public interface ProctoringApplicationService {
      * @param deansOfficeId ID of the Dean's Office
      * @return true if all applications are created successfully
      */
-    boolean createProctoringApplications(int classProctoringId, List<ProctoringApplicationDTO> dto, int deansOfficeId);
+    boolean createProctoringApplications(int requestId, int classProctoringId, List<ProctoringApplicationDTO> dto, int deansOfficeId);
 
     /**
      * Retrieves all proctoring applications related to a specific department.

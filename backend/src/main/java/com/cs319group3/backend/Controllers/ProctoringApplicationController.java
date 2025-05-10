@@ -68,10 +68,10 @@ public class ProctoringApplicationController {
      * @return true if creation is successful
      */
     @PostMapping("createProctoringApplications")
-    public boolean createProctoringApplication(@RequestParam int classProctoringId, @RequestBody List<ProctoringApplicationDTO> proctoringApplicationDTO) {
+    public boolean createProctoringApplication(@RequestParam int requestId, @RequestParam int classProctoringId, @RequestBody List<ProctoringApplicationDTO> proctoringApplicationDTO) {
         System.out.println("createProctoringApplication is called");
         int deansOfficeId = currentUserUtil.getCurrentUserId();
-        return proctoringApplicationService.createProctoringApplications(classProctoringId, proctoringApplicationDTO, deansOfficeId);
+        return proctoringApplicationService.createProctoringApplications(requestId, classProctoringId, proctoringApplicationDTO, deansOfficeId);
     }
 
     /**

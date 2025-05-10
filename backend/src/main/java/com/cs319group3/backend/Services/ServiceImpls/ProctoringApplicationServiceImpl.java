@@ -6,6 +6,7 @@ import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.ProctoringApplication;
 import com.cs319group3.backend.Entities.RelationEntities.ProctoringApplicationTARelation;
+import com.cs319group3.backend.Entities.RequestEntities.InstructorAdditionalTARequest;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Enums.LogType;
@@ -53,6 +54,9 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private InstructorAdditionalTARequestRepo instructorAdditionalTARequestRepo;
 
     @Override
     public List<ProctoringApplicationDTO> getProctoringApplications(int deansOfficeId) {
@@ -103,8 +107,14 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
     }
 
     @Override
-    public boolean createProctoringApplications(int classProctoringId, List<ProctoringApplicationDTO> dto, int deansOfficeId) {
-        System.out.println("Çoğul");
+    public boolean createProctoringApplications(int requestId, int classProctoringId, List<ProctoringApplicationDTO> dto, int deansOfficeId) {
+        Optional<InstructorAdditionalTARequest> iatr = instructorAdditionalTARequestRepo.findByRequestId(requestId);
+        if(iatr.isEmpty()) {
+            throw new RuntimeException("No such request found");
+        }
+        InstructorAdditionalTARequest request = iatr.get();
+        request.setSentToSecretary(true);
+        instructorAdditionalTARequestRepo.save(request);
         for (ProctoringApplicationDTO proctoringApplicationDTO : dto) {
             if (!createProctoringApplication(classProctoringId, proctoringApplicationDTO, deansOfficeId)) {
                 return false;

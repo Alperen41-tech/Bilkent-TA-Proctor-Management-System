@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface InstructorAdditionalTARequestRepo extends JpaRepository<InstructorAdditionalTARequest, Integer> {
+    Optional<InstructorAdditionalTARequest> findByRequestId(int requestId);
     List<InstructorAdditionalTARequest> findByReceiverUser_UserId(int receiverId);
     List<InstructorAdditionalTARequest> findBySenderUser_UserId(int receiverId);
 

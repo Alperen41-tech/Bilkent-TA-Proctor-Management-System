@@ -14,8 +14,6 @@ const LoginPage = () => {
 
   
   const handleLogin = async () => {
-    //navigate("dashboard"); 
-    //navigate("ds-dashboard");
     try {
       console.log(isAdmin);
       console.log("Email:", email);

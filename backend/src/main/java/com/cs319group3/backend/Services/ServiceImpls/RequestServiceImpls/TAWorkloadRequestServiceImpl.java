@@ -59,8 +59,10 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService {
                         taOptional.get().getAssignedCourse().getCourseId()
                 );
                 if (taskType.isEmpty()) throw new RuntimeException("No such task type");
-                if (dto.getTimeSpent() > taskType.get().getTimeLimit())
+                if (dto.getTimeSpent() > taskType.get().getTimeLimit()){
+                    System.out.println(dto.getTimeSpent()+" - "+taskType.get().getTimeLimit());
                     throw new RuntimeException("Proctoring time exceeds allowed time limit");
+                }
             }
 
             List<OfferedCourse> offeredCourses =
