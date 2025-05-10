@@ -2,11 +2,17 @@ package com.cs319group3.backend.Services.ServiceImpls;
 
 import com.cs319group3.backend.DTOs.ChangePasswordDTO;
 import com.cs319group3.backend.Entities.Login;
+import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Repositories.LoginRepo;
+import com.cs319group3.backend.Repositories.UserRepo;
 import com.cs319group3.backend.Services.AuthenticationService;
+import com.cs319group3.backend.Services.EmailService;
 import com.cs319group3.backend.Services.LogService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,17 +20,27 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
+import java.util.Base64;
+
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService, UserDetailsService {
 
     @Autowired
     private LoginRepo loginRepo;
-
     @Autowired
     private LogService logService;
+    @Autowired
+    private UserRepo userRepo;
+    @Value("${jwt.reset.secret}")
+    private String jwtResetSecret;
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public boolean changePassword(ChangePasswordDTO changePasswordDTO) {
@@ -72,5 +88,54 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
                 currLogin.getPassword(),
                 Collections.singleton(new SimpleGrantedAuthority(currLogin.getUserType().getUserTypeName()))
         );
+    }
+
+    @Override
+    public boolean forgetPassword(String userMail, String userType) {
+        Optional<User> userOptional = userRepo.findByEmail(userMail);
+        if (!userOptional.isPresent()){
+            throw new RuntimeException("User email not found");
+        }
+
+        Optional<Login> loginOptional;
+        if (!userType.isEmpty() && userType != null){
+            loginOptional = loginRepo.findByUser_EmailAndUserType_UserTypeName(userMail, userType);
+        }
+        else {
+            loginOptional = loginRepo.findByUserEmail(userMail);
+        }
+
+        if (!loginOptional.isPresent()){
+            throw new RuntimeException("User with selected type not found");
+        }
+
+        User user = userOptional.get();
+        Login login = loginOptional.get();
+
+        // Generate a secure reset token
+
+
+        byte[] secretKey = Base64.getDecoder().decode(jwtResetSecret);
+
+        String resetToken = Jwts.builder()
+                .setSubject(user.getEmail())
+                .setIssuedAt(new Date())
+                .setExpiration(Date.from(Instant.now().plus(15, ChronoUnit.MINUTES)))
+                .claim("userType", userType)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+
+        String resetLink = "https://localhost:3000/forgot-password?token=" + resetToken;
+
+        // Send the email (use your email service here)
+        String subject = "Password Reset Request for Bilkent TA Management Proctoring System";
+        String body = "Hi " + user.getName() + ",\n\n"
+                + "Please click the following link to reset your password. This link is valid for 30 minutes:\n"
+                + resetLink + "\n\n"
+                + "If you did not request a password reset, please ignore this email.";
+
+        emailService.sendEmail(user.getEmail(), subject, body);
+
+        return true;
     }
 }

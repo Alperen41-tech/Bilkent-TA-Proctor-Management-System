@@ -23,4 +23,13 @@ public interface AuthenticationService {
      * @throws UsernameNotFoundException if the user is not found
      */
     UserDetails loadUserByUsername(String entrance) throws UsernameNotFoundException;
+
+    /**
+     * when users forget their password, they can get new one
+     *
+     * @param userMail the current user mail
+     * @param userType is the user admim
+     * @return boolean according to success of getting new password;
+     */
+    boolean forgetPassword(String userMail, String userType);
 }

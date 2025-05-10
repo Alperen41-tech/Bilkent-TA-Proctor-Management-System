@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Controllers;
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.Components.JwtUtil;
 import com.cs319group3.backend.DTOs.ChangePasswordDTO;
 import com.cs319group3.backend.DTOs.LoginDTO;
@@ -44,6 +45,8 @@ public class AuthenticationController {
 
     @Autowired
     private UserTypeRepo userTypeRepo;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
     /**
      * Allows the current user to change their password.
@@ -54,6 +57,17 @@ public class AuthenticationController {
     @PutMapping("changePassword")
     public boolean changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
         return authenticationService.changePassword(changePasswordDTO);
+    }
+
+    /**
+     * An endpoint in order to reset the user's password
+     * @param userMail
+     * @param userTypeName
+     * @return
+     */
+    @GetMapping("forgetPassword")
+    public boolean forgetPassword(@RequestParam("userMail") String userMail, @RequestParam("userTypeName") String userTypeName){
+        return authenticationService.forgetPassword(userMail, userTypeName);
     }
 
     /**
