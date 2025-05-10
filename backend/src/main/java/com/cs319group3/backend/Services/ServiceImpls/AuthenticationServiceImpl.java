@@ -2,7 +2,8 @@ package com.cs319group3.backend.Services.ServiceImpls;
 
 import com.cs319group3.backend.DTOs.ChangePasswordDTO;
 import com.cs319group3.backend.Entities.Login;
-import com.cs319group3.backend.Entities.UserEntities.User;
+import com.cs319group3.backend.Entities.Student;
+import com.cs319group3.backend.Entities.UserEntities.*;
 import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Repositories.LoginRepo;
 import com.cs319group3.backend.Repositories.UserRepo;
@@ -96,13 +97,22 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
             throw new RuntimeException("User email not found");
         }
 
-        Optional<Login> loginOptional;
-        if (!userType.isEmpty() && userType != null){
-            loginOptional = loginRepo.findByUser_EmailAndUserType_UserTypeName(userMail, userType);
+        if (userType == null){
+            User user = userOptional.get();
+            if (user instanceof TA){
+                userType = "ta";
+            }
+            else if (user instanceof Instructor){
+                userType = "instructor";
+            }
+            else if(user instanceof DeansOffice){
+                userType = "deansOffice";
+            }
+            else if(user instanceof DepartmentSecretary){
+                userType = "department secretary";
+            }
         }
-        else {
-            loginOptional = loginRepo.findByUser_Email(userMail);
-        }
+        Optional<Login> loginOptional = loginRepo.findByUser_EmailAndUserType_UserTypeName(userMail, userType);
 
         if (!loginOptional.isPresent()){
             throw new RuntimeException("User with selected type not found");
