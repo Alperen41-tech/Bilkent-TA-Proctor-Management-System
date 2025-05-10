@@ -38,6 +38,8 @@ const DS_DashboardPage = () => {
     setActiveTab(tab);
     setSelectedRequest(null);
     setSelectedPPR(null);
+    fetchReceivedRequests();
+    fetchPendingRequests();
   };
 
   const handleASC = (id) => {
@@ -619,7 +621,7 @@ const DS_DashboardPage = () => {
               </div>
               <div className="buttons">
                 <button onClick={()=> handleForceAssignment()}>Force Assignment</button>
-                <button onClick={()=> handleOfferAssignment()}>Offer Assignment</button>
+                {isManualAssignment ? <button onClick={()=> handleOfferAssignment()}>Offer Assignment</button>: null}
               </div>
             </div>
           )}

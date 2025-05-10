@@ -16,6 +16,8 @@ const DO_Dashboard = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setSelectedRequest(null);
+    fetchReceivedRequests();
+    fetchPendingRequests();
   };
 
   const handleRequestResponse = async (requestId, answer) => {

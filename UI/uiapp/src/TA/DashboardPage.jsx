@@ -34,6 +34,8 @@ const DashboardPage = () => {
     setActiveTab(tab);
     setSelectedRequest(null);
     setSelectedProctoring(null);
+    fetchReceivedRequests();
+    fetchPendingRequests();
   };
 
   const handlePrintClassroomInfo = async () => {

@@ -29,7 +29,8 @@ const INS_DashboardPage = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setSelectedRequest(null);
-    console.log(notifications);
+    fetchReceivedRequests();
+    fetchPendingRequests();
   };
 
 
