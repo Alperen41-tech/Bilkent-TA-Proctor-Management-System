@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import axios from "axios";
+import { is } from "date-fns/locale";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const LoginPage = () => {
   const [password, setPassword] = React.useState("");
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [forgotPasswordMail, setIsForgotPasswordMail] = React.useState(false);
+  const [isTAAssigner, setIsTAAssigner] = React.useState(false);
   
   const handleLogin = async () => {
     try {
@@ -64,7 +66,7 @@ const LoginPage = () => {
 
   const handleForgotPassword = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/auth/forgetPassword?userMail=${forgotPasswordMail}&userTypeName=${isAdmin ? "admin" : ""}`);
+      const response = await axios.get(`http://localhost:8080/auth/forgetPassword?userMail=${forgotPasswordMail}&userTypeName=${isAdmin ? "admin" : isTAAssigner ? "ta assigner" : ""}`);
       if (response.data) {
         alert("Password reset link sent to your email.");
       } else {
@@ -105,15 +107,38 @@ const LoginPage = () => {
             />
             <div className="login-page-constaint-checkboxes">
               <div className="is-admin-checkbox">
-                <input
-                  type="checkbox"
-                  id="isAdmin"
-                  name="isAdmin"
-                  checked={isAdmin}
-                  onChange={(e) => setIsAdmin(e.target.checked)}
-                />
-                <label htmlFor="isAdmin">Is admin?</label>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="isAdmin"
+                    name="isAdmin"
+                    checked={isAdmin}
+                    onChange={(e) => {
+                      setIsAdmin(e.target.checked);
+                      if (e.target.checked) {
+                        setIsTAAssigner(false);
+                      }
+                    }}
+                  />
+                  <label htmlFor="isAdmin">Is admin?</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="isTAAssigner"
+                    name="isTAAssigner"
+                    checked={isTAAssigner}
+                    onChange={(e) => {
+                      setIsTAAssigner(e.target.checked);
+                      if (e.target.checked) {
+                        setIsAdmin(false);
+                      }
+                    }}
+                  />
+                  <label htmlFor="isTAAssigner">Is TA assigner?</label>
+                </div>
               </div>
+
               <div className="forgot-password">
                 <a href="#" onClick={() => setShowForgotPasswordModal(true)}>Forgot password?</a>
               </div>
@@ -128,15 +153,37 @@ const LoginPage = () => {
                 <label>Email</label>
                 <input type="email" placeholder="Enter your email" onChange={(e) => {setIsForgotPasswordMail(e.target.value)}}/>
                 <div className="is-admin-checkbox">
+                <div>
                   <input
                     type="checkbox"
                     id="isAdmin"
                     name="isAdmin"
                     checked={isAdmin}
-                    onChange={(e) => setIsAdmin(e.target.checked)}
+                    onChange={(e) => {
+                      setIsAdmin(e.target.checked);
+                      if (e.target.checked) {
+                        setIsTAAssigner(false);
+                      }
+                    }}
                   />
                   <label htmlFor="isAdmin">Is admin?</label>
                 </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="isTAAssigner"
+                    name="isTAAssigner"
+                    checked={isTAAssigner}
+                    onChange={(e) => {
+                      setIsTAAssigner(e.target.checked);
+                      if (e.target.checked) {
+                        setIsAdmin(false);
+                      }
+                    }}
+                  />
+                  <label htmlFor="isTAAssigner">Is TA assigner?</label>
+                </div>
+              </div>
                 <div className="modal-buttons">
                   
                   <button className="cancel-button" onClick ={() => setShowForgotPasswordModal(false)}>Cancel</button>

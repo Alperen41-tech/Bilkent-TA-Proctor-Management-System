@@ -178,3 +178,9 @@
     height: 16px;
     margin-left: 10px; /* ekstra boşluk varsa kaldırır */
   }
+
+  .is-admin-checkbox div{
+    display: flex;
+    flex-direction: row;
+
+  }
