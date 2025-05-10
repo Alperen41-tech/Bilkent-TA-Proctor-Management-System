@@ -15,6 +15,7 @@ import com.cs319group3.backend.Services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,6 +95,10 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
             }
             classProctoringTARelationRepo.delete(relation.get());
             String description = "You are dismissed by " + remover.get().getName() + " from the class proctoring.";
+            long minutes = ChronoUnit.MINUTES.between(relation.get().getClassProctoring().getStartDate(), relation.get().getClassProctoring().getEndDate());
+            TA ta = relation.get().getTA();
+            ta.setWorkload(ta.getWorkload() - (int) minutes);
+            taRepo.save(ta);
             notificationService.createNotificationWithoutRequest(DISMISS, remover.get(), description);
             return true;
         }

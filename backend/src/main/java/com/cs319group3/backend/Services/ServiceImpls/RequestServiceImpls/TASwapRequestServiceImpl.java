@@ -9,6 +9,7 @@ import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
 import com.cs319group3.backend.Entities.UserEntities.TA;
+import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,6 +96,13 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         swapRequestReceived.setApproved(true);
         swapRequestReceived.setResponseDate(LocalDateTime.now());
         taswapRequestRepo.save(swapRequestReceived);
+        TA senderTa = (TA)swapRequest.get().getSenderUser();
+        TA receiverTa = (TA)swapRequest.get().getReceiverUser();
+        long minutes = ChronoUnit.MINUTES.between(swapRequest.get().getClassProctoring().getStartDate(), swapRequest.get().getClassProctoring().getEndDate());
+        senderTa.setWorkload(senderTa.getWorkload() - (int) minutes);
+        receiverTa.setWorkload(receiverTa.getWorkload() + (int) minutes);
+        taRepo.save(senderTa);
+        taRepo.save(receiverTa);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
