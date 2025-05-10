@@ -29,7 +29,7 @@ public class RequestController {
      * @return true if the response was successfully processed
      */
     @PutMapping("respond")
-    public boolean respondToRequest(@RequestParam("id") int requestId, @RequestParam("response") boolean response) {
+    public boolean respondToRequest(@RequestParam("id") int requestId, @RequestParam("response") boolean response) throws Exception {
         return requestService.respondToRequest(requestId, response);
     }
 

@@ -33,14 +33,9 @@ public class ClassProctoringTARelationController {
      * @return a list of ClassProctoringTARelationDTOs
      */
     @GetMapping("getTAsClassProctorings")
-    public List<ClassProctoringTARelationDTO> getTAsClassProctorings() {
-        try {
-            int id = currentUserUtil.getCurrentUserId();
-            return classProctoringTARelationService.getTAsClassProctoringDTOs(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public List<ClassProctoringTARelationDTO> getTAsClassProctorings() throws Exception {
+        int id = currentUserUtil.getCurrentUserId();
+        return classProctoringTARelationService.getTAsClassProctoringDTOs(id);
     }
 
     /**
@@ -49,14 +44,9 @@ public class ClassProctoringTARelationController {
      * @return a list of ClassProctoringTARelationDTOs
      */
     @GetMapping("getTAsClassProctoringsByDepartment")
-    public List<ClassProctoringTARelationDTO> getTAsClassProctoringsByDepartment() {
-        try {
+    public List<ClassProctoringTARelationDTO> getTAsClassProctoringsByDepartment() throws Exception {
             int userId = currentUserUtil.getCurrentUserId();
             return classProctoringTARelationService.getTAsClassProctoringsByDepartment(userId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     /**

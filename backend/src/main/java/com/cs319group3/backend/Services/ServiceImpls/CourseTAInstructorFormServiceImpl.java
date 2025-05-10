@@ -33,29 +33,24 @@ public class CourseTAInstructorFormServiceImpl implements CourseTAInstructorForm
 
     @Override
     public ResponseEntity<Boolean> createForm(CourseTAInstructorFormDTO form) {
-        try {
-            Optional<Instructor> instructor = instructorRepo.findByUserId(form.getInstructorId());
-            if (instructor.isEmpty())
-                throw new RuntimeException("instructor not found");
+        Optional<Instructor> instructor = instructorRepo.findByUserId(form.getInstructorId());
+        if (instructor.isEmpty())
+            throw new RuntimeException("instructor not found");
 
-            Optional<Course> course = courseRepo.findByCourseId(form.getCourseId());
-            if (course.isEmpty())
-                throw new RuntimeException("course not found");
+        Optional<Course> course = courseRepo.findByCourseId(form.getCourseId());
+        if (course.isEmpty())
+            throw new RuntimeException("course not found");
 
-            Optional<CourseTAInstructorForm> sampleExist =
-                    courseTAInstructorFormRepo.findByCourse_CourseId(course.get().getCourseId());
-            if (sampleExist.isPresent())
-                throw new RuntimeException("course ta request is already sent");
+        Optional<CourseTAInstructorForm> sampleExist =
+                courseTAInstructorFormRepo.findByCourse_CourseId(course.get().getCourseId());
+        if (sampleExist.isPresent())
+            throw new RuntimeException("course ta request is already sent");
 
-            CourseTAInstructorForm newForm = courseTAInstructorFormMapper.essentialToEntityMapper(form);
-            newForm.setInstructor(instructor.get());
-            newForm.setCourse(course.get());
+        CourseTAInstructorForm newForm = courseTAInstructorFormMapper.essentialToEntityMapper(form);
+        newForm.setInstructor(instructor.get());
+        newForm.setCourse(course.get());
 
-            courseTAInstructorFormRepo.save(newForm);
-            return new ResponseEntity<>(true, HttpStatus.CREATED);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-        }
+        courseTAInstructorFormRepo.save(newForm);
+        return new ResponseEntity<>(true, HttpStatus.CREATED);
     }
 }

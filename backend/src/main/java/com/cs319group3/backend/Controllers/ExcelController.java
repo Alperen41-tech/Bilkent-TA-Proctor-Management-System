@@ -6,6 +6,8 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 /**
  * Controller responsible for exporting and importing Excel files
  * for TA assignment and data management.
@@ -24,24 +26,19 @@ public class ExcelController {
      * @return a ResponseEntity containing the Excel file bytes and headers
      */
     @GetMapping("/getRequirementsExcel")
-    public ResponseEntity<byte[]> getRequirementsExcel() {
-        try {
-            byte[] excelData = excelService.generateExcelFromTemplate();
+    public ResponseEntity<byte[]> getRequirementsExcel() throws IOException {
+        byte[] excelData = excelService.generateExcelFromTemplate();
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.parseMediaType(
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-            headers.setContentDisposition(ContentDisposition
-                    .attachment()
-                    .filename("TARequirements.xlsx")
-                    .build());
-            headers.setContentLength(excelData.length);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDisposition(ContentDisposition
+                .attachment()
+                .filename("TARequirements.xlsx")
+                .build());
+        headers.setContentLength(excelData.length);
 
-            return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
     }
 
     /**
@@ -51,14 +48,9 @@ public class ExcelController {
      * @return ResponseEntity indicating success or failure
      */
     @PostMapping("processTAAssignmentExcel")
-    public ResponseEntity<Boolean> processTAAssignmentExcel(@RequestParam(name = "file") MultipartFile file) {
-        try {
-            excelService.processTAAssignmentExcel(file);
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<Boolean> processTAAssignmentExcel(@RequestParam(name = "file") MultipartFile file) throws IOException {
+        excelService.processTAAssignmentExcel(file);
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     /**
@@ -68,35 +60,25 @@ public class ExcelController {
      * @return ResponseEntity indicating success or failure
      */
     @PostMapping("uploadAllData")
-    public ResponseEntity<Boolean> uploadAllData(@RequestParam(name = "file") MultipartFile file) {
-        try {
-            excelService.uploadAllData(file);
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<Boolean> uploadAllData(@RequestParam(name = "file") MultipartFile file) throws IOException {
+        excelService.uploadAllData(file);
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @GetMapping("getStudentsOfClassProctoring")
-    public ResponseEntity<byte[]> getStudentsOfClassProctoring(@RequestParam(name = "classProctoringId") int classProctoringId) {
-        try {
-            byte[] excelData = excelService.getStudentsOfClassProctoring(classProctoringId);
+    public ResponseEntity<byte[]> getStudentsOfClassProctoring(@RequestParam(name = "classProctoringId") int classProctoringId) throws IOException {
+        byte[] excelData = excelService.getStudentsOfClassProctoring(classProctoringId);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.parseMediaType(
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-            headers.setContentDisposition(ContentDisposition
-                    .attachment()
-                    .filename("Students.xlsx")
-                    .build());
-            headers.setContentLength(excelData.length);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDisposition(ContentDisposition
+                .attachment()
+                .filename("Students.xlsx")
+                .build());
+        headers.setContentLength(excelData.length);
 
-            return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
     }
 
 

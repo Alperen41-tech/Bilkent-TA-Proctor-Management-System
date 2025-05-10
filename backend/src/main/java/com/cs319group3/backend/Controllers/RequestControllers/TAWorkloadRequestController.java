@@ -32,7 +32,7 @@ public class TAWorkloadRequestController {
      * @return true if the request was created successfully
      */
     @PostMapping("create")
-    public boolean createTAWorkloadRequest(@RequestBody RequestDTO taWorkloadRequestDTO) {
+    public boolean createTAWorkloadRequest(@RequestBody RequestDTO taWorkloadRequestDTO) throws Exception {
         int taId = currentUserUtil.getCurrentUserId();
         return taWorkloadRequestService.createTAWorkloadRequest(taWorkloadRequestDTO, taId);
     }

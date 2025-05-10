@@ -46,12 +46,12 @@ public class RequestMapper {
         Optional<User> receiverUser = userRepo.findById(dto.getReceiverId());
 
         if (!senderUser.isPresent()) {
-            throw new Exception("Sender TA cannot be found in database");
+            throw new RuntimeException("Sender TA cannot be found in database");
         }
         finalRequest.setSenderUser(senderUser.get());
 
         if (!receiverUser.isPresent()) {
-            System.out.println("Receiver user cannot be found in database");
+            throw new RuntimeException("Receiver user cannot be found in database");
         }
         else{
             finalRequest.setReceiverUser(receiverUser.get());
@@ -60,31 +60,22 @@ public class RequestMapper {
 
     public TASwapRequest taSwapRequestToEntityMapper(RequestDTO dto) throws Exception{
         TASwapRequest taSwapRequest = new TASwapRequest();
-        try{
-            essentialToEntityMapper(taSwapRequest, dto);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+        essentialToEntityMapper(taSwapRequest, dto);
 
         Optional<ClassProctoring> classProctoring = classProctoringRepo.findById(dto.getClassProctoringId());
 
         if (!classProctoring.isPresent()) {
-            throw new Exception("ClassProctoring cannot be found in database");
+            throw new RuntimeException("ClassProctoring cannot be found in database");
         }
 
         taSwapRequest.setClassProctoring(classProctoring.get());
         return taSwapRequest;
     }
 
-    public InstructorAdditionalTARequest instructorAdditionalTARequestToEntityMapper(RequestDTO dto){
+    public InstructorAdditionalTARequest instructorAdditionalTARequestToEntityMapper(RequestDTO dto) throws Exception {
 
         InstructorAdditionalTARequest instructorAdditionalTARequest = new InstructorAdditionalTARequest();
-        try{
-            essentialToEntityMapper(instructorAdditionalTARequest, dto);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        essentialToEntityMapper(instructorAdditionalTARequest, dto);
 
         Optional<ClassProctoring> classProctoring = classProctoringRepo.findById(dto.getClassProctoringId());
 
@@ -101,13 +92,7 @@ public class RequestMapper {
 
     public TALeaveRequest taLeaveRequestToEntityMapper(RequestDTO dto) throws Exception{
         TALeaveRequest taLeaveRequest = new TALeaveRequest();
-        try {
-            essentialToEntityMapper(taLeaveRequest, dto);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
+        essentialToEntityMapper(taLeaveRequest, dto);
 
         TA senderTA = (TA) taLeaveRequest.getSenderUser();
 
@@ -128,12 +113,7 @@ public class RequestMapper {
 
     public TAWorkloadRequest taWorkloadRequestToEntityMapper(RequestDTO requestDTO, User receiverUser) throws Exception{
         TAWorkloadRequest taWorkloadRequest = new TAWorkloadRequest();
-        try{
-            essentialToEntityMapper(taWorkloadRequest, requestDTO);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+        essentialToEntityMapper(taWorkloadRequest, requestDTO);
 
         TA senderTA = (TA) taWorkloadRequest.getSenderUser();
         Optional<TaskType> taskType;
@@ -144,7 +124,6 @@ public class RequestMapper {
             }
             taWorkloadRequest.setTaskType(taskType.get());
         }
-
 
         taWorkloadRequest.setWorkloadId(requestDTO.getWorkloadId());
         taWorkloadRequest.setCourse(senderTA.getAssignedCourse());
@@ -196,9 +175,6 @@ public class RequestMapper {
 
         return requestDTO;
     }
-
-
-
 
 
     public RequestDTO taSwapRequestMapper(TASwapRequest request) {

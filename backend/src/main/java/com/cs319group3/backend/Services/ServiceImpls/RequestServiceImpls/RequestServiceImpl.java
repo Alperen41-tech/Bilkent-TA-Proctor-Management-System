@@ -76,7 +76,7 @@ public class RequestServiceImpl implements RequestService {
     ClassProctoringRepo classProctoringRepo;
 
     @Override
-    public boolean respondToRequest(int requestId, boolean response) {
+    public boolean respondToRequest(int requestId, boolean response) throws Exception {
         Optional<Request> optionalRequest = requestRepo.findByRequestId(requestId);
         if (optionalRequest.isEmpty()) {
             System.out.println("Request cannot be found");
@@ -86,14 +86,43 @@ public class RequestServiceImpl implements RequestService {
         Request request = optionalRequest.get();
 
         if (response){
-            try{
-                if (request instanceof TAWorkloadRequest) {
-                    Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());
+            if (request instanceof TAWorkloadRequest) {
+                Optional<TA> ta = taRepo.findById(request.getSenderUser().getUserId());
+                if (ta.isEmpty()) {
+                    throw new RuntimeException("No such TA");
+                }
+                ta.get().setWorkload(ta.get().getWorkload() + ((TAWorkloadRequest) request).getTimeSpent());
+                taRepo.save(ta.get());
+            }
+            else if (request instanceof TASwapRequest) {
+                TASwapRequest req = (TASwapRequest) request;
+                swapRequestService.acceptSwapRequest(requestId);
+            }
+            else if (request instanceof AuthStaffProctoringRequest) {
+                AuthStaffProctoringRequest req = (AuthStaffProctoringRequest) request;
+                if(!authStaffProctoringRequestService.canRequestBeAccepted(req.getClassProctoring().getClassProctoringId())) {
+                    request.setApproved(false);
+                    request.setResponseDate(LocalDateTime.now());
+                    requestRepo.save(request);
+                    System.out.println("Request is automatically rejected due to full proctoring");
+                    return false;
+                }
+                else if(!taAvailabilityService.isTAAvailable((TA) req.getReceiverUser(), req.getClassProctoring())){
+                    request.setApproved(false);
+                    request.setResponseDate(LocalDateTime.now());
+                    requestRepo.save(request);
+                    System.out.println("Request is automatically rejected due to unavailability of the user");
+                    return false;
+                }
+                else{
+                    classProctoringTARelationService.createClassProctoringTARelation(req.getReceiverUser().getUserId(), req.getClassProctoring().getClassProctoringId());
+                    Optional<TA> ta = taRepo.findById(request.getReceiverUser().getUserId());
                     if (ta.isEmpty()) {
                         throw new RuntimeException("No such TA");
                     }
-                    ta.get().setWorkload(ta.get().getWorkload() + ((TAWorkloadRequest) request).getTimeSpent());
-                    taRepo.save(ta.get());
+                    long minutes = ChronoUnit.MINUTES.between(req.getClassProctoring().getStartDate(), req.getClassProctoring().getEndDate());
+                    ta.get().setWorkload(ta.get().getWorkload() + (int)minutes);
+                    authStaffProctoringRequestService.rejectRequestsIfNeeded(req.getClassProctoring().getClassProctoringId());
                 }
                 else if (request instanceof TASwapRequest) {
                     TASwapRequest req = (TASwapRequest) request;
@@ -127,9 +156,8 @@ public class RequestServiceImpl implements RequestService {
                     }
                 }
             }
-            catch (Exception e){
-                System.out.println(e.getMessage());
-                return false;
+            else {
+                return false; // unknown type
             }
         }
 
@@ -150,7 +178,13 @@ public class RequestServiceImpl implements RequestService {
         else
             logMessage = "Request " + request.getRequestId() + " rejected by user " + request.getReceiverUser().getUserId() + ".";
         logService.createLog(logMessage, LogType.UPDATE);
-        requestRepo.save(request);
+        try {
+            requestRepo.save(request);
+        } catch (Exception e) {
+            e.printStackTrace();  // or log the error
+            throw e;
+        }
+
         notificationService.createNotification(request, APPROVAL);
         return true;
     }

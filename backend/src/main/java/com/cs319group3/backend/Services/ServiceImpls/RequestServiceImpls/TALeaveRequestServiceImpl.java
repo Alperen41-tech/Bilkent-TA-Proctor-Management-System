@@ -32,21 +32,15 @@ public class TALeaveRequestServiceImpl implements TALeaveRequestService {
     private LogService logService;
 
     @Override
-    public boolean createTALeaveRequest(RequestDTO taLeaveRequestDTO, int taId) {
-        try{
-            taLeaveRequestDTO.setSenderId(taId);
-            TALeaveRequest taLeaveRequest = requestMapper.taLeaveRequestToEntityMapper(taLeaveRequestDTO);
-            String logMessage = "User " + taLeaveRequest.getSenderUser().getUserId() + " sent a leave request (" +
-                    taLeaveRequest.getRequestId() + ") to user " + taLeaveRequest.getReceiverUser().getUserId() + ".";
-            logService.createLog(logMessage, LogType.CREATE);
-            tALeaveRequestRepo.save(taLeaveRequest);
+    public boolean createTALeaveRequest(RequestDTO taLeaveRequestDTO, int taId) throws Exception {
+        taLeaveRequestDTO.setSenderId(taId);
+        TALeaveRequest taLeaveRequest = requestMapper.taLeaveRequestToEntityMapper(taLeaveRequestDTO);
+        String logMessage = "User " + taLeaveRequest.getSenderUser().getUserId() + " sent a leave request (" +
+                taLeaveRequest.getRequestId() + ") to user " + taLeaveRequest.getReceiverUser().getUserId() + ".";
+        logService.createLog(logMessage, LogType.CREATE);
+        tALeaveRequestRepo.save(taLeaveRequest);
 
-            notificationService.createNotification(taLeaveRequest, REQUEST);
-            return true;
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            return false;
-        }
+        notificationService.createNotification(taLeaveRequest, REQUEST);
+        return true;
     }
 }

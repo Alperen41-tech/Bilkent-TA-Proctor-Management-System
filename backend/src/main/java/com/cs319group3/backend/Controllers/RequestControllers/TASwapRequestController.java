@@ -33,7 +33,7 @@ public class TASwapRequestController {
      * @return ResponseEntity with true if request creation was successful
      */
     @PostMapping("createSwapRequest")
-    public ResponseEntity<Boolean> createSwapRequest(@RequestBody RequestDTO requestDTO){
+    public ResponseEntity<Boolean> createSwapRequest(@RequestBody RequestDTO requestDTO) throws Exception {
         return swapRequestService.createSwapRequest(requestDTO);
     }
 
@@ -44,15 +44,9 @@ public class TASwapRequestController {
      * @return a list of TAProfileDTOs available for swapping, or null if an exception occurs
      */
     @GetMapping("getAvailableTAProfilesForClassProctoring")
-    public List<TAProfileDTO> getAvailableTAProfilesForClassProctoring(@RequestParam(name = "classProctoringId") int classProctoringId){
-        try {
+    public List<TAProfileDTO> getAvailableTAProfilesForClassProctoring(@RequestParam(name = "classProctoringId") int classProctoringId) throws Exception {
             int taId = currentUserUtil.getCurrentUserId();
             return swapRequestService.getAvailableTAProfilesForClassProctoring(classProctoringId, taId);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
     }
 
     // Future functionality (currently commented out):

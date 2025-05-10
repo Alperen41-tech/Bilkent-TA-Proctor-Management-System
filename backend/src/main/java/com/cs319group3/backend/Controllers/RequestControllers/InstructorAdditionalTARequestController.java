@@ -51,7 +51,7 @@ public class InstructorAdditionalTARequestController {
      * @return true if the request was created successfully
      */
     @PostMapping("createInstructorAdditionalTARequest")
-    public boolean createInstructorAdditionalTARequest(@RequestBody RequestDTO requestDTO) {
+    public boolean createInstructorAdditionalTARequest(@RequestBody RequestDTO requestDTO) throws Exception {
         int senderId = currentUserUtil.getCurrentUserId();
         return instructorAdditionalTARequestService.createInstructorAdditionalTARequest(requestDTO, senderId);
     }

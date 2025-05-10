@@ -19,7 +19,7 @@ public interface RequestService {
      * @param response true if the request is approved, false if rejected
      * @return true if the operation was successful
      */
-    boolean respondToRequest(int requestId, boolean response);
+    boolean respondToRequest(int requestId, boolean response) throws Exception;
 
     /**
      * Deletes a request by its ID.

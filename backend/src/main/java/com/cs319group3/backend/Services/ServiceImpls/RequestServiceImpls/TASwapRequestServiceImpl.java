@@ -68,19 +68,14 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
     }
 
     @Override
-    public ResponseEntity<Boolean> createSwapRequest(RequestDTO swapRequestReceived) {
-        try {
-            TASwapRequest swapRequest = requestMapper.taSwapRequestToEntityMapper(swapRequestReceived);
-            taswapRequestRepo.save(swapRequest);
-            String logMessage = "User " + swapRequest.getSenderUser().getUserId() + " sent a swap request (" +
-                    swapRequest.getRequestId() + ") to user " + swapRequest.getReceiverUser().getUserId() + ".";
-            logService.createLog(logMessage, LogType.CREATE);
-            notificationService.createNotification(swapRequest, NotificationType.REQUEST);
-            return ResponseEntity.ok(true);
-        } catch (Exception e) {
-            e.printStackTrace(); // Consider replacing with proper logger
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
-        }
+    public ResponseEntity<Boolean> createSwapRequest(RequestDTO swapRequestReceived) throws Exception {
+        TASwapRequest swapRequest = requestMapper.taSwapRequestToEntityMapper(swapRequestReceived);
+        taswapRequestRepo.save(swapRequest);
+        String logMessage = "User " + swapRequest.getSenderUser().getUserId() + " sent a swap request (" +
+                swapRequest.getRequestId() + ") to user " + swapRequest.getReceiverUser().getUserId() + ".";
+        logService.createLog(logMessage, LogType.CREATE);
+        notificationService.createNotification(swapRequest, NotificationType.REQUEST);
+        return ResponseEntity.ok(true);
     }
 
     @Override
@@ -94,16 +89,12 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         }
 
         TASwapRequest swapRequestReceived = swapRequest.get();
-        try {
-            setClassProctorings(swapRequestReceived);
-            swapRequestReceived.setApproved(true);
-            swapRequestReceived.setResponseDate(LocalDateTime.now());
-            taswapRequestRepo.save(swapRequestReceived);
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-        }
+
+        setClassProctorings(swapRequestReceived);
+        swapRequestReceived.setApproved(true);
+        swapRequestReceived.setResponseDate(LocalDateTime.now());
+        taswapRequestRepo.save(swapRequestReceived);
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @Override

@@ -14,5 +14,5 @@ public interface TALeaveRequestService {
      * @param taId the ID of the TA submitting the request
      * @return true if the request is successfully created, false otherwise
      */
-    boolean createTALeaveRequest(RequestDTO taLeaveRequest, int taId);
+    boolean createTALeaveRequest(RequestDTO taLeaveRequest, int taId) throws Exception;
 }

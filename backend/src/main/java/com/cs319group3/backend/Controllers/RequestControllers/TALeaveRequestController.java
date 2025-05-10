@@ -26,7 +26,7 @@ public class TALeaveRequestController {
      * @return true if the request was successfully created
      */
     @PostMapping("create")
-    public boolean createTALeaveRequest(@RequestBody RequestDTO taLeaveRequest) {
+    public boolean createTALeaveRequest(@RequestBody RequestDTO taLeaveRequest) throws Exception {
         int taId = currentUserUtil.getCurrentUserId();
         return taLeaveRequestService.createTALeaveRequest(taLeaveRequest, taId);
     }

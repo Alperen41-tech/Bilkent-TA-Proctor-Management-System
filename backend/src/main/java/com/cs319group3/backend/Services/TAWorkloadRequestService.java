@@ -13,7 +13,7 @@ public interface TAWorkloadRequestService {
      * @param taId  The ID of the TA creating the request.
      * @return      True if the request was created successfully, false otherwise.
      */
-    boolean createTAWorkloadRequest(RequestDTO dto, int taId);
+    boolean createTAWorkloadRequest(RequestDTO dto, int taId) throws Exception;
 
     /**
      * Retrieves all workload requests created by a specific TA.

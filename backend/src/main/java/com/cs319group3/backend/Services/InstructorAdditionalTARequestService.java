@@ -28,5 +28,5 @@ public interface InstructorAdditionalTARequestService {
      * @param senderId   the ID of the sender user
      * @return true if the request was successfully created, false otherwise
      */
-    boolean createInstructorAdditionalTARequest(RequestDTO requestDTO, int senderId);
+    boolean createInstructorAdditionalTARequest(RequestDTO requestDTO, int senderId) throws Exception;
 }

@@ -35,7 +35,7 @@ public interface TASwapRequestService {
      * @param requestDTO the data of the swap request
      * @return ResponseEntity containing true if creation is successful
      */
-    ResponseEntity<Boolean> createSwapRequest(RequestDTO requestDTO);
+    ResponseEntity<Boolean> createSwapRequest(RequestDTO requestDTO) throws Exception;
 
     /**
      * Accepts a swap request by marking it as approved and applying the swap logic.

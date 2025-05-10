@@ -53,7 +53,7 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
     }
 
     @Override
-    public boolean createInstructorAdditionalTARequest(RequestDTO requestDTO, int senderId) {
+    public boolean createInstructorAdditionalTARequest(RequestDTO requestDTO, int senderId) throws Exception {
         requestDTO.setSenderId(senderId);
 
         Optional<Instructor> instructor = instructorRepo.findById(senderId);
