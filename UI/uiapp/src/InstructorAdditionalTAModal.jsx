@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from "react";
 import "./InstructorAdditionalTAModal.css";
-
+/**
+ * InstructorAdditionalTAModal Component
+ * Modal that allows instructors to request additional TAs for a selected exam.
+ * Accepts TA count and optional justification as inputs and invokes a confirm callback.
+ */
 const InstructorAdditionalTAModal = ({ isOpen, onCancel, onConfirm , minTaCount, maxTaCount, onRefresh}) => {
   const [taCount, setTaCount] = useState(1);
   const [description, setDescription] = useState("");
 
+
+    /**
+   * Resets TA count and description when the modal is opened.
+   */
   useEffect(() => {
     if (isOpen) {
       setTaCount(1);

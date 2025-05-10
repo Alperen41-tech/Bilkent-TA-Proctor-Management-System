@@ -1,6 +1,17 @@
 import React from "react";
 import "./LogoutModal.css";
 
+
+/**
+ * LogoutModal Component
+ * Displays a modal dialog asking the user to confirm logout from the system.
+ */
+
+
+
+/**
+ * Renders the logout confirmation modal with Cancel and Confirm buttons.
+ */
 const LogoutModal = ({ isOpen, onCancel, onConfirm }) => {
   if (!isOpen) return null;
 

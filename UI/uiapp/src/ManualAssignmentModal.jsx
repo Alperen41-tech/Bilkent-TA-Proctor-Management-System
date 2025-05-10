@@ -2,6 +2,15 @@
 import React from "react";
 import "./ManualAssignmentModal.css";
 
+
+/**
+ * ManualAssignmentModal Component
+ * Displays a modal that lets instructors either force assign a TA or send a request for assignment.
+ */
+
+/**
+ * Renders the manual assignment modal UI with options to force assign, send request, or cancel.
+ */
 const ManualAssignmentModal = ({ isOpen, onForceAssign, onSendRequest, onCancel }) => {
   if (!isOpen) return null;
 

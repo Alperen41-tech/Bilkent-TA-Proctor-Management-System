@@ -2,11 +2,18 @@ import React, { useState } from "react";
 import "./AutomaticAssignmentModal.css";
 import TAItem from "./TAItem";
 import axios from "axios";
-
+/**
+ * AutomaticAssignmentModal Component
+ * Displays a modal for instructors to review and confirm automatic TA assignment suggestions.
+ * Allows selecting TAs from a recommended list and optionally applying a force assignment.
+ */
 const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs, selectedExamId, refreshAfterAssignment }) => {
   const [selectedTAKeys, setSelectedTAKeys] = useState([]);
   const [forceAssign, setForceAssign] = useState(false);
 
+    /**
+   * Toggles selection of a TA based on their name and email key.
+   */
   const toggleSelectTA = (ta) => {
     const key = `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`;
     setSelectedTAKeys((prev) =>
@@ -14,11 +21,18 @@ const AutomaticAssignmentModal = ({ isOpen, onClose, suggestedTAs, selectedExamI
     );
   };
 
+    /**
+   * Checks if a TA is currently selected.
+   */
   const isSelected = (ta) => {
     const key = `${ta.firstName || ta.name}-${ta.lastName || ta.surname}-${ta.email}`;
     return selectedTAKeys.includes(key);
   };
 
+    /**
+   * Sends the assignment request (forced or unforced) to the backend.
+   * Includes selected TA IDs and the exam ID.
+   */
   const handleConfirm = async () => {
     const selectedTAs = suggestedTAs
       .filter((ta) =>

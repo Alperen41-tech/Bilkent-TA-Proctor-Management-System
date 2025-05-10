@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import axios from "axios";
 import { is } from "date-fns/locale";
-
+/**
+ * LoginPage Component
+ * This page handles login functionality for multiple user types (admin, TA assigner, general roles).
+ * It also includes modal functionality for password recovery via email and user type selection.
+ */
 const LoginPage = () => {
   const navigate = useNavigate();
   const [showForgotPasswordModal, setShowForgotPasswordModal] = React.useState(false);
@@ -15,6 +19,9 @@ const LoginPage = () => {
   const [forgotPasswordMail, setIsForgotPasswordMail] = React.useState(false);
   const [isTAAssigner, setIsTAAssigner] = React.useState(false);
   
+    /**
+   * Handles the login process based on selected user type and credentials.
+   */
   const handleLogin = async () => {
     try {
       console.log(isAdmin);
@@ -64,6 +71,9 @@ const LoginPage = () => {
     }
   };
 
+    /**
+   * Sends password reset email based on user type and email input.
+   */
   const handleForgotPassword = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/auth/forgetPassword?userMail=${forgotPasswordMail}&userTypeName=${isAdmin ? "admin" : isTAAssigner ? "ta assigner" : ""}`);

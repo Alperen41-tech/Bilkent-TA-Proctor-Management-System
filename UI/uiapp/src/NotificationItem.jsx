@@ -1,6 +1,15 @@
 import React from 'react';
 import './NotificationItem.css';
 
+
+/**
+ * NotificationItem Component
+ * Renders a styled notification entry showing the type of request, message, timestamp, and icon.
+ */
+
+/**
+ * Returns an emoji/icon representing the notification category.
+ */
 function getIcon(notificationType) {
   switch (notificationType) {
     case 'REQUEST':
@@ -14,6 +23,10 @@ function getIcon(notificationType) {
   }
 }
 
+
+/**
+ * Maps backend request types to user-friendly labels.
+ */
 function getNotificationType(notificationType) {
   switch (notificationType) {
     case 'TAWorkloadRequest':
@@ -31,6 +44,10 @@ function getNotificationType(notificationType) {
   }
 }
 
+
+/**
+ * Main component to render a notification item with its icon, label, message, and date.
+ */
 function NotificationItem({ requestType, message, date, notificationType }) {
   return (
     <div className="notification-item">

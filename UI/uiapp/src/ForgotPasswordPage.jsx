@@ -4,13 +4,21 @@ import { useNavigate } from "react-router-dom";
 import "./ForgotPasswordPage.css";
 import axios from "axios";
 import { useSearchParams } from 'react-router-dom';
-
+/**
+ * ForgotPasswordPage Component
+ * Allows users to reset their password after receiving a valid token link.
+ * Includes client-side validation for password strength and confirmation match.
+ */
 const ForgotPasswordPage = () => {
     const newPasswordRef = useRef();
     const confirmNewPasswordRef = useRef();
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token");
 
+      /**
+   * Sends the new password to the backend using the provided token.
+   * Displays success or error alerts based on the response.
+   */
   const handleChangePassword = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/auth/setAfterForgetPassword?token=${token}&newPassword=${newPasswordRef.current.value}`);
