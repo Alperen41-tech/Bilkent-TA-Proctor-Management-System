@@ -361,6 +361,24 @@ create table course_ta_instructor_form(
     foreign key (semester_id) references semester(semester_id)
 );
 
+insert into user_type (user_type_id, user_type_name) values
+	(1, 'ta'),
+	(2, 'instructor'),
+	(3, 'department secretary'),
+	(4, 'deans office'),
+	(5, 'admin'),
+    (6, 'ta assigner');
+    
+insert into ta_type (ta_type_id, type_name, ta_load) values
+	(1, "regular", 2),
+    (2, "scholarship", 1),
+    (3, "part time", 1);
+
+insert into semester (semester_id, year, term) values
+	(1, '2024-2025', 1),
+    (2, '2024-2025', 2),
+    (3, '2025-2026', 1);
+
 insert into time_interval (day, start_time, end_time) values
 	('Monday', '08:30:00', '09:20:00'),
     ('Monday', '09:30:00', '10:20:00'),
@@ -409,13 +427,7 @@ insert into time_interval (day, start_time, end_time) values
     ('Friday', '16:30:00', '17:20:00');
     
 
-insert into user_type (user_type_id, user_type_name) values
-	(1, 'ta'),
-	(2, 'instructor'),
-	(3, 'department secretary'),
-	(4, 'deans office'),
-	(5, 'admin'),
-    (6, 'ta assigner');
+
     
 insert into faculty (faculty_id, faculty_name) values
 	(1, 'Engineering Faculty');
@@ -424,10 +436,6 @@ insert into department (department_id, department_name, department_code, faculty
 	(1, 'Computer Engineering', 'CS', 1),
     (2, 'Industrial Engineering', 'IE', 1);
     
-insert into semester (semester_id, year, term) values
-	(1, '2024-2025', 1),
-    (2, '2024-2025', 2),
-    (3, '2025-2026', 1);
     
 insert into general_variable (general_variable_id ,semester_id, ta_proctoring_cap_time) values
 	(1, 2, 25);
@@ -472,10 +480,6 @@ insert into course (course_id, department_id, course_code, course_name, coordina
     (6, 2, 173, 'Course 6', 6),
     (7, 1, 501, 'Course 7', 6);
     
-insert into ta_type (ta_type_id, type_name, ta_load) values
-	(1, "regular", 2),
-    (2, "scholarship", 1),
-    (3, "part time", 1);
     
 insert into ta (user_id, department_id, course_id, class, ta_type_id) values
 	(1, 1, 1, 9, 1),
