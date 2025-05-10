@@ -78,6 +78,8 @@ const DO_TARequestsPage = () => {
       );
 
       alert("Requests sent successfully!");
+      fetchTARequests();
+
     } catch (error) {
       console.error("Failed to send applications:", error.response?.data || error.message);
       alert("Error while sending. Check console for details.");
@@ -240,9 +242,25 @@ const DO_TARequestsPage = () => {
                   />
                 </div>
               ))}
-              <button className="do-TA-send-button" onClick={handleSendToDepartments}>
+              <button
+                className="do-TA-send-button"
+                onClick={handleSendToDepartments}
+                disabled={
+                  !selected ||
+                  Object.values(taCounts).reduce((sum, val) => sum + val, 0) > selected.taCountNeeded
+                }
+              >
                 Send to Department Secretary
               </button>
+
+              {selected &&
+                Object.values(taCounts).reduce((sum, val) => sum + val, 0) > selected.taCountNeeded && (
+                  <p style={{ color: "red", marginTop: "0.5rem" }}>
+                    Total TA count exceeds the required amount ({selected.taCountNeeded}).
+                  </p>
+                )}
+
+
             </div>
           </div>
         </section>
