@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static java.lang.Math.min;
@@ -149,6 +150,9 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
                 notificationService.createNotification(request, NotificationType.ASSIGNMENT, approvedDescription);
                 System.out.println(approvedDescription);
                 classProctoringTARelationService.createClassProctoringTARelation(taId, classProctoringId);
+                long minutes = ChronoUnit.MINUTES.between(request.getClassProctoring().getStartDate(), request.getClassProctoring().getEndDate());
+                taOpt.get().setWorkload(taOpt.get().getWorkload() + (int)minutes);
+                taRepo.save(taOpt.get());
             }
         } else {
             System.out.println("Given proctoring is not found");
