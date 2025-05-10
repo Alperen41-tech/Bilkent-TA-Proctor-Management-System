@@ -79,6 +79,7 @@ public class RequestServiceImpl implements RequestService {
     public boolean respondToRequest(int requestId, boolean response) {
         Optional<Request> optionalRequest = requestRepo.findByRequestId(requestId);
         if (optionalRequest.isEmpty()) {
+            System.out.println("Request cannot be found");
             return false;
         }
 
@@ -125,9 +126,6 @@ public class RequestServiceImpl implements RequestService {
                         authStaffProctoringRequestService.rejectRequestsIfNeeded(req.getClassProctoring().getClassProctoringId());
                     }
                 }
-                else {
-                    return false; // unknown type
-                }
             }
             catch (Exception e){
                 System.out.println(e.getMessage());
@@ -144,7 +142,6 @@ public class RequestServiceImpl implements RequestService {
                 }
             }
         }
-
         request.setApproved(response);
         request.setResponseDate(LocalDateTime.now());
         String logMessage;
@@ -153,15 +150,8 @@ public class RequestServiceImpl implements RequestService {
         else
             logMessage = "Request " + request.getRequestId() + " rejected by user " + request.getReceiverUser().getUserId() + ".";
         logService.createLog(logMessage, LogType.UPDATE);
-        try {
-            requestRepo.save(request);
-        } catch (Exception e) {
-            e.printStackTrace();  // or log the error
-            throw e;
-        }
-
+        requestRepo.save(request);
         notificationService.createNotification(request, APPROVAL);
-
         return true;
     }
 
