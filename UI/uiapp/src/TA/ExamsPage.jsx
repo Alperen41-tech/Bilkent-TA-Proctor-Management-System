@@ -12,11 +12,11 @@ const ExamsPage = () => {
   const [avaliableTAs, setAvailableTAs] = useState([]);
   const swapRequestRef = useRef();
 
-  const createTaskItem = (id, course, name, date, timeInterval, classroom, onClickHandler, selectedTaskId) => {
+  const createTaskItem = (id, course, name, date, timeInterval, classroom, swapRequestable, isAboutSwap, onClickHandler, selectedTaskId) => {
     const task = { id, course, name, date, timeInterval, classroom };
     const isSelected = selectedTaskId === id;
     console.log("Task ID:", id); 
-    return <TaskItem key={id} task={task} onClick={onClickHandler} isSelected={isSelected} />;
+    return <TaskItem key={id} task={task} onClick={onClickHandler} isSelected={isSelected} swapRequestable={swapRequestable} isAboutSwap={isAboutSwap}/>;
   };
   
   const createTAItem = (ta, onClickHandler) => {
@@ -38,16 +38,21 @@ const ExamsPage = () => {
 
   const handleRequestSwap = async () => {
     if (lastSelectedTask && selectedTA) {
+      const token = localStorage.getItem("token");
       const response = await axios.post("http://localhost:8080/swapRequest/createSwapRequest", {
-          senderId: 3,
           receiverId: selectedTA.userId,
           description: (swapRequestRef.current.value ? swapRequestRef.current.value : "-"),
           classProctoringId: lastSelectedTask.id,
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
       );
       if (response.data) {
         alert("Swap request sent successfully!");
         console.log("Swap request sent successfully!");
+        setAvailableTAs([]);
         fetchAvailableTAs(); // Refresh the available TAs after sending the request
         fetchTasProctorings(); // Refresh the tasks after sending the request
       }
@@ -134,12 +139,17 @@ const ExamsPage = () => {
           <div className="card">
             <h3>Choose one of your tasks</h3>
             <div className="task-row">
-              {tasProctorings.map((proctoring, index) => (createTaskItem(proctoring.classProctoringDTO.id, proctoring.classProctoringDTO.courseName, proctoring.classProctoringDTO.proctoringName, proctoring.classProctoringDTO.startDate, proctoring.classProctoringDTO.endDate, proctoring.classProctoringDTO.classrooms, handleTaskClick1, lastSelectedTask?.id)))}
+              {tasProctorings.map((proctoring, index) => (createTaskItem(proctoring.classProctoringDTO.id, proctoring.classProctoringDTO.courseName, proctoring.classProctoringDTO.proctoringName, proctoring.classProctoringDTO.startDate, proctoring.classProctoringDTO.endDate, proctoring.classProctoringDTO.classrooms, proctoring.swapRequestable, true, handleTaskClick1, lastSelectedTask?.id)))}
             </div>
             <div className="details-section">
               <label htmlFor="details">Details</label>
               <textarea ref={swapRequestRef} id="details" placeholder="Enter details..." />
-              <button className="swap-button" onClick={()=>handleRequestSwap()}>Request Swap</button>
+              <button className="swap-button" onClick={()=>{
+                if(!lastSelectedTask.id || !selectedTA.userId){
+                  alert("Please select a task and a TA to request a swap.");
+                  return;
+                }
+                handleRequestSwap();}}>Request Swap</button>
             </div>
           </div>
         </div>
