@@ -41,6 +41,7 @@ const INS_DashboardPage = () => {
     setSelectedRequest(null);
     fetchReceivedRequests();
     fetchPendingRequests();
+    console.log(notifications);
   };
 
   /**

@@ -93,7 +93,7 @@ const DS_DashboardPage = () => {
       );
 
       if (response.data) {
-        alert("Force assignment completed successfully.");
+        alert("Force assignment completed successfully." + response.data + " TAs are assigned to the proctoring request.");
         fetchAppliedStudents();
         fetchAvaliableTAs();
       } else {
@@ -135,7 +135,7 @@ const DS_DashboardPage = () => {
       );
 
       if (response.data) {
-        alert("Unforced assignment completed successfully.");
+        alert("Unforced assignment completed successfully." + response.data + " requests sent to the TAs.");
         fetchAppliedStudents();
         fetchAvaliableTAs();
       } else {

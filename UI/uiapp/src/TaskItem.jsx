@@ -14,7 +14,7 @@ const TaskItem = ({ task, onClick, isSelected, swapRequestable, isAboutSwap }) =
     onClick={()=> {
       if(!isAboutSwap || swapRequestable){handleClick();}
     } }
-      style={{ background: swapRequestable ? "#f3f4f6" : "#f8d7da"}}>
+      style={{ background: isAboutSwap ? (swapRequestable ? "#f3f4f6" : "#f8d7da") : null}}>
       <div className="property"><strong>Course:</strong> {task.course}</div>
       <div className="property"><strong>Task:</strong> {task.name}</div>
       <div className="property"><strong>Date:</strong> {task.date ? task.date.split("T")[0]: null}</div>
