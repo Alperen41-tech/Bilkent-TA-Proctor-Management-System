@@ -69,7 +69,7 @@ const DO_TARequestsPage = () => {
         applications,
         {
           params: {
-            classProctoringId: selected?.classProctoringId, // Replace with real dean's office ID if needed
+            requestId: selected.requestId, classProctoringId: selected?.classProctoringId,
           },
           headers: {
             Authorization: `Bearer ${token}`
@@ -206,6 +206,7 @@ const DO_TARequestsPage = () => {
                 <li>
                   <strong>TA Count:</strong> {selected.taCountNeeded}
                 </li>
+
               </ul>
             ) : (
               <div className="do-TA-placeholder">Click a request to see its details</div>
