@@ -106,7 +106,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
                 userType = "instructor";
             }
             else if(user instanceof DeansOffice){
-                userType = "deansOffice";
+                userType = "deans office";
             }
             else if(user instanceof DepartmentSecretary){
                 userType = "department secretary";

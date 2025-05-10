@@ -415,7 +415,7 @@ insert into user_type (user_type_id, user_type_name) values
 	(3, 'department secretary'),
 	(4, 'deans office'),
 	(5, 'admin'),
-    (6, 'ta_assigner');
+    (6, 'ta assigner');
     
 insert into faculty (faculty_id, faculty_name) values
 	(1, 'Engineering Faculty');
