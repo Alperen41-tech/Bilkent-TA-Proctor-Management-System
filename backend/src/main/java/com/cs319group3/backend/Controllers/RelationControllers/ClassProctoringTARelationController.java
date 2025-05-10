@@ -47,6 +47,7 @@ public class ClassProctoringTARelationController {
     @GetMapping("getTAsClassProctoringsByDepartment")
     public List<ClassProctoringTARelationDTO> getTAsClassProctoringsByDepartment() throws Exception {
             int userId = currentUserUtil.getCurrentUserId();
+            userId = 1;
             return classProctoringTARelationService.getTAsClassProctoringsByDepartment(userId);
     }
 
