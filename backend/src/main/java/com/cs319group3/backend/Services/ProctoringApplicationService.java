@@ -41,7 +41,7 @@ public interface ProctoringApplicationService {
      * @param departmentId ID of the department
      * @return List of ProctoringApplicationDTOs
      */
-    List<ProctoringApplicationDTO> getAllApplicationsByDepartment(int departmentId);
+    List<ProctoringApplicationDTO> getAllApplicationsByDepartment(int departmentSecretaryId);
 
     /**
      * Sets the application type for a specific proctoring application.

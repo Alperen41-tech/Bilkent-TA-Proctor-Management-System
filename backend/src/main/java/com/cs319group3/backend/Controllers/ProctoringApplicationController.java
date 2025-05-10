@@ -43,8 +43,10 @@ public class ProctoringApplicationController {
      * @return a list of ProctoringApplicationDTOs
      */
     @GetMapping("getAllApplicationsByDepartment")
-    public List<ProctoringApplicationDTO> getAllApplicationsByDepartment(@RequestParam("departmentId") int departmentId) {
-        return proctoringApplicationService.getAllApplicationsByDepartment(departmentId);
+    public List<ProctoringApplicationDTO> getAllApplicationsByDepartment() {
+        int departmentSecretaryId = currentUserUtil.getCurrentUserId();
+        System.out.println("The department secretary is: " + departmentSecretaryId);
+        return proctoringApplicationService.getAllApplicationsByDepartment(departmentSecretaryId);
     }
 
     /**

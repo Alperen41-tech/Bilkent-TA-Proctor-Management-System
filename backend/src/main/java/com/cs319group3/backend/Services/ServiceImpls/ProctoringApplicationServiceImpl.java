@@ -8,6 +8,7 @@ import com.cs319group3.backend.Entities.ProctoringApplication;
 import com.cs319group3.backend.Entities.RelationEntities.ProctoringApplicationTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.InstructorAdditionalTARequest;
 import com.cs319group3.backend.Entities.RequestEntities.Request;
+import com.cs319group3.backend.Entities.UserEntities.DepartmentSecretary;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Enums.NotificationType;
@@ -57,6 +58,8 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
 
     @Autowired
     private InstructorAdditionalTARequestRepo instructorAdditionalTARequestRepo;
+    @Autowired
+    private DepartmentSecretaryRepo departmentSecretaryRepo;
 
     @Override
     public List<ProctoringApplicationDTO> getProctoringApplications(int deansOfficeId) {
@@ -124,8 +127,12 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
     }
 
     @Override
-    public List<ProctoringApplicationDTO> getAllApplicationsByDepartment(int departmentId) {
-        List<ProctoringApplication> listPA = proctoringApplicationRepo.findByVisibleDepartment_DepartmentId(departmentId);
+    public List<ProctoringApplicationDTO> getAllApplicationsByDepartment(int departmentSecretaryId) {
+        Optional<DepartmentSecretary> ds = departmentSecretaryRepo.findByUserId(departmentSecretaryId);
+        if(ds.isEmpty()) {
+            throw new RuntimeException("The current user is not a department secretary");
+        }
+        List<ProctoringApplication> listPA = proctoringApplicationRepo.findByVisibleDepartment_DepartmentId(ds.get().getDepartment().getDepartmentId());
         return proctoringApplicationMapper.toDTO(listPA);
     }
 
@@ -160,7 +167,7 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
 
         TA taReceived = ta.get();
         List<ProctoringApplication> allProctorings =
-                proctoringApplicationRepo.findByVisibleDepartment_DepartmentIdNotAndApplicationType(
+                proctoringApplicationRepo.findByVisibleDepartment_DepartmentIdAndApplicationType(
                         taReceived.getDepartment().getDepartmentId(), applicationType
                 );
 

@@ -159,13 +159,25 @@ const DS_DashboardPage = () => {
 
   const fetchPaidProctoringRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/proctoringApplication/getAllApplicationsByDepartment?departmentId=1");
+      const token = localStorage.getItem("token");
+
+      const response = await axios.get(
+          "http://localhost:8080/proctoringApplication/getAllApplicationsByDepartment",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+      );
+
       if (response.data) {
-        const sortedRequests = response.data.sort((a, b) => new Date(b.classProctoringDTO.startDate) - new Date(a.classProctoringDTO.startDate));
+        const sortedRequests = response.data.sort(
+            (a, b) =>
+                new Date(b.classProctoringDTO.startDate) -
+                new Date(a.classProctoringDTO.startDate)
+        );
         setPaidProctorings(sortedRequests);
-        console.log(receivedRequests);
-      }
-      else{
+      } else {
         console.log("No paid proctoring requests found.");
       }
     } catch (error) {

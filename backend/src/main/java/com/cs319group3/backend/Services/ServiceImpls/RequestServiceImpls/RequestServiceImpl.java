@@ -154,9 +154,6 @@ public class RequestServiceImpl implements RequestService {
                     authStaffProctoringRequestService.rejectRequestsIfNeeded(req.getClassProctoring().getClassProctoringId());
                 }
             }
-            else {
-                return false; // unknown type
-            }
         }
 
         if (request instanceof TAWorkloadRequest) {
