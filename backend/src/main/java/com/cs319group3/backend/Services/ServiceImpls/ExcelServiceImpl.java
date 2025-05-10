@@ -1,14 +1,14 @@
 package com.cs319group3.backend.Services.ServiceImpls;
 
 import com.cs319group3.backend.CompositeIDs.ClassProctoringClassroomKey;
+import com.cs319group3.backend.CompositeIDs.CourseInstructorKey;
 import com.cs319group3.backend.CompositeIDs.CourseStudentKey;
 import com.cs319group3.backend.CompositeIDs.OfferedCourseScheduleKey;
 import com.cs319group3.backend.Entities.*;
+import com.cs319group3.backend.Entities.RelationEntities.CourseInstructorRelation;
 import com.cs319group3.backend.Entities.RelationEntities.CourseStudentRelation;
 import com.cs319group3.backend.Entities.RelationEntities.OfferedCourseScheduleRelation;
-import com.cs319group3.backend.Entities.UserEntities.Instructor;
-import com.cs319group3.backend.Entities.UserEntities.TA;
-import com.cs319group3.backend.Entities.UserEntities.User;
+import com.cs319group3.backend.Entities.UserEntities.*;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.ExcelService;
 import org.apache.poi.sl.draw.geom.GuideIf;
@@ -77,6 +77,14 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Autowired
     private ClassProctoringRepo classProctoringRepo;
+    @Autowired
+    private CourseInstructorRelationRepo courseInstructorRelationRepo;
+    @Autowired
+    private FacultyRepo facultyRepo;
+    @Autowired
+    private DeansOfficeRepo deansOfficeRepo;
+    @Autowired
+    private DepartmentSecretaryRepo departmentSecretaryRepo;
 
     public byte[] generateExcelFromTemplate() throws IOException {
         // Load template from classpath (inside the .jar)
@@ -272,15 +280,20 @@ public class ExcelServiceImpl implements ExcelService {
 
         try(InputStream inputStream = file.getInputStream();
             Workbook workbook = new XSSFWorkbook(inputStream)) {
-            Sheet studentsSheet = workbook.getSheetAt(0);
-            Sheet tasSheet = workbook.getSheetAt(1);
-            Sheet instructorSheet = workbook.getSheetAt(2);
-            Sheet courseSheet = workbook.getSheetAt(3);
-            Sheet offeredCoursesSheet = workbook.getSheetAt(4);
-            Sheet scheduleSheet = workbook.getSheetAt(5);
-            Sheet offeredCourseStudentRelSheet = workbook.getSheetAt(6);
+            Sheet facultySheet = workbook.getSheetAt(0);
+            Sheet departmentSheet = workbook.getSheetAt(1);
+            Sheet studentsSheet = workbook.getSheetAt(2);
+            Sheet tasSheet = workbook.getSheetAt(3);
+            Sheet instructorSheet = workbook.getSheetAt(4);
+            Sheet courseSheet = workbook.getSheetAt(5);
+            Sheet offeredCoursesSheet = workbook.getSheetAt(6);
+            Sheet scheduleSheet = workbook.getSheetAt(7);
+            Sheet offeredCourseStudentRelSheet = workbook.getSheetAt(8);
+            Sheet offeredCourseInstructorRelSheet = workbook.getSheetAt(9);
 
 
+            uploadFaculty(facultySheet);
+            uploadDepartment(departmentSheet);
             uploadStudents(studentsSheet);
             uploadTAs(tasSheet);
             uploadInstructors(instructorSheet);
@@ -288,8 +301,136 @@ public class ExcelServiceImpl implements ExcelService {
             uploadOfferedCourses(offeredCoursesSheet);
             uploadSchedule(scheduleSheet);
             uploadOfferedCourseStudentRel(offeredCourseStudentRelSheet);
+            uploadOfferedCourseInstructorRel(offeredCourseInstructorRelSheet);
         }
 
+    }
+
+    private void uploadDepartment(Sheet departmentSheet) {
+        for (Row row : departmentSheet) {
+            if (row.getRowNum() < 1)
+                continue;
+
+            String departmentName = getStringCellValue(row.getCell(0));
+            String departmentCode = getStringCellValue(row.getCell(1));
+
+            Optional<Faculty> faculty = facultyRepo.findByFacultyName(getStringCellValue(row.getCell(2)));
+            if (!faculty.isPresent()) {
+                throw new RuntimeException("faculty with name " + getStringCellValue(row.getCell(2)) + " does not exist");
+            }
+
+            Department department = new Department();
+            department.setDepartmentName(departmentName);
+            department.setDepartmentCode(departmentCode);
+            department.setFaculty(faculty.get());
+            department = departmentRepo.save(department);
+
+            DepartmentSecretary departmentSecretary = new DepartmentSecretary();
+            departmentSecretary.setDepartment(department);
+            departmentSecretary.setBilkentId(getStringCellValue(row.getCell(3)));
+            departmentSecretary.setName(getStringCellValue(row.getCell(4)));
+            departmentSecretary.setSurname(getStringCellValue(row.getCell(5)));
+            departmentSecretary.setEmail(getStringCellValue(row.getCell(6)));
+            departmentSecretary.setPhoneNumber(getStringCellValue(row.getCell(7)));
+            departmentSecretary.setActive(true);
+
+            departmentSecretaryRepo.save(departmentSecretary);
+
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            String password = getStringCellValue(row.getCell(8));
+
+            Login login = new Login();
+            login.setUser(departmentSecretary);
+            login.setPassword(encoder.encode(password));
+            UserType type = userTypeRepo.findByUserTypeName("department secretary");
+            login.setUserType(type);
+            loginRepo.save(login);
+        }
+    }
+
+    private void uploadFaculty(Sheet facultySheet) {
+        for (Row row : facultySheet) {
+            if (row.getRowNum() < 1)
+                continue;
+
+            String facultyName = getStringCellValue(row.getCell(0));
+            Faculty faculty = new Faculty();
+            faculty.setFacultyName(facultyName);
+            facultyRepo.save(faculty);
+
+            DeansOffice deansOffice = new DeansOffice();
+            deansOffice.setFaculty(faculty);
+            deansOffice.setBilkentId(getStringCellValue(row.getCell(1)));
+            deansOffice.setName(getStringCellValue(row.getCell(2)));
+            deansOffice.setSurname(getStringCellValue(row.getCell(3)));
+            deansOffice.setEmail(getStringCellValue(row.getCell(4)));
+            deansOffice.setPhoneNumber(getStringCellValue(row.getCell(5)));
+            deansOffice.setActive(true);
+            deansOfficeRepo.save(deansOffice);
+
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            String password = getStringCellValue(row.getCell(6));
+
+            Login login = new Login();
+            login.setUser(deansOffice);
+            login.setPassword(encoder.encode(password));
+            UserType type = userTypeRepo.findByUserTypeName("deans office");
+            login.setUserType(type);
+
+            loginRepo.save(login);
+        }
+    }
+
+
+
+    private void uploadOfferedCourseInstructorRel(Sheet offeredCourseInstructorRelSheet) {
+
+        for (Row row : offeredCourseInstructorRelSheet) {
+            if (row.getRowNum() < 1)
+                continue;
+
+            String departmentCode = getStringCellValue(row.getCell(0));
+            int courseCode = (int) row.getCell(1).getNumericCellValue();
+            int sectionNo = (int) row.getCell(2).getNumericCellValue();
+            String semester = getStringCellValue(row.getCell(3));
+            int term = (int) row.getCell(4).getNumericCellValue();
+            String instructorId = getStringCellValue(row.getCell(5));
+
+            saveOfferedCourseInstructorRel(departmentCode, courseCode, sectionNo, semester, term, instructorId);
+        }
+    }
+
+    private void saveOfferedCourseInstructorRel(String departmentCode, int courseCode, int sectionNo, String semester, int term, String instructorId) {
+        Optional<Course> course = courseRepo.findByDepartment_DepartmentCodeAndCourseCode(departmentCode, courseCode);
+        if (!course.isPresent()) {
+            throw new RuntimeException("failed because course with code " + courseCode + " does not exist");
+        }
+
+        Optional<Semester> currSemester = semesterRepo.findByYearAndTerm(semester, term);
+        if (!currSemester.isPresent()) {
+            throw new RuntimeException("failed because semester " + semester + " does not exist");
+        }
+
+
+        Optional<OfferedCourse> offeredCourse = offeredCourseRepo.findByCourseAndSemesterAndSectionNo(course.get(), currSemester.get(), sectionNo);
+        if (!offeredCourse.isPresent()) {
+            throw new RuntimeException("failed because course " + courseCode + " does not exist");
+        }
+
+        Optional<Instructor> instructorOptional = instructorRepo.findByBilkentId(instructorId);
+
+        if (!instructorOptional.isPresent()) {
+            throw new RuntimeException("failed because student with id " + instructorId + " does not exist");
+        }
+
+        CourseInstructorKey key = new CourseInstructorKey(offeredCourse.get().getOfferedCourseId(), instructorOptional.get().getUserId());
+
+        CourseInstructorRelation relation = new CourseInstructorRelation();
+        relation.setId(key);
+        relation.setCourse(offeredCourse.get());
+        relation.setInstructor(instructorOptional.get());
+
+        courseInstructorRelationRepo.save(relation);
     }
 
 

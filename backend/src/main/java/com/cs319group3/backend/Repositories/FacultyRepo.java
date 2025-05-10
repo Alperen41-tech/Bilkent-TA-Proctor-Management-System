@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface FacultyRepo extends JpaRepository<Faculty, Integer> {
     Optional<Faculty> findByFacultyId(int id);
     List<Faculty> findAll();
+    Optional<Faculty> findByFacultyName(String facultyName);
 }
