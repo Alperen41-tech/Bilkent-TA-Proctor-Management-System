@@ -49,6 +49,7 @@ const PendingRequestItem = ({requestType, sentDateTime, isApproved, responseDate
       case 'AuthStaffProctoringRequest':
         return (
           <>
+            <div className="pending-request-item-time-row">Proctoring Request:</div>
             <div className="pending-request-item-info-row">Proctoring Event: {classProctoringEventName}</div>
             <div>Start: {classProctoringStartDate ? classProctoringStartDate.split("T")[0] : "—"}</div>
             <div>End: {classProctoringEndDate ? classProctoringEndDate.split("T")[0] : "—"}</div>
@@ -60,9 +61,10 @@ const PendingRequestItem = ({requestType, sentDateTime, isApproved, responseDate
       case 'InstructorAdditionalTARequest':
         return (
           <>
+            <div className="pending-request-item-time-row">Additional TA Request:</div>
+            <div className="pending-request-item-info-row">Course: {courseCode}</div>
             <div className="pending-request-item-info-row">Proctoring Event: {classProctoringEventName}</div>
             <div className="pending-request-item-info-row">TA Count Needed: {taCountNeeded}</div>
-            <div className="pending-request-item-info-row">Completed: {isComplete ? "Yes" : "No"}</div>
             <div className="pending-request-item-info-row">Sender: {senderName}</div>
             <div className="pending-request-item-info-row pending-request-item-email">{senderEmail}</div>
           </>
@@ -71,7 +73,8 @@ const PendingRequestItem = ({requestType, sentDateTime, isApproved, responseDate
       case 'TALeaveRequest':
         return (
           <>
-            <div className="pending-request-item-time-row">Leave Period: {leaveStartDate} - {leaveEndDate}</div>
+            <div className="pending-request-item-time-row">TA Leave Request:</div>
+            <div className="pending-request-item-info-row">Leave Period: {leaveStartDate ? leaveStartDate.split("T")[0] + " " + leaveStartDate.split("T")[1].substring(0,5) : null} - {leaveEndDate ? leaveEndDate.split("T")[0] + " " + leaveEndDate.split("T")[1].substring(0,5) : null}</div>
             <div className="pending-request-item-info-row">Urgent: {isUrgent ? "Yes" : "No"}</div>
             <div className="pending-request-item-info-row">Sender: {senderName}</div>
             <div className="pending-request-item-info-row pending-request-item-email">{senderEmail}</div>
@@ -81,9 +84,10 @@ const PendingRequestItem = ({requestType, sentDateTime, isApproved, responseDate
       case 'TASwapRequest':
         return (
           <>
+            <div className="pending-request-item-time-row">TA Swap Request:</div>
             <div className="pending-request-item-info-row">Proctoring Event: {classProctoringEventName}</div>
-            <div className="pending-request-item-time-row">Start: {classProctoringStartDate ? classProctoringStartDate.split("T")[0] : "—"}</div>
-            <div className="pending-request-item-time-row">End: {classProctoringEndDate ? classProctoringEndDate.split("T")[0] : "—"}</div>
+            <div className="pending-request-item-info-row">Start: {classProctoringStartDate ? classProctoringStartDate.split("T")[0] : "—"}</div>
+            <div className="pending-request-item-info-row">End: {classProctoringEndDate ? classProctoringEndDate.split("T")[0] : "—"}</div>
             <div className="pending-request-item-info-row">Sender: {senderName}</div>
             <div className="pending-request-item-info-row pending-request-item-email">{senderEmail}</div>
           </>
@@ -92,7 +96,8 @@ const PendingRequestItem = ({requestType, sentDateTime, isApproved, responseDate
       case 'TAWorkloadRequest':
         return (
           <>
-            <div className="pending-request-item-time-row">{time.start}</div>
+            <div className="pending-request-item-time-row">TA Workload Request:</div>
+            <div className="pending-request-item-info-row">Start Time: {time.start}</div>
             <div className="pending-request-item-info-row">{taskTypeName} • {Math.floor(parseInt(timeSpent, 10) / 60)} Hours {parseInt(timeSpent,10)%60} Min</div>
             <div className="pending-request-item-info-row">Course: {courseCode}</div>
             <div className="pending-request-item-info-row">Sender: {senderName}</div>

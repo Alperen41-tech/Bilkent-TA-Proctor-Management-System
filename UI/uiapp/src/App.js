@@ -35,6 +35,8 @@ import DOCreateExamPage from "./DO/DOCreateExamPage";
 
 import Instructor_AdminProfilePage from "./Instructor-Admin/Instructor_AdminProfilePage";
 
+import ForgotPasswordPage from "./ForgotPasswordPage";
+
 
 
 function App() {
@@ -77,6 +79,8 @@ function App() {
         <Route path="/do-ta-requests" element={<DO_TARequestsPage />} />  
 
         <Route path="/instructor-admin-profile" element={<Instructor_AdminProfilePage />} />
+
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
       </Routes>
 

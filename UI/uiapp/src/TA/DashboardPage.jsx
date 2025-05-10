@@ -36,6 +36,37 @@ const DashboardPage = () => {
     setSelectedProctoring(null);
   };
 
+  const handlePrintClassroomInfo = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(
+      `http://localhost:8080/excel/getStudentsOfClassProctoring?classProctoringId=${selectedProctoring.classProctoringDTO.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob", // Excel dosyası için önemli!
+      }
+    );
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "classroom_info.xlsx");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error("Error printing classroom info:", error);
+    if (error.response?.data?.message) {
+      alert(error.response.data.message);
+    } else {
+      alert("An error occurred. Please try again.");
+    }
+  }
+};
+
+
   const createPendingRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
@@ -120,7 +151,8 @@ const DashboardPage = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      setNotifications(response.data);
+      const sortedNotifications = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+      setNotifications(sortedNotifications);
       console.log(notifications);
     } catch (error) {
       console.error("Error fetching task types:", error);
@@ -141,7 +173,8 @@ const DashboardPage = () => {
           Authorization: `Bearer ${token}`
         }
       }); // Adjust the URL as needed
-      setReceivedRequests(response.data);
+      const sortedRecRequests = response.data.sort((a, b) => new Date(b.sentDateTime) - new Date(a.sentDateTime));
+      setReceivedRequests(sortedRecRequests);
       console.log(receivedRequests);
     } catch (error) {
       console.error("Error fetching received requests:", error);
@@ -162,7 +195,9 @@ const DashboardPage = () => {
           Authorization: `Bearer ${token}`
         }
       }); // Adjust the URL as needed
-      setPendingRequests(response.data);
+      const sortedPenRequests = response.data.sort((a, b) => new Date(b.sentDateTime) - new Date(a.sentDateTime));
+      setPendingRequests(sortedPenRequests);
+      //setPendingRequests(response.data);
       console.log(receivedRequests);
     } catch (error) {
       console.error("Error fetching pending requests:", error);
@@ -429,7 +464,8 @@ const DashboardPage = () => {
                     <p><strong>End Time:</strong> {selectedProctoring.classProctoringDTO.endDate.split("T")[1]}</p>
                     <p><strong>Classrooms:</strong> {selectedProctoring.classProctoringDTO.classrooms}</p>
                     <p><strong>Locked:</strong> {selectedProctoring.isOpenToSwap ? "No" : "Yes"}</p>
-                    <p><strong>Proctoring Status:</strong> {selectedProctoring.isPaid ? "Yes" : "No"}</p>,
+                    <p><strong>Proctoring Status:</strong> {selectedProctoring.isPaid ? "Yes" : "No"}</p>
+                    <button onClick={()=> handlePrintClassroomInfo()}>Print Classroom Info</button>
                   </div>
                 ) : (
                   <p className="ta-dashboard-placeholder">{selectedProctoring}</p>

@@ -52,15 +52,41 @@ const INS_ExamsPage = () => {
   const [autoSuggestedTAs, setAutoSuggestedTAs] = useState([]);
   const [showInstructorTAModal, setShowInstructorTAModal] = useState(false);
 
-
-
-
-
   useEffect(() => {
     fetchProctoringTasks();
     fetchAvailableTAs();
     fetchInstructorCourses();
   }, [selectedTask]);
+
+  const handlePrintClassroomInfo = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(
+      `http://localhost:8080/excel/getStudentsOfClassProctoring?classProctoringId=${selectedTask.classProctoringTARelationDTO.classProctoringDTO.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob", // Excel dosyası için önemli!
+      }
+    );
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "classroom_info.xlsx");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error("Error printing classroom info:", error);
+    if (error.response?.data?.message) {
+      alert(error.response.data.message);
+    } else {
+      alert("An error occurred. Please try again.");
+    }
+  }
+};
 
   const fetchProctoringTasks = async () => {
     try {
@@ -292,12 +318,6 @@ const INS_ExamsPage = () => {
     }
   };
 
-
-
-
-
-
-
   const handleTaskClick = (task) => {
     setSelectedTask(task);
     setSelectedTA(null);
@@ -367,6 +387,7 @@ const handleAutomaticAssign = async () => {
       <div className="ins-exam-grid-container">
         <div className="ins-exam-card ins-exam-assignments">
           <h3>Your Assignments with Proctors</h3>
+          {selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? <button className="ins-exam-page-print-classroom-button" onClick={()=> handlePrintClassroomInfo()}>Print Classroom Info</button> : null}
           <div className="ins-exam-page-task-row">
             {proctoringTasks.map((task) =>
               createTaskItem(

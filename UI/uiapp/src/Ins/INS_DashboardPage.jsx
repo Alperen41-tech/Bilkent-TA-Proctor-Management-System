@@ -80,7 +80,8 @@ const INS_DashboardPage = () => {
         }
       });
       if(response.data){
-        setNotifications(response.data);
+        const sortedNotifications = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setNotifications(sortedNotifications);
         console.log(notifications);
       }
       else {
@@ -99,7 +100,8 @@ const INS_DashboardPage = () => {
           Authorization: `Bearer ${token}`
         }
       }); // Adjust the URL as needed
-      setReceivedRequests(response.data);
+      const sortedRequests = response.data.sort((a, b) => new Date(b.sentDateTime) - new Date(a.sentDateTime));
+      setReceivedRequests(sortedRequests);
       console.log(receivedRequests);
     } catch (error) {
       console.error("Error fetching received requests:", error);
@@ -114,7 +116,8 @@ const INS_DashboardPage = () => {
           Authorization: `Bearer ${token}`
         }
       }); // Adjust the URL as needed
-      setPendingRequests(response.data);
+      const sortedRequests = response.data.sort((a, b) => new Date(b.sentDateTime) - new Date(a.sentDateTime));
+      setPendingRequests(sortedRequests);
       console.log(receivedRequests);
     } catch (error) {
       console.error("Error fetching pending requests:", error);

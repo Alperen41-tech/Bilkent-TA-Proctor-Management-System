@@ -43,7 +43,7 @@ const DO_Dashboard = () => {
           Authorization: `Bearer ${token}`
         },
       });
-      setReceivedRequests(response.data);
+      const sortedReceivedRequests = response.data.sort((a, b) => new Date(b.sentDateTime) - new Date(a.sentDateTime));
     } catch (error) {
       console.error("Error fetching received requests:", error);
     }
@@ -57,7 +57,8 @@ const DO_Dashboard = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      setPendingRequests(response.data);
+      const sortedPendingRequests = response.data.sort((a, b) => new Date(b.classProctoringDTO.startDate) - new Date(a.classProctoringDTO.startDate));
+      setPendingRequests(sortedPendingRequests);
     } catch (error) {
       console.error("Error fetching pending requests:", error);
     }
@@ -71,7 +72,9 @@ const DO_Dashboard = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      setNotifications(response.data);
+      const sortedNotifications = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+      setNotifications(sortedNotifications);
+      
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }

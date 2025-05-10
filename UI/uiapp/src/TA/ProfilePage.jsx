@@ -114,7 +114,6 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    
     fetchProfileInformation();
   }, []);
 

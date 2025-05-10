@@ -133,7 +133,8 @@ const DS_DashboardPage = () => {
           Authorization: `Bearer ${token}`
         }
       }); // Adjust the URL as needed
-      setReceivedRequests(response.data);
+      const sortedRequests = response.data.sort((a, b) => new Date(b.sentDateTime) - new Date(a.sentDateTime));
+      setReceivedRequests(sortedRequests);
       console.log(receivedRequests);
     } catch (error) {
       console.error("Error fetching received requests:", error);
@@ -148,7 +149,8 @@ const DS_DashboardPage = () => {
           Authorization: `Bearer ${token}`
         }
       }); // Adjust the URL as needed
-      setPendingRequests(response.data);
+      const sortedRequests = response.data.sort((a, b) => new Date(b.sentDateTime) - new Date(a.sentDateTime));
+      setPendingRequests(sortedRequests);
       console.log(receivedRequests);
     } catch (error) {
       console.error("Error fetching pending requests:", error);
@@ -159,7 +161,8 @@ const DS_DashboardPage = () => {
     try {
       const response = await axios.get("http://localhost:8080/proctoringApplication/getAllApplicationsByDepartment?departmentId=1");
       if (response.data) {
-        setPaidProctorings(response.data);
+        const sortedRequests = response.data.sort((a, b) => new Date(b.classProctoringDTO.startDate) - new Date(a.classProctoringDTO.startDate));
+        setPaidProctorings(sortedRequests);
         console.log(receivedRequests);
       }
       else{
@@ -341,7 +344,8 @@ const DS_DashboardPage = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      setNotifications(response.data);
+      const sortedNotifications = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+      setNotifications(sortedNotifications);
       console.log(notifications);
     } catch (error) {
       console.error("Error fetching task types:", error);
