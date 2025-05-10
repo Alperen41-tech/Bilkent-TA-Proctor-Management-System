@@ -3,11 +3,15 @@ import React from "react";
 import "./Instructor_AdminProfilePage.css"; // Reusing the same CSS
 import Instructor_AdminNavbar from "./Instructor_AdminNavbar";
 import axios from "axios";
-import { useState, useEffect, useRef} from "react";
-
+import { useState, useEffect, useRef } from "react";
+/**
+ * Instructor_AdminProfilePage component
+ * This page provides the instructor admin interface for viewing profile info,
+ * changing passwords, exporting instructor TA constraints, and uploading Excel data.
+ */
 const Instructor_AdminProfilePage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
-  const [insProfileInfo, setInsProfileInfo] = useState({courses: []});
+  const [insProfileInfo, setInsProfileInfo] = useState({ courses: [] });
   const [selectedFile, setSelectedFile] = useState(null);
 
   //Refs for password inputs
@@ -15,7 +19,9 @@ const Instructor_AdminProfilePage = () => {
   const newPasswordRef = useRef();
   const confirmNewPasswordRef = useRef();
   //-----------------------------------------------------------
-
+  /**
+   * Handles Excel file upload for TA assignment.
+   */
   const handleImportClick = async () => {
     if (!selectedFile) {
       alert("Please select a file.");
@@ -42,24 +48,26 @@ const Instructor_AdminProfilePage = () => {
       alert("A problem occured.");
     }
   };
-
+  /**
+   * Updates selectedFile state when a file is chosen from input.
+   */
   const handleFileChange = (e) => {
-      if (e.target.files && e.target.files[0]) {
-        setSelectedFile(e.target.files[0]);
-      }
-    };
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
 
   const handleGetTaConstraints = async () => {
     try {
       const response = await axios.get("http://localhost:8080/excel/getRequirementsExcel", {
         responseType: "blob", // 🔥 this is crucial to receive binary data correctly
       });
-  
+
       // Create a blob and a temporary download link
       const blob = new Blob([response.data], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
-  
+
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -67,15 +75,17 @@ const Instructor_AdminProfilePage = () => {
       document.body.appendChild(link);
       link.click();
       link.remove(); // clean up
-  
+
       console.log("TA constraints downloaded successfully.");
     } catch (error) {
       console.error("Error downloading TA constraints:", error);
       alert("Failed to download TA constraints.");
     }
   };
-  
 
+  /**
+   * Sends password change request for the instructor.
+   */
   const handleChangePassword = async () => {
     try {
       console.log("Email:", insProfileInfo.email);
@@ -97,9 +107,11 @@ const Instructor_AdminProfilePage = () => {
     } catch (error) {
       console.error("Error changing password:", error);
     }
-  
-  };
 
+  };
+  /**
+   * Loads instructor profile data.
+   */
   useEffect(() => {
     const fetchProfileInformation = async () => {
       try {
@@ -153,8 +165,8 @@ const Instructor_AdminProfilePage = () => {
           <div className="ins-admin-dump-new-data">
             <h3>Dump New Data</h3>
             <div className="ins-admin-upload-container">
-              {!selectedFile && 
-                <div className="ins-admin-drag-drop-area">              
+              {!selectedFile &&
+                <div className="ins-admin-drag-drop-area">
                   <p>Drag &amp; Drop file here</p>
                   <p>or</p>
                   <label htmlFor="file-upload" className="ins-admin-choose-file-label">
@@ -177,8 +189,8 @@ const Instructor_AdminProfilePage = () => {
                   borderRadius: "8px",
                   textAlign: "center",
                 }}
-            >
-                  
+                >
+
                   <p style={{ fontWeight: "bold", color: "#2e7d32" }}>
                     ✅ File successfully selected!
                   </p>
@@ -201,7 +213,7 @@ const Instructor_AdminProfilePage = () => {
           <div className="modal">
             <h3>Change Password</h3>
             <label>Old Password</label>
-            <input ref={oldPasswordRef} type="password" placeholder="Enter your old password"/>
+            <input ref={oldPasswordRef} type="password" placeholder="Enter your old password" />
             <label>New Password</label>
             <input ref={newPasswordRef} type="password" placeholder="At least 8 characters long" />
             <label>Confirm New Password</label>
@@ -209,15 +221,15 @@ const Instructor_AdminProfilePage = () => {
             <div className="modal-buttons">
               <button className="cancel-button" onClick={() => setShowChangePasswordModal(false)}>Cancel</button>
               <button className="apply-button" onClick={() => {
-                if(!oldPasswordRef.current.value || !newPasswordRef.current.value || !confirmNewPasswordRef.current.value) {
+                if (!oldPasswordRef.current.value || !newPasswordRef.current.value || !confirmNewPasswordRef.current.value) {
                   alert("Please fill in all fields.");
                   return;
                 }
-                if(newPasswordRef.current.value !== confirmNewPasswordRef.current.value) {
+                if (newPasswordRef.current.value !== confirmNewPasswordRef.current.value) {
                   alert("New password and confirmation do not match.");
                   return;
                 }
-                if(newPasswordRef.current.value.length < 8) {
+                if (newPasswordRef.current.value.length < 8) {
                   alert("New password must be at least 8 characters long.");
                   return;
                 }

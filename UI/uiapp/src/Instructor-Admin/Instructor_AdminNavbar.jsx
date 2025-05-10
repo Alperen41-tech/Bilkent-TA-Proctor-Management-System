@@ -2,7 +2,10 @@ import React from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import "./Instructor_AdminNavbar.css";
 import LogoutModal from "../LogoutModal";
-
+/**
+ * Instructor Admin Navbar component
+ * Navigation bar for the instructor admin interface, includes profile link and logout functionality.
+ */
 const NavbarINS = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -16,9 +19,6 @@ const NavbarINS = () => {
     navigate("/");
   };
 
-
-
-  //CHANGED ALL TO ins-tas FOR NOW!!!!!!!!!!!!!!!!!!!!!
   return (
     <>
       <header className="navbar">
