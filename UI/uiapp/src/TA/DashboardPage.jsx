@@ -7,7 +7,11 @@ import WorkloadEntryItem from "../WorkloadEntryItem";
 import ProctoringDutyItem from "../ProctoringDutyItem";
 import NotificationItem from "../NotificationItem";
 import axios from "axios";
-
+/**
+ * DashboardPage component
+ * Main dashboard for TAs to manage pending/received requests, workload entries, proctoring duties, and notifications.
+ * Also includes functionality to create new workload entries, print classroom info, and manage proctoring swap status.
+ */
 const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -25,11 +29,15 @@ const DashboardPage = () => {
   const newTimeSpendMinutesEntry = useRef();
   const newDetailsEntry = useRef();
   //-----------------------------
-  
+    /**
+   * Handles the selection of a proctoring item.
+   */
   const handleSelect = (proc) => {
     setSelectedProctoring(proc);
   };
-
+    /**
+   * Switches tabs and refreshes requests.
+   */
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setSelectedRequest(null);
@@ -37,7 +45,9 @@ const DashboardPage = () => {
     fetchReceivedRequests();
     fetchPendingRequests();
   };
-
+  /**
+   * Downloads Excel sheet of classroom info for the selected proctoring.
+   */
   const handlePrintClassroomInfo = async () => {
   try {
     const token = localStorage.getItem("token");
@@ -68,7 +78,9 @@ const DashboardPage = () => {
   }
 };
 
-
+  /**
+   * Renders a pending request component.
+   */
   const createPendingRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
@@ -76,7 +88,9 @@ const DashboardPage = () => {
       </div>
     );
   };
-
+    /**
+   * Renders a received request component.
+   */
   const createReceivedRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
@@ -84,11 +98,15 @@ const DashboardPage = () => {
       </div>
     );
   };
-
+  /**
+   * Renders a workload entry card.
+   */
   const createWorkloadEntry = (taskTitle, courseCode ,date, duration, comment, status) => {
     return <WorkloadEntryItem taskTitle={taskTitle} courseCode={courseCode} date={date} duration={duration} comment={comment} status={status} />;
   }
-
+  /**
+   * Fetches TA's assigned proctoring duties.
+   */
   const fetchTasProctorings = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -109,7 +127,9 @@ const DashboardPage = () => {
       }
     }
   };
-
+  /**
+   * Fetches workload task types.
+   */
   const fetchWorkloadTypes = async () => {
     try {
       const response = await axios.get("http://localhost:8080/taskType/getTaskTypeNames?courseId=1"); // Adjust the URL as needed
@@ -125,7 +145,9 @@ const DashboardPage = () => {
       }
     }
   };
-
+  /**
+   * Fetches TA's submitted workload requests.
+   */
   const fetchTaWorkloadRequests = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -145,7 +167,9 @@ const DashboardPage = () => {
       }
     }
   };
-
+  /**
+   * Fetches user notifications.
+   */
   const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -167,7 +191,9 @@ const DashboardPage = () => {
       }
     }
   };
-
+  /**
+   * Fetches requests received by the TA.
+   */
   const fetchReceivedRequests = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -189,7 +215,9 @@ const DashboardPage = () => {
       }
     }
   };
-
+  /**
+   * Fetches requests sent by the TA.
+   */
   const fetchPendingRequests = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -212,7 +240,9 @@ const DashboardPage = () => {
       }
     }
   };
-
+  /**
+   * Submits a new TA workload request.
+   */
   const postNewWorkloadEntry = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -241,7 +271,9 @@ const DashboardPage = () => {
       }
     }
   };
-
+  /**
+   * Responds to received request (accept/reject).
+   */
   const handleRequestResponse = async (requestId, answer) => {
     try {
       const response = await axios.put(`http://localhost:8080/request/respond`,null, {
@@ -267,7 +299,9 @@ const DashboardPage = () => {
       }
     }
   };
-
+    /**
+   * Cancels a pending request previously sent.
+   */
   const cancelPendingRequest = async (requestId) => {
     try {
       const response = await axios.delete(`http://localhost:8080/request/deleteRequest?id=${requestId}`);
@@ -289,7 +323,9 @@ const DashboardPage = () => {
       }
     }
   };
-
+  /**
+   * useEffect to load all relevant dashboard data on component mount.
+   */
   useEffect(() => {
     fetchNotifications();
     fetchTasProctorings();
@@ -298,7 +334,9 @@ const DashboardPage = () => {
     fetchReceivedRequests();
     fetchPendingRequests();
   }, []);
-
+  /**
+   * Updates the locked/unlocked swap status of a selected proctoring.
+   */
   const handleLockedStatusChange = async (id) => {
     try {
       const proctoringToBeLocked = tasProctorings.find((duty) => duty.classProctoringDTO.id === id);
