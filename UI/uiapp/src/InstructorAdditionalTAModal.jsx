@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./InstructorAdditionalTAModal.css";
 
-const InstructorAdditionalTAModal = ({ isOpen, onCancel, onConfirm }) => {
+const InstructorAdditionalTAModal = ({ isOpen, onCancel, onConfirm , minTaCount, maxTaCount, onRefresh}) => {
   const [taCount, setTaCount] = useState(1);
   const [description, setDescription] = useState("");
 
@@ -23,7 +23,8 @@ const InstructorAdditionalTAModal = ({ isOpen, onCancel, onConfirm }) => {
         <label>TA Count</label>
         <input
           type="number"
-          min="1"
+          min={minTaCount}
+          max={maxTaCount}
           value={taCount}
           onChange={(e) => setTaCount(Number(e.target.value))}
           className="modal-input"
@@ -40,7 +41,7 @@ const InstructorAdditionalTAModal = ({ isOpen, onCancel, onConfirm }) => {
 
         <div className="modal-buttons">
           <button className="cancel-button" onClick={onCancel}>Cancel</button>
-          <button className="apply-button" onClick={() => onConfirm(taCount, description)}>Confirm</button>
+          <button className="apply-button" onClick={() => {onConfirm(taCount, description); onRefresh();}}>Confirm</button>
         </div>
       </div>
     </div>

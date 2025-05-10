@@ -37,7 +37,7 @@ const INS_ExamsPage = () => {
   const [sortName, setSortName] = useState("");
   const [sortWorkload, setSortWorkload] = useState("");
 
-  const [taCount, setTaCount] = useState(2);
+  const [taCount, setTaCount] = useState(0);
   const [eventName, setEventName] = useState("");
   const [examDate, setExamDate] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -57,6 +57,18 @@ const INS_ExamsPage = () => {
     fetchAvailableTAs();
     fetchInstructorCourses();
   }, [selectedTask]);
+
+  const hasAvailableTASlots = () => {
+    const examInfo = selectedTask?.classProctoringTARelationDTO?.classProctoringDTO;
+
+    if (!examInfo) return false;
+
+    const assigned = examInfo.numberOfAssignedTAs || 0;
+    const pending = examInfo.numberOfPendingRequests || 0;
+    const max = examInfo.tacount || 0;
+
+    return assigned + pending < max;
+  };
 
   const handlePrintClassroomInfo = async () => {
   try {
@@ -198,6 +210,20 @@ const INS_ExamsPage = () => {
         alert("TA discarded successfully.");
         setSelectedTA(null);
         fetchProctoringTasks();
+        setSelectedTask({
+          classProctoringTARelationDTO: {
+            classProctoringDTO: {
+              id: null,
+              courseName: "",
+              proctoringName: "",
+              startDate: "",
+              endDate: "",
+              classrooms: "",
+            },
+          },
+          taProfileDTOList: [],
+        });
+        setAvailableTAs([]);
       }
     } catch (error) {
       console.error("Failed to discard TA:", error);
@@ -232,6 +258,20 @@ const INS_ExamsPage = () => {
         setShowManualModal(false);
         setSelectedTA(null);
         fetchProctoringTasks();
+        setSelectedTask({
+          classProctoringTARelationDTO: {
+            classProctoringDTO: {
+              id: null,
+              courseName: "",
+              proctoringName: "",
+              startDate: "",
+              endDate: "",
+              classrooms: "",
+            },
+          },
+          taProfileDTOList: [],
+        });
+        setAvailableTAs([]);
       } else {
         alert("Force assignment failed.");
       }
@@ -270,6 +310,20 @@ const INS_ExamsPage = () => {
         setShowManualModal(false);
         setSelectedTA(null);
         fetchProctoringTasks();
+        setSelectedTask({
+          classProctoringTARelationDTO: {
+            classProctoringDTO: {
+              id: null,
+              courseName: "",
+              proctoringName: "",
+              startDate: "",
+              endDate: "",
+              classrooms: "",
+            },
+          },
+          taProfileDTOList: [],
+        });
+        setAvailableTAs([]);
       } else {
         alert("Failed to send request.");
       }
@@ -323,6 +377,7 @@ const INS_ExamsPage = () => {
   const handleTaskClick = (task) => {
     setSelectedTask(task);
     setSelectedTA(null);
+    setTaCount(0);
   };
 
   const handleTAClick = (ta) => {
@@ -461,7 +516,7 @@ const INS_ExamsPage = () => {
         </div>
 
         <div className="ins-exam-card ins-exam-ta-list">
-          <h3>Available TAs</h3>
+          <h3>Available TAs • {selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests >= 0 ? (selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests) + "TA Slots Remaining": "Reached enough number of ta." : "Please select a proctoring"}</h3>
           <div className="ins-exam-filters">
             <input
               type="text"
@@ -488,10 +543,8 @@ const INS_ExamsPage = () => {
 
           <div className="ins-exam-assign-actions">
             <button onClick={handleAutomaticAssign}>Automatic Assign</button>
-            <button onClick={() => setShowManualModal(true)}>Manual Assign</button>
-            <button onClick={() => setShowInstructorTAModal(true)}>Request Additional TAs</button>
-
-
+            <button onClick={() => {hasAvailableTASlots() ? setShowManualModal(true) : ( !selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? alert("Select a proctoring task first") : alert("Not enough TA slots!"))}}>Manual Assign</button>
+            <button onClick={() => {hasAvailableTASlots() ? setShowInstructorTAModal(true) : ( !selectedTask.classProctoringTARelationDTO.classProctoringDTO.id ? alert("Select a proctoring task first") : alert("Not enough TA slots!"))}}>Request Additional TAs</button>
 
             <br />
             <div className="ins-exam-restriction-checkboxes" style={{ marginTop: "1rem" }}>
@@ -517,7 +570,8 @@ const INS_ExamsPage = () => {
                 TA Count:
                 <input
                   type="number"
-                  min="1"
+                  min={selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests >= 1 ? 1 : 0}
+                  max={selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests >= 0 ? selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests : 0} 
                   value={taCount}
                   onChange={(e) => setTaCount(Number(e.target.value))}
                   style={{ width: "60px", marginLeft: "0.5rem" }}
@@ -539,12 +593,48 @@ const INS_ExamsPage = () => {
             onClose={() => setShowAutoModal(false)}
             suggestedTAs={autoSuggestedTAs}
             selectedExamId={selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.id}
-            refreshAfterAssignment={fetchProctoringTasks}
+            refreshAfterAssignment={()=> {fetchProctoringTasks(); setSelectedTA(null);
+        fetchProctoringTasks();
+        setSelectedTask({
+          classProctoringTARelationDTO: {
+            classProctoringDTO: {
+              id: null,
+              courseName: "",
+              proctoringName: "",
+              startDate: "",
+              endDate: "",
+              classrooms: "",
+            },
+          },
+          taProfileDTOList: [],
+        });
+        setAvailableTAs([]);}}
           />
           <InstructorAdditionalTAModal
             isOpen={showInstructorTAModal}
             onCancel={() => setShowInstructorTAModal(false)}
             onConfirm={handleRequestAdditionalTAs}
+            minTaCount={selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests >= 1 ? 1 : 0}
+            maxTaCount={selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests >= 0 ? selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.tacount - selectedTask.taProfileDTOList.length - selectedTask.classProctoringTARelationDTO?.classProctoringDTO?.numberOfPendingRequests : 0}
+            onRefresh={() => {
+              fetchProctoringTasks();
+              setSelectedTA(null);
+              fetchProctoringTasks();
+              setSelectedTask({
+                classProctoringTARelationDTO: {
+                  classProctoringDTO: {
+                    id: null,
+                    courseName: "",
+                    proctoringName: "",
+                    startDate: "",
+                    endDate: "",
+                    classrooms: "",
+                  },
+                },
+                taProfileDTOList: [],
+              });
+              setAvailableTAs([]);
+            }}
           />
 
 
