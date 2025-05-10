@@ -5,9 +5,11 @@ import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Entities.RequestEntities.InstructorAdditionalTARequest;
 import com.cs319group3.backend.Entities.UserEntities.DeansOffice;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
+import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.InstructorAdditionalTARequestRepo;
 import com.cs319group3.backend.Repositories.InstructorRepo;
 import com.cs319group3.backend.Services.InstructorAdditionalTARequestService;
+import com.cs319group3.backend.Services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,9 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
 
     @Autowired
     private InstructorRepo instructorRepo;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public List<RequestDTO> getApprovedInstructorAdditionalTARequests(int receiverId) {
@@ -62,6 +67,8 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
         request.setReceiverUser(deansOffice);
 
         instructorAdditionalTARequestRepo.save(request);
+        notificationService.createNotification(request, NotificationType.REQUEST);
+
         return true;
     }
 }
