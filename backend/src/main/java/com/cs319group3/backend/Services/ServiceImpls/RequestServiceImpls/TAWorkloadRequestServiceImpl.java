@@ -50,17 +50,20 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService {
         dto.setWorkloadId(workloadId);
         dto.setSenderId(taId);
 
-            if (!dto.getTaskTypeName().equals("Other")) {
-                Optional<TaskType> taskType = taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(
-                        dto.getTaskTypeName(),
-                        taOptional.get().getAssignedCourse().getCourseId()
-                );
-                if (taskType.isEmpty()) throw new RuntimeException("No such task type");
-                if (dto.getTimeSpent() > taskType.get().getTimeLimit()){
-                    System.out.println(dto.getTimeSpent()+" - "+taskType.get().getTimeLimit());
-                    throw new RuntimeException("Proctoring time exceeds allowed time limit");
-                }
+        Optional<TA> taOptional = taRepo.findById(taId);
+        if (taOptional.isEmpty()) throw new RuntimeException("No such TA");
+
+        if (!dto.getTaskTypeName().equals("Other")) {
+            Optional<TaskType> taskType = taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(
+                    dto.getTaskTypeName(),
+                    taOptional.get().getAssignedCourse().getCourseId()
+            );
+            if (taskType.isEmpty()) throw new RuntimeException("No such task type");
+            if (dto.getTimeSpent() > taskType.get().getTimeLimit()){
+                System.out.println(dto.getTimeSpent()+" - "+taskType.get().getTimeLimit());
+                throw new RuntimeException("Proctoring time exceeds allowed time limit");
             }
+        }
 
         if (!dto.getTaskTypeName().equals("Other")) {
             Optional<TaskType> taskType = taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(

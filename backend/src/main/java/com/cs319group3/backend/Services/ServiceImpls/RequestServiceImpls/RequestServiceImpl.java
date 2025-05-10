@@ -100,6 +100,35 @@ public class RequestServiceImpl implements RequestService {
             }
             else if (request instanceof AuthStaffProctoringRequest) {
                 AuthStaffProctoringRequest req = (AuthStaffProctoringRequest) request;
+                if (!authStaffProctoringRequestService.canRequestBeAccepted(req.getClassProctoring().getClassProctoringId())) {
+                    request.setApproved(false);
+                    request.setResponseDate(LocalDateTime.now());
+                    requestRepo.save(request);
+                    System.out.println("Request is automatically rejected due to full proctoring");
+                    return false;
+                } else if (!taAvailabilityService.isTAAvailable((TA) req.getReceiverUser(), req.getClassProctoring())) {
+                    request.setApproved(false);
+                    request.setResponseDate(LocalDateTime.now());
+                    requestRepo.save(request);
+                    System.out.println("Request is automatically rejected due to unavailability of the user");
+                    return false;
+                } else {
+                    classProctoringTARelationService.createClassProctoringTARelation(req.getReceiverUser().getUserId(), req.getClassProctoring().getClassProctoringId());
+                    Optional<TA> ta = taRepo.findById(request.getReceiverUser().getUserId());
+                    if (ta.isEmpty()) {
+                        throw new RuntimeException("No such TA");
+                    }
+                    long minutes = ChronoUnit.MINUTES.between(req.getClassProctoring().getStartDate(), req.getClassProctoring().getEndDate());
+                    ta.get().setWorkload(ta.get().getWorkload() + (int) minutes);
+                    authStaffProctoringRequestService.rejectRequestsIfNeeded(req.getClassProctoring().getClassProctoringId());
+                }
+            }
+            else if (request instanceof TASwapRequest) {
+                TASwapRequest req = (TASwapRequest) request;
+                swapRequestService.acceptSwapRequest(requestId);
+            }
+            else if (request instanceof AuthStaffProctoringRequest) {
+                AuthStaffProctoringRequest req = (AuthStaffProctoringRequest) request;
                 if(!authStaffProctoringRequestService.canRequestBeAccepted(req.getClassProctoring().getClassProctoringId())) {
                     request.setApproved(false);
                     request.setResponseDate(LocalDateTime.now());
@@ -123,37 +152,6 @@ public class RequestServiceImpl implements RequestService {
                     long minutes = ChronoUnit.MINUTES.between(req.getClassProctoring().getStartDate(), req.getClassProctoring().getEndDate());
                     ta.get().setWorkload(ta.get().getWorkload() + (int)minutes);
                     authStaffProctoringRequestService.rejectRequestsIfNeeded(req.getClassProctoring().getClassProctoringId());
-                }
-                else if (request instanceof TASwapRequest) {
-                    TASwapRequest req = (TASwapRequest) request;
-                    swapRequestService.acceptSwapRequest(requestId);
-                }
-                else if (request instanceof AuthStaffProctoringRequest) {
-                    AuthStaffProctoringRequest req = (AuthStaffProctoringRequest) request;
-                    if(!authStaffProctoringRequestService.canRequestBeAccepted(req.getClassProctoring().getClassProctoringId())) {
-                        request.setApproved(false);
-                        request.setResponseDate(LocalDateTime.now());
-                        requestRepo.save(request);
-                        System.out.println("Request is automatically rejected due to full proctoring");
-                        return false;
-                    }
-                    else if(!taAvailabilityService.isTAAvailable((TA) req.getReceiverUser(), req.getClassProctoring())){
-                        request.setApproved(false);
-                        request.setResponseDate(LocalDateTime.now());
-                        requestRepo.save(request);
-                        System.out.println("Request is automatically rejected due to unavailability of the user");
-                        return false;
-                    }
-                    else{
-                        classProctoringTARelationService.createClassProctoringTARelation(req.getReceiverUser().getUserId(), req.getClassProctoring().getClassProctoringId());
-                        Optional<TA> ta = taRepo.findById(request.getReceiverUser().getUserId());
-                        if (ta.isEmpty()) {
-                            throw new RuntimeException("No such TA");
-                        }
-                        long minutes = ChronoUnit.MINUTES.between(req.getClassProctoring().getStartDate(), req.getClassProctoring().getEndDate());
-                        ta.get().setWorkload(ta.get().getWorkload() + (int)minutes);
-                        authStaffProctoringRequestService.rejectRequestsIfNeeded(req.getClassProctoring().getClassProctoringId());
-                    }
                 }
             }
             else {
