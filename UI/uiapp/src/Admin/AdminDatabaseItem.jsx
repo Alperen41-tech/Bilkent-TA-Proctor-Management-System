@@ -2,10 +2,26 @@
 import React from 'react';
 import './AdminDatabaseItem.css';
 
+
+/**
+ * AdminDatabaseItem component
+ * Renders a single database item for admin view based on type (TA, instructor, course, etc.).
+ *
+ * Props:
+ * - type: string indicating the type of item
+ * - data: object containing the item’s data
+ * - onDelete: function to call when delete is triggered
+ * - isSelected: whether the item is currently selected
+ * - onSelect: function to handle selection
+ * - inLog: whether the item is being shown in a log context (disables delete)
+ */
+
+
 const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }) => {
   console.log("Course data passed to AdminDatabaseItem:", data);
-
+  // render item specific details
   const renderDetails = () => {
+    // TA (v2): Shows name, email, and department
     switch (type) {
       case 'ta2':
         return (
@@ -15,6 +31,7 @@ const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }
             <div>{data.department}</div>
           </>
         );
+      // Instructor (v2): Shows name, email, and academic title
       case 'instructor2':
         return (
           <>
@@ -23,6 +40,7 @@ const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }
             <div>{data.title}</div>
           </>
         );
+      // Exam: Shows course, type, date/time, room, and TA count
       case 'exam':
         return (
           <>
@@ -32,7 +50,7 @@ const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }
             <div>TA Count: {data.tacount ?? '—'}</div>
           </>
         );
-
+      // Course (v2): Shows course code, name, and instructor
       case 'course2':
         return (
           <>
@@ -41,6 +59,7 @@ const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }
             <div>{data.instructor}</div>
           </>
         );
+      // Class: Shows room and student capacity
       case 'class':
         return (
           <>
@@ -48,6 +67,7 @@ const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }
             <div>{data.capacity} students</div>
           </>
         );
+      // Student: Shows name, email, and student ID
       case 'student':
         return (
           <>
@@ -56,7 +76,7 @@ const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }
             <div>{data.studentId}</div>
           </>
         );
-
+      // Instructor (detailed): Shows full profile including department, contact, and courses
       case 'instructor':
         return (
           <>
@@ -69,7 +89,7 @@ const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }
           </>
         );
 
-
+      // Course (detailed): Shows course code, name, description, and department
       case 'course':
         return (
           <>
@@ -88,7 +108,7 @@ const AdminDatabaseItem = ({ type, data, onDelete, isSelected, onSelect, inLog }
           </>
         );
 
-
+      // TA (detailed): Shows full TA profile including ID, phone, department, and workload
       case 'ta':
         return (
           <>

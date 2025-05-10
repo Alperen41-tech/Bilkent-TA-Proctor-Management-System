@@ -6,6 +6,19 @@ import axios from "axios";
 
 import { type } from "@testing-library/user-event/dist/type";
 
+
+/**
+ * AdminDatabasePage component
+ * Central admin interface to view, filter, create, and bulk upload entities such as:
+ * - Courses
+ * - Instructors
+ * - TAs
+ * - Proctoring events (exams)
+ *
+ * Handles both display (via <AdminDatabaseItem/>) and data creation logic.
+ */
+
+
 const AdminDatabasePage = () => {
   const [selectedType, setSelectedType] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -76,6 +89,9 @@ const AdminDatabasePage = () => {
   const [tasData, setTAsData] = useState([]);
   const [createSectionType, setCreateSectionType] = useState("");
 
+  /**
+ * Handles Excel file upload and sends it to backend for processing.
+ */
 
   const handleImportClick = async () => {
     if (!selectedFile) {
@@ -103,6 +119,10 @@ const AdminDatabasePage = () => {
       alert("A problem occured.");
     }
   };
+
+  /**
+ * Fetches entity data from the backend depending on the selected type.
+ */
 
   const fetchDataForType = async (type) => {
     try {
@@ -178,6 +198,11 @@ const AdminDatabasePage = () => {
     fetchDepartments();
   }, []);
 
+
+  /**
+ * Retrieves department list from backend to populate dropdowns.
+ */
+
   const fetchDepartments = async () => {
     try {
       const response = await axios.get(
@@ -189,6 +214,10 @@ const AdminDatabasePage = () => {
       console.error("Error fetching departments:", error);
     }
   };
+
+  /**
+ * Dynamically renders AdminDatabaseItem components based on selected type and search input.
+ */
 
   const createDatabaseItems = () => {
     const keyword = searchKeyword.toLowerCase();
@@ -281,7 +310,9 @@ const AdminDatabasePage = () => {
     return <p style={{ padding: "1rem" }}>Please select a type to be displayed.</p>;
   };
 
-
+  /**
+ * Creates a new TA using input fields and selected department/course.
+ */
   const createNewTa = async () => {
     console.log("Calling createNewTa...");
 
@@ -338,6 +369,12 @@ const AdminDatabasePage = () => {
     }
   };
 
+
+  /**
+ * Creates a new proctoring session (exam) for a given course and section.
+ */
+
+
   const createNewProctoring = async (
     eventName,
     courseId,
@@ -371,6 +408,9 @@ const AdminDatabasePage = () => {
       alert("An error occurred. Please try again.");
     }
   };
+  /**
+   * Creates a new course with the given metadata and links it to a department.
+   */
 
   const createNewCourse = async (name, description, courseCode, departmentId, coordinatorId) => {
     try {
@@ -393,6 +433,9 @@ const AdminDatabasePage = () => {
       alert("An error occurred while creating the course.");
     }
   };
+  /**
+   * Sends instructor creation payload including login info and assigned courses.
+   */
 
   const createInstructor = async (
     name,
@@ -441,6 +484,9 @@ const AdminDatabasePage = () => {
       alert("An error occurred while creating the instructor.");
     }
   };
+  /**
+   * Top section with search bar and dynamic database list (based on selected type).
+   */
 
   return (
     <div className="admin-database-database-container">
@@ -448,6 +494,7 @@ const AdminDatabasePage = () => {
 
       {/* Top Section: Left side for search and data table, right side for view data details */}
       <div className="admin-database-database-top">
+
         <div className="admin-database-search-data-section">
           <div className="admin-database-search-bar">
             <input

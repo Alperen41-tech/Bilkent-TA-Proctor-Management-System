@@ -5,6 +5,12 @@ import NavbarAdmin from "./NavbarAdmin";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
+
+/**
+ * AdminProfilePage component
+ * Displays the logged-in admin’s personal information and allows password changes.
+ */
+
 const AdminProfilePage = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = React.useState(false);
   const [adminProfileInfo, setAdminProfileInfo] = useState({ courses: [] }); // tbchanged for admin
@@ -15,6 +21,10 @@ const AdminProfilePage = () => {
   const confirmNewPasswordRef = useRef();
   //-----------------------------------------------------------
 
+  /**
+   * Sends password change request to the backend.
+   * Validates old password and applies new one for the admin user.
+   */
 
   const handleChangePassword = async () => {
     try {
@@ -37,6 +47,7 @@ const AdminProfilePage = () => {
 
   };
 
+  // On mount: Fetches admin profile information from the backend
 
   useEffect(() => {
     const fetchProfileInformation = async () => {

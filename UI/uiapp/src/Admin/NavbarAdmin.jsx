@@ -3,7 +3,14 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import "./NavbarAdmin.css";
 import LogoutModal from "../LogoutModal";
 
+
+/**
+ * NavbarAdmin component
+ * Navigation bar for admin users with links to database, logs, profile, and logout functionality.
+ */
+
 const NavbarAdmin = () => {
+  // Hook to programmatically navigate between routes
   const navigate = useNavigate();
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
