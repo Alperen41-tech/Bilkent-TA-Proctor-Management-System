@@ -10,16 +10,23 @@ import PendingRequestItem from "../PendingRequestItem";
 import ReceivedRequestItem from "../ReceivedRequestItem";
 import { set } from "date-fns";
 
+
+/**
+ * DS_DashboardPage component
+ * Main interface for Department Secretary to manage proctoring requests, assign TAs,
+ * and respond to both application-based and direct assignment workflows.
+ */
+
 const DS_DashboardPage = () => {
   const [selectedAppliedStudentsId, setSelectedAppliedStudentsId] = useState([]);
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [searchText, setSearchText] = useState("");
-  const [sortName, setSortName] = useState("");  
+  const [sortName, setSortName] = useState("");
   const [sortWorkload, setSortWorkload] = useState("");
   const [sortedSearchAppliedTAs, setSortedSearchAppliedTAs] = useState([]);
   const [sortedSearchAvailableTAs, setSortedSearchAvailableTAs] = useState([]);
-  
+
   const [avaliableTAs, setAvailableTAs] = useState([]);
   const [appliedTAs, setAppliedTAs] = useState([]);
   const [notifications, setNotifications] = useState([]);
@@ -34,6 +41,10 @@ const DS_DashboardPage = () => {
   const [taSelectRestrictionsEligibility, setTASelectRestrictionsEligibility] = useState(false);
   const [taSelectRestrictionsOneDay, setTASelectRestrictionsOneDay] = useState(false);
 
+  /**
+ * Handles tab change and refreshes relevant data
+ */
+
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setSelectedRequest(null);
@@ -42,6 +53,10 @@ const DS_DashboardPage = () => {
     fetchPendingRequests();
   };
 
+
+  /**
+ * Toggles TA selection in multi-select state by ID
+ */
   const handleASC = (id) => {
     if (selectedAppliedStudentsId && !selectedAppliedStudentsId.includes(id)) {
       setSelectedAppliedStudentsId((prev) => [...prev, id]);
@@ -51,6 +66,11 @@ const DS_DashboardPage = () => {
     }
     console.log("Selected TA:", id);
   };
+
+
+  /**
+ * Sends selected students to backend for force assignment
+ */
 
   const handleForceAssignment = async () => {
     try {
@@ -71,7 +91,7 @@ const DS_DashboardPage = () => {
           },
         }
       );
-  
+
       if (response.data) {
         alert("Force assignment completed successfully.");
         fetchAppliedStudents();
@@ -88,7 +108,11 @@ const DS_DashboardPage = () => {
       }
     }
   };
-  
+
+  /**
+ * Sends selected students to backend to receive assignment offers
+ */
+
   const handleOfferAssignment = async () => {
     try {
       if (selectedAppliedStudentsId.length === 0) {
@@ -109,7 +133,7 @@ const DS_DashboardPage = () => {
           },
         }
       );
-  
+
       if (response.data) {
         alert("Unforced assignment completed successfully.");
         fetchAppliedStudents();
@@ -126,6 +150,9 @@ const DS_DashboardPage = () => {
       }
     }
   };
+  /**
+ * Fetches requests received by the Dean's Secretary
+ */
 
   const fetchReceivedRequests = async () => {
     try {
@@ -142,6 +169,9 @@ const DS_DashboardPage = () => {
       console.error("Error fetching received requests:", error);
     }
   };
+  /**
+ * Fetches requests sent by the Dean's Secretary
+ */
 
   const fetchPendingRequests = async () => {
     try {
@@ -159,24 +189,27 @@ const DS_DashboardPage = () => {
     }
   };
 
+  /**
+ * Retrieves all Paid Proctoring Requests for the department
+ */
   const fetchPaidProctoringRequests = async () => {
     try {
       const token = localStorage.getItem("token");
 
       const response = await axios.get(
-          "http://localhost:8080/proctoringApplication/getAllApplicationsByDepartment",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        "http://localhost:8080/proctoringApplication/getAllApplicationsByDepartment",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       if (response.data) {
         const sortedRequests = response.data.sort(
-            (a, b) =>
-                new Date(b.classProctoringDTO.startDate) -
-                new Date(a.classProctoringDTO.startDate)
+          (a, b) =>
+            new Date(b.classProctoringDTO.startDate) -
+            new Date(a.classProctoringDTO.startDate)
         );
         setPaidProctorings(sortedRequests);
       } else {
@@ -187,13 +220,16 @@ const DS_DashboardPage = () => {
     }
   };
 
+  /**
+ * Retrieves TAs who applied for the selected paid proctoring
+ */
   const fetchAppliedStudents = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/proctoringApplicationTARelation/getApplicantsForApplication?applicationId=${selectedPPR.applicationId}`); // Adjust the URL as needed
       if (response.data) {
         setAppliedTAs(response.data);
       }
-      else{
+      else {
         console.log("No paid proctoring requests found.");
       }
     } catch (error) {
@@ -201,6 +237,9 @@ const DS_DashboardPage = () => {
     }
   };
 
+  /**
+ * Retrieves TAs available for manual assignment
+ */
   const fetchAvaliableTAs = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -213,11 +252,11 @@ const DS_DashboardPage = () => {
         headers: {
           Authorization: `Bearer ${token}`
         }
-      }); // Adjust the URL as needed);
+      });
       if (response.data) {
         setAvailableTAs(response.data);
       }
-      else{
+      else {
         console.log("No paid proctoring requests found.");
       }
     } catch (error) {
@@ -230,6 +269,9 @@ const DS_DashboardPage = () => {
       }
     }
   };
+  /**
+   * Automatically selects TAs based on restrictions and backend logic
+   */
 
   const handleAutomaticSelect = async () => {
     try {
@@ -262,26 +304,32 @@ const DS_DashboardPage = () => {
       }
     }
   };
+  /**
+ * Sets assignment type of a paid proctoring request (APPLICATION or ASSIGNMENT)
+ */
 
   const handleAssignmentTypeSelect = (type, applicationId) => {
     try {
       const response = axios.put(`http://localhost:8080/proctoringApplication/setApplicationType?applicationId=${applicationId}&applicationType=${type}`);
       if (response) {
         alert("Assignment type selected successfully.");
-        fetchPaidProctoringRequests(); 
+        fetchPaidProctoringRequests();
       } else {
         alert("Failed to select assignment type. Please try again.");
-        fetchPaidProctoringRequests(); 
+        fetchPaidProctoringRequests();
       }
     } catch (error) {
       console.error("Error selecting assignment type:", error);
       alert("An error occurred while selecting assignment type. Please try again.");
     }
   }
+  /**
+ * Accepts or rejects a received request from the UI
+ */
 
   const handleRequestResponse = async (requestId, answer) => {
     try {
-      const response = await axios.put(`http://localhost:8080/request/respond`,null, {
+      const response = await axios.put(`http://localhost:8080/request/respond`, null, {
         params: {
           id: requestId,
           response: answer,
@@ -294,8 +342,8 @@ const DS_DashboardPage = () => {
         } else {
           alert("Request rejected successfully.");
         }
-        fetchReceivedRequests(); 
-        fetchPendingRequests(); 
+        fetchReceivedRequests();
+        fetchPendingRequests();
       } else {
         alert("Failed to accept the request. Please try again.");
       }
@@ -304,6 +352,10 @@ const DS_DashboardPage = () => {
       alert("An error occurred while accepting the request. Please try again.");
     }
   };
+
+  /**
+ * Cancels a pending request and updates UI
+ */
 
   const cancelPendingRequest = async (requestId) => {
     try {
@@ -330,7 +382,7 @@ const DS_DashboardPage = () => {
   const createPendingRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <PendingRequestItem {...request} onCancel={() => cancelPendingRequest(request.requestId)} isSelected={selectedRequest === request}/>
+        <PendingRequestItem {...request} onCancel={() => cancelPendingRequest(request.requestId)} isSelected={selectedRequest === request} />
       </div>
     );
   };
@@ -338,32 +390,34 @@ const DS_DashboardPage = () => {
   const createReceivedRequest = (request, index) => {
     return (
       <div key={index} onClick={() => setSelectedRequest(request)}>
-        <ReceivedRequestItem {...request} onAccept={()=>handleRequestResponse(request.requestId, true)} onReject={()=>handleRequestResponse(request.requestId, false)} isSelected={selectedRequest === request}/>
+        <ReceivedRequestItem {...request} onAccept={() => handleRequestResponse(request.requestId, true)} onReject={() => handleRequestResponse(request.requestId, false)} isSelected={selectedRequest === request} />
       </div>
     );
   };
 
   const createSelectPaidProctoringTAs = () => {
     return paidProctorings.map((request) => (
-      <DS_SelectPaidProctoringTAItem  paidProctoring={request} isSelected={selectedPPR === request} onSelect={()=>{setSelectedPPR(request); setSelectedAppliedStudentsId([]);}} isAppliedAssignment={request.applicationType === "APPLICATION"} isForcedAssignment={request.applicationType === "ASSIGNMENT"} onAppliedAssignment={()=> handleAssignmentTypeSelect("APPLICATION", request.applicationId)} onForcedAssignment={()=> handleAssignmentTypeSelect("ASSIGNMENT", request.applicationId)}/>
+      <DS_SelectPaidProctoringTAItem paidProctoring={request} isSelected={selectedPPR === request} onSelect={() => { setSelectedPPR(request); setSelectedAppliedStudentsId([]); }} isAppliedAssignment={request.applicationType === "APPLICATION"} isForcedAssignment={request.applicationType === "ASSIGNMENT"} onAppliedAssignment={() => handleAssignmentTypeSelect("APPLICATION", request.applicationId)} onForcedAssignment={() => handleAssignmentTypeSelect("ASSIGNMENT", request.applicationId)} />
     ));
   }
 
   const createAppliedTAItems = () => {
     return sortedSearchAppliedTAs.map((ta) => (
-      <DS_DashboardTAItem name={ta.name} surname={ta.surname} onSelect={()=> handleASC(ta.userId)} isSelected={selectedAppliedStudentsId.includes(ta.userId)} id={ta.bilkentId} bgColor={""} email={ta.email} paidProctoringCount={ta.paidProctoringCount}/>
+      <DS_DashboardTAItem name={ta.name} surname={ta.surname} onSelect={() => handleASC(ta.userId)} isSelected={selectedAppliedStudentsId.includes(ta.userId)} id={ta.bilkentId} bgColor={""} email={ta.email} paidProctoringCount={ta.paidProctoringCount} />
     ));
   }
   const createAvaliableTAItems = () => {
     return sortedSearchAvailableTAs.map((ta) => (
-      <DS_DashboardTAItem name={ta.name} surname={ta.surname} onSelect={()=> handleASC(ta.userId)} isSelected={selectedAppliedStudentsId.includes(ta.userId)} id={ta.bilkentId} bgColor={""} email={ta.email} paidProctoringCount={ta.paidProctoringCount}/>
+      <DS_DashboardTAItem name={ta.name} surname={ta.surname} onSelect={() => handleASC(ta.userId)} isSelected={selectedAppliedStudentsId.includes(ta.userId)} id={ta.bilkentId} bgColor={""} email={ta.email} paidProctoringCount={ta.paidProctoringCount} />
     ));
   }
-
+  /**
+   * Retrieves notifications for the logged-in Dean's Secretary
+   */
   const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:8080/notification/get",{
+      const response = await axios.get("http://localhost:8080/notification/get", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -375,13 +429,14 @@ const DS_DashboardPage = () => {
       console.error("Error fetching task types:", error);
     }
   };
-  useEffect(() => {
-      fetchReceivedRequests();
-      fetchPendingRequests();
-      fetchNotifications();
-      fetchPaidProctoringRequests();
-    }, []);
   
+  useEffect(() => {
+    fetchReceivedRequests();
+    fetchPendingRequests();
+    fetchNotifications();
+    fetchPaidProctoringRequests();
+  }, []);
+
   useEffect(() => {
     setIsAppliedAssignment(selectedPPR && selectedPPR.applicationType === "APPLICATION");
     setIsManualAssignment(selectedPPR && selectedPPR.applicationType === "ASSIGNMENT");
@@ -391,10 +446,11 @@ const DS_DashboardPage = () => {
     }
   }, [paidProctorings, selectedPPR]);
 
+  // Applies search and sort filters on TA lists (name/workload)
   useEffect(() => {
     const sortAndSearch = (taList) => {
       let filtered = [...taList];
-  
+
       // Search (by name or surname)
       if (searchText.trim() !== "") {
         const lower = searchText.toLowerCase();
@@ -404,29 +460,29 @@ const DS_DashboardPage = () => {
             ta.surname.toLowerCase().includes(lower)
         );
       }
-  
+
       // Sort by name
       if (sortName === "asc") {
         filtered.sort((a, b) => a.name.localeCompare(b.name));
       } else if (sortName === "desc") {
         filtered.sort((a, b) => b.name.localeCompare(a.name));
       }
-  
+
       // Sort by workload
       if (sortWorkload === "low") {
         filtered.sort((a, b) => a.workload - b.workload);
       } else if (sortWorkload === "high") {
         filtered.sort((a, b) => b.workload - a.workload);
       }
-  
+
       return filtered;
     };
-  
+
     setSortedSearchAppliedTAs(sortAndSearch(appliedTAs));
     setSortedSearchAvailableTAs(sortAndSearch(avaliableTAs));
   }, [appliedTAs, avaliableTAs, searchText, sortName, sortWorkload]);
-  
-  
+
+
   useEffect(() => {
     console.log(paidProctorings);
     console.log(selectedPPR);
@@ -446,29 +502,29 @@ const DS_DashboardPage = () => {
         <div className="dashboard-left">
           {/* Tabs */}
           <div className="top-left">
-          <div className="tab-bar">
-            <button onClick={() => handleTabClick("pending")} className={activeTab === "pending" ? "active" : ""}>Pending Requests</button>
-            <button onClick={() => handleTabClick("received")} className={activeTab === "received" ? "active" : ""}>Received Requests</button>
-            <button onClick={() => handleTabClick("pprTas")} className={activeTab === "pprTas" ? "active" : ""}>Select Paid Proctoring TAs</button>
-          </div>
+            <div className="tab-bar">
+              <button onClick={() => handleTabClick("pending")} className={activeTab === "pending" ? "active" : ""}>Pending Requests</button>
+              <button onClick={() => handleTabClick("received")} className={activeTab === "received" ? "active" : ""}>Received Requests</button>
+              <button onClick={() => handleTabClick("pprTas")} className={activeTab === "pprTas" ? "active" : ""}>Select Paid Proctoring TAs</button>
+            </div>
 
-          {/* Top Left Panel */}
-          <div className="ds-dashboard-tab-content">
-            {activeTab === "pending" && (
-              <div className="ds-dashboard-pending-request-panel">{pendingRequests.map((req, index) => createPendingRequest(req, index))}</div>
-            )}
-            {activeTab === "received" && (
-              <div className="ds-dashboard-received-request-panel">{receivedRequests.filter((enr, index) => {return enr.status === null}).map((req, index) => createReceivedRequest(req, index))}</div>
-            )}
-            {activeTab === "pprTas" && (
-              <div>{createSelectPaidProctoringTAs()}</div>
-            )}
-          </div>
+            {/* Top Left Panel */}
+            <div className="ds-dashboard-tab-content">
+              {activeTab === "pending" && (
+                <div className="ds-dashboard-pending-request-panel">{pendingRequests.map((req, index) => createPendingRequest(req, index))}</div>
+              )}
+              {activeTab === "received" && (
+                <div className="ds-dashboard-received-request-panel">{receivedRequests.filter((enr, index) => { return enr.status === null }).map((req, index) => createReceivedRequest(req, index))}</div>
+              )}
+              {activeTab === "pprTas" && (
+                <div>{createSelectPaidProctoringTAs()}</div>
+              )}
+            </div>
           </div>
           {/* Bottom Left Panel */}
           <div>
             {activeTab === "pprTas" && isAppliedAssignment ? (
-                
+
               <div className="ta-list-container">
                 <h3 className="ta-list-title">Applied Students</h3>
                 <div className="ds-dashboard-filters">
@@ -491,35 +547,35 @@ const DS_DashboardPage = () => {
                 </div>
 
                 <div className="ta-list">
-                {appliedTAs.length > 0 ? (
+                  {appliedTAs.length > 0 ? (
                     <div>{createAppliedTAItems()}</div>
-                )
-                : (
-                <div className="no-ta">No TAs available</div>
-                )}
+                  )
+                    : (
+                      <div className="no-ta">No TAs available</div>
+                    )}
                 </div>
               </div>
             ) : activeTab === "pprTas" && isManualAssignment ? (
-            <div className="ds-dashboard-card">
-              <h3>Available TAs</h3>
-              <div className="ds-dashboard-filters">
-                <input
-                  type="text"
-                  placeholder="🔍 Search by name"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                />
-                <select value={sortName} onChange={(e) => setSortName(e.target.value)}>
-                  <option value="">Sort by Name</option>
-                  <option value="asc">A → Z</option>
-                  <option value="desc">Z → A</option>
-                </select>
-                <select value={sortWorkload} onChange={(e) => setSortWorkload(e.target.value)}>
-                  <option value="">Sort by Workload</option>
-                  <option value="low">Low to High</option>
-                  <option value="high">High to Low</option>
-                </select>
-                <div className="ds-ta-select-restrictions">
+              <div className="ds-dashboard-card">
+                <h3>Available TAs</h3>
+                <div className="ds-dashboard-filters">
+                  <input
+                    type="text"
+                    placeholder="🔍 Search by name"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                  />
+                  <select value={sortName} onChange={(e) => setSortName(e.target.value)}>
+                    <option value="">Sort by Name</option>
+                    <option value="asc">A → Z</option>
+                    <option value="desc">Z → A</option>
+                  </select>
+                  <select value={sortWorkload} onChange={(e) => setSortWorkload(e.target.value)}>
+                    <option value="">Sort by Workload</option>
+                    <option value="low">Low to High</option>
+                    <option value="high">High to Low</option>
+                  </select>
+                  <div className="ds-ta-select-restrictions">
                     <div className="ds-ta-select-restrictions-inputs">
                       <label htmlFor="taSelectRestrictionsCount">TA Select Restrictions Count</label>
                       <input type="number" min={1} id="taSelectRestrictionsCount" name="taSelectRestrictionsCount" value={taSelectRestrictionsCount} onChange={(e) => setTASelectRestrictionsCount(e.target.value)} />
@@ -532,31 +588,31 @@ const DS_DashboardPage = () => {
                       <label htmlFor="taSelectRestrictionsOneDay">TA Select Restrictions One Day</label>
                       <input type="checkbox" id="taSelectRestrictionsOneDay" name="taSelectRestrictionsOneDay" value={taSelectRestrictionsOneDay} checked={taSelectRestrictionsOneDay} onChange={(e) => setTASelectRestrictionsOneDay(e.target.checked)} />
                     </div>
-                    
+
                   </div>
-                <button onClick={()=> handleAutomaticSelect()}>Automatic Select</button>
-              </div>
-              <div className="ds-dashboard-avaliable-ta-list">{createAvaliableTAItems()}</div>
-            </div>) : null}
+                  <button onClick={() => handleAutomaticSelect()}>Automatic Select</button>
+                </div>
+                <div className="ds-dashboard-avaliable-ta-list">{createAvaliableTAItems()}</div>
+              </div>) : null}
           </div>
         </div>
 
         {/* RIGHT SIDE */}
         <div className="dashboard-right">
           <div className="notifications">
-          <h3>Notifications</h3>
-          <div className="ds-dashboard-notification-panel">
-            {notifications.map((notification, index) => (
-              <div key={index} className="ta-dashboard-notification-item">
-                <NotificationItem
-                  requestType={notification.requestType}
-                  message={notification.message}
-                  date={notification.date}
-                  notificationType={notification.notificationType}
-                />
-              </div>
-            ))}
-          </div>
+            <h3>Notifications</h3>
+            <div className="ds-dashboard-notification-panel">
+              {notifications.map((notification, index) => (
+                <div key={index} className="ta-dashboard-notification-item">
+                  <NotificationItem
+                    requestType={notification.requestType}
+                    message={notification.message}
+                    date={notification.date}
+                    notificationType={notification.notificationType}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="right-bottom">
@@ -564,78 +620,78 @@ const DS_DashboardPage = () => {
               <div className="ds-dashboard-details-panel">
                 <h3>Details</h3>
                 {selectedRequest ? (
-                <div>
-                  <p><strong>Name:</strong> {selectedRequest.senderName || "—"}</p>
-                  <p><strong>Email:</strong> {selectedRequest.senderEmail || "—"}</p>
-
-                  {selectedRequest.sentDateTime && (() => {
-                    const [ date, time ] = selectedRequest.sentDateTime.split("T");
-                    return (
-                      <>
-                        <p><strong>Sent Date:</strong> {date}</p>
-                        <p><strong>Sent Time:</strong> {time}</p>
-                      </>
-                    );
-                  })()}
-
-                  {selectedRequest.requestType === 'AuthStaffProctoringRequest' ||
-                  selectedRequest.requestType === 'TASwapRequest' ? (
-                    <>
-                      <p><strong>Event:</strong> {selectedRequest.classProctoringEventName}</p>
-                      <p><strong>Event Start Date:</strong> {selectedRequest.classProctoringStartDate ? selectedRequest.classProctoringStartDate.split("T")[0] : "—"}</p>
-                      <p><strong>Event End Date:</strong> {selectedRequest.classProctoringEndDate ? selectedRequest.classProctoringEndDate.split("T")[0] : "—"}</p>
-                    </>
-                  ) : null}
-
-                  {selectedRequest.requestType === 'TAWorkloadRequest' ? (
-                    <p><strong>Task:</strong> {selectedRequest.taskTypeName}</p>
-                  ) : null}
-
-                  <p><strong>Comment:</strong> {selectedRequest.description || "—"}</p>
-                  <p><strong>Status:</strong> {selectedRequest.status || "—"}</p>
-                </div>
-                  ) : (
-                    <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
-                  )}
-
-
-              </div>
-            ): activeTab === "pprTas" && (
-              <div className="ta-list-container">
-              <h3 className="ta-list-title">TA List</h3>
-              <div className="ta-list">
-                {appliedTAs.length > 0 ? (
                   <div>
-                    {selectedAppliedStudentsId.map((id) => {
-                      return (isManualAssignment ? (
-                        avaliableTAs.filter((ta) => ta.userId === id).map(({ name,surname, bilkentId }) => (
-                          <div className="ds-dashboard-ta-list-item-content">
-                            <div className="ds-dashboard-ta-list-item-name">Name: {name} {surname}</div>
-                            <div className="ds-dashboard-ta-list-item-id">Student ID: {bilkentId}</div>
-                          </div>
-                        )))
-                        :(
-                        appliedTAs.filter((ta) => ta.userId === id).map(({ name,surname, bilkentId }) => (
-                        <div className="ds-dashboard-ta-list-item-content">
-                          <div className="ds-dashboard-ta-list-item-name">Name: {name} {surname}</div>
-                          <div className="ds-dashboard-ta-list-item-id">Student ID: {bilkentId}</div>
-                        </div>)
-                      )))
-                    }               
-                    )}
+                    <p><strong>Name:</strong> {selectedRequest.senderName || "—"}</p>
+                    <p><strong>Email:</strong> {selectedRequest.senderEmail || "—"}</p>
+
+                    {selectedRequest.sentDateTime && (() => {
+                      const [date, time] = selectedRequest.sentDateTime.split("T");
+                      return (
+                        <>
+                          <p><strong>Sent Date:</strong> {date}</p>
+                          <p><strong>Sent Time:</strong> {time}</p>
+                        </>
+                      );
+                    })()}
+
+                    {selectedRequest.requestType === 'AuthStaffProctoringRequest' ||
+                      selectedRequest.requestType === 'TASwapRequest' ? (
+                      <>
+                        <p><strong>Event:</strong> {selectedRequest.classProctoringEventName}</p>
+                        <p><strong>Event Start Date:</strong> {selectedRequest.classProctoringStartDate ? selectedRequest.classProctoringStartDate.split("T")[0] : "—"}</p>
+                        <p><strong>Event End Date:</strong> {selectedRequest.classProctoringEndDate ? selectedRequest.classProctoringEndDate.split("T")[0] : "—"}</p>
+                      </>
+                    ) : null}
+
+                    {selectedRequest.requestType === 'TAWorkloadRequest' ? (
+                      <p><strong>Task:</strong> {selectedRequest.taskTypeName}</p>
+                    ) : null}
+
+                    <p><strong>Comment:</strong> {selectedRequest.description || "—"}</p>
+                    <p><strong>Status:</strong> {selectedRequest.status || "—"}</p>
                   </div>
-                  
                 ) : (
-                  <div className="no-ta">No TAs available</div>
+                  <p className="ta-dashboard-placeholder">[ Click a request to see its details ]</p>
                 )}
+
+
               </div>
-              <div className="buttons">
-                {isAppliedAssignment ? (isFinished() ? <button onClick={()=> handleForceAssignment()}>Force Assignment</button> : null) : <button onClick={()=> handleForceAssignment()}>Force Assignment</button>}
-                {isManualAssignment ? <button onClick={()=> handleOfferAssignment()}>Offer Assignment</button>: null}
+            ) : activeTab === "pprTas" && (
+              <div className="ta-list-container">
+                <h3 className="ta-list-title">TA List</h3>
+                <div className="ta-list">
+                  {appliedTAs.length > 0 ? (
+                    <div>
+                      {selectedAppliedStudentsId.map((id) => {
+                        return (isManualAssignment ? (
+                          avaliableTAs.filter((ta) => ta.userId === id).map(({ name, surname, bilkentId }) => (
+                            <div className="ds-dashboard-ta-list-item-content">
+                              <div className="ds-dashboard-ta-list-item-name">Name: {name} {surname}</div>
+                              <div className="ds-dashboard-ta-list-item-id">Student ID: {bilkentId}</div>
+                            </div>
+                          )))
+                          : (
+                            appliedTAs.filter((ta) => ta.userId === id).map(({ name, surname, bilkentId }) => (
+                              <div className="ds-dashboard-ta-list-item-content">
+                                <div className="ds-dashboard-ta-list-item-name">Name: {name} {surname}</div>
+                                <div className="ds-dashboard-ta-list-item-id">Student ID: {bilkentId}</div>
+                              </div>)
+                            )))
+                      }
+                      )}
+                    </div>
+
+                  ) : (
+                    <div className="no-ta">No TAs available</div>
+                  )}
+                </div>
+                <div className="buttons">
+                  {isAppliedAssignment ? (isFinished() ? <button onClick={() => handleForceAssignment()}>Force Assignment</button> : null) : <button onClick={() => handleForceAssignment()}>Force Assignment</button>}
+                  {isManualAssignment ? <button onClick={() => handleOfferAssignment()}>Offer Assignment</button> : null}
+                </div>
               </div>
-            </div>
-          )}
-         </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

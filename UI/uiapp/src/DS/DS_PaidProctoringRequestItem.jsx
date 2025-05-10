@@ -1,6 +1,13 @@
 import React from "react";
 import "./DS_PaidProctoringRequestItem.css";
 
+
+/**
+ * DS_PaidProctoringRequestItem component
+ * Represents a single paid proctoring request card for the Dean's Secretary.
+ *
+ */
+
 const DS_PaidProctoringRequestItem = ({id, date, time, role, duration, name, numOfTaNeeded, onInform, isSelected, onSelect}) => {
 
   return (

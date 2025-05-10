@@ -2,6 +2,12 @@
 import React from 'react';
 import './DS_DashboardTAItem.css';
 
+
+/**
+ * DS_DashboardTAItem component
+ * Represents a TA in the Dean’s Secretary dashboard for selection and overview.
+ */
+
 const DS_DashboardTAItem = ({ name, surname, id, bgColor, onSelect, isSelected, email, paidProctoringCount }) => {
   return (
     <div className={`ds-dashboard-ta-item ${isSelected ? "ds-dashboard-ta-item-selected" : ""} `}  style={{ backgroundColor: bgColor }} onClick={() => onSelect(id)} >
