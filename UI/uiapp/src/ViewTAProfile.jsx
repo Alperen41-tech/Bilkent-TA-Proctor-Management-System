@@ -100,6 +100,7 @@ const ViewTAProfile = ({ taId = 2 }) => {
           <p><strong>Department:</strong> {profile.departmentName}</p>
           <p><strong>Course:</strong> {profile.courseName}</p>
           <p><strong>Total Workload:</strong> {profile.workload}</p>
+          <p><strong>TA Type:</strong> {profile?.classType} </p>
         </div>
 
         <div className="view-ta-profile-calendar-container">

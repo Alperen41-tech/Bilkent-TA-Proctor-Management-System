@@ -146,6 +146,7 @@ const ProfilePage = () => {
           <p><strong>Department</strong><br />{taProfileInfo.departmentName}</p>
           <p><strong>Course</strong><br />{taProfileInfo.courseName}</p>
           <p><strong>Total Workload</strong><br />{taProfileInfo.workload}</p>
+          <p><strong>TA Type:</strong><br /> {taProfileInfo?.classType} </p>
         </div>
 
         <div className="right-section">

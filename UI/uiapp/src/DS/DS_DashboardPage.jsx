@@ -432,12 +432,12 @@ const DS_DashboardPage = () => {
 
   const createAppliedTAItems = () => {
     return sortedSearchAppliedTAs.map((ta) => (
-      <DS_DashboardTAItem name={ta.name} surname={ta.surname} onSelect={() => handleASC(ta.userId)} isSelected={selectedAppliedStudentsId.includes(ta.userId)} id={ta.bilkentId} bgColor={""} email={ta.email} paidProctoringCount={ta.paidProctoringCount} />
+      <DS_DashboardTAItem name={ta.name} surname={ta.surname} onSelect={() => handleASC(ta.userId)} isSelected={selectedAppliedStudentsId.includes(ta.userId)} id={ta.bilkentId} bgColor={""} email={ta.email} paidProctoringCount={ta.paidProctoringCount} taType={ta.classType}/>
     ));
   }
   const createAvaliableTAItems = () => {
     return sortedSearchAvailableTAs.map((ta) => (
-      <DS_DashboardTAItem name={ta.name} surname={ta.surname} onSelect={() => handleASC(ta.userId)} isSelected={selectedAppliedStudentsId.includes(ta.userId)} id={ta.bilkentId} bgColor={""} email={ta.email} paidProctoringCount={ta.paidProctoringCount} />
+      <DS_DashboardTAItem name={ta.name} surname={ta.surname} onSelect={() => handleASC(ta.userId)} isSelected={selectedAppliedStudentsId.includes(ta.userId)} id={ta.bilkentId} bgColor={""} email={ta.email} paidProctoringCount={ta.paidProctoringCount} taType={ta.classType}/>
     ));
   }
   /**

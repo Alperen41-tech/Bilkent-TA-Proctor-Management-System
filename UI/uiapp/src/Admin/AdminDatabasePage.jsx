@@ -506,7 +506,7 @@ const AdminDatabasePage = () => {
       }
     } catch (error) {
       console.error("Error creating instructor:", error.response?.data || error.message);
-if (error?.response?.data?.message) {
+      if (error?.response?.data?.message) {
         alert(error?.response?.data?.message);
       }
       else {
@@ -850,7 +850,15 @@ if (error?.response?.data?.message) {
 
 
               <label>Class Year</label>
-              <input ref={newTaClassYearRef} type="number" min={1} max={6} required placeholder="e.g., 3" />
+              <select
+                ref={newTaClassYearRef}
+                required
+              >
+                <option value="">Select Class</option>
+                <option value="5">Master</option>
+                <option value="9">PhD</option>
+              </select>
+
 
               <label>Password</label>
               <input ref={newTaPasswordRef} type="password" required placeholder="Set login password" />
