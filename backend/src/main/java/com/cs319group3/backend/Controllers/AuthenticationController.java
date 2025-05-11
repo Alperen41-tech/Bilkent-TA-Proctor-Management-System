@@ -99,7 +99,7 @@ public class AuthenticationController {
 
             User user = userReceived.get();
             int userTypeId = 0;
-            String userTypeName = "";
+            String userTypeName = loginRequest.getUserTypeName();
 
             if (loginRequest.getUserTypeName().isEmpty()) {
                 if (user instanceof DepartmentSecretary) {
