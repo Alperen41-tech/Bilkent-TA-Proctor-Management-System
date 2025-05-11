@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 /**
  * Controller responsible for exporting and importing Excel files
@@ -91,7 +92,7 @@ public class ExcelController {
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
         headers.setContentDisposition(ContentDisposition
                 .attachment()
-                .filename("Students.xlsx")
+                .filename("Report" + LocalDate.now() +".xlsx")
                 .build());
         headers.setContentLength(excelData.length);
 
