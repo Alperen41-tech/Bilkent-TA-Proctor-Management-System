@@ -34,7 +34,7 @@ const Navbar = () => {
           <NavLink to="/dashboard" className={({ isActive }) => (isActive ? "active" : "")}>Dashboard</NavLink>
           <NavLink to="/schedule" className={({ isActive }) => (isActive ? "active" : "")}>My Schedule</NavLink>
           <NavLink to="/proctoring" className={({ isActive }) => (isActive ? "active" : "")}>Paid Proctoring</NavLink>
-          <NavLink to="/exams" className={({ isActive }) => (isActive ? "active" : "")}>Exams</NavLink>
+          <NavLink to="/exams" className={({ isActive }) => (isActive ? "active" : "")}>Swap</NavLink>
           <NavLink to="/profile" className={({ isActive }) => (isActive ? "active" : "")}>Profile</NavLink>
           <button className="logout" onClick={openModal}>Logout</button>
         </nav>
