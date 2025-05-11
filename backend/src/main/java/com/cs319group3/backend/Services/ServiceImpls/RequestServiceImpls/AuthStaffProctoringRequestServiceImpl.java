@@ -185,6 +185,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
 
     @Override
     public List<TAProfileDTO> sendAuthStaffProctoringRequestAutomaticallyInDepartment(int classProctoringId, String departmentCode, int senderId, int count, boolean eligibilityRestriction, boolean oneDayRestriction) {
+        System.out.println("Sending requests automatically in department " + count);
         List<TAProfileDTO> availableTAs =
                 taService.getAllAvailableTAsByDepartmentCode(departmentCode, classProctoringId, senderId, eligibilityRestriction, oneDayRestriction);
         if (availableTAs.size() < count) {

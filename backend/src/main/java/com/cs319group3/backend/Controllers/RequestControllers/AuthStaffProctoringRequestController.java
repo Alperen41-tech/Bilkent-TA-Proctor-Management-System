@@ -66,7 +66,7 @@ public class AuthStaffProctoringRequestController {
      */
     @GetMapping("selectAuthStaffProctoringRequestAutomaticallyInDepartment")
     public List<TAProfileDTO> selectAuthStaffProctoringRequestAutomaticallyInDepartment(@RequestParam int classProctoringId, @RequestParam String departmentCode, @RequestParam int count, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
-        System.out.println("Class proctoring request sent.");
+        System.out.println("Class proctoring request sent: " + departmentCode);
         int senderId = currentUserUtil.getCurrentUserId();
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequestAutomaticallyInDepartment(classProctoringId, departmentCode, senderId, count, eligibilityRestriction, oneDayRestriction);
     }

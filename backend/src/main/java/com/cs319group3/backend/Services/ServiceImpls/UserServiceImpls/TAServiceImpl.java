@@ -133,7 +133,12 @@ public class TAServiceImpl implements TAService {
                                                                  boolean eligibilityRestriction, boolean oneDayRestriction) {
         ClassProctoring cp = classProctoringRepo.findById(classProctoringId).get();
         List<TA> availableTAs = taRepo.findAvailableTAsByDepartment(departmentCode, classProctoringId);
+        for(TA ta : availableTAs){
+            System.out.println("TA with id " + ta.getUserId() + ": " + ta.getAssignedCourse().getCourseName());
+        }
         int courseId = cp.getCourse().getCourseId();
+
+        System.out.println("Number of available TAs: " + availableTAs.size());
 
         availableTAs.removeIf(ta -> {
             boolean unavailable = !taAvailabilityService.isTAAvailable(ta, cp);
@@ -141,6 +146,7 @@ public class TAServiceImpl implements TAService {
             boolean takesSameCourse = doesTakeCourse(ta.getUserId(), courseId);
             boolean ineligible = eligibilityRestriction && !isTAEligible(ta.getUserId(), courseId);
             boolean failsOneDayRule = oneDayRestriction && !noProctoringInOneDay(ta.getUserId(), classProctoringId);
+            System.out.println(unavailable + ", " + alreadyRequested + ", " + takesSameCourse + ", " + ineligible + ", " + failsOneDayRule);
             return unavailable || alreadyRequested || takesSameCourse || ineligible || failsOneDayRule;
         });
 
