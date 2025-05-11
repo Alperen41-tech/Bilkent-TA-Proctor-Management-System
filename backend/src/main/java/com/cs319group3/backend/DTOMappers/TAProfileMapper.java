@@ -4,10 +4,7 @@ import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.UserEntities.TA;
-import com.cs319group3.backend.Repositories.ClassProctoringRepo;
-import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
-import com.cs319group3.backend.Repositories.CourseRepo;
-import com.cs319group3.backend.Repositories.DepartmentRepo;
+import com.cs319group3.backend.Repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +22,8 @@ public class TAProfileMapper {
 
     @Autowired
     DepartmentRepo departmentRepo;
+    @Autowired
+    private StudentRepo studentRepo;
 
     public TAProfileDTO essentialMapper(TA ta) {
         TAProfileDTO dto = new TAProfileDTO();
@@ -40,6 +39,8 @@ public class TAProfileMapper {
         dto.setClassYear(ta.getClassYear());
         dto.setWorkload(ta.getWorkload());
         dto.setPaidProctoringCount(classProctoringTARelationRepo.countClassProctoringTARelationsByTA_UserIdAndIsPaid(ta.getUserId(), true));
+        
+        dto.setClassNumber(studentRepo.findByBilkentId(ta.getBilkentId()).get().getClassYear());
 
 
         // Fix here:
