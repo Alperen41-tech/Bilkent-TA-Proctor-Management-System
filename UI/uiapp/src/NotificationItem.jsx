@@ -16,6 +16,8 @@ function getIcon(notificationType) {
       return '📥';
     case 'APPROVAL':
       return '✅';
+    case 'REJECTION':
+      return '❌';
     case 'ASSIGNMENT':
       return '📝';
     default:
