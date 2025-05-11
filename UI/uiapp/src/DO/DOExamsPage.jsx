@@ -314,7 +314,7 @@ const DOExamsPage = () => {
    * Applies eligibility and one-day restrictions.
    */
   const fetchTAs = async (departmentCode, proctoringId) => {
-console.log(facultyId, proctoringId, eligibilityRestriction, oneDayRestriction);
+    console.log(facultyId, proctoringId, eligibilityRestriction, oneDayRestriction);
     try {
       let response;
 
@@ -364,6 +364,15 @@ console.log(facultyId, proctoringId, eligibilityRestriction, oneDayRestriction);
 
       console.log("🧪 Exams API Response:", response.data);
       setExamItems(response.data || []);
+      fetchTAs();
+      fetchDepartments();
+      fetchTAs();
+      setSelectedExamKey(null);
+      setSelectedExamItem(null);
+      setTAs([]);
+      setAllTAs([]);
+      setTaDepartmentFilter("");
+      setSelectedTAObj(null);
     } catch (error) {
       console.error('Error fetching exams:', error);
     }
@@ -447,7 +456,7 @@ console.log(facultyId, proctoringId, eligibilityRestriction, oneDayRestriction);
       alert("An error occurred. Please try again.");
     }
   };
-  
+
   /**
    * Creates a TAItem component with selection highlighting and click handler.
    */
@@ -487,7 +496,7 @@ console.log(facultyId, proctoringId, eligibilityRestriction, oneDayRestriction);
         onClose={() => setShowAutoModal(false)}
         suggestedTAs={autoSuggestedTAs}
         selectedExamId={selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id}
-        refreshAfterAssignment={() => fetchExams(departmentFilter)} // ✅ call fetchExams again
+        refreshAfterAssignment={() => fetchExams(departmentFilter)}
       />
 
 

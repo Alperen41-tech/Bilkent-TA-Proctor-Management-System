@@ -174,6 +174,15 @@ const DOCreateExamPage = () => {
       if (updatedExam) {
         setSelectedExamItem(updatedExam);
         fetchTAs();
+        fetchDepartments();
+        fetchCreatedExams();
+        fetchTAs();
+        setSelectedExamKey(null);
+        setSelectedExamItem(null);
+        setTAs([]);
+        setAllTAs([]);
+        setTaDepartmentFilter("");
+        setSelectedTAObj(null);
       }
     } catch (error) {
       console.error("Error refreshing assigned TAs:", error);
@@ -222,60 +231,60 @@ const DOCreateExamPage = () => {
    * Handles automatic TA assignment for a selected exam by requesting backend suggestions.
    */
 
-const handleAutomaticAssign = async () => {
-  if (!selectedExamItem) {
-    alert("Please select an exam first.");
-    return;
-  }
-
-  const classProctoringId =
-    selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
-
-  const courseCode =
-    selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.courseCode || "";
-
-  const departmentCode = courseCode.split(" ")[0];
-
-  if (!classProctoringId || !departmentCode) {
-    alert("Invalid exam data.");
-    return;
-  }
-
-  if (!isAutoAssignmentWithinLimit()) {
-    alert(`No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.`);
-    return;
-  }
-
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("No authentication token found.");
+  const handleAutomaticAssign = async () => {
+    if (!selectedExamItem) {
+      alert("Please select an exam first.");
       return;
     }
 
-    const response = await axios.get(
-      "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
-      {
-        params: {
-          classProctoringId,
-          departmentCode,
-          count: taCount,
-          eligibilityRestriction,
-          oneDayRestriction,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const classProctoringId =
+      selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id;
 
-    setAutoSuggestedTAs(response.data || []);
-    setShowAutoModal(true);
-  } catch (error) {
-    console.error("Error during automatic assignment:", error);
-    alert("Failed to get suggested TAs.");
-  }
-};
+    const courseCode =
+      selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.courseCode || "";
+
+    const departmentCode = courseCode.split(" ")[0];
+
+    if (!classProctoringId || !departmentCode) {
+      alert("Invalid exam data.");
+      return;
+    }
+
+    if (!isAutoAssignmentWithinLimit()) {
+      alert(`No available TA slots for this exam. All positions are filled or pending. Please reduce the TA count or wait for pending requests.`);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("No authentication token found.");
+        return;
+      }
+
+      const response = await axios.get(
+        "http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment",
+        {
+          params: {
+            classProctoringId,
+            departmentCode,
+            count: taCount,
+            eligibilityRestriction,
+            oneDayRestriction,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setAutoSuggestedTAs(response.data || []);
+      setShowAutoModal(true);
+    } catch (error) {
+      console.error("Error during automatic assignment:", error);
+      alert("Failed to get suggested TAs.");
+    }
+  };
 
 
 
@@ -346,62 +355,62 @@ const handleAutomaticAssign = async () => {
    * Sends an assignment request to a TA for a selected exam.
    */
 
-const handleSendRequest = async () => {
-  const cpId =
-    selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id ||
-    selectedExamItem?.classProctoringDTO?.id ||
-    selectedExamItem?.id;
+  const handleSendRequest = async () => {
+    const cpId =
+      selectedExamItem?.classProctoringTARelationDTO?.classProctoringDTO?.id ||
+      selectedExamItem?.classProctoringDTO?.id ||
+      selectedExamItem?.id;
 
-  const taId = selectedTAObj?.userId || selectedTAObj?.id;
+    const taId = selectedTAObj?.userId || selectedTAObj?.id;
 
-  console.log("📨 Send Request Debug:", { cpId, taId, selectedExamItem });
+    console.log("📨 Send Request Debug:", { cpId, taId, selectedExamItem });
 
-  if (!cpId || !taId) {
-    alert("Missing required IDs for request.");
-    return;
-  }
-
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("No authentication token found.");
+    if (!cpId || !taId) {
+      alert("Missing required IDs for request.");
       return;
     }
 
-    const { data } = await axios.post(
-      "http://localhost:8080/authStaffProctoringRequestController/sendAuthStaffProctoringRequest",
-      null,
-      {
-        params: {
-          classProctoringId: cpId,
-          taId,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("No authentication token found.");
+        return;
       }
-    );
 
-    if (data === true) {
-      alert("Request sent.");
-      fetchDepartments();
-      fetchCreatedExams();
-      fetchTAs();
-      setSelectedExamKey(null);
-      setSelectedExamItem(null);
-      setTAs([]);
-      setAllTAs([]);
-      setTaDepartmentFilter("");
-      setSelectedTAObj(null);
-      setShowManualModal(false);
-    } else {
-      alert("Failed to send request.");
+      const { data } = await axios.post(
+        "http://localhost:8080/authStaffProctoringRequestController/sendAuthStaffProctoringRequest",
+        null,
+        {
+          params: {
+            classProctoringId: cpId,
+            taId,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data === true) {
+        alert("Request sent.");
+        fetchDepartments();
+        fetchCreatedExams();
+        fetchTAs();
+        setSelectedExamKey(null);
+        setSelectedExamItem(null);
+        setTAs([]);
+        setAllTAs([]);
+        setTaDepartmentFilter("");
+        setSelectedTAObj(null);
+        setShowManualModal(false);
+      } else {
+        alert("Failed to send request.");
+      }
+    } catch (error) {
+      console.error("Send request error:", error);
+      alert("Error sending request.");
     }
-  } catch (error) {
-    console.error("Send request error:", error);
-    alert("Error sending request.");
-  }
-};
+  };
 
 
   /**
@@ -426,54 +435,54 @@ const handleSendRequest = async () => {
    * Submits a new exam creation form to the backend.
    */
 
-const handleCreateExam = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Authentication token not found.");
-      return;
-    }
-
-    const payload = {
-      courseId: selectedCourseId,
-      startDate: `${examDate} ${startTime}:00`,
-      endDate: `${examDate} ${endTime}:00`,
-      classrooms: classrooms.split(",").map((c) => c.trim()),
-      taCount,
-      sectionNo,
-      eventName,
-    };
-
-    const { data } = await axios.post(
-      "http://localhost:8080/classProctoring/createClassProctoring",
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  const handleCreateExam = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Authentication token not found.");
+        return;
       }
-    );
 
-    if (data === true) {
-      alert("Exam created.");
-      fetchCreatedExams();
-      setEventName("");
-      setExamDate("");
-      setStartTime("");
-      setEndTime("");
-      setClassrooms("");
-      setSelectedDepartmentId(null);
-      setSelectedCourseId(null);
-      setSectionNo(1);
-      setTaCount(2);
-    } else {
-      alert("Failed to create exam.");
+      const payload = {
+        courseId: selectedCourseId,
+        startDate: `${examDate} ${startTime}:00`,
+        endDate: `${examDate} ${endTime}:00`,
+        classrooms: classrooms.split(",").map((c) => c.trim()),
+        taCount,
+        sectionNo,
+        eventName,
+      };
+
+      const { data } = await axios.post(
+        "http://localhost:8080/classProctoring/createClassProctoring",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data === true) {
+        alert("Exam created.");
+        fetchCreatedExams();
+        setEventName("");
+        setExamDate("");
+        setStartTime("");
+        setEndTime("");
+        setClassrooms("");
+        setSelectedDepartmentId(null);
+        setSelectedCourseId(null);
+        setSectionNo(1);
+        setTaCount(2);
+      } else {
+        alert("Failed to create exam.");
+      }
+    } catch (error) {
+      console.error("Exam creation error:", error);
+      alert("Error occurred.");
     }
-  } catch (error) {
-    console.error("Exam creation error:", error);
-    alert("Error occurred.");
-  }
-};
+  };
 
   /**
    * Creates a TAItem component for display in TA selection lists.
