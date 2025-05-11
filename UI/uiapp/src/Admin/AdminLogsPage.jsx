@@ -89,6 +89,7 @@ const AdminLogsPage = () => {
       const response = await axios.post(`http://localhost:8080/generalVariable/changeSemester?semester=${term}`);
       if (response.data) {
         console.log("Term set successfully:", response.data);
+        alert("Term set successfully!");
         fetchGlobalData();
       } else {
         console.error("Error setting term:", response);

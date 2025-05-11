@@ -256,6 +256,12 @@ const INS_ExamsPage = () => {
       }
     } catch (error) {
       console.error("Failed to discard TA:", error);
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      }
+      else {
+        alert("An error occurred while discarding the TA.");
+      }
     }
   };
 
@@ -306,7 +312,12 @@ const INS_ExamsPage = () => {
       }
     } catch (error) {
       console.error("Error in force assignment:", error);
-      alert("An error occurred during force assignment.");
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      }
+      else {
+        alert("An error occurred while force assigning the TA.");
+      }
     }
   };
 
@@ -358,7 +369,12 @@ const INS_ExamsPage = () => {
       }
     } catch (error) {
       console.error("Error in sending request:", error);
-      alert("An error occurred while sending request.");
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      }
+      else {
+        alert("An error occurred while sending the request.");
+      }
     }
   };
 
@@ -399,7 +415,12 @@ const INS_ExamsPage = () => {
       setShowInstructorTAModal(false);
     } catch (error) {
       console.error("Error creating instructor TA request:", error);
-      alert("An error occurred while submitting the request.");
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      }
+      else {
+        alert("An error occurred while sending the request.");
+      }
     }
   };
 
@@ -447,7 +468,11 @@ const INS_ExamsPage = () => {
       setShowAutoModal(true);
     } catch (error) {
       console.error("Auto assign error:", error);
-      alert("Failed to get suggested TAs.");
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("An error occurred while auto-assigning TAs.");
+      }
     }
   };
 

@@ -50,6 +50,8 @@ const SchedulePage = () => {
     const requestId = ++latestRequest.current;
     try {
       const token = localStorage.getItem("token");
+      console.log(format(currentStartDate, "yyyy-MM-dd"));
+      console.log(format(currentEndDate, "yyyy-MM-dd"));
       const response = await axios.post("http://localhost:8080/timeInterval/taSchedule", {
         startDate: format(currentStartDate, "yyyy-MM-dd"),
         endDate: format(currentEndDate, "yyyy-MM-dd"),
