@@ -53,7 +53,8 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
         LocalDate from = LocalDate.parse(dateIntervalDTO.getStartDate(), dtf);
         LocalDate to = LocalDate.parse(dateIntervalDTO.getEndDate(), dtf);
         LocalDateTime fromDate = LocalDateTime.of(from.getYear(), from.getMonth(), from.getDayOfMonth(), 0, 0, 0);
-        LocalDateTime toDate = LocalDateTime.of(to.getYear(), to.getMonth(), to.getDayOfMonth() + 1, 0, 0, 0);
+        LocalDateTime toDate = LocalDateTime.of(to.getYear(), to.getMonth(), to.getDayOfMonth(), 0, 0, 0);
+        toDate = toDate.plusDays(1);
 
         List<TimeIntervalDTO> schedule = new ArrayList<>();
 
@@ -113,9 +114,11 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
             LocalDateTime availabilityStart = tAAvailabilityRequest.getLeaveStartDate();
             LocalDateTime availabilityEnd = tAAvailabilityRequest.getLeaveEndDate();
             if (availabilityStart.isBefore(toDate) && availabilityEnd.isAfter(fromDate)) {
-                LocalDateTime start = availabilityStart;
-                if (start.getHour() < scheduleStart)
-                    start = LocalDateTime.of(start.getYear(), start.getMonth(), start.getDayOfMonth(), scheduleStart, 0, 0);
+                LocalDateTime start;
+                if (availabilityStart.isBefore(fromDate))
+                    start = LocalDateTime.of(fromDate.getYear(), fromDate.getMonth(), fromDate.getDayOfMonth(), scheduleStart, 0, 0);
+                else
+                    start = availabilityStart;
                 if (start.getHour() >= scheduleEnd) {
                     start = LocalDateTime.of(start.getYear(), start.getMonth(), start.getDayOfMonth(), scheduleStart, 0, 0);
                     start = start.plusDays(1);
