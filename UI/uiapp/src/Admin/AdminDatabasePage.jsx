@@ -449,7 +449,12 @@ const AdminDatabasePage = () => {
       }
     } catch (error) {
       console.error("Error creating course:", error.response?.data || error.message);
-      alert("An error occurred while creating the course.");
+      if (error?.response?.data?.message) {
+        alert(error?.response?.data?.message);
+      }
+      else {
+        alert("error occured" + error);
+      }
     }
   };
   /**
@@ -500,7 +505,12 @@ const AdminDatabasePage = () => {
       }
     } catch (error) {
       console.error("Error creating instructor:", error.response?.data || error.message);
-      alert("An error occurred while creating the instructor.");
+if (error?.response?.data?.message) {
+        alert(error?.response?.data?.message);
+      }
+      else {
+        alert("error occured" + error);
+      }
     }
   };
   /**
