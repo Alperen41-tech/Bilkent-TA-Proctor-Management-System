@@ -58,7 +58,7 @@ const DS_DashboardPage = () => {
  * Toggles TA selection in multi-select state by ID
  */
   const handleASC = (id) => {
-    if (selectedAppliedStudentsId && !selectedAppliedStudentsId.includes(id) && selectedAppliedStudentsId.length < selectedPPR.applicantCountLimit) {
+    if (selectedAppliedStudentsId && !selectedAppliedStudentsId.includes(id) && selectedAppliedStudentsId.length < selectedPPR?.applicantCountLimit) {
       setSelectedAppliedStudentsId((prev) => [...prev, id]);
     }
     else {
@@ -607,7 +607,7 @@ const DS_DashboardPage = () => {
                   <div className="ds-ta-select-restrictions">
                     <div className="ds-ta-select-restrictions-inputs">
                       <label htmlFor="taSelectRestrictionsCount">TA Select Restrictions Count</label>
-                      <input type="number" min={0} max={selectedPPR.applicantCountLimit} id="taSelectRestrictionsCount" name="taSelectRestrictionsCount" value={taSelectRestrictionsCount} onChange={(e) => setTASelectRestrictionsCount(e.target.value)} />
+                      <input type="number" min={0} max={selectedPPR?.applicantCountLimit} id="taSelectRestrictionsCount" name="taSelectRestrictionsCount" value={taSelectRestrictionsCount} onChange={(e) => setTASelectRestrictionsCount(e.target.value)} />
                     </div>
                     <div className="ds-ta-select-restrictions-inputs">
                       <label htmlFor="taSelectRestrictionsEligibility">TA Select Restrictions Eligibility</label>

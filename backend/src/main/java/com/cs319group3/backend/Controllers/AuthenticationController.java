@@ -53,6 +53,7 @@ public class AuthenticationController {
     private CurrentUserUtil currentUserUtil;
     @Autowired
     private LogService logService;
+    @Autowired
     private LogRepo logRepo;
 
     /**

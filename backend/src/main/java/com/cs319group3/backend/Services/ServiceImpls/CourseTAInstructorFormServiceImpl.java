@@ -32,6 +32,8 @@ public class CourseTAInstructorFormServiceImpl implements CourseTAInstructorForm
 
     @Autowired
     private CourseTAInstructorFormRepo courseTAInstructorFormRepo;
+
+    @Autowired
     private LogService logService;
 
     @Override

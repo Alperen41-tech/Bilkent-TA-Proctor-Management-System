@@ -62,6 +62,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
     @Autowired
     @Lazy
     private TAService taService;
+    @Autowired
     private LogService logService;
 
     @Override
