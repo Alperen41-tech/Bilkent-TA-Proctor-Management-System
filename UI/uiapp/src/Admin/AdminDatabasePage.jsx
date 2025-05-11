@@ -500,6 +500,7 @@ const AdminDatabasePage = () => {
 
       if (response.data === true) {
         alert("Instructor created successfully!");
+        setSelectedInstructorCourse(null);
       } else {
         alert("Failed to create instructor.");
       }
