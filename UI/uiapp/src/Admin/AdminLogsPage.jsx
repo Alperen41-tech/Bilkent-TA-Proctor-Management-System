@@ -136,6 +136,30 @@ const AdminLogsPage = () => {
     }
   };
 
+  const handleGetReport = async () => {
+    try{
+      const response = await axios.get("http://localhost:8080/excel/getReport", {
+        responseType: "blob", // 🔥 this is crucial to receive binary data correctly
+      });
+
+      // Create a blob and a temporary download link
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Report.xlsx"); // file name
+      document.body.appendChild(link);
+      link.click();
+      link.remove(); // clean up
+    }catch(error){
+      console.error("Error downloading report:", error);
+      alert("Failed to download report.");
+    }
+  };
+
   return (
     <div className="logs-container">
       <NavbarAdmin />
@@ -194,6 +218,8 @@ const AdminLogsPage = () => {
               <input ref={globalProctoringCapRef} type="number" min={0} placeholder="e.g., 6" required />
               <button className="set-proctoring-button" type="submit">Set Proctoring Cap</button>
             </form>
+
+            <button onClick={()=> handleGetReport()}>Get Report</button>
           </div>
         </div>
       </div>
