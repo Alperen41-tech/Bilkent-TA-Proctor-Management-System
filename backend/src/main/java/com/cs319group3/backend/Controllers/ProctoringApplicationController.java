@@ -86,4 +86,10 @@ public class ProctoringApplicationController {
     public boolean setApplicationType (@RequestParam("applicationId") int applicationId, @RequestParam("applicationType") ProctoringApplicationType type) {
         return proctoringApplicationService.setApplicationType(applicationId, type);
     }
+
+    @PutMapping("setComplete")
+    public boolean setComplete(@RequestParam int applicationId){
+        System.out.println("setApproved is called");
+        return proctoringApplicationService.setComplete(applicationId);
+    }
 }

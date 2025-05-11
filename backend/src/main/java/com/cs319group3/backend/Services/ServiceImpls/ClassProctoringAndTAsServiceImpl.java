@@ -18,6 +18,7 @@ import com.cs319group3.backend.Services.TAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -40,18 +41,23 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
 
     @Override
     public List<ClassProctoringAndTAsDTO> getDepartmentTAsClassProctorings(int userId) {
-        return classProctoringToClassProctoringAndTAs(classProctoringRepo.findProctoringsByTAId(userId));
+        List<ClassProctoring> list = classProctoringRepo.findProctoringsByTAId(userId);
+        list.removeIf(classProctoring -> classProctoring.getStartDate().isBefore(LocalDateTime.now()));
+        return classProctoringToClassProctoringAndTAs(list);
     }
 
     @Override
     public List<ClassProctoringAndTAsDTO> getDepartmentClassProctoringsByCode(String departmentCode) {
+        List<ClassProctoring> list = classProctoringRepo.findAllByDepartmentCode(departmentCode);
+        list.removeIf(classProctoring -> classProctoring.getStartDate().isBefore(LocalDateTime.now()));
         return classProctoringToClassProctoringAndTAs(classProctoringRepo.findAllByDepartmentCode(departmentCode));
     }
 
     @Override
     public List<ClassProctoringAndTAsDTO> getDepartmentClassProctoringsById(int departmentId) {
-        List<ClassProctoring> proctorings = classProctoringRepo.findByCourse_Department_DepartmentIdAndIsCompleteFalse(departmentId);
-        return classProctoringToClassProctoringAndTAs(proctorings);
+        List<ClassProctoring> list = classProctoringRepo.findByCourse_Department_DepartmentIdAndIsCompleteFalse(departmentId);
+        list.removeIf(classProctoring -> classProctoring.getStartDate().isBefore(LocalDateTime.now()));
+        return classProctoringToClassProctoringAndTAs(list);
     }
 
     @Override
@@ -66,13 +72,16 @@ public class ClassProctoringAndTAsServiceImpl implements ClassProctoringAndTAsSe
 
     @Override
     public List<ClassProctoringAndTAsDTO> getClassProctoringsOfCreator(int creatorId) {
-        List<ClassProctoring> proctorings = classProctoringRepo.findByCreatorUserId(creatorId);
-        return classProctoringToClassProctoringAndTAs(proctorings);
+        List<ClassProctoring> list = classProctoringRepo.findByCreatorUserId(creatorId);
+        list.removeIf(classProctoring -> classProctoring.getStartDate().isBefore(LocalDateTime.now()));
+        return classProctoringToClassProctoringAndTAs(list);
     }
 
     @Override
     public List<ClassProctoringAndTAsDTO> getClassProctoringsOfInstructor(int instructorId) {
-        return classProctoringToClassProctoringAndTAs(classProctoringRepo.findClassProctoringsByInstructorId(instructorId));
+        List<ClassProctoring> list = classProctoringRepo.findClassProctoringsByInstructorId(instructorId);
+        list.removeIf(classProctoring -> classProctoring.getStartDate().isBefore(LocalDateTime.now()));
+        return classProctoringToClassProctoringAndTAs(list);
     }
 
     @Override

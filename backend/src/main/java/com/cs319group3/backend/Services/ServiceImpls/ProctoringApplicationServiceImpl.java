@@ -184,4 +184,16 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
 
         return proctoringApplicationDTOs;
     }
+
+    @Override
+    public boolean setComplete(int applicationId){
+        Optional<ProctoringApplication> proctoringApplication = proctoringApplicationRepo.findById(applicationId);
+        if (proctoringApplication.isEmpty()) {
+            throw new RuntimeException("no such proctoring application found");
+        }
+        ProctoringApplication entity = proctoringApplication.get();
+        entity.setComplete(true);
+        proctoringApplicationRepo.save(entity);
+        return true;
+    }
 }
