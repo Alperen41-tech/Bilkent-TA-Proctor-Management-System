@@ -47,9 +47,8 @@ const InstructorProfilePage = () => {
       console.log("Preferred TAs:", preferredTAsRef.current.value);
       console.log("Preferred Graders:", preferredGradersRef.current.value);
       console.log("Unwanted TAs:", unwantedTAsRef.current.value);
-
+      const token = localStorage.getItem("token");
       const response = await axios.post("http://localhost:8080/courseTAInstructorForm/create", {
-        instructorId: 4,
         courseId: courseIdRef.current.value,
         minTALoad: minTALoadRef.current.value,
         maxTALoad: maxTALoadRef.current.value,
@@ -59,7 +58,12 @@ const InstructorProfilePage = () => {
         preferredTAs: preferredTAsRef.current.value,
         preferredGraders: preferredGradersRef.current.value,
         avoidedTAs: unwantedTAsRef.current.value
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
+
       if (response.data) {
         alert("TA request form created successfully.");
         setShowFormModal(false);
@@ -111,6 +115,7 @@ const InstructorProfilePage = () => {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log("Instructor Profile Info:", response.data);
       setInsProfileInfo(response.data);
       console.log(insProfileInfo);
     } catch (error) {
