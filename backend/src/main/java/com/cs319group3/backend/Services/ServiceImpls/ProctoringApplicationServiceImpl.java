@@ -92,7 +92,10 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
         proctoringApplication.setComplete(false);
         proctoringApplication.setApplicationType(ProctoringApplicationType.NOT_DEFINED);
         LocalDateTime cpTime = proctoringApplication.getClassProctoring().getStartDate();
-        proctoringApplication.setFinishDate(cpTime.minusDays(3));
+        LocalDateTime a = cpTime.minusDays(1);
+        LocalDateTime b = LocalDateTime.now().plusDays(7);
+        LocalDateTime min = a.isBefore(b) ? a : b;
+        proctoringApplication.setFinishDate(min);
         proctoringApplication.setApplicantCountLimit(dto.getApplicantCountLimit());
 
         String logMessage = "User " + deansOfficeId + " created proctoring application " + proctoringApplication.getApplicationId() + ".";

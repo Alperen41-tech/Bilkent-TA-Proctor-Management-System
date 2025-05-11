@@ -6,6 +6,7 @@ import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Repositories.ClassProctoringTARelationRepo;
+import com.cs319group3.backend.Repositories.DepartmentSecretaryRepo;
 import com.cs319group3.backend.Services.AuthStaffProctoringRequestService;
 import com.cs319group3.backend.Services.AuthenticationService;
 import com.cs319group3.backend.Services.ClassProctoringTARelationService;
@@ -24,6 +25,8 @@ public class AuthStaffProctoringRequestController {
 
     @Autowired
     private CurrentUserUtil currentUserUtil;
+    @Autowired
+    private DepartmentSecretaryRepo departmentSecretaryRepo;
 
     /**
      * Sends a non-forced authorization staff proctoring request to a TA.
@@ -35,7 +38,6 @@ public class AuthStaffProctoringRequestController {
     @PostMapping("sendAuthStaffProctoringRequest")
     public boolean sendAuthStaffProctoringRequest(@RequestParam int classProctoringId, @RequestParam int taId) {
         int senderId = currentUserUtil.getCurrentUserId();
-        System.out.println("Auth staff proctoring request is sesesesent.");
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequest(classProctoringId, taId, senderId, false);
     }
 
@@ -66,6 +68,14 @@ public class AuthStaffProctoringRequestController {
     public List<TAProfileDTO> selectAuthStaffProctoringRequestAutomaticallyInDepartment(@RequestParam int classProctoringId, @RequestParam String departmentCode, @RequestParam int count, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
         System.out.println("Class proctoring request sent.");
         int senderId = currentUserUtil.getCurrentUserId();
+        return authStaffProctoringRequestService.sendAuthStaffProctoringRequestAutomaticallyInDepartment(classProctoringId, departmentCode, senderId, count, eligibilityRestriction, oneDayRestriction);
+    }
+
+    @GetMapping("selectAuthStaffProctoringRequestAutomaticallyInDepartmentSecretary")
+    public List<TAProfileDTO> selectAuthStaffProctoringRequestAutomaticallyInDepartmentSecretary(@RequestParam int classProctoringId, @RequestParam int count, @RequestParam boolean eligibilityRestriction, @RequestParam boolean oneDayRestriction) {
+        System.out.println("Class proctoring request sent.");
+        int senderId = currentUserUtil.getCurrentUserId();
+        String departmentCode = departmentSecretaryRepo.findByUserId(senderId).get().getDepartment().getDepartmentCode();
         return authStaffProctoringRequestService.sendAuthStaffProctoringRequestAutomaticallyInDepartment(classProctoringId, departmentCode, senderId, count, eligibilityRestriction, oneDayRestriction);
     }
 
