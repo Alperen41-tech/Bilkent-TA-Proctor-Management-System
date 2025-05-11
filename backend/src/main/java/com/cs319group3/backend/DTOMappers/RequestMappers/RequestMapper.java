@@ -53,12 +53,8 @@ public class RequestMapper {
         }
         finalRequest.setSenderUser(senderUser.get());
 
-        if (!receiverUser.isPresent()) {
-            throw new RuntimeException("Receiver user cannot be found in database: " + dto.getReceiverId());
-        }
-        else{
+        if (receiverUser.isPresent())
             finalRequest.setReceiverUser(receiverUser.get());
-        }
     }
 
     public TASwapRequest taSwapRequestToEntityMapper(RequestDTO dto) throws Exception{
@@ -96,8 +92,8 @@ public class RequestMapper {
 
     public TALeaveRequest taLeaveRequestToEntityMapper(RequestDTO dto) throws Exception{
         TALeaveRequest taLeaveRequest = new TALeaveRequest();
-        essentialToEntityMapper(taLeaveRequest, dto);
 
+        essentialToEntityMapper(taLeaveRequest, dto);
         TA senderTA = (TA) taLeaveRequest.getSenderUser();
 
         Optional<DepartmentSecretary> departmentSecretary = departmentSecretaryRepo
@@ -108,6 +104,7 @@ public class RequestMapper {
         }
 
         taLeaveRequest.setReceiverUser(departmentSecretary.get());
+        dto.setReceiverId(departmentSecretary.get().getUserId());
 
         taLeaveRequest.setLeaveStartDate(dto.getLeaveStartDate());
         taLeaveRequest.setLeaveEndDate(dto.getLeaveEndDate());
