@@ -417,14 +417,29 @@ const AdminDatabasePage = () => {
    */
 
   const createNewCourse = async (name, description, courseCode, departmentId, coordinatorId) => {
+
+    console.log("Sending course creation data:", {
+      name,
+      description,
+      courseCode: parseInt(courseCode),
+      departmentId,
+      coordinatorId: parseInt(coordinatorId, 10),
+      departmentCode: departments.find((d) => d.departmentId === departmentId)?.departmentName || ""
+    });
+
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.post("http://localhost:8080/course/createCourse", {
         name,
         description,
         courseCode: parseInt(courseCode),
         departmentId,
-        coordinatorId: 4,
+        coordinatorId: parseInt(coordinatorId, 10),
         departmentCode: departments.find((d) => d.departmentId === departmentId)?.departmentName || ""
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       if (response.data === true) {
