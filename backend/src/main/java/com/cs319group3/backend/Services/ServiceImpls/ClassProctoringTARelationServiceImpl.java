@@ -150,7 +150,7 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
             TA ta = relation.get().getTA();
             ta.setWorkload(ta.getWorkload() - (int) minutes);
             taRepo.save(ta);
-            notificationService.createNotificationWithoutRequest(DISMISS, remover.get(), description);
+            notificationService.createNotificationWithoutRequest(DISMISS, relation.get().getTA(), description);
             return true;
         }
 

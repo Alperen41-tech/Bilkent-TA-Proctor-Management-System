@@ -11,6 +11,7 @@ import com.cs319group3.backend.Services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +26,7 @@ public class NotificationServiceImpl implements NotificationService {
         List<Notification> notifications = notificationRepo.findByReceiver_UserId(userId);
         List<NotificationDTO> notificationDTOs = new ArrayList<>();
         for (Notification notification : notifications) {
-            String message = "test";
-            NotificationDTO dto = NotificationMapper.essentialMapper(notification, message);
+            NotificationDTO dto = NotificationMapper.essentialMapper(notification, notification.getDescription());
             notificationDTOs.add(dto);
         }
         return notificationDTOs;
@@ -62,6 +62,7 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setRequest(request);
         notification.setNotificationType(type);
         notification.setRead(false);
+        notification.setSentDateTime(LocalDateTime.now());
         if (type == NotificationType.APPROVAL) {
             notification.setReceiver(request.getSenderUser());
         } else {
@@ -77,6 +78,7 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setRequest(request);
         notification.setNotificationType(type);
         notification.setRead(false);
+        notification.setSentDateTime(LocalDateTime.now());
         if (type == NotificationType.APPROVAL) {
             notification.setReceiver(request.getSenderUser());
         } else {
@@ -93,6 +95,7 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setReceiver(receiver);
         notification.setRead(false);
         notification.setDescription(description);
+        notification.setSentDateTime(LocalDateTime.now());
         notificationRepo.save(notification);
         return notification;
     }

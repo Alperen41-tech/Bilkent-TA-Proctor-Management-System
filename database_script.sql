@@ -327,6 +327,7 @@ create table notification(
     request_id int,
     notification_type varchar(50),
     is_read boolean,
+    sent_date_time datetime,
     description varchar(200),
     foreign key (receiver_id) references user(user_id),
     foreign key (request_id) references request(request_id)

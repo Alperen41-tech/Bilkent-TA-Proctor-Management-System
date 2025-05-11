@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -31,6 +33,8 @@ public class Notification {
     private NotificationType notificationType;
 
     private boolean isRead;
+
+    private LocalDateTime sentDateTime;
 
     @ManyToOne
     @JoinColumn(name = "receiver_id")
