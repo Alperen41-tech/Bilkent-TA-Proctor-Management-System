@@ -245,6 +245,10 @@ const DashboardPage = () => {
    */
   const postNewWorkloadEntry = async () => {
     try {
+      console.log(newTaskTypeEntry.current.value);
+      console.log(newTimeSpendHoursEntry.current.value);
+      console.log(newTimeSpendMinutesEntry.current.value);
+      console.log(newDetailsEntry.current.value);
       const token = localStorage.getItem("token");
       const response = await axios.post("http://localhost:8080/taWorkloadRequest/create", {
         taskTypeName: newTaskTypeEntry.current.value,
@@ -483,8 +487,8 @@ const DashboardPage = () => {
 
                   <label>Time Spent</label>
                   <div className="ta-dashboard-time-inputs">
-                    <input ref={newTimeSpendHoursEntry} type="number" min={0}  placeholder="Hours" required/>
-                    <input ref={newTimeSpendMinutesEntry} type="number" min={0} placeholder="Minutes" required/>
+                    <input ref={newTimeSpendHoursEntry} type="number" min={0}  placeholder="Hours"/>
+                    <input ref={newTimeSpendMinutesEntry} type="number" min={0} placeholder="Minutes"/>
                   </div>
 
                   <label>Details</label>
