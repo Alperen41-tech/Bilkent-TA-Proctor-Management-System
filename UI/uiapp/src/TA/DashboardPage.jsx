@@ -246,7 +246,7 @@ const DashboardPage = () => {
   const postNewWorkloadEntry = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post("http://localhost:8080/taWorkloadRequest/create?id=1", {
+      const response = await axios.post("http://localhost:8080/taWorkloadRequest/create", {
         taskTypeName: newTaskTypeEntry.current.value,
         timeSpent: parseInt(newTimeSpendHoursEntry.current.value,10)*60 + parseInt(newTimeSpendMinutesEntry.current.value, 10),
         description: newDetailsEntry.current.value,

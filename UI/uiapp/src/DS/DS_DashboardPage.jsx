@@ -275,10 +275,9 @@ const DS_DashboardPage = () => {
   const handleAutomaticSelect = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartment`, {
+      const response = await axios.get(`http://localhost:8080/authStaffProctoringRequestController/selectAuthStaffProctoringRequestAutomaticallyInDepartmentSecretary`, {
         params: {
           classProctoringId: selectedPPR.classProctoringDTO.id,
-          departmentCode: selectedPPR.departmentName === "Computer Engineering" ? "CS" : "Industrial Engineering" ? "IE" : null,
           count: taSelectRestrictionsCount,
           eligibilityRestriction: taSelectRestrictionsEligibility,
           oneDayRestriction: taSelectRestrictionsOneDay,
@@ -289,6 +288,7 @@ const DS_DashboardPage = () => {
       });
       if (response.data) {
         alert("Automatic selection completed successfully.");
+        console.log(response.data);
         setSelectedAppliedStudentsId(response.data.map((student) => student.userId));
       } else {
         alert("Failed to complete automatic selection. Please try again.");
@@ -483,14 +483,14 @@ const DS_DashboardPage = () => {
 
 
   useEffect(() => {
-    console.log(paidProctorings);
+    /*console.log(paidProctorings);
     console.log(selectedPPR);
     console.log(appliedTAs);
     console.log(avaliableTAs);
     console.log(selectedAppliedStudentsId);
     console.log(taSelectRestrictionsCount);
     console.log(taSelectRestrictionsEligibility);
-    console.log(taSelectRestrictionsOneDay);
+    console.log(taSelectRestrictionsOneDay);*/
   }, [appliedTAs, selectedAppliedStudentsId, selectedPPR, paidProctorings, taSelectRestrictionsCount, taSelectRestrictionsEligibility, taSelectRestrictionsOneDay, avaliableTAs]);
 
   return (
@@ -659,7 +659,7 @@ const DS_DashboardPage = () => {
               <div className="ta-list-container">
                 <h3 className="ta-list-title">TA List</h3>
                 <div className="ta-list">
-                  {appliedTAs.length > 0 ? (
+                  {selectedAppliedStudentsId.length > 0 ? (
                     <div>
                       {selectedAppliedStudentsId.map((id) => {
                         return (isManualAssignment ? (
