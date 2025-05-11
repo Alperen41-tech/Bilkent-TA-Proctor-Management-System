@@ -386,6 +386,7 @@ const AdminDatabasePage = () => {
     taCount
   ) => {
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.post("http://localhost:8080/classProctoring/createClassProctoring", {
         eventName,
         courseId,
@@ -394,7 +395,11 @@ const AdminDatabasePage = () => {
         endDate: `${date} ${endTime}:00`,
         classrooms: classrooms.split(",").map((c) => c.trim()),
         taCount: parseInt(taCount),
-        creatorId: 1, // Replace 1 with actual Admin userId if needed
+
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       if (response.data === true) {
