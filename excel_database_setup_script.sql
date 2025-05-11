@@ -457,3 +457,5 @@ insert into login (login_id, user_id, password, user_type_id) values
     (4, 3, '$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi', 3),
 	(5, 4, '$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi', 3);
     
+insert into general_variable(general_variable_id, semester_id, ta_proctoring_cap_time) values
+		(1, 1, 10);
