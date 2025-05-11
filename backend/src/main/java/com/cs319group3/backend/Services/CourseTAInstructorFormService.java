@@ -11,5 +11,5 @@ public interface CourseTAInstructorFormService {
      * @param form the form data containing TA, Instructor, and Course info
      * @return true if successfully created, false otherwise
      */
-    ResponseEntity<Boolean> createForm(CourseTAInstructorFormDTO form);
+    ResponseEntity<Boolean> createForm(CourseTAInstructorFormDTO form, int userId);
 }

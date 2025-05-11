@@ -37,7 +37,8 @@ public class CourseTAInstructorFormServiceImpl implements CourseTAInstructorForm
     private LogService logService;
 
     @Override
-    public ResponseEntity<Boolean> createForm(CourseTAInstructorFormDTO form) {
+    public ResponseEntity<Boolean> createForm(CourseTAInstructorFormDTO form, int userId) {
+        form.setInstructorId(userId);
         Optional<Instructor> instructor = instructorRepo.findByUserId(form.getInstructorId());
         if (instructor.isEmpty())
             throw new RuntimeException("instructor not found");

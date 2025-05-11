@@ -206,11 +206,16 @@ public class ExcelServiceImpl implements ExcelService {
             // Example: Loop through all rows and cells
             for (Row row : sheet) {
 
-                String ss = row.getCell(0).getStringCellValue();
+
 
                 if (row.getRowNum() < 9)
                     continue; // skip header
 
+                String ss = getStringCellValue(row.getCell(0));
+
+                if (ss.isEmpty()){
+                    break;
+                }
                 for (Cell cell : row) {
 
                     if (cell.getColumnIndex() < 4)
