@@ -36,11 +36,14 @@ public class TAProfileMapper {
         dto.setBilkentId(ta.getBilkentId());
         dto.setPhoneNumber(ta.getPhoneNumber());
         dto.setActive(ta.isActive());
-        dto.setClassYear(ta.getClassYear());
         dto.setWorkload(ta.getWorkload());
+        dto.setClassYear(ta.getClassYear());
         dto.setPaidProctoringCount(classProctoringTARelationRepo.countClassProctoringTARelationsByTA_UserIdAndIsPaid(ta.getUserId(), true));
-        
-        dto.setClassNumber(studentRepo.findByBilkentId(ta.getBilkentId()).get().getClassYear());
+        int taClass = ta.getClassYear();
+        if (taClass == 5)
+            dto.setClassType("Ms");
+        else if (taClass == 9)
+            dto.setClassType("Phd");
 
 
         // Fix here:

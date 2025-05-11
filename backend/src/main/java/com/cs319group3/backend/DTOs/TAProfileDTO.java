@@ -20,10 +20,10 @@ public class TAProfileDTO {
     private int courseCode;
     private String phoneNumber;
     private Boolean active;
+    public String classType;
     private int classYear;
     private int workload;
     private int paidProctoringCount;
-    private int classNumber;
 
     //For finding available tas in a class proctoring
     private boolean isTAOfTheCourse;
