@@ -24,16 +24,17 @@ const LoginPage = () => {
    */
   const handleLogin = async () => {
     try {
-      console.log(isAdmin);
       console.log("Email:", email);
       console.log("Password:", password);
+      console.log("isAdmin: " + isAdmin);
+      console.log("isTAAssigner: " + isTAAssigner);
       // Make the API call to the Spring Boot backend
       const response = await axios.post("http://localhost:8080/auth/login", {
         email: email,
         password: password, 
-        userTypeName: isAdmin ? "admin" : null,
+        userTypeName: isAdmin ? "admin" : isTAAssigner ? "ta assigner" : "",
       });
-
+      
       if (response.data) {
         switch(response.data.userTypeName) {
           case "admin":
@@ -50,6 +51,9 @@ const LoginPage = () => {
             break;
           case "department secretary":
             navigate("/ds-dashboard");
+            break;
+          case "ta assigner":
+            navigate("/instructor-admin-profile");
             break;
           default:
             console.error("Unknown user type:", response.data.userTypeName);

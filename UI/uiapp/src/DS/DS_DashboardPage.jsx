@@ -85,6 +85,8 @@ const DS_DashboardPage = () => {
         fetchPaidProctoringRequests();
         fetchAppliedStudents();
         fetchAvaliableTAs();
+        setSelectedAppliedStudentsId([]);
+        setSelectedPPR(null);
       } else {
         alert("Failed to complete the request. Please try again.");
       }
