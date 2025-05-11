@@ -133,6 +133,7 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
             throw new RuntimeException("The current user is not a department secretary");
         }
         List<ProctoringApplication> listPA = proctoringApplicationRepo.findByVisibleDepartment_DepartmentId(ds.get().getDepartment().getDepartmentId());
+        listPA.removeIf(ProctoringApplication::isComplete);
         return proctoringApplicationMapper.toDTO(listPA);
     }
 
@@ -170,7 +171,7 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
                 proctoringApplicationRepo.findByVisibleDepartment_DepartmentIdAndApplicationType(
                         taReceived.getDepartment().getDepartmentId(), applicationType
                 );
-
+        allProctorings.removeIf(proctoring -> proctoring.getClassProctoring().getStartDate().isBefore(LocalDateTime.now()));
         List<ProctoringApplicationDTO> proctoringApplicationDTOs = proctoringApplicationMapper.toDTO(allProctorings);
 
         for (ProctoringApplicationDTO dto : proctoringApplicationDTOs) {
@@ -183,5 +184,17 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
         }
 
         return proctoringApplicationDTOs;
+    }
+
+    @Override
+    public boolean setComplete(int applicationId){
+        Optional<ProctoringApplication> proctoringApplication = proctoringApplicationRepo.findById(applicationId);
+        if (proctoringApplication.isEmpty()) {
+            throw new RuntimeException("no such proctoring application found");
+        }
+        ProctoringApplication entity = proctoringApplication.get();
+        entity.setComplete(true);
+        proctoringApplicationRepo.save(entity);
+        return true;
     }
 }

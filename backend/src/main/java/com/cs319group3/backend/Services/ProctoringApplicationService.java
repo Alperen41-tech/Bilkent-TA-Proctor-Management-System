@@ -38,7 +38,6 @@ public interface ProctoringApplicationService {
     /**
      * Retrieves all proctoring applications related to a specific department.
      *
-     * @param departmentId ID of the department
      * @return List of ProctoringApplicationDTOs
      */
     List<ProctoringApplicationDTO> getAllApplicationsByDepartment(int departmentSecretaryId);
@@ -60,4 +59,6 @@ public interface ProctoringApplicationService {
      * @return List of ProctoringApplicationDTOs
      */
     List<ProctoringApplicationDTO> getAllApplicationsForTA(int userId, ProctoringApplicationType applicationType);
+
+    boolean setComplete(int applicationId);
 }
