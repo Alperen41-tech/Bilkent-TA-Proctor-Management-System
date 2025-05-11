@@ -69,7 +69,7 @@ public class CourseServiceImpl implements CourseService {
         if (department.isEmpty()) return false;
 
         Optional<Instructor> instructor = instructorRepo.findByBilkentId("" + dto.getCoordinatorId());
-        if (instructor.isEmpty()) return false;
+        if (instructor.isEmpty()) throw new RuntimeException("Instructor with id " + dto.getCoordinatorId() + " not found");
 
         Course course = new Course();
         course.setDepartment(department.get());

@@ -53,10 +53,13 @@ public class InstructorServiceImpl implements InstructorService {
         InstructorProfileDTO profile = ciDTO.getInstructorDTO();
         LoginDTO login = ciDTO.getLoginDTO();
 
-        if (userRepo.findByBilkentId(profile.getBilkentId()).isPresent() ||
-                userRepo.findByEmail(profile.getEmail()).isPresent()) {
-            return false;
+        if (userRepo.findByBilkentId(profile.getBilkentId()).isPresent())
+            throw new RuntimeException("User with ID " + profile.getBilkentId() + " already exists.");
+
+        if (userRepo.findByEmail(profile.getEmail()).isPresent()) {
+            throw new RuntimeException("instructor with email " + profile.getEmail() + " already exists.");
         }
+
 
         Instructor instructor = instructorProfileMapper.toEntity(profile);
         Login loginEntity = loginMapper.essentialEntityToLogin(login, instructor);
