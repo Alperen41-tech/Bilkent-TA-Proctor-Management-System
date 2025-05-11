@@ -60,7 +60,6 @@ const ExamsPage = () => {
         console.log("Swap request sent successfully!");
         setLastSelectedTask({});
         setAvailableTAs([]);
-        fetchAvailableTAs();
         fetchTasProctorings();
       }
       else {
