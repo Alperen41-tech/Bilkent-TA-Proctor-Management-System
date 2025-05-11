@@ -68,7 +68,7 @@ public class CourseServiceImpl implements CourseService {
         Optional<Department> department = departmentRepo.findById(dto.getDepartmentId());
         if (department.isEmpty()) return false;
 
-        Optional<Instructor> instructor = instructorRepo.findByUserId(dto.getCoordinatorId());
+        Optional<Instructor> instructor = instructorRepo.findByBilkentId("" + dto.getCoordinatorId());
         if (instructor.isEmpty()) return false;
 
         Course course = new Course();
