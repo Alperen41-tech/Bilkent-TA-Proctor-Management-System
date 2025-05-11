@@ -20,10 +20,8 @@ public class TaskTypeServiceImpl implements TaskTypeService {
 
     @Autowired
     private CourseRepo courseRepo;
-
     @Autowired
     private TaskTypeRepo taskTypeRepo;
-
     @Autowired
     private TAWorkloadRequestRepo taWorkloadRequestRepo;
     @Autowired
