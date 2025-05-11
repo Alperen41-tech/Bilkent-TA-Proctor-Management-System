@@ -4,8 +4,10 @@ import com.cs319group3.backend.DTOMappers.TaskTypeMapper;
 import com.cs319group3.backend.DTOs.TaskTypeDTO;
 import com.cs319group3.backend.Entities.RequestEntities.TAWorkloadRequest;
 import com.cs319group3.backend.Entities.TaskType;
+import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Repositories.CourseRepo;
+import com.cs319group3.backend.Repositories.TARepo;
 import com.cs319group3.backend.Repositories.TAWorkloadRequestRepo;
 import com.cs319group3.backend.Repositories.TaskTypeRepo;
 import com.cs319group3.backend.Services.LogService;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TaskTypeServiceImpl implements TaskTypeService {
@@ -26,6 +29,9 @@ public class TaskTypeServiceImpl implements TaskTypeService {
     private TAWorkloadRequestRepo taWorkloadRequestRepo;
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private TARepo taRepo;
 
     @Override
     public boolean createTaskType(TaskTypeDTO dto, int courseId) {
@@ -59,6 +65,7 @@ public class TaskTypeServiceImpl implements TaskTypeService {
 
     @Override
     public List<String> getTaskTypeNames(int courseId) {
-        return taskTypeRepo.findTaskTypeNamesByCourseId(courseId);
+        Optional<TA> ta = taRepo.findByUserId(courseId);
+        return taskTypeRepo.findTaskTypeNamesByCourseId(ta.get().getAssignedCourse().getCourseId());
     }
 }

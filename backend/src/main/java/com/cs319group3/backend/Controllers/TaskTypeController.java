@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Controllers;
 
+import com.cs319group3.backend.Components.CurrentUserUtil;
 import com.cs319group3.backend.DTOs.TaskTypeDTO;
 import com.cs319group3.backend.Services.TaskTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ public class TaskTypeController {
 
     @Autowired
     private TaskTypeService taskTypeService;
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
 
     /**
      * Creates a new task type associated with a specific course.
@@ -48,12 +51,13 @@ public class TaskTypeController {
     /**
      * Retrieves the names of all task types for a given course.
      *
-     * @param courseId the ID of the course
+     *
      * @return list of task type names
      */
     @GetMapping("getTaskTypeNames")
-    public List<String> getTaskTypeNames(@RequestParam int courseId) {
+    public List<String> getTaskTypeNames() {
+        int taId = currentUserUtil.getCurrentUserId();
         System.out.println("Extracting task type names.");
-        return taskTypeService.getTaskTypeNames(courseId);
+        return taskTypeService.getTaskTypeNames(taId);
     }
 }
