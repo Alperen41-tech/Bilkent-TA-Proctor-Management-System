@@ -173,6 +173,7 @@ const DOCreateExamPage = () => {
       );
       if (updatedExam) {
         setSelectedExamItem(updatedExam);
+        fetchTAs();
       }
     } catch (error) {
       console.error("Error refreshing assigned TAs:", error);

@@ -314,6 +314,7 @@ const DOExamsPage = () => {
    * Applies eligibility and one-day restrictions.
    */
   const fetchTAs = async (departmentCode, proctoringId) => {
+console.log(facultyId, proctoringId, eligibilityRestriction, oneDayRestriction);
     try {
       let response;
 
