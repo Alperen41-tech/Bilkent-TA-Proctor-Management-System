@@ -473,8 +473,8 @@ const DashboardPage = () => {
                 <h3>Enter Task</h3>
                 <form onSubmit={(e) => {e.preventDefault();postNewWorkloadEntry();console.log(taskType);}}>
                   <label>Task Type</label>
-                  <select ref={newTaskTypeEntry} required>
-                    <option value="" disabled selected>Select a Task Type</option>
+                  <select ref={newTaskTypeEntry}>
+                    <option>Select a Task Type</option>
                     {taskType ? taskType.map((type, index) => (
                       <option key={index}>{type}</option>
                     )): null}
