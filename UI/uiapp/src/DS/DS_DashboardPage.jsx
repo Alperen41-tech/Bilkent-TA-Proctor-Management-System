@@ -404,7 +404,7 @@ const DS_DashboardPage = () => {
 
   const isFinished = () => {
     const currentDate = new Date();
-    const selectedPPRApplicationFinishDate = new Date(selectedPPR.finishDate);
+    const selectedPPRApplicationFinishDate = new Date(selectedPPR?.finishDate);
     return currentDate > selectedPPRApplicationFinishDate;
   };
 
