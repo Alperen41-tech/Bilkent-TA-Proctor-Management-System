@@ -399,7 +399,6 @@ const AdminDatabasePage = () => {
 
       if (response.data === true) {
         alert("Exam created successfully!");
-        // Optionally reset fields here
       } else {
         alert("Failed to create the exam. Try again.");
       }
@@ -667,9 +666,9 @@ const AdminDatabasePage = () => {
               <input
                 ref={newProctoringSectionNumberRef}
                 type="number"
-                placeholder="e.g., 1"
+                placeholder="0 for all sections"
                 required
-                min={1}
+                min={0}
               />
 
               <label>TA Count</label>
