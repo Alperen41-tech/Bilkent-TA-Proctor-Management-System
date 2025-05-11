@@ -459,3 +459,5 @@ insert into login (login_id, user_id, password, user_type_id) values
     
 insert into general_variable(general_variable_id, semester_id, ta_proctoring_cap_time) values
 		(1, 1, 10);
+        
+        

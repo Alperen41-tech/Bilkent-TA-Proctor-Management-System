@@ -175,7 +175,7 @@ public class ExcelServiceImpl implements ExcelService {
             relations = courseStudentRelationRepo.findByCourse_CourseAndCourse_SectionNo(offeredCourse, sectionNo);
         }
 
-        int classroomCount = classrooms.size();
+        int classroomCount = Math.max(classrooms.size(), 1);
         int studentCount = relations.size();
         int classroomSize = (int) Math.ceil(studentCount / classroomCount);
 
