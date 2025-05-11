@@ -85,6 +85,8 @@ public class ExcelServiceImpl implements ExcelService {
     private DeansOfficeRepo deansOfficeRepo;
     @Autowired
     private DepartmentSecretaryRepo departmentSecretaryRepo;
+    @Autowired
+    private ClassProctoringTARelationRepo classProctoringTARelationRepo;
 
     public byte[] generateExcelFromTemplate() throws IOException {
         // Load template from classpath (inside the .jar)
@@ -126,6 +128,20 @@ public class ExcelServiceImpl implements ExcelService {
         row.createCell(2).setCellValue(student.getSurname());
         row.createCell(3).setCellValue(student.getEmail());
         row.createCell(4).setCellValue(classroom);
+    }
+
+    private void setRow(Row row, TA ta, int paidProctoring, int unpaidProctoring){
+        row.createCell(0).setCellValue(ta.getBilkentId());
+        row.createCell(1).setCellValue(ta.getDepartment().getDepartmentCode());
+        row.createCell(2).setCellValue(ta.getName());
+        row.createCell(3).setCellValue(ta.getSurname());
+        row.createCell(4).setCellValue(ta.getEmail());
+        row.createCell(5).setCellValue(ta.getPhoneNumber());
+        row.createCell(6).setCellValue(ta.getClassYear());
+        row.createCell(7).setCellValue(ta.getTaType().getTypeName());
+        row.createCell(8).setCellValue(ta.getWorkload());
+        row.createCell(9).setCellValue(paidProctoring);
+        row.createCell(10).setCellValue(unpaidProctoring);
     }
 
     @Override
@@ -187,6 +203,36 @@ public class ExcelServiceImpl implements ExcelService {
             return outStream.toByteArray();
         }
     }
+
+    @Override
+    public byte[] getReport() throws IOException{
+
+        try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH + "Report.xlsx");
+            Workbook wb = new XSSFWorkbook(templateStream);
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream()){
+
+            Sheet sheet = wb.getSheetAt(0);
+            int rowIndex = sheet.getLastRowNum() + 1;
+
+            List<TA> allTA = taRepo.findAll();
+
+            for (TA ta : allTA) {
+                Row row = sheet.createRow(rowIndex++);
+
+                int paidProctoring = classProctoringTARelationRepo.countByTA_UserIdAndIsPaid(ta.getUserId(), true);
+                int unpaidProctoring = classProctoringTARelationRepo.countByTA_UserIdAndIsPaid(ta.getUserId(), false);
+
+                setRow(row, ta, paidProctoring, unpaidProctoring);
+
+            }
+
+            wb.write(outStream);
+            return outStream.toByteArray();
+        }
+
+    }
+
+
 
 
     @Override

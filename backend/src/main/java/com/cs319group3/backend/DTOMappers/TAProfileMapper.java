@@ -38,7 +38,7 @@ public class TAProfileMapper {
         dto.setActive(ta.isActive());
         dto.setWorkload(ta.getWorkload());
         dto.setClassYear(ta.getClassYear());
-        dto.setPaidProctoringCount(classProctoringTARelationRepo.countClassProctoringTARelationsByTA_UserIdAndIsPaid(ta.getUserId(), true));
+        dto.setPaidProctoringCount(classProctoringTARelationRepo.countByTA_UserIdAndIsPaid(ta.getUserId(), true));
         int taClass = ta.getClassYear();
         if (taClass == 5)
             dto.setClassType("Ms");

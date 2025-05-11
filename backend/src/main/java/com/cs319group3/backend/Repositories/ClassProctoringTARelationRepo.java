@@ -5,7 +5,6 @@ import com.cs319group3.backend.CompositeIDs.ClassProctoringTAKey;
 import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
 import com.cs319group3.backend.Entities.UserEntities.TA;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -25,7 +24,8 @@ public interface ClassProctoringTARelationRepo extends JpaRepository<ClassProcto
     List<ClassProctoringTARelation> findByClassProctoring_ClassProctoringId(Integer id);
     List<ClassProctoringTARelation> findByClassProctoring_Course(Course classProctoringCourse);
     List<ClassProctoringTARelation> findByClassProctoring_Course_Department_DepartmentIdAndTA_UserId(int departmentId, Integer taUserId);
-    int countClassProctoringTARelationsByTA_UserIdAndIsPaid(int userId, boolean isPaid);
+    int countByTA_UserIdAndIsPaid(int userId, boolean isPaid);
+
 
     @Query("""
     SELECT COUNT(ctr)

@@ -40,4 +40,10 @@ public interface ExcelService {
      * @throws IOException if file generation fails
      */
     byte[] getStudentsOfClassProctoring(int classProctoringId) throws IOException;
+
+    /**
+     * used to get annual report showing ta's total workload, paid proctorings and unpaid proctroings
+     * @return
+     */
+    byte[] getReport() throws IOException;
 }

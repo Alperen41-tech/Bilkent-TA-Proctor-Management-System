@@ -82,6 +82,23 @@ public class ExcelController {
     }
 
 
+    @GetMapping("getReport")
+    public ResponseEntity<byte[]> getReport() throws IOException {
+        byte[] excelData = excelService.getReport();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDisposition(ContentDisposition
+                .attachment()
+                .filename("Students.xlsx")
+                .build());
+        headers.setContentLength(excelData.length);
+
+        return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
+    }
+
+
 
 
 
