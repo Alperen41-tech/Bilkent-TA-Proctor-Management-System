@@ -237,6 +237,8 @@ public class RequestServiceImpl implements RequestService {
         requests.addAll(requestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequests));
         requests.addAll(requestMapper.authStaffTARequestMapper(authStaffProctoringRequests));
 
+        requests.removeIf(requestDTO -> requestDTO.getResponseDateTime() == null && requestDTO.getIsApproved());
+
         return requests;
     }
 
@@ -264,6 +266,9 @@ public class RequestServiceImpl implements RequestService {
         requests.addAll(requestMapper.taLeaveRequestMapper(taleaveRequests));
         requests.addAll(requestMapper.instructorAdditionalTARequestMapper(instructorAdditionalTARequests));
         requests.addAll(requestMapper.authStaffTARequestMapper(authStaffProctoringRequests));
+
+        requests.removeIf(requestDTO -> requestDTO.getResponseDateTime() == null && requestDTO.getIsApproved());
+
         return requests;
     }
 
