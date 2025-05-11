@@ -426,7 +426,7 @@ const DS_DashboardPage = () => {
 
   const createSelectPaidProctoringTAs = () => {
     return paidProctorings.map((request) => (
-      <DS_SelectPaidProctoringTAItem paidProctoring={request} isSelected={selectedPPR === request} onSelect={() => { setSelectedPPR(request); setSelectedAppliedStudentsId([]); }} isAppliedAssignment={request.applicationType === "APPLICATION"} isForcedAssignment={request.applicationType === "ASSIGNMENT"} onAppliedAssignment={() => handleAssignmentTypeSelect("APPLICATION", request.applicationId)} onForcedAssignment={() => handleAssignmentTypeSelect("ASSIGNMENT", request.applicationId)} />
+      <DS_SelectPaidProctoringTAItem paidProctoring={request} isSelected={selectedPPR === request} onSelect={() => { if(!request.complete){setSelectedPPR(request);} setSelectedAppliedStudentsId([]); }} isAppliedAssignment={request.applicationType === "APPLICATION"} isForcedAssignment={request.applicationType === "ASSIGNMENT"} onAppliedAssignment={() => handleAssignmentTypeSelect("APPLICATION", request.applicationId)} onForcedAssignment={() => handleAssignmentTypeSelect("ASSIGNMENT", request.applicationId)} />
     ));
   }
 
