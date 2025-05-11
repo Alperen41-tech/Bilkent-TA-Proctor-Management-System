@@ -2,12 +2,16 @@ package com.cs319group3.backend.Services.ServiceImpls;
 
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
+import com.cs319group3.backend.Entities.ClassProctoring;
+import com.cs319group3.backend.Entities.ProctoringApplication;
 import com.cs319group3.backend.Entities.RequestEntities.InstructorAdditionalTARequest;
 import com.cs319group3.backend.Entities.UserEntities.DeansOffice;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import com.cs319group3.backend.Enums.NotificationType;
+import com.cs319group3.backend.Repositories.ClassProctoringRepo;
 import com.cs319group3.backend.Repositories.InstructorAdditionalTARequestRepo;
 import com.cs319group3.backend.Repositories.InstructorRepo;
+import com.cs319group3.backend.Repositories.ProctoringApplicationRepo;
 import com.cs319group3.backend.Services.InstructorAdditionalTARequestService;
 import com.cs319group3.backend.Services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,10 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
 
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private ClassProctoringRepo classProctoringRepo;
+    @Autowired
+    private ProctoringApplicationRepo proctoringApplicationRepo;
 
     @Override
     public List<RequestDTO> getApprovedInstructorAdditionalTARequests(int receiverId) {
@@ -56,6 +64,15 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
 
     @Override
     public boolean createInstructorAdditionalTARequest(RequestDTO requestDTO, int senderId) throws Exception {
+        int classProctoringId = requestDTO.getClassProctoringId();
+        List<ProctoringApplication> list = proctoringApplicationRepo.findByClassProctoring_ClassProctoringId(classProctoringId);
+
+        for(ProctoringApplication application : list) {
+            if(!application.isComplete()){
+                throw new RuntimeException("A proctoring application for the requested class proctoring is going on");
+            }
+        }
+
         requestDTO.setSenderId(senderId);
 
         Optional<Instructor> instructor = instructorRepo.findById(senderId);
