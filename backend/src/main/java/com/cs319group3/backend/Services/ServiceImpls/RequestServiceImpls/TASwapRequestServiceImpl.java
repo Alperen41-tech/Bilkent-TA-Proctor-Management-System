@@ -5,11 +5,13 @@ import com.cs319group3.backend.DTOMappers.TAProfileMapper;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
+import com.cs319group3.backend.Entities.Course;
 import com.cs319group3.backend.Entities.Department;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
+import com.cs319group3.backend.Entities.RelationEntities.CourseStudentRelation;
 import com.cs319group3.backend.Entities.RequestEntities.TASwapRequest;
+import com.cs319group3.backend.Entities.Student;
 import com.cs319group3.backend.Entities.UserEntities.TA;
-import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
@@ -56,6 +58,10 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
 
     @Autowired
     private TAAvailabilityService taAvailabilityService;
+    @Autowired
+    private StudentRepo studentRepo;
+    @Autowired
+    private CourseStudentRelationRepo courseStudentRelationRepo;
 
     @Override
     public ResponseEntity<List<RequestDTO>> getTASwapRequestsByReceiver(int TAId) {
@@ -121,7 +127,8 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
 
         departmentAvailableTAs.removeIf(ta ->
                 !taAvailabilityService.isTAAvailable(ta, classProctoringReceived)
-                        || isRequestAlreadySent(taId, ta, classProctoringReceived));
+                        || isRequestAlreadySent(taId, ta, classProctoringReceived)
+                        || isEnrolledCourse(ta, classProctoringReceived));
 
         return taProfileMapper.essentialMapper(departmentAvailableTAs);
     }
@@ -133,6 +140,20 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
                         senderId, receiver.getUserId(), ctr.getClassProctoringId());
 
         return taSwapRequest.isPresent();
+    }
+
+    private boolean isEnrolledCourse(TA receiver, ClassProctoring ctr) {
+        Course course = ctr.getCourse();
+        Optional<Student> student = studentRepo.findByBilkentId(receiver.getBilkentId());
+
+        if (student.isEmpty()) {
+            return false;
+        }
+
+        List<CourseStudentRelation> relationOptional = courseStudentRelationRepo.findByCourse_CourseAndStudent(course, student.get());
+
+        return !relationOptional.isEmpty();
+
     }
 
     private void setClassProctorings(TASwapRequest swapRequest) throws Exception {

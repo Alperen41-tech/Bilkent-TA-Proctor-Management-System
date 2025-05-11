@@ -14,5 +14,5 @@ public interface CourseStudentRelationRepo extends JpaRepository<CourseStudentRe
 
     List<CourseStudentRelation> findByCourse_Course(Course course);
     List<CourseStudentRelation> findByCourse_CourseAndCourse_SectionNo(Course course, int sectionNo);
-
+    List<CourseStudentRelation> findByCourse_CourseAndStudent(Course course, Student student);
 }
