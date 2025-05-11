@@ -132,7 +132,10 @@ const DashboardPage = () => {
    */
   const fetchWorkloadTypes = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/taskType/getTaskTypeNames?courseId=1"); // Adjust the URL as needed
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8080/taskType/getTaskTypeNames", {headers: {
+          Authorization: `Bearer ${token}`
+        }}); // Adjust the URL as needed
       setTaskType(response.data);
       console.log(taskType);
     } catch (error) {
