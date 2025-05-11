@@ -117,6 +117,7 @@ public class RequestMapper {
 
     public TAWorkloadRequest taWorkloadRequestToEntityMapper(RequestDTO requestDTO, User receiverUser) throws Exception{
         TAWorkloadRequest taWorkloadRequest = new TAWorkloadRequest();
+        requestDTO.setReceiverId(receiverUser.getUserId());
         essentialToEntityMapper(taWorkloadRequest, requestDTO);
 
         TA senderTA = (TA) taWorkloadRequest.getSenderUser();
