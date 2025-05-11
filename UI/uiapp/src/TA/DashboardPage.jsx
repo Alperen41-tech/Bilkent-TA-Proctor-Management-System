@@ -504,7 +504,6 @@ const DashboardPage = () => {
                     <p><strong>Start Time:</strong> {selectedProctoring.classProctoringDTO.startDate.split("T")[1]}</p>
                     <p><strong>End Time:</strong> {selectedProctoring.classProctoringDTO.endDate.split("T")[1]}</p>
                     <p><strong>Classrooms:</strong> {selectedProctoring.classProctoringDTO.classrooms}</p>
-                    <p><strong>Locked:</strong> {selectedProctoring.isOpenToSwap ? "No" : "Yes"}</p>
                     <p><strong>Proctoring Status:</strong> {selectedProctoring.isPaid ? "Yes" : "No"}</p>
                     <button onClick={()=> handlePrintClassroomInfo()}>Print Classroom Info</button>
                   </div>
