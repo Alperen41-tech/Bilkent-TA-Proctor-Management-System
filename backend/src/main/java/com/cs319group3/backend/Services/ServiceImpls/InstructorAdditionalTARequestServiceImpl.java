@@ -4,14 +4,12 @@ import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.ProctoringApplication;
+import com.cs319group3.backend.Entities.RequestEntities.AuthStaffProctoringRequest;
 import com.cs319group3.backend.Entities.RequestEntities.InstructorAdditionalTARequest;
 import com.cs319group3.backend.Entities.UserEntities.DeansOffice;
 import com.cs319group3.backend.Entities.UserEntities.Instructor;
 import com.cs319group3.backend.Enums.NotificationType;
-import com.cs319group3.backend.Repositories.ClassProctoringRepo;
-import com.cs319group3.backend.Repositories.InstructorAdditionalTARequestRepo;
-import com.cs319group3.backend.Repositories.InstructorRepo;
-import com.cs319group3.backend.Repositories.ProctoringApplicationRepo;
+import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.InstructorAdditionalTARequestService;
 import com.cs319group3.backend.Services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +37,8 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
     private ClassProctoringRepo classProctoringRepo;
     @Autowired
     private ProctoringApplicationRepo proctoringApplicationRepo;
+    @Autowired
+    private AuthStaffProctoringRequestRepo authStaffProctoringRequestRepo;
 
     @Override
     public List<RequestDTO> getApprovedInstructorAdditionalTARequests(int receiverId) {
@@ -66,6 +66,13 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
     public boolean createInstructorAdditionalTARequest(RequestDTO requestDTO, int senderId) throws Exception {
         int classProctoringId = requestDTO.getClassProctoringId();
         List<ProctoringApplication> list = proctoringApplicationRepo.findByClassProctoring_ClassProctoringId(classProctoringId);
+
+        List<InstructorAdditionalTARequest> listAuth = instructorAdditionalTARequestRepo.findByClassProctoring_ClassProctoringId(classProctoringId);
+        for(InstructorAdditionalTARequest request : listAuth) {
+            if(request.getResponseDate() == null ){
+                throw new RuntimeException("There is an ongoing auth staff proctoring request for this class proctoring");
+            }
+        }
 
         for(ProctoringApplication application : list) {
             if(!application.isComplete()){

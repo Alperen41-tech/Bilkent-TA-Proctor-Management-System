@@ -1,5 +1,6 @@
 package com.cs319group3.backend.Repositories;
 
+import com.cs319group3.backend.Entities.RequestEntities.AuthStaffProctoringRequest;
 import com.cs319group3.backend.Entities.RequestEntities.InstructorAdditionalTARequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +30,6 @@ AND r.approved = true
 AND r.isSentToSecretary = false
 """)
     List<InstructorAdditionalTARequest> findByReceiverIdAndIsApprovedTrue(int receiverId);
+
+    List<InstructorAdditionalTARequest> findByClassProctoring_ClassProctoringId(int classProctoringId);
 }
