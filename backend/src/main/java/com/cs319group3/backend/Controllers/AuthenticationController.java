@@ -111,8 +111,6 @@ public class AuthenticationController {
                 } else if (user instanceof DeansOffice) {
                     userTypeName = "deans office";
                 }
-            } else {
-                userTypeName = "admin";
             }
 
             String combinedUsername = loginRequest.getEmail() + "::" + userTypeName;

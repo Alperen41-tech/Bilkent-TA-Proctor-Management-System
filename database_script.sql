@@ -427,6 +427,7 @@ insert into time_interval (day, start_time, end_time) values
     ('Friday', '15:30:00', '16:20:00'),
     ('Friday', '16:30:00', '17:20:00');
     
+    
 
 
     

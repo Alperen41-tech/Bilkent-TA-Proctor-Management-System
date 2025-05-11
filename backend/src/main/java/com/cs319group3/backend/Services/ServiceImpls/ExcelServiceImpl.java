@@ -403,7 +403,7 @@ public class ExcelServiceImpl implements ExcelService {
     private void saveOfferedCourseInstructorRel(String departmentCode, int courseCode, int sectionNo, String semester, int term, String instructorId) {
         Optional<Course> course = courseRepo.findByDepartment_DepartmentCodeAndCourseCode(departmentCode, courseCode);
         if (!course.isPresent()) {
-            throw new RuntimeException("failed because course with code " + courseCode + " does not exist");
+            throw new RuntimeException("failed because course with code " + departmentCode + " " + courseCode + " does not exist");
         }
 
         Optional<Semester> currSemester = semesterRepo.findByYearAndTerm(semester, term);
