@@ -193,6 +193,10 @@ const INS_DashboardPage = () => {
 
   const postTaskType = async (taskTypeName, taskLimit) => {
     try {
+      console.log("Creating Task Type:", taskTypeName, taskLimit);
+      console.log("Selected Course:", selectedCreateTaskCourse.course.id);
+      console.log("Selected Course Name:", selectedCreateTaskCourse.course.name);
+
       const response = await axios.post(`http://localhost:8080/taskType/createTaskType?courseId=${selectedCreateTaskCourse.course.id}`, {
         courseName: selectedCreateTaskCourse.course.name,
         taskTypeName: taskTypeName,
@@ -204,6 +208,7 @@ const INS_DashboardPage = () => {
       }
       else {
         alert("Task Type created successfully!");
+
         console.log("Task Type created successfully:", response.data);
       }
     } catch (error) {
@@ -228,6 +233,7 @@ const INS_DashboardPage = () => {
       }
       else {
         alert("Task Type deleted successfully!");
+        fetchTaskTypes();
         console.log("Task Type deleted successfully:", response.data);
       }
     } catch (error) {
@@ -290,6 +296,7 @@ const INS_DashboardPage = () => {
 
   useEffect(() => {
     if (selectedDeleteTaskCourse) {
+      setTaskTypes([]);
       fetchTaskTypes();
     }
   }
@@ -392,7 +399,7 @@ const INS_DashboardPage = () => {
                       alert("Please select a course.");
                       return;
                     }
-                    postTaskType(newTaskTypeNameRef.current.value, newTaskLimitRef.current.value);
+                    postTaskType(newTaskTypeNameRef.current.value, parseInt(newTaskLimitRef.current.value, 10) * 60);
                   }}>
                     <label>Select Course</label>
                     <select required onChange={(e) => {
