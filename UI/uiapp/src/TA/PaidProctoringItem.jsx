@@ -38,7 +38,13 @@ function parseSentDate(startDateString, endDateString) {
   const adjustedHour = hourInt % 12 || 12;
 
   const start = `${adjustedHour}:${minute}${ampm}`;
-  const end = endDateString.split("T")[1].substring(0,5) + "PM"; // Assuming end time is the same as start time for now
+
+  // Format end time
+  const endHourInt = parseInt(endDateString.split("T")[1].split(":")[0], 10);
+  const endMinute = endDateString.split("T")[1].split(":")[1];
+  const endHour = endHourInt % 12 || 12;
+  const endAMPM = endHourInt >= 12 ? 'PM' : 'AM';
+  const end = `${endHour}:${endMinute}${endAMPM}`;
 
   return {
     date: {

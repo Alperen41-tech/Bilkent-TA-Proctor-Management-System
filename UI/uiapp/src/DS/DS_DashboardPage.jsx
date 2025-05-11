@@ -67,6 +67,32 @@ const DS_DashboardPage = () => {
     console.log("Selected TA:", id);
   };
 
+  /**
+ * Handles the completion of a paid proctoring request
+ * Sets the request as completed and refreshes the list
+ *  */
+
+  const handleIsCompleted = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.put(`http://localhost:8080/proctoringApplication/setComplete?applicationId=${selectedPPR.applicationId}`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response.data) {
+        console.log("Handle set completed successfully.");
+        fetchPaidProctoringRequests();
+        fetchAppliedStudents();
+        fetchAvaliableTAs();
+      } else {
+        alert("Failed to complete the request. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error completing the request:", error);
+    }
+  };
+
 
   /**
  * Sends selected students to backend for force assignment
@@ -94,6 +120,7 @@ const DS_DashboardPage = () => {
 
       if (response.data) {
         alert("Force assignment completed successfully." + response.data + " TAs are assigned to the proctoring request.");
+        handleIsCompleted();
         fetchAppliedStudents();
         fetchAvaliableTAs();
       } else {
@@ -136,6 +163,7 @@ const DS_DashboardPage = () => {
 
       if (response.data) {
         alert("Unforced assignment completed successfully." + response.data + " requests sent to the TAs.");
+        handleIsCompleted();
         fetchAppliedStudents();
         fetchAvaliableTAs();
       } else {
