@@ -343,8 +343,8 @@ public class ExcelServiceImpl implements ExcelService {
             Sheet offeredCourseInstructorRelSheet = workbook.getSheetAt(9);
 
 
-            uploadFaculty(facultySheet);
-            uploadDepartment(departmentSheet);
+            //uploadFaculty(facultySheet);
+            //uploadDepartment(departmentSheet);
             uploadStudents(studentsSheet);
             uploadTAs(tasSheet);
             uploadInstructors(instructorSheet);

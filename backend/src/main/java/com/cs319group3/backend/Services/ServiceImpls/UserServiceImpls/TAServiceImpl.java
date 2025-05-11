@@ -209,7 +209,7 @@ public class TAServiceImpl implements TAService {
 
     @Override
     public List<TAProfileDTO> getAllTAProfiles() {
-        List<TA> tas = taRepo.findAll();
+        List<TA> tas = taRepo.findByAssignedCourse_Department_Faculty_FacultyId(1);
         List<TAProfileDTO> TAProfiles = new ArrayList<>();
         for (TA ta : tas) {
             TAProfileDTO dto = taProfileMapper.essentialMapper(ta);

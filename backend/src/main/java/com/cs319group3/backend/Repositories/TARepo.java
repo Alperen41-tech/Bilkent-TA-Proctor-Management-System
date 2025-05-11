@@ -45,4 +45,6 @@ public interface TARepo extends JpaRepository<TA, Integer> {
 
     Optional<TA> findByEmail(String email);
 
+    List<TA> findByAssignedCourse_Department_Faculty_FacultyId(int assignedCourseDepartmentFacultyFacultyId);
+
 }
