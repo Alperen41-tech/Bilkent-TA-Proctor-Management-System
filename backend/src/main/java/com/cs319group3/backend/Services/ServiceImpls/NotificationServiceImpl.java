@@ -63,7 +63,7 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setNotificationType(type);
         notification.setRead(false);
         notification.setSentDateTime(LocalDateTime.now());
-        if (type == NotificationType.APPROVAL) {
+        if (type == NotificationType.RESPONSE) {
             notification.setReceiver(request.getSenderUser());
         } else {
             notification.setReceiver(request.getReceiverUser());
@@ -79,7 +79,7 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setNotificationType(type);
         notification.setRead(false);
         notification.setSentDateTime(LocalDateTime.now());
-        if (type == NotificationType.APPROVAL) {
+        if (type == NotificationType.RESPONSE) {
             notification.setReceiver(request.getSenderUser());
         } else {
             notification.setReceiver(request.getReceiverUser());

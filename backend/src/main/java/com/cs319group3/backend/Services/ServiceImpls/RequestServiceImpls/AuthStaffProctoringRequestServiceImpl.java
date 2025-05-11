@@ -3,7 +3,6 @@ package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 import com.cs319group3.backend.DTOs.TAProfileDTO;
 import com.cs319group3.backend.Entities.ClassProctoring;
 import com.cs319group3.backend.Entities.RelationEntities.ClassProctoringTARelation;
-import com.cs319group3.backend.Entities.RelationEntities.ProctoringApplicationTARelation;
 import com.cs319group3.backend.Entities.RequestEntities.AuthStaffProctoringRequest;
 import com.cs319group3.backend.Entities.UserEntities.TA;
 import com.cs319group3.backend.Entities.UserEntities.User;
@@ -11,7 +10,6 @@ import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Enums.NotificationType;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.*;
-import com.cs319group3.backend.Services.ServiceImpls.LogServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -254,7 +252,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
                         request.getClassProctoring().getEventName() +
                         " is automatically rejected because capacity has been filled. ";
                 System.out.println(description);
-                notificationService.createNotification(request, NotificationType.APPROVAL, description);
+                notificationService.createNotification(request, NotificationType.RESPONSE, description);
             }
         }
     }

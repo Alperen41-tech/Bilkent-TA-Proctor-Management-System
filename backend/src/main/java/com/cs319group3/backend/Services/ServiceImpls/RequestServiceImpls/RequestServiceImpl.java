@@ -3,15 +3,11 @@ package com.cs319group3.backend.Services.ServiceImpls.RequestServiceImpls;
 import com.cs319group3.backend.DTOMappers.RequestMappers.RequestMapper;
 import com.cs319group3.backend.DTOs.ProctoringApplicationDTO;
 import com.cs319group3.backend.DTOs.RequestDTOs.RequestDTO;
-import com.cs319group3.backend.Entities.Notification;
 import com.cs319group3.backend.Entities.RequestEntities.*;
 import com.cs319group3.backend.Entities.UserEntities.TA;
-import com.cs319group3.backend.Entities.UserEntities.User;
 import com.cs319group3.backend.Enums.LogType;
 import com.cs319group3.backend.Repositories.*;
 import com.cs319group3.backend.Services.*;
-import com.cs319group3.backend.Services.ServiceImpls.ClassProctoringTARelationServiceImpl;
-import com.cs319group3.backend.Services.ServiceImpls.LogServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +15,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import static com.cs319group3.backend.Enums.NotificationType.APPROVAL;
+import static com.cs319group3.backend.Enums.NotificationType.RESPONSE;
 
 @Service
 public class RequestServiceImpl implements RequestService {
@@ -84,6 +80,7 @@ public class RequestServiceImpl implements RequestService {
         }
 
         Request request = optionalRequest.get();
+        String requestType = "";
 
         if (response){
             if (request instanceof TAWorkloadRequest) {
@@ -157,6 +154,7 @@ public class RequestServiceImpl implements RequestService {
         }
 
         if (request instanceof TAWorkloadRequest) {
+            requestType = "Workload";
             TAWorkloadRequest req = (TAWorkloadRequest) request;
             List<TAWorkloadRequest> reqs = taWorkloadRequestRepo.findByWorkloadIdAndRequestIdNot(req.getWorkloadId(), requestId);
             for (TAWorkloadRequest req1 : reqs) {
@@ -164,14 +162,27 @@ public class RequestServiceImpl implements RequestService {
                     requestRepo.delete(req1);
                 }
             }
-        }
+        } else if (request instanceof AuthStaffProctoringRequest)
+            requestType = "Proctoring";
+        else if (request instanceof TASwapRequest)
+            requestType = "Swap";
+        else if (request instanceof InstructorAdditionalTARequest)
+            requestType = "Additional TA";
+        else if (request instanceof TALeaveRequest)
+            requestType = "Leave";
+
         request.setApproved(response);
         request.setResponseDate(LocalDateTime.now());
         String logMessage;
-        if (response)
+        String description;
+        if (response) {
             logMessage = "Request " + request.getRequestId() + " accepted by user " + request.getReceiverUser().getUserId() + ".";
-        else
+            description = "Your " + requestType + " request has been accepted by " + request.getReceiverUser().getFullName();
+        }
+        else {
             logMessage = "Request " + request.getRequestId() + " rejected by user " + request.getReceiverUser().getUserId() + ".";
+            description = "Your " + requestType + " request has been rejected by " + request.getReceiverUser().getFullName();
+        }
         logService.createLog(logMessage, LogType.UPDATE);
         try {
             requestRepo.save(request);
@@ -180,7 +191,7 @@ public class RequestServiceImpl implements RequestService {
             throw e;
         }
 
-        notificationService.createNotification(request, APPROVAL);
+        notificationService.createNotification(request, RESPONSE, description);
         return true;
     }
 

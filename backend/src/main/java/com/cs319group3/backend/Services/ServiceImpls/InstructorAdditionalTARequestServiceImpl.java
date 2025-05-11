@@ -93,7 +93,8 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
         InstructorAdditionalTARequest request = requestMapper.instructorAdditionalTARequestToEntityMapper(requestDTO);
 
         instructorAdditionalTARequestRepo.save(request);
-        notificationService.createNotification(request, NotificationType.REQUEST);
+        String description = "You received an additional TA request from " + instructor.get().getFullName();
+        notificationService.createNotification(request, NotificationType.REQUEST, description);
 
         return true;
     }

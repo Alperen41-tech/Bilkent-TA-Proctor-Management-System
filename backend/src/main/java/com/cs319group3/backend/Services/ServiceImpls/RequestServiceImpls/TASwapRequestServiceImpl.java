@@ -77,7 +77,8 @@ public class TASwapRequestServiceImpl implements TASwapRequestService {
         String logMessage = "User " + swapRequest.getSenderUser().getUserId() + " sent a swap request (" +
                 swapRequest.getRequestId() + ") to user " + swapRequest.getReceiverUser().getUserId() + ".";
         logService.createLog(logMessage, LogType.CREATE);
-        notificationService.createNotification(swapRequest, NotificationType.REQUEST);
+        String description = "You received a swap request from " + swapRequest.getSenderUser().getFullName();
+        notificationService.createNotification(swapRequest, NotificationType.REQUEST, description);
         return ResponseEntity.ok(true);
     }
 

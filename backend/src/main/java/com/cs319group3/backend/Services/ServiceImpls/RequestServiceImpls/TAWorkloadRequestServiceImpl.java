@@ -103,7 +103,8 @@ public class TAWorkloadRequestServiceImpl implements TAWorkloadRequestService {
                     + " sent a workload request (" + workloadRequest.getRequestId()
                     + ") to user " + workloadRequest.getReceiverUser().getUserId() + ".";
             logService.createLog(logMessage, LogType.CREATE);
-            notificationService.createNotification(workloadRequest, REQUEST);
+            String description = "You received a workload request from " + workloadRequest.getSenderUser().getFullName();
+            notificationService.createNotification(workloadRequest, REQUEST, description);
         }
 
         return true;
