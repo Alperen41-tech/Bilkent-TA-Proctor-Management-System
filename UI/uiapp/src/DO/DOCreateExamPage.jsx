@@ -623,9 +623,12 @@ const DOCreateExamPage = () => {
               <option value="">Select Course</option>
               {courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
+            <label>Section No:</label>
             <input type="number" value={sectionNo} min={1} onChange={(e) => setSectionNo(Number(e.target.value))} />
+            <label>Start and End Time:</label>
             <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
             <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+            <label>TA Count:</label>
             <input type="number" value={taCount} min={1} onChange={(e) => setTaCount(Number(e.target.value))} />
             <button onClick={handleCreateExam}>Create</button>
           </div>
