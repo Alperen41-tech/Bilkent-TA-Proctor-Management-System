@@ -415,7 +415,7 @@ const DOExamsPage = () => {
     const taId = selectedTAObj?.userId ?? selectedTAObj?.id;
 
     const classProctoring = selectedExamItem
-      .classProctoringTARelationDTO
+      ?.classProctoringTARelationDTO
       ?.classProctoringDTO;
     const classProctoringId = classProctoring?.id;
 

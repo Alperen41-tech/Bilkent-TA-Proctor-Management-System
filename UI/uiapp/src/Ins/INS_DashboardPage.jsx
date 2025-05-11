@@ -222,6 +222,10 @@ const INS_DashboardPage = () => {
 
   const deleteTaskType = async (taskTypeName) => {
     try {
+      if (!selectedDeleteTaskCourse || !selectedDeleteTaskCourse.course || !selectedDeleteTaskCourse.course.id) {
+        alert("Please select a valid course.");
+        return;
+      }
       const response = await axios.delete("http://localhost:8080/taskType/deleteTaskType?", {
         params: {
           courseId: selectedDeleteTaskCourse.course.id,

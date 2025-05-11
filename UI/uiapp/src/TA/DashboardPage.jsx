@@ -249,7 +249,7 @@ const DashboardPage = () => {
       const response = await axios.post("http://localhost:8080/taWorkloadRequest/create", {
         taskTypeName: newTaskTypeEntry.current.value,
         timeSpent: parseInt(newTimeSpendHoursEntry.current.value,10)*60 + parseInt(newTimeSpendMinutesEntry.current.value, 10),
-        description: newDetailsEntry.current.value,
+        description: newDetailsEntry.current.value ? newDetailsEntry.current.value : null,
       }, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -473,8 +473,8 @@ const DashboardPage = () => {
                 <h3>Enter Task</h3>
                 <form onSubmit={(e) => {e.preventDefault();postNewWorkloadEntry();console.log(taskType);}}>
                   <label>Task Type</label>
-                  <select ref={newTaskTypeEntry}>
-                    <option>Select a Task Type</option>
+                  <select ref={newTaskTypeEntry} required>
+                    <option value="" disabled selected>Select a Task Type</option>
                     {taskType ? taskType.map((type, index) => (
                       <option key={index}>{type}</option>
                     )): null}
@@ -483,8 +483,8 @@ const DashboardPage = () => {
 
                   <label>Time Spent</label>
                   <div className="ta-dashboard-time-inputs">
-                    <input ref={newTimeSpendHoursEntry} type="number" min={0}  placeholder="Hours" />
-                    <input ref={newTimeSpendMinutesEntry} type="number" min={0} placeholder="Minutes" />
+                    <input ref={newTimeSpendHoursEntry} type="number" min={0}  placeholder="Hours" required/>
+                    <input ref={newTimeSpendMinutesEntry} type="number" min={0} placeholder="Minutes" required/>
                   </div>
 
                   <label>Details</label>
