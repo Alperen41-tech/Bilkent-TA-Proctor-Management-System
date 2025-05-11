@@ -24,15 +24,6 @@ const ProctoringDutyItem = ({ duty, isSelected, onSelect, onLockedStatusChange }
       <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.startDate ? duty.classProctoringDTO.startDate.split("T")[0]: null}</span>
       <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.startDate && duty.classProctoringDTO.endDate ? duty.classProctoringDTO.startDate.split("T")[1].substring(0,5) + "-"+ duty.classProctoringDTO.endDate.split("T")[1].substring(0,5) : null}</span>
       <span className="proctoring-duty-item-duty-field">{duty.classProctoringDTO.classrooms}</span>
-      <div className="proctoring-duty-item-duty-field proctoring-duty-item-status-container">
-        <input
-          type="checkbox"
-          onClick={onLockedStatusChange}
-          checked={isLocked}
-          readOnly
-        />
-        <span className="proctoring-duty-item-status-text">{isLocked ? "Swap Locked" : "Open for Swap"}</span>
-      </div>
     </div>
   );
 };

@@ -58,9 +58,10 @@ const ExamsPage = () => {
       if (response.data) {
         alert("Swap request sent successfully!");
         console.log("Swap request sent successfully!");
+        setLastSelectedTask({});
         setAvailableTAs([]);
-        fetchAvailableTAs(); // Refresh the available TAs after sending the request
-        fetchTasProctorings(); // Refresh the tasks after sending the request
+        fetchAvailableTAs();
+        fetchTasProctorings();
       }
       else {
         alert("Failed to send swap request. Please try again.");
@@ -175,13 +176,9 @@ const ExamsPage = () => {
                 )
               )}
             </div>
-
-            
           </div>
         </div>
       </div>
-
-
     </div>
   );
 };
