@@ -145,7 +145,7 @@ public class ClassProctoringTARelationServiceImpl implements ClassProctoringTARe
             classProctoringTARelationRepo.delete(relation.get());
             String logMessage = "TA " + taId + " is dismissed from class proctoring " + classProctoringId + ".";
             logService.createLog(logMessage, LogType.DELETE);
-            String description = "You are dismissed by " + remover.get().getName() + " from the class proctoring.";
+            String description = "You are dismissed by " + remover.get().getFullName() + " from the class proctoring.";
             long minutes = ChronoUnit.MINUTES.between(relation.get().getClassProctoring().getStartDate(), relation.get().getClassProctoring().getEndDate());
             TA ta = relation.get().getTA();
             ta.setWorkload(ta.getWorkload() - (int) minutes);

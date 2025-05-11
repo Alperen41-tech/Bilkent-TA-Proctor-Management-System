@@ -40,7 +40,7 @@ public class TALeaveRequestServiceImpl implements TALeaveRequestService {
         logService.createLog(logMessage, LogType.CREATE);
         tALeaveRequestRepo.save(taLeaveRequest);
 
-        String description = "You received a leave request from " + taLeaveRequest.getSenderUser().getUserId();
+        String description = "You received a leave request from " + taLeaveRequest.getSenderUser().getFullName();
         notificationService.createNotification(taLeaveRequest, REQUEST, description);
         return true;
     }

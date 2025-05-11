@@ -252,7 +252,7 @@ public class AuthStaffProctoringRequestServiceImpl implements AuthStaffProctorin
                         request.getClassProctoring().getEventName() +
                         " is automatically rejected because capacity has been filled. ";
                 System.out.println(description);
-                notificationService.createNotification(request, NotificationType.RESPONSE, description);
+                notificationService.createNotification(request, NotificationType.REJECTION, description);
             }
         }
     }

@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import static com.cs319group3.backend.Enums.NotificationType.RESPONSE;
+import static com.cs319group3.backend.Enums.NotificationType.APPROVAL;
+import static com.cs319group3.backend.Enums.NotificationType.REJECTION;
 
 @Service
 public class RequestServiceImpl implements RequestService {
@@ -178,10 +179,12 @@ public class RequestServiceImpl implements RequestService {
         if (response) {
             logMessage = "Request " + request.getRequestId() + " accepted by user " + request.getReceiverUser().getUserId() + ".";
             description = "Your " + requestType + " request has been accepted by " + request.getReceiverUser().getFullName();
+            notificationService.createNotification(request, APPROVAL, description);
         }
         else {
             logMessage = "Request " + request.getRequestId() + " rejected by user " + request.getReceiverUser().getUserId() + ".";
             description = "Your " + requestType + " request has been rejected by " + request.getReceiverUser().getFullName();
+            notificationService.createNotification(request, REJECTION, description);
         }
         logService.createLog(logMessage, LogType.UPDATE);
         try {
@@ -191,7 +194,6 @@ public class RequestServiceImpl implements RequestService {
             throw e;
         }
 
-        notificationService.createNotification(request, RESPONSE, description);
         return true;
     }
 

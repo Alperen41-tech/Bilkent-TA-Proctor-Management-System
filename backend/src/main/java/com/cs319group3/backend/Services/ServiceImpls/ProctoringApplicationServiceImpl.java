@@ -104,7 +104,7 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
 
         Request request = requestService.createProctoringApplicationRequest(dto, deansOfficeId);
         String description = request.getSenderUser().getFullName() + " opened a paid proctoring application";
-        notificationService.createNotification(request, NotificationType.RESPONSE, description);
+        notificationService.createNotification(request, NotificationType.REQUEST, description);
         return true;
     }
 
