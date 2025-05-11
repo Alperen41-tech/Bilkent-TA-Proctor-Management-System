@@ -26,6 +26,7 @@ public class TaskTypeServiceImpl implements TaskTypeService {
 
     @Autowired
     private TAWorkloadRequestRepo taWorkloadRequestRepo;
+    @Autowired
     private LogService logService;
 
     @Override
