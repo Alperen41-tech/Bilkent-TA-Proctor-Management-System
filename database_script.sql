@@ -427,9 +427,38 @@ insert into time_interval (day, start_time, end_time) values
     ('Friday', '15:30:00', '16:20:00'),
     ('Friday', '16:30:00', '17:20:00');
     
+insert into faculty (faculty_id, faculty_name) values
+	(1, 'Engineering Faculty');
+    
+insert into department (department_id, department_name, department_code, faculty_id) values
+	(1, 'Computer Engineering', 'CS', 1),
+    (2, 'Industrial Engineering', 'IE', 1);
+    
+insert into user (user_id, bilkent_id, name, surname, email, phone_number, is_active) values
+	(1, '23103131', 'dummy', 'instructor', 'dummyinstructor@bilkent.edu.tr', '+905353533535', true),
+	(2, '30001', 'mühe', 'dekan', 'mühedekan@bilkent.edu.tr', '+905353533535', true), -- engineering deans office
+   	(3, '40001', 'Begüm', 'Hanım', 'begümhanım@bilkent.edu.tr', '+905353533535', true), -- cs secretary
+	(4, '40002', 'Vegüm', 'Hanım', 'vegümhanım@bilkent.edu.tr', '+905353533535', true); -- ie secretary
+	
+insert into instructor (user_id, department_id) values
+	(1, 1);
+
+insert into deans_office(user_id, faculty_id) values
+	(2, 1);
+
+insert into department_secretary(user_id, department_id) values
+	(3, 1),
+    (4, 2);
+    
+insert into login (login_id, user_id, password, user_type_id) values
+	(1, 1, '$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi', 5),
+    (2, 1, '$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi', 6),
+	(3, 2, '$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi', 4),
+    (4, 3, '$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi', 3),
+	(5, 4, '$2a$10$GDsiwaSCnb3DFDsaaWGI3ORGiPg/lnTe8zfMRCt6wLJe8jB4sqjWi', 3);
     
 
-
+-- burdan sonrası çalıştırılmayacak ---------------
     
 insert into faculty (faculty_id, faculty_name) values
 	(1, 'Engineering Faculty');
