@@ -133,7 +133,7 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
             throw new RuntimeException("The current user is not a department secretary");
         }
         List<ProctoringApplication> listPA = proctoringApplicationRepo.findByVisibleDepartment_DepartmentId(ds.get().getDepartment().getDepartmentId());
-        listPA.removeIf(ProctoringApplication::isComplete);
+        listPA.removeIf(proctoringApplication -> proctoringApplication.getClassProctoring().getStartDate().isBefore(LocalDateTime.now()));
         return proctoringApplicationMapper.toDTO(listPA);
     }
 

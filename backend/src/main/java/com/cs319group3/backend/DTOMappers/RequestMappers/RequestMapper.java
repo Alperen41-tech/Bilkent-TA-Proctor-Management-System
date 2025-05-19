@@ -39,7 +39,7 @@ public class RequestMapper {
     @Autowired
     private DeansOfficeRepo deansOfficeRepo;
 
-    public void essentialToEntityMapper(Request finalRequest, RequestDTO dto) throws Exception{
+    public void essentialToEntityMapper(Request finalRequest, RequestDTO dto){
 
         finalRequest.setSentDate(LocalDateTime.now());
         //finalRequest.setApproved(dto.getIsApproved());
@@ -57,7 +57,7 @@ public class RequestMapper {
             finalRequest.setReceiverUser(receiverUser.get());
     }
 
-    public TASwapRequest taSwapRequestToEntityMapper(RequestDTO dto) throws Exception{
+    public TASwapRequest taSwapRequestToEntityMapper(RequestDTO dto){
         TASwapRequest taSwapRequest = new TASwapRequest();
         essentialToEntityMapper(taSwapRequest, dto);
 
@@ -71,7 +71,7 @@ public class RequestMapper {
         return taSwapRequest;
     }
 
-    public InstructorAdditionalTARequest instructorAdditionalTARequestToEntityMapper(RequestDTO dto) throws Exception {
+    public InstructorAdditionalTARequest instructorAdditionalTARequestToEntityMapper(RequestDTO dto){
 
         InstructorAdditionalTARequest instructorAdditionalTARequest = new InstructorAdditionalTARequest();
         essentialToEntityMapper(instructorAdditionalTARequest, dto);
@@ -90,7 +90,7 @@ public class RequestMapper {
         return instructorAdditionalTARequest;
     }
 
-    public TALeaveRequest taLeaveRequestToEntityMapper(RequestDTO dto) throws Exception{
+    public TALeaveRequest taLeaveRequestToEntityMapper(RequestDTO dto){
         TALeaveRequest taLeaveRequest = new TALeaveRequest();
 
         essentialToEntityMapper(taLeaveRequest, dto);
@@ -100,7 +100,7 @@ public class RequestMapper {
                 .findByDepartment_DepartmentId(senderTA.getDepartment().getDepartmentId());
 
         if (!departmentSecretary.isPresent()) {
-            throw new Exception("DepartmentSecretary cannot be found in database");
+            throw new RuntimeException("DepartmentSecretary cannot be found in database");
         }
 
         taLeaveRequest.setReceiverUser(departmentSecretary.get());
@@ -112,7 +112,7 @@ public class RequestMapper {
         return taLeaveRequest;
     }
 
-    public TAWorkloadRequest taWorkloadRequestToEntityMapper(RequestDTO requestDTO, User receiverUser) throws Exception{
+    public TAWorkloadRequest taWorkloadRequestToEntityMapper(RequestDTO requestDTO, User receiverUser){
         TAWorkloadRequest taWorkloadRequest = new TAWorkloadRequest();
         requestDTO.setReceiverId(receiverUser.getUserId());
         essentialToEntityMapper(taWorkloadRequest, requestDTO);
@@ -122,7 +122,7 @@ public class RequestMapper {
         if (!requestDTO.getTaskTypeName().equals("Other")) {
             taskType = taskTypeRepo.findByTaskTypeNameAndCourse_CourseId(requestDTO.getTaskTypeName(), senderTA.getAssignedCourse().getCourseId());
             if (!taskType.isPresent()) {
-                throw new Exception("Task type does not exist");
+                throw new RuntimeException("Task type does not exist");
             }
             taWorkloadRequest.setTaskType(taskType.get());
         }

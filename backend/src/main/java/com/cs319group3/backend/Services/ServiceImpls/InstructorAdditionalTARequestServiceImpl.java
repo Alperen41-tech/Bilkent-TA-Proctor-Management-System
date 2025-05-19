@@ -63,7 +63,7 @@ public class InstructorAdditionalTARequestServiceImpl implements InstructorAddit
     }
 
     @Override
-    public boolean createInstructorAdditionalTARequest(RequestDTO requestDTO, int senderId) throws Exception {
+    public boolean createInstructorAdditionalTARequest(RequestDTO requestDTO, int senderId){
         int classProctoringId = requestDTO.getClassProctoringId();
         List<ProctoringApplication> list = proctoringApplicationRepo.findByClassProctoring_ClassProctoringId(classProctoringId);
 
