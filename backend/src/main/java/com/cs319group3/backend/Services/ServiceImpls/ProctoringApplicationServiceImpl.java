@@ -171,7 +171,7 @@ public class ProctoringApplicationServiceImpl implements ProctoringApplicationSe
                 proctoringApplicationRepo.findByVisibleDepartment_DepartmentIdAndApplicationType(
                         taReceived.getDepartment().getDepartmentId(), applicationType
                 );
-        allProctorings.removeIf(proctoring -> proctoring.getClassProctoring().getStartDate().isBefore(LocalDateTime.now()));
+        allProctorings.removeIf(proctoring -> proctoring.getClassProctoring().getStartDate().isBefore(LocalDateTime.now()) || proctoring.isComplete() || proctoring.getFinishDate().isBefore(LocalDateTime.now()));
         List<ProctoringApplicationDTO> proctoringApplicationDTOs = proctoringApplicationMapper.toDTO(allProctorings);
 
         for (ProctoringApplicationDTO dto : proctoringApplicationDTOs) {
